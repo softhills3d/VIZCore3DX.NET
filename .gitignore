@@ -1,3 +1,9 @@
-
+v15
+.vs/
+bin/
+obj/
+Thumbs.db
+*.user
+packages/
 VIZCore3DX.Control.dll
 VIZCore3DX.Control.lang
