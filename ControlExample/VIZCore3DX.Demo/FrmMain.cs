@@ -29,12 +29,15 @@ namespace VIZCore3DX.Demo
 
         private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
         {
-            VIZCore3DX.Control.Data.LicenseResults result =
+            VIZCore3DX.Control.Data.LicenseResults resultFile =
                 vizcore3d.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
 
-            if(result != Control.Data.LicenseResults.SUCCESS)
+            //VIZCore3DX.Control.Data.LicenseResults resultServer =
+            //    vizcore3d.License.LicenseServer("127.0.0.1", 8901);
+
+            if(resultFile != Control.Data.LicenseResults.SUCCESS)
             {
-                MessageBox.Show(string.Format("License = {0}", result), "License", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("License = {0}", resultFile), "License", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
