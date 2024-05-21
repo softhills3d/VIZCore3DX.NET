@@ -56,8 +56,6 @@ namespace VIZCore3DX.NET.Demo
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
-            if (vizcore3d.IsLicenseAuthenticated != License.AuthenticationResult.Success) return;
-
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "VIZX (*.vizx)|*.vizx";
             if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -67,29 +65,21 @@ namespace VIZCore3DX.NET.Demo
 
         private void ckEdge_CheckedChanged(object sender, EventArgs e)
         {
-            if (vizcore3d.IsLicenseAuthenticated != License.AuthenticationResult.Success) return;
-
             vizcore3d.View.IsEdgeEnabled = ckEdge.Checked;
         }
 
         private void ckSSAO_CheckedChanged(object sender, EventArgs e)
         {
-            if (vizcore3d.IsLicenseAuthenticated != License.AuthenticationResult.Success) return;
-
             vizcore3d.View.IsSsaoEnabled = ckSSAO.Checked;
         }
 
         private void ckShadow_CheckedChanged(object sender, EventArgs e)
         {
-            if (vizcore3d.IsLicenseAuthenticated != License.AuthenticationResult.Success) return;
-
             vizcore3d.View.IsShadowEnabled = ckShadow.Checked;
         }
 
         private void ckEnvLight_CheckedChanged(object sender, EventArgs e)
         {
-            if (vizcore3d.IsLicenseAuthenticated != License.AuthenticationResult.Success) return;
-
             vizcore3d.View.IsEnvironmentMapEnabled = ckEnvLight.Checked;
         }
     }
