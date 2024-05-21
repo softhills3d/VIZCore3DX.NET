@@ -47,11 +47,11 @@ namespace VIZCore3DX.NET.Demo
             this.splitContainer1.Panel1.Controls.Add(Scene);
 
             // 라이선스
-            VIZCore3DX.NET.License.AuthenticationResult resultFile =
-                vizcore3d.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
+            //VIZCore3DX.NET.License.AuthenticationResult resultFile =
+            //    vizcore3d.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
 
-            //VIZCore3DX.NET.License.AuthenticationResult resultServer =
-            //    vizcore3d.AuthenticateLicenseByServer("127.0.0.1", 8901);
+            VIZCore3DX.NET.License.AuthenticationResult resultServer =
+                vizcore3d.AuthenticateLicenseByServer("127.0.0.1", 8901);
         }
 
         private void btnOpen_Click(object sender, EventArgs e)
