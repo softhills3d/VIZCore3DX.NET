@@ -34,18 +34,6 @@ namespace VIZCore3DX.NET.Demo
             MouseWheel += (sender, e) => { View.OnMouseWheel(e); };
             MouseDoubleClick += (sender, e) => { View.OnMouseDoubleClick(e); };
 
-            PreviewKeyDown += (sender, e) =>
-            {
-                switch (e.KeyCode)
-                {
-                    case Keys.Down:
-                    case Keys.Right:
-                    case Keys.Up:
-                    case Keys.Left:
-                        e.IsInputKey = true;
-                        break;
-                }
-            };
             KeyDown += (sender, e) => { View.OnKeyDown(e); };
 
             Paint += (sender, e) => { View.Render(); };
