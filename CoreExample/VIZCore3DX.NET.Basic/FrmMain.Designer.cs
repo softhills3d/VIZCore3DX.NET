@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.menuBar = new System.Windows.Forms.MenuStrip();
             this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileNew = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,11 +40,6 @@
             this.menuEditUndo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuEditRedo = new System.Windows.Forms.ToolStripMenuItem();
             this.menuView = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuTools = new System.Windows.Forms.ToolStripMenuItem();
-            this.splitContainerMain = new System.Windows.Forms.SplitContainer();
-            this.menuToolsLicense = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuToolsLicenseFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuToolsLicenseServer = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewRenderingMode = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewRenderingModeSmooth = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewRenderingModeSmoothEdge = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,6 +47,11 @@
             this.menuViewRenderingModeRealtimeShadow = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewRenderingModeEnvironmentLight = new System.Windows.Forms.ToolStripMenuItem();
             this.menuViewXray = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuTools = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuToolsLicense = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuToolsLicenseFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuToolsLicenseServer = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.menuBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.SuspendLayout();
@@ -146,6 +147,60 @@
             this.menuView.Size = new System.Drawing.Size(43, 20);
             this.menuView.Text = "보기";
             // 
+            // menuViewRenderingMode
+            // 
+            this.menuViewRenderingMode.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuViewRenderingModeSmooth,
+            this.menuViewRenderingModeSmoothEdge,
+            this.menuViewRenderingModeSSAO,
+            this.menuViewRenderingModeRealtimeShadow,
+            this.menuViewRenderingModeEnvironmentLight});
+            this.menuViewRenderingMode.Name = "menuViewRenderingMode";
+            this.menuViewRenderingMode.Size = new System.Drawing.Size(138, 22);
+            this.menuViewRenderingMode.Text = "렌더링 모드";
+            // 
+            // menuViewRenderingModeSmooth
+            // 
+            this.menuViewRenderingModeSmooth.Name = "menuViewRenderingModeSmooth";
+            this.menuViewRenderingModeSmooth.Size = new System.Drawing.Size(166, 22);
+            this.menuViewRenderingModeSmooth.Text = "부드러운 음영";
+            this.menuViewRenderingModeSmooth.Click += new System.EventHandler(this.menuViewRenderingModeSmooth_Click);
+            // 
+            // menuViewRenderingModeSmoothEdge
+            // 
+            this.menuViewRenderingModeSmoothEdge.Name = "menuViewRenderingModeSmoothEdge";
+            this.menuViewRenderingModeSmoothEdge.Size = new System.Drawing.Size(166, 22);
+            this.menuViewRenderingModeSmoothEdge.Text = "모서리 표시 음영";
+            this.menuViewRenderingModeSmoothEdge.Click += new System.EventHandler(this.menuViewRenderingModeSmoothEdge_Click);
+            // 
+            // menuViewRenderingModeSSAO
+            // 
+            this.menuViewRenderingModeSSAO.Name = "menuViewRenderingModeSSAO";
+            this.menuViewRenderingModeSSAO.Size = new System.Drawing.Size(166, 22);
+            this.menuViewRenderingModeSSAO.Text = "SSAO";
+            this.menuViewRenderingModeSSAO.Click += new System.EventHandler(this.menuViewRenderingModeSSAO_Click);
+            // 
+            // menuViewRenderingModeRealtimeShadow
+            // 
+            this.menuViewRenderingModeRealtimeShadow.Name = "menuViewRenderingModeRealtimeShadow";
+            this.menuViewRenderingModeRealtimeShadow.Size = new System.Drawing.Size(166, 22);
+            this.menuViewRenderingModeRealtimeShadow.Text = "그림자";
+            this.menuViewRenderingModeRealtimeShadow.Click += new System.EventHandler(this.menuViewRenderingModeRealtimeShadow_Click);
+            // 
+            // menuViewRenderingModeEnvironmentLight
+            // 
+            this.menuViewRenderingModeEnvironmentLight.Name = "menuViewRenderingModeEnvironmentLight";
+            this.menuViewRenderingModeEnvironmentLight.Size = new System.Drawing.Size(166, 22);
+            this.menuViewRenderingModeEnvironmentLight.Text = "환경조명";
+            this.menuViewRenderingModeEnvironmentLight.Click += new System.EventHandler(this.menuViewRenderingModeEnvironmentLight_Click);
+            // 
+            // menuViewXray
+            // 
+            this.menuViewXray.Name = "menuViewXray";
+            this.menuViewXray.Size = new System.Drawing.Size(138, 22);
+            this.menuViewXray.Text = "X-Ray";
+            this.menuViewXray.Click += new System.EventHandler(this.menuViewXray_Click);
+            // 
             // menuTools
             // 
             this.menuTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -153,6 +208,29 @@
             this.menuTools.Name = "menuTools";
             this.menuTools.Size = new System.Drawing.Size(43, 20);
             this.menuTools.Text = "도구";
+            // 
+            // menuToolsLicense
+            // 
+            this.menuToolsLicense.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuToolsLicenseFile,
+            this.menuToolsLicenseServer});
+            this.menuToolsLicense.Name = "menuToolsLicense";
+            this.menuToolsLicense.Size = new System.Drawing.Size(122, 22);
+            this.menuToolsLicense.Text = "라이선스";
+            // 
+            // menuToolsLicenseFile
+            // 
+            this.menuToolsLicenseFile.Name = "menuToolsLicenseFile";
+            this.menuToolsLicenseFile.Size = new System.Drawing.Size(126, 22);
+            this.menuToolsLicenseFile.Text = "파일 인증";
+            this.menuToolsLicenseFile.Click += new System.EventHandler(this.menuToolsLicenseFile_Click);
+            // 
+            // menuToolsLicenseServer
+            // 
+            this.menuToolsLicenseServer.Name = "menuToolsLicenseServer";
+            this.menuToolsLicenseServer.Size = new System.Drawing.Size(126, 22);
+            this.menuToolsLicenseServer.Text = "서버 연결";
+            this.menuToolsLicenseServer.Click += new System.EventHandler(this.menuToolsLicenseServer_Click);
             // 
             // splitContainerMain
             // 
@@ -164,83 +242,6 @@
             this.splitContainerMain.SplitterDistance = 318;
             this.splitContainerMain.TabIndex = 1;
             // 
-            // menuToolsLicense
-            // 
-            this.menuToolsLicense.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuToolsLicenseFile,
-            this.menuToolsLicenseServer});
-            this.menuToolsLicense.Name = "menuToolsLicense";
-            this.menuToolsLicense.Size = new System.Drawing.Size(180, 22);
-            this.menuToolsLicense.Text = "라이선스";
-            // 
-            // menuToolsLicenseFile
-            // 
-            this.menuToolsLicenseFile.Name = "menuToolsLicenseFile";
-            this.menuToolsLicenseFile.Size = new System.Drawing.Size(180, 22);
-            this.menuToolsLicenseFile.Text = "파일 인증";
-            this.menuToolsLicenseFile.Click += new System.EventHandler(this.menuToolsLicenseFile_Click);
-            // 
-            // menuToolsLicenseServer
-            // 
-            this.menuToolsLicenseServer.Name = "menuToolsLicenseServer";
-            this.menuToolsLicenseServer.Size = new System.Drawing.Size(180, 22);
-            this.menuToolsLicenseServer.Text = "서버 연결";
-            this.menuToolsLicenseServer.Click += new System.EventHandler(this.menuToolsLicenseServer_Click);
-            // 
-            // menuViewRenderingMode
-            // 
-            this.menuViewRenderingMode.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuViewRenderingModeSmooth,
-            this.menuViewRenderingModeSmoothEdge,
-            this.menuViewRenderingModeSSAO,
-            this.menuViewRenderingModeRealtimeShadow,
-            this.menuViewRenderingModeEnvironmentLight});
-            this.menuViewRenderingMode.Name = "menuViewRenderingMode";
-            this.menuViewRenderingMode.Size = new System.Drawing.Size(180, 22);
-            this.menuViewRenderingMode.Text = "렌더링 모드";
-            // 
-            // menuViewRenderingModeSmooth
-            // 
-            this.menuViewRenderingModeSmooth.Name = "menuViewRenderingModeSmooth";
-            this.menuViewRenderingModeSmooth.Size = new System.Drawing.Size(180, 22);
-            this.menuViewRenderingModeSmooth.Text = "부드러운 음영";
-            this.menuViewRenderingModeSmooth.Click += new System.EventHandler(this.menuViewRenderingModeSmooth_Click);
-            // 
-            // menuViewRenderingModeSmoothEdge
-            // 
-            this.menuViewRenderingModeSmoothEdge.Name = "menuViewRenderingModeSmoothEdge";
-            this.menuViewRenderingModeSmoothEdge.Size = new System.Drawing.Size(180, 22);
-            this.menuViewRenderingModeSmoothEdge.Text = "모서리 표시 음영";
-            this.menuViewRenderingModeSmoothEdge.Click += new System.EventHandler(this.menuViewRenderingModeSmoothEdge_Click);
-            // 
-            // menuViewRenderingModeSSAO
-            // 
-            this.menuViewRenderingModeSSAO.Name = "menuViewRenderingModeSSAO";
-            this.menuViewRenderingModeSSAO.Size = new System.Drawing.Size(180, 22);
-            this.menuViewRenderingModeSSAO.Text = "SSAO";
-            this.menuViewRenderingModeSSAO.Click += new System.EventHandler(this.menuViewRenderingModeSSAO_Click);
-            // 
-            // menuViewRenderingModeRealtimeShadow
-            // 
-            this.menuViewRenderingModeRealtimeShadow.Name = "menuViewRenderingModeRealtimeShadow";
-            this.menuViewRenderingModeRealtimeShadow.Size = new System.Drawing.Size(180, 22);
-            this.menuViewRenderingModeRealtimeShadow.Text = "그림자";
-            this.menuViewRenderingModeRealtimeShadow.Click += new System.EventHandler(this.menuViewRenderingModeRealtimeShadow_Click);
-            // 
-            // menuViewRenderingModeEnvironmentLight
-            // 
-            this.menuViewRenderingModeEnvironmentLight.Name = "menuViewRenderingModeEnvironmentLight";
-            this.menuViewRenderingModeEnvironmentLight.Size = new System.Drawing.Size(180, 22);
-            this.menuViewRenderingModeEnvironmentLight.Text = "환경조명";
-            this.menuViewRenderingModeEnvironmentLight.Click += new System.EventHandler(this.menuViewRenderingModeEnvironmentLight_Click);
-            // 
-            // menuViewXray
-            // 
-            this.menuViewXray.Name = "menuViewXray";
-            this.menuViewXray.Size = new System.Drawing.Size(180, 22);
-            this.menuViewXray.Text = "X-Ray";
-            this.menuViewXray.Click += new System.EventHandler(this.menuViewXray_Click);
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -248,6 +249,7 @@
             this.ClientSize = new System.Drawing.Size(956, 541);
             this.Controls.Add(this.splitContainerMain);
             this.Controls.Add(this.menuBar);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuBar;
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
