@@ -12,18 +12,22 @@ namespace VIZCore3DX.Control.Basic
 {
     public partial class FrmMain : Form
     {
+        // 컨트롤 객체
         public VIZCore3DX.Control.VIZCore3DControl vizcore3d { get; set; }
 
         public FrmMain()
         {
             InitializeComponent();
 
+            // 모듈 초기화
             VIZCore3DX.Control.ModuleInitializer.Run();
 
+            // 생성
             vizcore3d = new Control.VIZCore3DControl();
             vizcore3d.Dock = DockStyle.Fill;
             this.Controls.Add(vizcore3d);
 
+            // 초기화
             vizcore3d.OnInitializedVIZCore3D += VIZCore3D_OnInitializedVIZCore3D;
         }
 
