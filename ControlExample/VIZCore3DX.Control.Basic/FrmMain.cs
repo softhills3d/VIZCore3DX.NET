@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VIZCore3DX.Demo
+namespace VIZCore3DX.Control.Basic
 {
     public partial class FrmMain : Form
     {
@@ -35,7 +35,7 @@ namespace VIZCore3DX.Demo
             //VIZCore3DX.Control.Data.LicenseResults resultServer =
             //    vizcore3d.License.LicenseServer("127.0.0.1", 8901);
 
-            if(resultFile != Control.Data.LicenseResults.SUCCESS)
+            if (resultFile != Control.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("License = {0}", resultFile), "License", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
