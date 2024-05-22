@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VIZCore3DX.NET.Demo
+namespace VIZCore3DX.NET.Basic
 {
     internal static class Program
     {

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VIZCore3DX.NET.Demo.Properties
+namespace VIZCore3DX.NET.Basic.Properties
 {
 
 

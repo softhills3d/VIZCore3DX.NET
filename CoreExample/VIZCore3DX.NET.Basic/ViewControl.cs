@@ -7,13 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using VIZCore3DX.NET.Markup;
 
-namespace VIZCore3DX.NET.Demo
+namespace VIZCore3DX.NET.Basic
 {
     public partial class ViewControl : UserControl
     {
-        public VIZCore3DX.NET.Core vizcore3d {  get; set; }
+        public VIZCore3DX.NET.Core vizcore3d { get; set; }
         public VIZCore3DX.NET.View View { get; private set; }
 
         public ViewControl()

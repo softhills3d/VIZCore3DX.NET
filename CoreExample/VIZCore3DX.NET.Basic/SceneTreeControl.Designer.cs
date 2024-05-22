@@ -1,6 +1,6 @@
-﻿namespace VIZCore3DX.NET.Demo
+﻿namespace VIZCore3DX.NET.Basic
 {
-    partial class ViewControl
+    partial class SceneTreeControl
     {
         /// <summary> 
         /// 필수 디자이너 변수입니다.
@@ -30,12 +30,12 @@
         {
             this.SuspendLayout();
             // 
-            // ViewControl
+            // SceneTreeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Name = "ViewControl";
-            this.Size = new System.Drawing.Size(939, 624);
+            this.Name = "SceneTreeControl";
+            this.Size = new System.Drawing.Size(580, 475);
             this.ResumeLayout(false);
 
         }

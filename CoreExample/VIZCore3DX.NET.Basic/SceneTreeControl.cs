@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VIZCore3DX.NET.Demo
+namespace VIZCore3DX.NET.Basic
 {
-    public partial class SceneControl : UserControl
+    public partial class SceneTreeControl : UserControl
     {
-        public SceneControl()
+        public SceneTreeControl()
         {
             InitializeComponent();
         }
