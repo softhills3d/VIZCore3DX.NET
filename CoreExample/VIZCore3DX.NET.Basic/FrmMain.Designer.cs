@@ -33,6 +33,9 @@
             this.menuEdit = new System.Windows.Forms.ToolStripMenuItem();
             this.menuView = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
+            this.menuFileNew = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuFileAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.menuBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.SuspendLayout();
@@ -52,6 +55,10 @@
             // 
             // menuFile
             // 
+            this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuFileNew,
+            this.menuFileOpen,
+            this.menuFileAdd});
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size(43, 20);
             this.menuFile.Text = "파일";
@@ -77,6 +84,27 @@
             this.splitContainerMain.Size = new System.Drawing.Size(956, 517);
             this.splitContainerMain.SplitterDistance = 318;
             this.splitContainerMain.TabIndex = 1;
+            // 
+            // menuFileNew
+            // 
+            this.menuFileNew.Name = "menuFileNew";
+            this.menuFileNew.Size = new System.Drawing.Size(180, 22);
+            this.menuFileNew.Text = "새 모델";
+            this.menuFileNew.Click += new System.EventHandler(this.menuFileNew_Click);
+            // 
+            // menuFileOpen
+            // 
+            this.menuFileOpen.Name = "menuFileOpen";
+            this.menuFileOpen.Size = new System.Drawing.Size(180, 22);
+            this.menuFileOpen.Text = "열기...";
+            this.menuFileOpen.Click += new System.EventHandler(this.menuFileOpen_Click);
+            // 
+            // menuFileAdd
+            // 
+            this.menuFileAdd.Name = "menuFileAdd";
+            this.menuFileAdd.Size = new System.Drawing.Size(180, 22);
+            this.menuFileAdd.Text = "추가...";
+            this.menuFileAdd.Click += new System.EventHandler(this.menuFileAdd_Click);
             // 
             // FrmMain
             // 
@@ -105,6 +133,9 @@
         private System.Windows.Forms.ToolStripMenuItem menuEdit;
         private System.Windows.Forms.ToolStripMenuItem menuView;
         private System.Windows.Forms.SplitContainer splitContainerMain;
+        private System.Windows.Forms.ToolStripMenuItem menuFileNew;
+        private System.Windows.Forms.ToolStripMenuItem menuFileOpen;
+        private System.Windows.Forms.ToolStripMenuItem menuFileAdd;
     }
 }
 

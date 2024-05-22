@@ -53,5 +53,36 @@ namespace VIZCore3DX.NET.Basic
             VIZCore3DX.NET.License.AuthenticationResult resultServer =
                 vizcore3d.AuthenticateLicenseByServer("127.0.0.1", 8901);
         }
+
+        private void menuFileNew_Click(object sender, EventArgs e)
+        {
+            vizcore3d.CloseFile();
+        }
+
+        private void menuFileOpen_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "VIZX File (*.vizx)|*.vizx";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            vizcore3d.OpenFile(dlg.FileName);
+        }
+
+        private void menuFileAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "VIZX File (*.vizx)|*.vizx";
+            dlg.Multiselect = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            vizcore3d.View.StopRender();
+
+            foreach (string item in dlg.FileNames)
+            {
+                vizcore3d.AddFile(item);
+            }
+
+            vizcore3d.View.StartRender();
+        }
     }
 }
