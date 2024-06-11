@@ -53,7 +53,7 @@ namespace VIZCore3DX.NET.Basic
 
             // 라이선스: File
             //VIZCore3DX.NET.License.AuthenticationResult result =
-            //    vizcore3d.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
+            //    VIZCore.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
 
             // 라이선스: Server
             VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByServer("127.0.0.1", 8901);
