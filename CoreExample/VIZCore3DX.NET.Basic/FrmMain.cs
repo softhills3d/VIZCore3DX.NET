@@ -15,7 +15,7 @@ namespace VIZCore3DX.NET.Basic
         /// <summary>
         /// VIZCore3DX
         /// </summary>
-        public VIZCore3DX.NET.Core vizcore3d { get; private set; }
+        public VIZCore3DX.NET.Core VIZCore { get; private set; }
 
         /// <summary>
         /// View Control
@@ -30,20 +30,25 @@ namespace VIZCore3DX.NET.Basic
         public FrmMain()
         {
             InitializeComponent();
+            this.Load += FrmMain_Load; // 폼 로드 이벤트 핸들러 등록
+            this.Disposed += FrmMain_Disposed; // 폼 해제 이벤트 핸들러 등록
+        }
 
+        private void FrmMain_Load(object sender, EventArgs e)
+        {
             // 코어
-            vizcore3d = new Core();
+            VIZCore = new Core();
 
             // 뷰 컨트롤
             View = new ViewControl();
             View.Dock = DockStyle.Fill;
-            View.Initialize(vizcore3d);
+            View.Initialize(VIZCore);
             this.splitContainerMain.Panel2.Controls.Add(View);
 
             // 씬 트리 컨트롤
             Scene = new SceneTreeControl();
             Scene.Dock = DockStyle.Fill;
-            Scene.Initialize(vizcore3d);
+            Scene.Initialize(VIZCore);
             this.splitContainerMain.Panel1.Controls.Add(Scene);
 
             // 라이선스: File
@@ -51,19 +56,29 @@ namespace VIZCore3DX.NET.Basic
             //    vizcore3d.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
 
             // 라이선스: Server
-            VIZCore3DX.NET.License.AuthenticationResult result =
-                vizcore3d.AuthenticateLicenseByServer("127.0.0.1", 8901);
+            VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByServer("127.0.0.1", 8901);
+
 
             if (result != VIZCore3DX.NET.License.AuthenticationResult.Success)
             {
                 MessageBox.Show(string.Format("Error Code = {0}", result), "License", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            // 모델 트리 닫기
+            splitContainerMain.Panel1Collapsed = true;
         }
+
+        private void FrmMain_Disposed(object sender, EventArgs e)
+        {
+            if (VIZCore != null)
+                VIZCore.Dispose();
+        }
+
 
         #region 메뉴 - 파일
         private void menuFileNew_Click(object sender, EventArgs e)
         {
-            vizcore3d.CloseFile();
+            VIZCore.CloseFile();
         }
 
         private void menuFileOpen_Click(object sender, EventArgs e)
@@ -72,7 +87,7 @@ namespace VIZCore3DX.NET.Basic
             dlg.Filter = "VIZX File (*.vizx)|*.vizx";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            vizcore3d.OpenFile(dlg.FileName);
+            VIZCore.OpenFile(dlg.FileName);
         }
 
         private void menuFileAdd_Click(object sender, EventArgs e)
@@ -82,14 +97,14 @@ namespace VIZCore3DX.NET.Basic
             dlg.Multiselect = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            vizcore3d.View.StopRender();
+            VIZCore.View.StopRender();
 
             foreach (string item in dlg.FileNames)
             {
-                vizcore3d.AddFile(item);
+                VIZCore.AddFile(item);
             }
 
-            vizcore3d.View.StartRender();
+            VIZCore.View.StartRender();
         }
 
         private void menuFileExit_Click(object sender, EventArgs e)
@@ -101,44 +116,44 @@ namespace VIZCore3DX.NET.Basic
         #region 메뉴 - 편집
         private void menuEditUndo_Click(object sender, EventArgs e)
         {
-            vizcore3d.Undo();
+            VIZCore.Undo();
         }
 
         private void menuEditRedo_Click(object sender, EventArgs e)
         {
-            vizcore3d.Redo();
+            VIZCore.Redo();
         }
         #endregion
 
         #region 메뉴 - 보기
         private void menuViewRenderingModeSmooth_Click(object sender, EventArgs e)
         {
-            vizcore3d.View.IsEdgeEnabled = false;
+            VIZCore.View.IsEdgeEnabled = false;
         }
 
         private void menuViewRenderingModeSmoothEdge_Click(object sender, EventArgs e)
         {
-            vizcore3d.View.IsEdgeEnabled = true;
+            VIZCore.View.IsEdgeEnabled = true;
         }
 
         private void menuViewRenderingModeSSAO_Click(object sender, EventArgs e)
         {
-            vizcore3d.View.IsSsaoEnabled = !vizcore3d.View.IsSsaoEnabled;
+            VIZCore.View.IsSsaoEnabled = !VIZCore.View.IsSsaoEnabled;
         }
 
         private void menuViewRenderingModeRealtimeShadow_Click(object sender, EventArgs e)
         {
-            vizcore3d.View.IsShadowEnabled = !vizcore3d.View.IsShadowEnabled;
+            VIZCore.View.IsShadowEnabled = !VIZCore.View.IsShadowEnabled;
         }
 
         private void menuViewRenderingModeEnvironmentLight_Click(object sender, EventArgs e)
         {
-            vizcore3d.View.IsEnvironmentMapEnabled = !vizcore3d.View.IsEnvironmentMapEnabled;
+            VIZCore.View.IsEnvironmentMapEnabled = !VIZCore.View.IsEnvironmentMapEnabled;
         }
 
         private void menuViewXray_Click(object sender, EventArgs e)
         {
-            vizcore3d.View.IsXRayEnabled = !vizcore3d.View.IsXRayEnabled;
+            VIZCore.View.IsXRayEnabled = !VIZCore.View.IsXRayEnabled;
         }
         #endregion
 
@@ -150,7 +165,7 @@ namespace VIZCore3DX.NET.Basic
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             VIZCore3DX.NET.License.AuthenticationResult result =
-                vizcore3d.AuthenticateLicenseByFile(dlg.FileName);
+                VIZCore.AuthenticateLicenseByFile(dlg.FileName);
 
             if (result != VIZCore3DX.NET.License.AuthenticationResult.Success)
             {
@@ -165,7 +180,7 @@ namespace VIZCore3DX.NET.Basic
         private void menuToolsLicenseServer_Click(object sender, EventArgs e)
         {
             VIZCore3DX.NET.License.AuthenticationResult result =
-                vizcore3d.AuthenticateLicenseByServer("127.0.0.1", 8901);
+                VIZCore.AuthenticateLicenseByServer("127.0.0.1", 8901);
 
             if (result != VIZCore3DX.NET.License.AuthenticationResult.Success)
             {

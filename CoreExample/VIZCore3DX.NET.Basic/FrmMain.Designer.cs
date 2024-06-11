@@ -85,33 +85,33 @@
             // menuFileNew
             // 
             this.menuFileNew.Name = "menuFileNew";
-            this.menuFileNew.Size = new System.Drawing.Size(114, 22);
+            this.menuFileNew.Size = new System.Drawing.Size(180, 22);
             this.menuFileNew.Text = "새 모델";
             this.menuFileNew.Click += new System.EventHandler(this.menuFileNew_Click);
             // 
             // menuFileOpen
             // 
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size(114, 22);
+            this.menuFileOpen.Size = new System.Drawing.Size(180, 22);
             this.menuFileOpen.Text = "열기...";
             this.menuFileOpen.Click += new System.EventHandler(this.menuFileOpen_Click);
             // 
             // menuFileAdd
             // 
             this.menuFileAdd.Name = "menuFileAdd";
-            this.menuFileAdd.Size = new System.Drawing.Size(114, 22);
+            this.menuFileAdd.Size = new System.Drawing.Size(180, 22);
             this.menuFileAdd.Text = "추가...";
             this.menuFileAdd.Click += new System.EventHandler(this.menuFileAdd_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(111, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // menuFileExit
             // 
             this.menuFileExit.Name = "menuFileExit";
-            this.menuFileExit.Size = new System.Drawing.Size(114, 22);
+            this.menuFileExit.Size = new System.Drawing.Size(180, 22);
             this.menuFileExit.Text = "종료";
             this.menuFileExit.Click += new System.EventHandler(this.menuFileExit_Click);
             // 
@@ -127,14 +127,14 @@
             // menuEditUndo
             // 
             this.menuEditUndo.Name = "menuEditUndo";
-            this.menuEditUndo.Size = new System.Drawing.Size(126, 22);
+            this.menuEditUndo.Size = new System.Drawing.Size(180, 22);
             this.menuEditUndo.Text = "실행 취소";
             this.menuEditUndo.Click += new System.EventHandler(this.menuEditUndo_Click);
             // 
             // menuEditRedo
             // 
             this.menuEditRedo.Name = "menuEditRedo";
-            this.menuEditRedo.Size = new System.Drawing.Size(126, 22);
+            this.menuEditRedo.Size = new System.Drawing.Size(180, 22);
             this.menuEditRedo.Text = "다시 실행";
             this.menuEditRedo.Click += new System.EventHandler(this.menuEditRedo_Click);
             // 
@@ -156,7 +156,7 @@
             this.menuViewRenderingModeRealtimeShadow,
             this.menuViewRenderingModeEnvironmentLight});
             this.menuViewRenderingMode.Name = "menuViewRenderingMode";
-            this.menuViewRenderingMode.Size = new System.Drawing.Size(138, 22);
+            this.menuViewRenderingMode.Size = new System.Drawing.Size(180, 22);
             this.menuViewRenderingMode.Text = "렌더링 모드";
             // 
             // menuViewRenderingModeSmooth
@@ -197,7 +197,7 @@
             // menuViewXray
             // 
             this.menuViewXray.Name = "menuViewXray";
-            this.menuViewXray.Size = new System.Drawing.Size(138, 22);
+            this.menuViewXray.Size = new System.Drawing.Size(180, 22);
             this.menuViewXray.Text = "X-Ray";
             this.menuViewXray.Click += new System.EventHandler(this.menuViewXray_Click);
             // 
@@ -215,7 +215,7 @@
             this.menuToolsLicenseFile,
             this.menuToolsLicenseServer});
             this.menuToolsLicense.Name = "menuToolsLicense";
-            this.menuToolsLicense.Size = new System.Drawing.Size(122, 22);
+            this.menuToolsLicense.Size = new System.Drawing.Size(180, 22);
             this.menuToolsLicense.Text = "라이선스";
             // 
             // menuToolsLicenseFile
@@ -239,7 +239,7 @@
             this.splitContainerMain.Location = new System.Drawing.Point(0, 24);
             this.splitContainerMain.Name = "splitContainerMain";
             this.splitContainerMain.Size = new System.Drawing.Size(956, 517);
-            this.splitContainerMain.SplitterDistance = 318;
+            this.splitContainerMain.SplitterDistance = 261;
             this.splitContainerMain.TabIndex = 1;
             // 
             // FrmMain
