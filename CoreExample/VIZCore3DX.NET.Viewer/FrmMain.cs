@@ -100,6 +100,7 @@ namespace VIZCore3DX.NET.Viewer
             }
         }
 
+        #region Camera
         private void btnResetView_Click(object sender, EventArgs e)
         {
             VIZCore.ActiveView.Camera.Initialize();
@@ -133,7 +134,9 @@ namespace VIZCore3DX.NET.Viewer
         {
             VIZCore.ActiveView.Camera.Projection = ProjectionType.Orthographic;
         }
+        #endregion
 
+        #region Show
         private void btnShowAll_Click(object sender, EventArgs e)
         {
             VIZCore.Scene.Query(NodeFilter.Root).ShowNodes(true);
@@ -161,5 +164,6 @@ namespace VIZCore3DX.NET.Viewer
             VIZCore.StartRenderViews();
             VIZCore.SceneTree.Render();
         }
+        #endregion
     }
 }

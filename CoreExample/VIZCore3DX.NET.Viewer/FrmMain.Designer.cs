@@ -32,6 +32,8 @@
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.splitContainerRoot = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnOrthographicView = new System.Windows.Forms.Button();
+            this.btnPerspectiveView = new System.Windows.Forms.Button();
             this.btnResetView = new System.Windows.Forms.Button();
             this.btnFitView = new System.Windows.Forms.Button();
             this.btnMoveToObject = new System.Windows.Forms.Button();
@@ -44,8 +46,6 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnModelTree = new System.Windows.Forms.Button();
             this.btnModelOpen = new System.Windows.Forms.Button();
-            this.btnPerspectiveView = new System.Windows.Forms.Button();
-            this.btnOrthographicView = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerRoot)).BeginInit();
@@ -88,7 +88,7 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.btnOrthographicView);
             this.groupBox3.Controls.Add(this.btnPerspectiveView);
@@ -101,7 +101,27 @@
             this.groupBox3.Size = new System.Drawing.Size(114, 206);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "View";
+            this.groupBox3.Text = "Camera";
+            // 
+            // btnOrthographicView
+            // 
+            this.btnOrthographicView.Location = new System.Drawing.Point(8, 175);
+            this.btnOrthographicView.Name = "btnOrthographicView";
+            this.btnOrthographicView.Size = new System.Drawing.Size(100, 25);
+            this.btnOrthographicView.TabIndex = 7;
+            this.btnOrthographicView.Text = "평행뷰";
+            this.btnOrthographicView.UseVisualStyleBackColor = true;
+            this.btnOrthographicView.Click += new System.EventHandler(this.btnOrthographicView_Click);
+            // 
+            // btnPerspectiveView
+            // 
+            this.btnPerspectiveView.Location = new System.Drawing.Point(8, 144);
+            this.btnPerspectiveView.Name = "btnPerspectiveView";
+            this.btnPerspectiveView.Size = new System.Drawing.Size(100, 25);
+            this.btnPerspectiveView.TabIndex = 6;
+            this.btnPerspectiveView.Text = "원근뷰";
+            this.btnPerspectiveView.UseVisualStyleBackColor = true;
+            this.btnPerspectiveView.Click += new System.EventHandler(this.btnPerspectiveView_Click);
             // 
             // btnResetView
             // 
@@ -145,7 +165,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.btnShowAll);
             this.groupBox2.Controls.Add(this.btnHideAll);
@@ -200,7 +220,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.btnModelTree);
             this.groupBox1.Controls.Add(this.btnModelOpen);
@@ -230,26 +250,6 @@
             this.btnModelOpen.Text = "Model Open";
             this.btnModelOpen.UseVisualStyleBackColor = true;
             this.btnModelOpen.Click += new System.EventHandler(this.btnModelOpen_Click);
-            // 
-            // btnPerspectiveView
-            // 
-            this.btnPerspectiveView.Location = new System.Drawing.Point(8, 144);
-            this.btnPerspectiveView.Name = "btnPerspectiveView";
-            this.btnPerspectiveView.Size = new System.Drawing.Size(100, 25);
-            this.btnPerspectiveView.TabIndex = 6;
-            this.btnPerspectiveView.Text = "원근뷰";
-            this.btnPerspectiveView.UseVisualStyleBackColor = true;
-            this.btnPerspectiveView.Click += new System.EventHandler(this.btnPerspectiveView_Click);
-            // 
-            // btnOrthographicView
-            // 
-            this.btnOrthographicView.Location = new System.Drawing.Point(8, 175);
-            this.btnOrthographicView.Name = "btnOrthographicView";
-            this.btnOrthographicView.Size = new System.Drawing.Size(100, 25);
-            this.btnOrthographicView.TabIndex = 7;
-            this.btnOrthographicView.Text = "평행뷰";
-            this.btnOrthographicView.UseVisualStyleBackColor = true;
-            this.btnOrthographicView.Click += new System.EventHandler(this.btnOrthographicView_Click);
             // 
             // FrmMain
             // 
