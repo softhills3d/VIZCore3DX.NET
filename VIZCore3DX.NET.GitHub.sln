@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.Control.Basic", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Basic", "CoreExample\VIZCore3DX.NET.Basic\VIZCore3DX.NET.Basic.csproj", "{8607A9A9-BFBF-4DB0-8C04-5AF949A2E7DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Viewer", "CoreExample\VIZCore3DX.NET.View\VIZCore3DX.NET.Viewer.csproj", "{CC60B55F-C55B-4B97-A1B8-7075FBDE04E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Viewer", "CoreExample\VIZCore3DX.NET.Viewer\VIZCore3DX.NET.Viewer.csproj", "{CC60B55F-C55B-4B97-A1B8-7075FBDE04E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
