@@ -76,9 +76,7 @@ namespace VIZCore3DX.NET.SubView
             //    VIZCore.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
 
             // 라이선스: Server
-            //VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByServer("127.0.0.1", 8901);
-
-            VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByFile(@"C:\License\20240611_DM파트.lic");
+            VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByServer("127.0.0.1", 8901);
 
             if (result != VIZCore3DX.NET.License.AuthenticationResult.Success)
             {

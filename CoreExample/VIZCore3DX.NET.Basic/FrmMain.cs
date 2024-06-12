@@ -53,6 +53,8 @@ namespace VIZCore3DX.NET.Basic
 
             // 모델 트리 닫기
             splitContainerMain.Panel1Collapsed = true;
+
+            LicenseCheck();
         }
 
         private void LicenseCheck()
