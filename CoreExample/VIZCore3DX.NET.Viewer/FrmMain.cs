@@ -52,6 +52,14 @@ namespace VIZCore3DX.NET.Viewer
             Scene.Initialize(VIZCore);
             this.splitContainerMain.Panel1.Controls.Add(Scene);
 
+            // 모델 트리 닫기
+            splitContainerMain.Panel1Collapsed = true;
+
+            LicenseCheck();
+        }
+
+        private void LicenseCheck()
+        {
             // 라이선스: File
             //VIZCore3DX.NET.License.AuthenticationResult result =
             //    VIZCore.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
@@ -63,9 +71,6 @@ namespace VIZCore3DX.NET.Viewer
             {
                 MessageBox.Show(string.Format("Error Code = {0}", result), "License", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            // 모델 트리 닫기
-            splitContainerMain.Panel1Collapsed = true;
         }
 
         private void FrmMain_Disposed(object sender, EventArgs e)
