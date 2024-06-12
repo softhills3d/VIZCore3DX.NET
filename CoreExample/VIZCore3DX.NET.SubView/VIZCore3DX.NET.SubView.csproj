@@ -48,9 +48,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VIZCore3DX.NET, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
+    <Reference Include="VIZCore3DX.Core">
+      <HintPath>..\..\VIZCore3DX.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

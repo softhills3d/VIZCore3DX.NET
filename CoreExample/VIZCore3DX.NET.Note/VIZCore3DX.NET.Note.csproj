@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8607A9A9-BFBF-4DB0-8C04-5AF949A2E7DE}</ProjectGuid>
+    <ProjectGuid>{5BB3E75B-3CA7-4003-B7C9-D4F360AB047F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>VIZCore3DX.NET.Basic</RootNamespace>
     <AssemblyName>VIZCore3DX.NET.Basic</AssemblyName>
@@ -53,11 +53,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EditNoteDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditNoteDialog.Designer.cs">
+      <DependentUpon>EditNoteDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NoteControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="NoteControl.Designer.cs">
+      <DependentUpon>NoteControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,14 +79,26 @@
     <Compile Include="SceneTreeControl.Designer.cs">
       <DependentUpon>SceneTreeControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SurfaceNoteDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SurfaceNoteDialog.Designer.cs">
+      <DependentUpon>SurfaceNoteDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="ViewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ViewControl.Designer.cs">
       <DependentUpon>ViewControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="EditNoteDialog.resx">
+      <DependentUpon>EditNoteDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NoteControl.resx">
+      <DependentUpon>NoteControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -87,6 +111,9 @@
     </Compile>
     <EmbeddedResource Include="SceneTreeControl.resx">
       <DependentUpon>SceneTreeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SurfaceNoteDialog.resx">
+      <DependentUpon>SurfaceNoteDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ViewControl.resx">
       <DependentUpon>ViewControl.cs</DependentUpon>

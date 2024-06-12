@@ -27,6 +27,8 @@ namespace VIZCore3DX.NET.Basic
         /// </summary>
         public SceneTreeControl Scene { get; set; }
 
+        private static bool isXrayMode { get; set; }
+
         public FrmMain()
         {
             InitializeComponent();
@@ -51,9 +53,6 @@ namespace VIZCore3DX.NET.Basic
             Scene.Initialize(VIZCore);
             this.splitContainerMain.Panel1.Controls.Add(Scene);
 
-            // 모델 트리 닫기
-            splitContainerMain.Panel1Collapsed = true;
-
             LicenseCheck();
         }
 
@@ -64,7 +63,7 @@ namespace VIZCore3DX.NET.Basic
             //    VIZCore.AuthenticateLicenseByFile("C:\\License\\VIZCore3DX.NET.lic");
 
             // 라이선스: Server
-            VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByServer("127.0.0.1", 8901);
+            VIZCore3DX.NET.License.AuthenticationResult result = VIZCore.AuthenticateLicenseByServer("192.0.0.1", 8901);
 
             if (result != VIZCore3DX.NET.License.AuthenticationResult.Success)
             {
@@ -103,10 +102,7 @@ namespace VIZCore3DX.NET.Basic
 
             VIZCore.View.StopRender();
 
-            foreach (string item in dlg.FileNames)
-            {
-                VIZCore.AddFile(item);
-            }
+            VIZCore.OpenFiles(dlg.FileNames);
 
             VIZCore.View.StartRender();
         }
@@ -157,7 +153,17 @@ namespace VIZCore3DX.NET.Basic
 
         private void menuViewXray_Click(object sender, EventArgs e)
         {
-            VIZCore.View.IsXRayEnabled = !VIZCore.View.IsXRayEnabled;
+            if (isXrayMode)
+            {
+                VIZCore.ActiveView.ClearOverrideColorAlpha();
+                isXrayMode = false;
+            } else
+            {
+                Color XRayModeColorAlpha = Color.FromArgb(100, 200, 200, 200);
+                VIZCore.ActiveView.SetOverrideColorAlpha(XRayModeColorAlpha);
+                isXrayMode = true;
+            }
+     
         }
         #endregion
 
