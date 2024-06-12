@@ -1,4 +1,4 @@
-﻿namespace VIZCore3DX.NET.Basic
+﻿namespace VIZCore3DX.NET.Viewer
 {
     partial class SceneTreeControl
     {

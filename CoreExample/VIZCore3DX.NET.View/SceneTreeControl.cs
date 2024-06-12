@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace VIZCore3DX.NET.Basic
+namespace VIZCore3DX.NET.Viewer
 {
     public partial class SceneTreeControl : UserControl
     {

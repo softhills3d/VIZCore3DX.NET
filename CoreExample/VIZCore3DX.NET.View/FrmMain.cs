@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VIZCore3DX.NET.License;
 
-namespace VIZCore3DX.NET.Basic
+namespace VIZCore3DX.NET.Viewer
 {
     public partial class FrmMain : Form
     {
