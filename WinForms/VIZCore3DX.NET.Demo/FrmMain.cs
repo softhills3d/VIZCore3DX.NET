@@ -29,7 +29,7 @@ namespace VIZCore3DX.NET.Demo
             // Example
             // ================================================================
             // 라이선스 파일을 통한 인증
-            vizcore3dx.License.LicenseFile("C:\\License\\CadwinLicense.lic");
+            //vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
 
             // 라이선스 서버를 통한 인증
             //vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
