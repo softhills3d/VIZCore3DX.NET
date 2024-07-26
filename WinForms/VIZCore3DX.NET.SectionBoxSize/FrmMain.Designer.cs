@@ -101,6 +101,7 @@
             this.groupBox3.Controls.Add(this.cbMaxX);
             this.groupBox3.Controls.Add(this.cbMinX);
             this.groupBox3.Controls.Add(this.label1);
+            this.groupBox3.Enabled = false;
             this.groupBox3.Location = new System.Drawing.Point(12, 140);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(355, 535);
