@@ -117,6 +117,7 @@
             this.tbMaxZ.Size = new System.Drawing.Size(343, 45);
             this.tbMaxZ.TabIndex = 14;
             this.tbMaxZ.Scroll += new System.EventHandler(this.tbMaxZ_Scroll);
+            this.tbMaxZ.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMaxZ_MouseUp);
             // 
             // tbMinZ
             // 
@@ -127,6 +128,7 @@
             this.tbMinZ.Size = new System.Drawing.Size(343, 45);
             this.tbMinZ.TabIndex = 13;
             this.tbMinZ.Scroll += new System.EventHandler(this.tbMinZ_Scroll);
+            this.tbMinZ.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMinZ_MouseUp);
             // 
             // cbMaxZ
             // 
@@ -164,6 +166,7 @@
             this.tbMaxY.Size = new System.Drawing.Size(343, 45);
             this.tbMaxY.TabIndex = 9;
             this.tbMaxY.Scroll += new System.EventHandler(this.tbMaxY_Scroll);
+            this.tbMaxY.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMaxY_MouseUp);
             // 
             // tbMinY
             // 
@@ -174,6 +177,7 @@
             this.tbMinY.Size = new System.Drawing.Size(343, 45);
             this.tbMinY.TabIndex = 8;
             this.tbMinY.Scroll += new System.EventHandler(this.tbMinY_Scroll);
+            this.tbMinY.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMinY_MouseUp);
             // 
             // cbMaxY
             // 
@@ -211,6 +215,7 @@
             this.tbMaxX.Size = new System.Drawing.Size(343, 45);
             this.tbMaxX.TabIndex = 4;
             this.tbMaxX.Scroll += new System.EventHandler(this.tbMaxX_Scroll);
+            this.tbMaxX.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMaxX_MouseUp);
             // 
             // tbMinX
             // 
@@ -221,6 +226,7 @@
             this.tbMinX.Size = new System.Drawing.Size(343, 45);
             this.tbMinX.TabIndex = 3;
             this.tbMinX.Scroll += new System.EventHandler(this.tbMinX_Scroll);
+            this.tbMinX.MouseUp += new System.Windows.Forms.MouseEventHandler(this.tbMinX_MouseUp);
             // 
             // cbMaxX
             // 
