@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 using VIZCore3DX.NET.Event;
+using VIZCore3DX.NET.Manager;
+using static VIZCore3DX.NET.Manager.SectionManager;
 
 namespace VIZCore3DX.NET.SectionBoxSize
 {
@@ -77,14 +79,23 @@ namespace VIZCore3DX.NET.SectionBoxSize
         }
         private void InitializeVIZCore3DXEvent()
         {
-            vizcore3dx.Section.OnSectionEvent += VIZCore3D_OnSectionEvent;
+            vizcore3dx.Section.OnSectionEvent += VIZCore3DX_OnSectionEvent;
         }
 
-        private void VIZCore3D_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
+        private void VIZCore3DX_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
         {
-            if (isScroll) return;
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
-            vizcore3dx.Update();
+            if(e.EventType == SectionEventType.Moved)
+            {
+                if (isScroll)
+                {
+              
+                }
+                else
+                {
+                    vizcore3dx.Frame.GridArea = e.Section.BoundBox;
+                    vizcore3dx.Update();
+                }
+            }
         }
 
         private void btnOpenModel_Click(object sender, EventArgs e)
