@@ -84,7 +84,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
         private void VIZCore3DX_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
         {
-            if(e.EventType == SectionEventType.Moved)
+            if(e.EventType == EventType.Moved)
             {
                 if (isScroll)
                 {
