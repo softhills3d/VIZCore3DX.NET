@@ -469,8 +469,9 @@ namespace VIZCore3DX.NET.Demo
                 MessageBox.Show("Node count is 0", "Objects", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-         
-            Dictionary<string, string> uda = vizcore3dx.Object3D.UDA.FromEntry(items[0].EntityID, items[0].Index); // 현재 없는 API. FromIndex 대체 함수 필요 = > FromEntry
+
+            //vizcore3dx.Object3D.UDA.FromEntry(items[0].EntityID, items[0].Index) 함수 대체 소스 수정
+            Dictionary<string, string> uda = vizcore3dx.Object3D.UDA.FromNode(items[0]).ToDictionary();
 
             List<string> keyItems = new List<string>();
             List<string> valueItems= new List<string>();
