@@ -38,7 +38,8 @@ namespace VIZCore3DX.NET.Demo
             // ================================================================
             // License
             // ================================================================
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
+            //VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.0.215", 8901); 
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile(@"C:\\License\\20250103_DM파트.lic");
             if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -59,10 +60,10 @@ namespace VIZCore3DX.NET.Demo
             // 설정 - 툴바
             // ================================================================
             vizcore3dx.ToolbarMain.Visible = true;
-            vizcore3dx.ToolbarNote.Visible = false;
-            vizcore3dx.ToolbarMeasure.Visible = false;
-            vizcore3dx.ToolbarSection.Visible = false;
-            vizcore3dx.ToolbarSnapshot.Visible = false;
+            //vizcore3dx.ToolbarNote.Visible = false;
+            //vizcore3dx.ToolbarMeasure.Visible = false;
+            //vizcore3dx.ToolbarSection.Visible = false;
+            //vizcore3dx.ToolbarSnapshot.Visible = false;
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작
@@ -170,7 +171,7 @@ namespace VIZCore3DX.NET.Demo
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            VIZCore3DX.NET.Data.Section section = vizcore3dx.Section.AddBox(false);
+            VIZCore3DX.NET.Data.SectionItem section = vizcore3dx.Section.AddBox(false);
 
             MessageBox.Show(section.BoundBox.ToString(), "BoundBox", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -205,7 +206,7 @@ namespace VIZCore3DX.NET.Demo
             box.MaxZ = maxZ;
 
             vizcore3dx.Section.Clear();
-            VIZCore3DX.NET.Data.Section section = vizcore3dx.Section.AddBox(true);
+            VIZCore3DX.NET.Data.SectionItem section = vizcore3dx.Section.AddBox(true);
 
             vizcore3dx.Section.SetBoxSize(section.ID, box);
         }
@@ -504,7 +505,7 @@ namespace VIZCore3DX.NET.Demo
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            List<string> keys = vizcore3dx.Object3D.UDA.Keys;
+            List<string> keys = vizcore3dx.Object3D.UDA.Names;
 
             if (keys.Count == 0)
             {
@@ -576,7 +577,7 @@ namespace VIZCore3DX.NET.Demo
                 return;
             }
 
-            List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.UDA.GetNodes(key, val);
+            List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes("General", key, val, false);
 
             if (nodes.Count == 0)
             {

@@ -12,7 +12,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
     {
         public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
 
-        public VIZCore3DX.NET.Data.Section Section { get; set; }
+        public VIZCore3DX.NET.Data.SectionItem Section { get; set; }
 
         private bool isScroll = false;
 
@@ -92,7 +92,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
                 }
                 else
                 {
-                    vizcore3dx.Frame.GridArea = e.Section.BoundBox;
+                    vizcore3dx.Frame.GridSpace = e.Section.BoundBox;
 
                     BoundBox3D box = e.Section.BoundBox;
 
@@ -340,8 +340,8 @@ namespace VIZCore3DX.NET.SectionBoxSize
             tbMaxY.Scroll += new System.EventHandler(tbMaxY_Scroll);
             tbMaxZ.Scroll += new System.EventHandler(tbMaxZ_Scroll);
 
-            vizcore3dx.Frame.GridAreaMode = GridAreaMode.Fixed;
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpaceMode = GridSpaceMode.Fixed;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -462,7 +462,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMin);
 
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -475,7 +475,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMax);
 
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -488,7 +488,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMin);
 
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -501,7 +501,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMax);
 
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -514,7 +514,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMin);
 
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -527,48 +527,48 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMax);
 
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
         private void tbMinX_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMaxX_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMinY_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMaxY_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMinZ_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMaxZ_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridArea = vizcore3dx.Section.Sections[0].BoundBox;
+            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
