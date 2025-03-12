@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.SectionBoxSi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Demo", "WinForms\VIZCore3DX.NET.Demo\VIZCore3DX.NET.Demo.csproj", "{0ABFCDB6-C164-40C2-BFB2-A480CF64AD8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.SectionBoxControl", "WinForms\VIZCore3DX.NET.SectionBoxControl\VIZCore3DX.NET.SectionBoxControl.csproj", "{E9A9F964-E3D6-4839-804A-5BEAE0896750}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{0ABFCDB6-C164-40C2-BFB2-A480CF64AD8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0ABFCDB6-C164-40C2-BFB2-A480CF64AD8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0ABFCDB6-C164-40C2-BFB2-A480CF64AD8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9A9F964-E3D6-4839-804A-5BEAE0896750}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9A9F964-E3D6-4839-804A-5BEAE0896750}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9A9F964-E3D6-4839-804A-5BEAE0896750}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9A9F964-E3D6-4839-804A-5BEAE0896750}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{6E945CEB-839C-4BC5-86DD-1D49B4958334} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 		{0ABFCDB6-C164-40C2-BFB2-A480CF64AD8C} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
+		{E9A9F964-E3D6-4839-804A-5BEAE0896750} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6F4C4F3-9324-4530-A853-29E8CDBED4B7}
