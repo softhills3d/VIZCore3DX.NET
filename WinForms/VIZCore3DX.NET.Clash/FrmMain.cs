@@ -172,13 +172,13 @@ namespace VIZCore3DX.NET.ClashTest
 
             if (nodes.Count == 0)
             {
-                MessageBox.Show("선택된 항목이 없습니다.", "VIZCore3D.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("선택된 항목이 없습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             nodesB = nodes;
 
-            MessageBox.Show("선택된 모델을 그룹에 설정 하였습니다.", "VIZCore3D.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("선택된 모델을 그룹에 설정 하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             vizcore3dx.Object3D.Select(Data.Object3dSelectionModes.DESELECT_ALL);
         }
