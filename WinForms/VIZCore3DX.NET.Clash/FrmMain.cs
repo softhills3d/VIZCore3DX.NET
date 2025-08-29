@@ -120,7 +120,6 @@ namespace VIZCore3DX.NET.ClashTest
             vizcore3dx.EndUpdate();
 
             cbClashTestKind.SelectedIndex = 0;
-            cbClashTestId.SelectedIndex = 0;
         }
 
         private void InitializeVIZCore3DXEvent()
