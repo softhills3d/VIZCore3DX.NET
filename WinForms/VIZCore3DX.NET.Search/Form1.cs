@@ -36,6 +36,8 @@ namespace VIZCore3DX.NET.Search
             // 라이선스 서버를 통한 인증
             vizcore3dx.License.LicenseServer("192.168.0.215", 8901);
 
+            vizcore3dx.Model.EnableBody = false;
+
             InitializeVIZCore3DXEvent();
         }
 
@@ -106,6 +108,27 @@ namespace VIZCore3DX.NET.Search
                 lvResult2.Items.Add(lvi);
             }
             lvResult2.EndUpdate();
+
+            vizcore3dx.CloseWaitForm();
+        }
+
+        private void btnSearch3_Click(object sender, EventArgs e)
+        {
+            vizcore3dx.ShowWaitForm("Searching...", "Searching...");            
+
+            List<Data.Node> nodes = vizcore3dx.Object3D.Find.QuickSearch(txtKeyword3.Text.Trim(), false);
+
+            vizcore3dx.Object3D.Show(nodes, false);
+
+            lvResult3.Items.Clear();
+
+            lvResult3.BeginUpdate();
+            foreach (VIZCore3DX.NET.Data.Node item in nodes)
+            {
+                ListViewItem lvi = new ListViewItem(new string[] { item.Index.ToString(), item.EntityID.ToString(), item.NodeName });
+                lvResult3.Items.Add(lvi);
+            }
+            lvResult3.EndUpdate();
 
             vizcore3dx.CloseWaitForm();
         }
