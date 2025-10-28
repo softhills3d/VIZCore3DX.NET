@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using VIZCore3DX.NET.Data;
 
 namespace VIZCore3DX.NET.Demo
 {
@@ -38,15 +39,40 @@ namespace VIZCore3DX.NET.Demo
             // ================================================================
             // License
             // ================================================================
-            //VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.0.215", 8901); 
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile(@"C:\\License\\20250103_DM파트.lic");
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
             if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            vizcore3dx.Section.OnSectionEvent += Section_OnSectionEvent;
+
             InitializeVIZCore3DX();
+        }
+
+        private void Section_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
+        {
+            if (e.EventType == Manager.SectionManager.EventType.Created)
+            {
+                cbSectionSubID.Items.Clear();
+
+                cbSectionID.Items.Add(e.Section.ID);
+                if (e.Section.SectionType == Manager.SectionManager.SectionTypes.SECTION)
+                {
+                    cbSectionSubID.Items.Add(-1);
+                }
+                else
+                {
+                    for (int i = 0; i < e.Section.Planes.Count; i++)
+                        cbSectionSubID.Items.Add(i);
+
+                }
+            }
+            else if (e.EventType == Manager.SectionManager.EventType.Deleted)
+            {
+                cbSectionID.Items.Remove(e.Section.ID);
+            }
         }
 
         private void InitializeVIZCore3DX()
@@ -105,7 +131,7 @@ namespace VIZCore3DX.NET.Demo
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            VIZCore3DX.NET.Data.BoundBox3D box = 
+            VIZCore3DX.NET.Data.BoundBox3D box =
                 vizcore3dx.Model.BoundBox;
 
             MessageBox.Show(box.ToString(), "Model BoundBox", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -167,6 +193,7 @@ namespace VIZCore3DX.NET.Demo
         //==========================================================================
         // Section
         //==========================================================================
+        #region Section
         private void btnAddSectionBox_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
@@ -211,10 +238,58 @@ namespace VIZCore3DX.NET.Demo
             vizcore3dx.Section.SetBoxSize(section.ID, box);
         }
 
+        /// <summary>
+        /// 단면상자 핸들 활성화/비활성화
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckShowHandle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            if (ckShowHandle.Checked == false)
+                vizcore3dx.Section.ShowHandle(false);
+            else
+
+                vizcore3dx.Section.ShowHandle(true);
+        }
+
+        /// <summary>
+        /// Get Center
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGetCenter_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            Vertex3D center = vizcore3dx.Section.GetCenter(Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem));
+
+            txtSectionX.Text = center.X.ToString();
+            txtSectionY.Text = center.Y.ToString();
+            txtSectionZ.Text = center.Z.ToString();
+        }
+
+        /// <summary>
+        /// Set Center
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSetCenter_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            if (String.IsNullOrEmpty(txtCenterPosition.Text)) return;
+
+            float position = Convert.ToSingle(txtCenterPosition.Text);
+            vizcore3dx.Section.SetCenter(Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
+        }
+        #endregion
 
         //==========================================================================
         // Frame
         //==========================================================================
+        #region Frame
         private void btnOpenFrame_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
@@ -260,7 +335,7 @@ namespace VIZCore3DX.NET.Demo
                 VIZCore3DX.NET.Data.FrameItem item2 = items[i];
                 VIZCore3DX.NET.Data.FramePosition position = vizcore3dx.Frame.GetPosition(VIZCore3DX.NET.Data.Axis.X, items[i].ToString());
 
-               VIZCore3DX.NET.Data.FrameItem item = vizcore3dx.Frame.GetSnap(VIZCore3DX.NET.Data.Axis.X, (int)position.Position);
+                VIZCore3DX.NET.Data.FrameItem item = vizcore3dx.Frame.GetSnap(VIZCore3DX.NET.Data.Axis.X, position.Position);
 
                 ListViewItem listView = new ListViewItem(new string[] { item.GridID.ToString(), item.Axis.ToString(), item.Label.ToString(), item.Offset.ToString() });
                 lvGridResult.Items.Add(listView);
@@ -270,7 +345,7 @@ namespace VIZCore3DX.NET.Demo
 
         private void btnGetGridItemsY_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Frame.HasFrame == false) return; 
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             List<VIZCore3DX.NET.Data.FrameItem> items =
                 vizcore3dx.Frame.GetGridItems(VIZCore3DX.NET.Data.Axis.Y);
@@ -287,7 +362,7 @@ namespace VIZCore3DX.NET.Demo
             {
                 VIZCore3DX.NET.Data.FramePosition position = vizcore3dx.Frame.GetPosition(VIZCore3DX.NET.Data.Axis.Y, items[i].ToString());
 
-                VIZCore3DX.NET.Data.FrameItem item = vizcore3dx.Frame.GetSnap(VIZCore3DX.NET.Data.Axis.Y, (int)position.Position);
+                VIZCore3DX.NET.Data.FrameItem item = vizcore3dx.Frame.GetSnap(VIZCore3DX.NET.Data.Axis.Y, position.Position);
 
                 ListViewItem listView = new ListViewItem(new string[] { item.GridID.ToString(), item.Axis.ToString(), item.Label.ToString(), item.Offset.ToString() });
                 lvGridResult.Items.Add(listView);
@@ -313,17 +388,146 @@ namespace VIZCore3DX.NET.Demo
             {
                 VIZCore3DX.NET.Data.FramePosition position = vizcore3dx.Frame.GetPosition(VIZCore3DX.NET.Data.Axis.Z, items[i].ToString());
 
-               VIZCore3DX.NET.Data.FrameItem item = vizcore3dx.Frame.GetSnap(VIZCore3DX.NET.Data.Axis.Z, (int)position.Position);
+                VIZCore3DX.NET.Data.FrameItem item = vizcore3dx.Frame.GetSnap(VIZCore3DX.NET.Data.Axis.Z, position.Position);
 
                 ListViewItem listView = new ListViewItem(new string[] { item.GridID.ToString(), item.Axis.ToString(), item.Label.ToString(), item.Offset.ToString() });
                 lvGridResult.Items.Add(listView);
             }
         }
 
+        /// <summary>
+        /// Grid Color 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGridColor_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == true) return;
+
+            ColorDialog dlg = new ColorDialog();
+            dlg.AllowFullOpen = true;
+            dlg.ShowHelp = true;
+            dlg.Color = btnGridColor.BackColor;
+
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            btnGridColor.BackColor = dlg.Color;
+
+            Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
+
+            frameStyle.GridLineStrokeColor = dlg.Color;
+
+            vizcore3dx.Frame.SetStyle(frameStyle);
+        }
+
+        /// <summary>
+        /// Grid Label 모두 보이기
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGridShowNum_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == true) return;
+
+            vizcore3dx.BeginUpdate();
+
+            vizcore3dx.Frame.ShowNumber(true);
+
+            ckGridLabelX.Checked = true;
+            ckGridLabelY.Checked = true;
+            ckGridLabelZ.Checked = true;
+
+            vizcore3dx.EndUpdate();
+        }
+
+        /// <summary>
+        /// Grid Label 모두 숨기기
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnGridHideNum_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == true) return;
+
+            vizcore3dx.BeginUpdate();
+
+            vizcore3dx.Frame.ShowNumber(false);
+
+            ckGridLabelX.Checked = false;
+            ckGridLabelY.Checked = false;
+            ckGridLabelZ.Checked = false;
+
+            vizcore3dx.EndUpdate();
+        }
+
+        /// <summary>
+        /// Grid Label X축 보이기/숨기기
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckGridLabelX_CheckedChanged(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == true) return;
+
+            Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
+
+            frameStyle.XGridLineLabelType = Data.GridLineLabelType.None;
+
+            if (ckGridLabelX.Checked == true)
+                frameStyle.XGridLineLabelType = Data.GridLineLabelType.GridCoordinate;
+
+            vizcore3dx.Frame.SetStyle(frameStyle);
+        }
+
+        /// <summary>
+        /// Grid Label Y축 보이기/숨기기
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckGridLabelY_CheckedChanged(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == true) return;
+
+            Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
+
+            frameStyle.YGridLineLabelType = Data.GridLineLabelType.None;
+
+            if (ckGridLabelY.Checked == true)
+                frameStyle.YGridLineLabelType = Data.GridLineLabelType.GridCoordinate;
+
+            vizcore3dx.Frame.SetStyle(frameStyle);
+        }
+
+        /// <summary>
+        /// Grid Label Z축 보이기/숨기기
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckGridLabelZ_CheckedChanged(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == true) return;
+
+            Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
+
+            frameStyle.ZGridLineLabelType = Data.GridLineLabelType.None;
+
+            if (ckGridLabelZ.Checked == true)
+                frameStyle.ZGridLineLabelType = Data.GridLineLabelType.GridCoordinate;
+
+            vizcore3dx.Frame.SetStyle(frameStyle);
+        }
+        #endregion
 
         //==========================================================================
         // View
         //==========================================================================
+        #region View
         private void btnXrayEnable_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
@@ -354,7 +558,7 @@ namespace VIZCore3DX.NET.Demo
 
             string keyword = txtXrayObjects.Text;
 
-            if(String.IsNullOrEmpty(keyword) == true)
+            if (String.IsNullOrEmpty(keyword) == true)
             {
                 MessageBox.Show("Keyword is empty", "Keyword", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -363,7 +567,7 @@ namespace VIZCore3DX.NET.Demo
             List<VIZCore3DX.NET.Data.Node> items =
                 vizcore3dx.Object3D.Find.QuickSearch(keyword, false);
 
-            if(items.Count == 0)
+            if (items.Count == 0)
             {
                 MessageBox.Show("Node count is 0", "Objects", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -447,9 +651,116 @@ namespace VIZCore3DX.NET.Demo
             //vizcore3dx.Object3D.Color.RestoreColorAll();
         }
 
+        /// <summary>
+        /// 선택된 개체 재선택 시, 상위 개체 선택 기능 활성화/비활성화
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckEnableParentSelection_CheckedChanged(object sender, EventArgs e)
+        {
+            vizcore3dx.View.EnableParentSelection = ckEnableParentSelection.Checked;
+        }
+
+        /// <summary>
+        /// Mouse Double Click 시, 선택된 모델 초점 및 자동화면 맞춤 활성화/비활성화.
+        /// 노드를 더블클릭 할 경우 해당 노드로 카메라 이동
+        /// 배경을 더블클릭 할 경우 전체 모델이 화면에 보이도록 카메라 이동
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckEnableDoubleClickFocusAndFit_CheckedChanged(object sender, EventArgs e)
+        {
+            vizcore3dx.View.EnableDoubleClickFocusAndFit = ckEnableDoubleClickFocusAndFit.Checked;
+        }
+
+        /// <summary>
+        /// 개체 선택 활성화/비활성화
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckEnableSelection_CheckedChanged(object sender, EventArgs e)
+        {
+            vizcore3dx.View.EnableSelection = ckEnableSelection.Checked;
+        }
+
+        /// <summary>
+        /// 마우스 오른쪽 버튼으로 개체 선택 활성화/비활성. 기본값 True
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckEnableSelectionMouseRButtonUp_CheckedChanged(object sender, EventArgs e)
+        {
+            vizcore3dx.View.EnableSelectionMouseRButtonUp = ckEnableSelectionMouseRButtonUp.Checked;
+        }
+
+        /// <summary>
+        ///  확대/축소 비율
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numZoomRatio_ValueChanged(object sender, EventArgs e)
+        {
+            vizcore3dx.View.ZoomRatio = Convert.ToSingle(numZoomRatio.Value);
+        }
+
+        /// <summary>
+        /// 선택된 개체의 BoundBox 가져오기
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnViewGetBoundBox_Click(object sender, EventArgs e)
+        {
+            Node node = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_TOP)[0];
+            if (node == null) return;
+
+            Data.BoundBox3D bb = node.GetBoundBox();
+
+            txtViewBounboxMinX.Text = bb.MinX.ToString();
+            txtViewBounboxMinY.Text = bb.MinY.ToString();
+            txtViewBounboxMinZ.Text = bb.MinZ.ToString();
+
+            txtViewBounboxMaxX.Text = bb.MaxX.ToString();
+            txtViewBounboxMaxY.Text = bb.MaxY.ToString();
+            txtViewBounboxMaxZ.Text = bb.MaxZ.ToString();
+        }
+
+        /// <summary>
+        /// Box Zoom
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnViewBoxZoom_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            if (String.IsNullOrEmpty(txtViewBounboxMinX.Text)
+                || String.IsNullOrEmpty(txtViewBounboxMinY.Text)
+                || String.IsNullOrEmpty(txtViewBounboxMinZ.Text)
+                || String.IsNullOrEmpty(txtViewBounboxMaxX.Text)
+                || String.IsNullOrEmpty(txtViewBounboxMaxY.Text)
+                || String.IsNullOrEmpty(txtViewBounboxMaxZ.Text)) return;
+
+            float minX = Convert.ToSingle(txtViewBounboxMinX.Text);
+            float minY = Convert.ToSingle(txtViewBounboxMinY.Text);
+            float minZ = Convert.ToSingle(txtViewBounboxMinZ.Text);
+
+            float maxX = Convert.ToSingle(txtViewBounboxMaxX.Text);
+            float maxY = Convert.ToSingle(txtViewBounboxMaxY.Text);
+            float maxZ = Convert.ToSingle(txtViewBounboxMaxZ.Text);
+
+            Data.Vector3D min = new Vector3D(minX, minY, minZ);
+            Data.Vector3D max = new Vector3D(maxX, maxY, maxZ);
+
+            TimeSpan timeSpan = TimeSpan.FromSeconds(1);
+
+            vizcore3dx.View.BoxZoom(min, max, timeSpan);
+        }
+        #endregion
+
         //==========================================================================
         // UDA
         //==========================================================================
+        #region UDA
         private void btnUDAInfo_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
@@ -475,8 +786,8 @@ namespace VIZCore3DX.NET.Demo
             Dictionary<string, string> uda = vizcore3dx.Object3D.UDA.FromNode(items[0]).ToDictionary();
 
             List<string> keyItems = new List<string>();
-            List<string> valueItems= new List<string>();
-           
+            List<string> valueItems = new List<string>();
+
             ICollection<string> keys = uda.Keys;
             foreach (string key in keys)
             {
@@ -494,7 +805,7 @@ namespace VIZCore3DX.NET.Demo
 
             if (lvUDAResult.Items.Count > 0) lvUDAResult.Items.Clear();
 
-            for (int i =0; i < keyItems.Count; i++)
+            for (int i = 0; i < keyItems.Count; i++)
             {
                 ListViewItem listView = new ListViewItem(new string[] { keyItems[i], valueItems[i] });
                 lvUDAResult.Items.Add(listView);
@@ -552,7 +863,7 @@ namespace VIZCore3DX.NET.Demo
 
             for (int i = 0; i < values.Count; i++)
             {
-                ListViewItem listView = new ListViewItem(new string[] { keyword , values[i] });
+                ListViewItem listView = new ListViewItem(new string[] { keyword, values[i] });
                 lvUDAResult.Items.Add(listView);
             }
         }
@@ -584,7 +895,7 @@ namespace VIZCore3DX.NET.Demo
                 MessageBox.Show("Node count is 0", "Objects", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            
+
             lvUDAResult.Columns[0].Text = "EntityID";
             lvUDAResult.Columns[1].Text = "Index";
 
@@ -596,5 +907,99 @@ namespace VIZCore3DX.NET.Demo
                 lvUDAResult.Items.Add(listView);
             }
         }
+        #endregion
+
+        //==========================================================================
+        // Note
+        //==========================================================================
+        #region Note
+        /// <summary>
+        /// Box Fill Color 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNoteBoxFillColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.AllowFullOpen = true;
+            dlg.ShowHelp = true;
+            dlg.Color = btnNoteBoxFillColor.BackColor;
+
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            btnNoteBoxFillColor.BackColor = dlg.Color;
+
+            NoteStyle noteStyle = vizcore3dx.Note.GetStyle();
+            noteStyle.BoxFillColor = Color.FromArgb(Convert.ToInt32(numNoteBoxFillAlpha.Value), dlg.Color.R, dlg.Color.G, dlg.Color.B);
+            vizcore3dx.Note.SetStyle(noteStyle);
+        }
+
+        /// <summary>
+        /// Box Stroke Color 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNoteBoxStrokeColor_Click(object sender, EventArgs e)
+        {
+            ColorDialog dlg = new ColorDialog();
+            dlg.AllowFullOpen = true;
+            dlg.ShowHelp = true;
+            dlg.Color = btnNoteBoxStrokeColor.BackColor;
+
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            btnNoteBoxStrokeColor.BackColor = dlg.Color;
+
+            NoteStyle noteStyle = vizcore3dx.Note.GetStyle();
+            noteStyle.BoxStrokeColor = Color.FromArgb(Convert.ToInt32(numNoteBoxStrokeAlpha.Value), dlg.Color.R, dlg.Color.G, dlg.Color.B);
+            vizcore3dx.Note.SetStyle(noteStyle);
+        }
+
+        /// <summary>
+        /// 배경색 없음 옵션
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ckNoteBackgroundTransparent_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ckNoteBackgroundTransparent.Checked == true)
+            {
+                NoteStyle noteStyle = vizcore3dx.Note.GetStyle();
+                noteStyle.BoxFillColor = Color.FromArgb(0, btnNoteBoxFillColor.BackColor.R, btnNoteBoxFillColor.BackColor.G, btnNoteBoxFillColor.BackColor.B);
+                noteStyle.BoxStrokeColor = Color.FromArgb(0, btnNoteBoxStrokeColor.BackColor.R, btnNoteBoxStrokeColor.BackColor.G, btnNoteBoxStrokeColor.BackColor.B);
+                vizcore3dx.Note.SetStyle(noteStyle);
+            }
+            else
+            {
+                NoteStyle noteStyle = vizcore3dx.Note.GetStyle();
+                noteStyle.BoxFillColor = Color.FromArgb(Convert.ToInt32(numNoteBoxFillAlpha.Value), btnNoteBoxFillColor.BackColor.R, btnNoteBoxFillColor.BackColor.G, btnNoteBoxFillColor.BackColor.B);
+                noteStyle.BoxStrokeColor = Color.FromArgb(Convert.ToInt32(numNoteBoxStrokeAlpha.Value), btnNoteBoxStrokeColor.BackColor.R, btnNoteBoxStrokeColor.BackColor.G, btnNoteBoxStrokeColor.BackColor.B);
+                vizcore3dx.Note.SetStyle(noteStyle);
+            }
+
+        }
+        #endregion
+
+        //==========================================================================
+        // ModelTree
+        //==========================================================================
+        #region ModelTree
+        /// <summary>
+        /// ModelTree Focus
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnModelTreeFocus_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (String.IsNullOrEmpty(txtModelTreeIndex.Text)) return;
+
+            Node node = vizcore3dx.Object3D.GetNodes(txtModelTreeIndex.Text)[0];
+            if (node == null) return;
+
+            vizcore3dx.ModelTree.Focus(node);
+        }
+        #endregion
+
     }
 }
