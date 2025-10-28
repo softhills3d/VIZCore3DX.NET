@@ -46,33 +46,14 @@ namespace VIZCore3DX.NET.Demo
                 return;
             }
 
-            vizcore3dx.Section.OnSectionEvent += Section_OnSectionEvent;
-
             InitializeVIZCore3DX();
+            InitializeVIZCore3DXEvent();
         }
 
-        private void Section_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
+        private void InitializeVIZCore3DXEvent()
         {
-            if (e.EventType == Manager.SectionManager.EventType.Created)
-            {
-                cbSectionSubID.Items.Clear();
-
-                cbSectionID.Items.Add(e.Section.ID);
-                if (e.Section.SectionType == Manager.SectionManager.SectionTypes.SECTION)
-                {
-                    cbSectionSubID.Items.Add(-1);
-                }
-                else
-                {
-                    for (int i = 0; i < e.Section.Planes.Count; i++)
-                        cbSectionSubID.Items.Add(i);
-
-                }
-            }
-            else if (e.EventType == Manager.SectionManager.EventType.Deleted)
-            {
-                cbSectionID.Items.Remove(e.Section.ID);
-            }
+            // Section Event
+            vizcore3dx.Section.OnSectionEvent += Section_OnSectionEvent;
         }
 
         private void InitializeVIZCore3DX()
@@ -284,6 +265,64 @@ namespace VIZCore3DX.NET.Demo
             float position = Convert.ToSingle(txtCenterPosition.Text);
             vizcore3dx.Section.SetCenter(Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
         }
+
+        private void Section_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
+        {
+            cbSectionID.SelectedIndexChanged -= cbSectionID_SelectedIndexChanged;
+
+            // Section 생성 이벤트
+            if (e.EventType == Manager.SectionManager.EventType.Created)
+            {
+                cbSectionSubID.Items.Clear();
+
+                cbSectionID.Items.Add(e.Section.ID);
+                cbSectionID.SelectedItem = e.Section.ID;
+
+                if (e.Section.SectionType == Manager.SectionManager.SectionTypes.SECTION)
+                {
+                    cbSectionSubID.Items.Add(-1);
+                    cbSectionSubID.SelectedItem = -1;
+                }
+                else
+                {
+                    for (int i = 0; i < e.Section.Planes.Count; i++)
+                    {
+                        cbSectionSubID.Items.Add(i);
+                    }
+                    cbSectionSubID.SelectedItem = 0;
+                }
+            }
+            // Section 삭제 이벤트
+            else if (e.EventType == Manager.SectionManager.EventType.Deleted)
+            {
+                cbSectionID.Items.Remove(e.Section.ID);
+                cbSectionSubID.Items.Clear();
+            }
+
+            cbSectionID.SelectedIndexChanged += cbSectionID_SelectedIndexChanged;
+        }
+
+        private void cbSectionID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SectionItem section = vizcore3dx.Section.FromID(Convert.ToInt32(cbSectionID.SelectedItem));
+
+            cbSectionSubID.Items.Clear();
+
+            if (section.SectionType == Manager.SectionManager.SectionTypes.SECTION)
+            {
+                cbSectionSubID.Items.Add(-1);
+                cbSectionSubID.SelectedItem = -1;
+            }
+            else
+            {
+                for (int i = 0; i < section.Planes.Count; i++)
+                {
+                    cbSectionSubID.Items.Add(i);
+                }
+
+                cbSectionSubID.SelectedItem = 0;
+            }
+        }
         #endregion
 
         //==========================================================================
@@ -403,7 +442,7 @@ namespace VIZCore3DX.NET.Demo
         private void btnGridColor_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (vizcore3dx.Frame.HasFrame == true) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             ColorDialog dlg = new ColorDialog();
             dlg.AllowFullOpen = true;
@@ -429,7 +468,7 @@ namespace VIZCore3DX.NET.Demo
         private void btnGridShowNum_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (vizcore3dx.Frame.HasFrame == true) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             vizcore3dx.BeginUpdate();
 
@@ -450,7 +489,7 @@ namespace VIZCore3DX.NET.Demo
         private void btnGridHideNum_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (vizcore3dx.Frame.HasFrame == true) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             vizcore3dx.BeginUpdate();
 
@@ -471,7 +510,7 @@ namespace VIZCore3DX.NET.Demo
         private void ckGridLabelX_CheckedChanged(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (vizcore3dx.Frame.HasFrame == true) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
 
@@ -491,7 +530,7 @@ namespace VIZCore3DX.NET.Demo
         private void ckGridLabelY_CheckedChanged(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (vizcore3dx.Frame.HasFrame == true) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
 
@@ -511,7 +550,7 @@ namespace VIZCore3DX.NET.Demo
         private void ckGridLabelZ_CheckedChanged(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (vizcore3dx.Frame.HasFrame == true) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
 
@@ -913,6 +952,61 @@ namespace VIZCore3DX.NET.Demo
         // Note
         //==========================================================================
         #region Note
+        /// <summary>
+        /// 표면 노트 추가
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNoteSurfaceNote_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            vizcore3dx.Note.AddNoteSurfaceDialog();
+        }
+
+        /// <summary>
+        /// 2D 노트 추가
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNote2DNote_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            vizcore3dx.Note.AddNote2DDialog();
+        }
+
+        /// <summary>
+        /// 3D 노트 추가
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNote3DNote_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            vizcore3dx.Note.AddNote3DDialog();
+        }
+
+        /// <summary>
+        /// 선택된 노트 삭제
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNoteDelete_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            vizcore3dx.Note.Delete();
+        }
+
+        /// <summary>
+        /// 노트 모두 삭제
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnNoteClear_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            vizcore3dx.Note.Clear();
+        }
+
         /// <summary>
         /// Box Fill Color 변경
         /// </summary>

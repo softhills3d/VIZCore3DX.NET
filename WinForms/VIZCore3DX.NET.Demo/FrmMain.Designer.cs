@@ -87,6 +87,15 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tpView = new System.Windows.Forms.TabPage();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.txtViewBounboxMaxZ = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.txtViewBounboxMaxY = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.txtViewBounboxMaxX = new System.Windows.Forms.TextBox();
+            this.btnViewBoxZoom = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.txtViewBounboxMinZ = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
@@ -148,15 +157,12 @@
             this.txtModelTreeIndex = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgView = new System.Windows.Forms.DataGridView();
-            this.btnViewBoxZoom = new System.Windows.Forms.Button();
-            this.label16 = new System.Windows.Forms.Label();
-            this.txtViewBounboxMaxZ = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.txtViewBounboxMaxY = new System.Windows.Forms.TextBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.txtViewBounboxMaxX = new System.Windows.Forms.TextBox();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
+            this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.btnNoteSurfaceNote = new System.Windows.Forms.Button();
+            this.btnNote2DNote = new System.Windows.Forms.Button();
+            this.btnNote3DNote = new System.Windows.Forms.Button();
+            this.btnNoteClear = new System.Windows.Forms.Button();
+            this.btnNoteDelete = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -193,6 +199,7 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgView)).BeginInit();
+            this.groupBox17.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -492,6 +499,7 @@
             this.cbSectionID.Name = "cbSectionID";
             this.cbSectionID.Size = new System.Drawing.Size(85, 20);
             this.cbSectionID.TabIndex = 8;
+            this.cbSectionID.SelectedIndexChanged += new System.EventHandler(this.cbSectionID_SelectedIndexChanged);
             // 
             // btnSetCenter
             // 
@@ -817,6 +825,82 @@
             this.groupBox16.TabIndex = 16;
             this.groupBox16.TabStop = false;
             this.groupBox16.Text = "Box Zoom";
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(217, 27);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(32, 12);
+            this.label20.TabIndex = 32;
+            this.label20.Text = "MAX";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(81, 27);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(28, 12);
+            this.label19.TabIndex = 31;
+            this.label19.Text = "MIN";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(155, 104);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(21, 12);
+            this.label16.TabIndex = 30;
+            this.label16.Text = "Z :";
+            // 
+            // txtViewBounboxMaxZ
+            // 
+            this.txtViewBounboxMaxZ.Location = new System.Drawing.Point(182, 101);
+            this.txtViewBounboxMaxZ.Name = "txtViewBounboxMaxZ";
+            this.txtViewBounboxMaxZ.Size = new System.Drawing.Size(107, 21);
+            this.txtViewBounboxMaxZ.TabIndex = 29;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(155, 77);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(21, 12);
+            this.label17.TabIndex = 28;
+            this.label17.Text = "Y :";
+            // 
+            // txtViewBounboxMaxY
+            // 
+            this.txtViewBounboxMaxY.Location = new System.Drawing.Point(182, 74);
+            this.txtViewBounboxMaxY.Name = "txtViewBounboxMaxY";
+            this.txtViewBounboxMaxY.Size = new System.Drawing.Size(107, 21);
+            this.txtViewBounboxMaxY.TabIndex = 27;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(155, 48);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(21, 12);
+            this.label18.TabIndex = 26;
+            this.label18.Text = "X :";
+            // 
+            // txtViewBounboxMaxX
+            // 
+            this.txtViewBounboxMaxX.Location = new System.Drawing.Point(182, 45);
+            this.txtViewBounboxMaxX.Name = "txtViewBounboxMaxX";
+            this.txtViewBounboxMaxX.Size = new System.Drawing.Size(107, 21);
+            this.txtViewBounboxMaxX.TabIndex = 25;
+            // 
+            // btnViewBoxZoom
+            // 
+            this.btnViewBoxZoom.Location = new System.Drawing.Point(309, 101);
+            this.btnViewBoxZoom.Name = "btnViewBoxZoom";
+            this.btnViewBoxZoom.Size = new System.Drawing.Size(110, 23);
+            this.btnViewBoxZoom.TabIndex = 24;
+            this.btnViewBoxZoom.Text = "Box Zoom";
+            this.btnViewBoxZoom.UseVisualStyleBackColor = true;
+            this.btnViewBoxZoom.Click += new System.EventHandler(this.btnViewBoxZoom_Click);
             // 
             // label13
             // 
@@ -1276,6 +1360,7 @@
             // 
             // tpNote
             // 
+            this.tpNote.Controls.Add(this.groupBox17);
             this.tpNote.Controls.Add(this.groupBox13);
             this.tpNote.Location = new System.Drawing.Point(4, 22);
             this.tpNote.Name = "tpNote";
@@ -1294,9 +1379,9 @@
             this.groupBox13.Controls.Add(this.btnNoteBoxFillColor);
             this.groupBox13.Controls.Add(this.label3);
             this.groupBox13.Controls.Add(this.numNoteBoxFillAlpha);
-            this.groupBox13.Location = new System.Drawing.Point(6, 6);
+            this.groupBox13.Location = new System.Drawing.Point(6, 133);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(430, 133);
+            this.groupBox13.Size = new System.Drawing.Size(427, 133);
             this.groupBox13.TabIndex = 0;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Color";
@@ -1321,6 +1406,11 @@
             this.numNoteBoxStrokeAlpha.Name = "numNoteBoxStrokeAlpha";
             this.numNoteBoxStrokeAlpha.Size = new System.Drawing.Size(102, 21);
             this.numNoteBoxStrokeAlpha.TabIndex = 5;
+            this.numNoteBoxStrokeAlpha.Value = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
             // 
             // btnNoteBoxStrokeColor
             // 
@@ -1373,6 +1463,11 @@
             this.numNoteBoxFillAlpha.Name = "numNoteBoxFillAlpha";
             this.numNoteBoxFillAlpha.Size = new System.Drawing.Size(102, 21);
             this.numNoteBoxFillAlpha.TabIndex = 0;
+            this.numNoteBoxFillAlpha.Value = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
             // 
             // tpModelTree
             // 
@@ -1451,81 +1546,69 @@
             this.dgView.Size = new System.Drawing.Size(897, 191);
             this.dgView.TabIndex = 0;
             // 
-            // btnViewBoxZoom
+            // groupBox17
             // 
-            this.btnViewBoxZoom.Location = new System.Drawing.Point(309, 101);
-            this.btnViewBoxZoom.Name = "btnViewBoxZoom";
-            this.btnViewBoxZoom.Size = new System.Drawing.Size(110, 23);
-            this.btnViewBoxZoom.TabIndex = 24;
-            this.btnViewBoxZoom.Text = "Box Zoom";
-            this.btnViewBoxZoom.UseVisualStyleBackColor = true;
-            this.btnViewBoxZoom.Click += new System.EventHandler(this.btnViewBoxZoom_Click);
+            this.groupBox17.Controls.Add(this.btnNoteDelete);
+            this.groupBox17.Controls.Add(this.btnNoteClear);
+            this.groupBox17.Controls.Add(this.btnNote3DNote);
+            this.groupBox17.Controls.Add(this.btnNote2DNote);
+            this.groupBox17.Controls.Add(this.btnNoteSurfaceNote);
+            this.groupBox17.Location = new System.Drawing.Point(6, 6);
+            this.groupBox17.Name = "groupBox17";
+            this.groupBox17.Size = new System.Drawing.Size(427, 121);
+            this.groupBox17.TabIndex = 1;
+            this.groupBox17.TabStop = false;
+            this.groupBox17.Text = "Note";
             // 
-            // label16
+            // btnNoteSurfaceNote
             // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(155, 104);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(21, 12);
-            this.label16.TabIndex = 30;
-            this.label16.Text = "Z :";
+            this.btnNoteSurfaceNote.Location = new System.Drawing.Point(22, 29);
+            this.btnNoteSurfaceNote.Name = "btnNoteSurfaceNote";
+            this.btnNoteSurfaceNote.Size = new System.Drawing.Size(111, 23);
+            this.btnNoteSurfaceNote.TabIndex = 3;
+            this.btnNoteSurfaceNote.Text = "Surface Note";
+            this.btnNoteSurfaceNote.UseVisualStyleBackColor = true;
+            this.btnNoteSurfaceNote.Click += new System.EventHandler(this.btnNoteSurfaceNote_Click);
             // 
-            // txtViewBounboxMaxZ
+            // btnNote2DNote
             // 
-            this.txtViewBounboxMaxZ.Location = new System.Drawing.Point(182, 101);
-            this.txtViewBounboxMaxZ.Name = "txtViewBounboxMaxZ";
-            this.txtViewBounboxMaxZ.Size = new System.Drawing.Size(107, 21);
-            this.txtViewBounboxMaxZ.TabIndex = 29;
+            this.btnNote2DNote.Location = new System.Drawing.Point(154, 29);
+            this.btnNote2DNote.Name = "btnNote2DNote";
+            this.btnNote2DNote.Size = new System.Drawing.Size(111, 23);
+            this.btnNote2DNote.TabIndex = 4;
+            this.btnNote2DNote.Text = "2D Note";
+            this.btnNote2DNote.UseVisualStyleBackColor = true;
+            this.btnNote2DNote.Click += new System.EventHandler(this.btnNote2DNote_Click);
             // 
-            // label17
+            // btnNote3DNote
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(155, 77);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(21, 12);
-            this.label17.TabIndex = 28;
-            this.label17.Text = "Y :";
+            this.btnNote3DNote.Location = new System.Drawing.Point(290, 29);
+            this.btnNote3DNote.Name = "btnNote3DNote";
+            this.btnNote3DNote.Size = new System.Drawing.Size(111, 23);
+            this.btnNote3DNote.TabIndex = 5;
+            this.btnNote3DNote.Text = "3D Note";
+            this.btnNote3DNote.UseVisualStyleBackColor = true;
+            this.btnNote3DNote.Click += new System.EventHandler(this.btnNote3DNote_Click);
             // 
-            // txtViewBounboxMaxY
+            // btnNoteClear
             // 
-            this.txtViewBounboxMaxY.Location = new System.Drawing.Point(182, 74);
-            this.txtViewBounboxMaxY.Name = "txtViewBounboxMaxY";
-            this.txtViewBounboxMaxY.Size = new System.Drawing.Size(107, 21);
-            this.txtViewBounboxMaxY.TabIndex = 27;
+            this.btnNoteClear.Location = new System.Drawing.Point(290, 73);
+            this.btnNoteClear.Name = "btnNoteClear";
+            this.btnNoteClear.Size = new System.Drawing.Size(111, 23);
+            this.btnNoteClear.TabIndex = 6;
+            this.btnNoteClear.Text = "Clear";
+            this.btnNoteClear.UseVisualStyleBackColor = true;
+            this.btnNoteClear.Click += new System.EventHandler(this.btnNoteClear_Click);
             // 
-            // label18
+            // btnNoteDelete
             // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(155, 48);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(21, 12);
-            this.label18.TabIndex = 26;
-            this.label18.Text = "X :";
-            // 
-            // txtViewBounboxMaxX
-            // 
-            this.txtViewBounboxMaxX.Location = new System.Drawing.Point(182, 45);
-            this.txtViewBounboxMaxX.Name = "txtViewBounboxMaxX";
-            this.txtViewBounboxMaxX.Size = new System.Drawing.Size(107, 21);
-            this.txtViewBounboxMaxX.TabIndex = 25;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(81, 27);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(28, 12);
-            this.label19.TabIndex = 31;
-            this.label19.Text = "MIN";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(217, 27);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(32, 12);
-            this.label20.TabIndex = 32;
-            this.label20.Text = "MAX";
+            this.btnNoteDelete.Location = new System.Drawing.Point(22, 73);
+            this.btnNoteDelete.Name = "btnNoteDelete";
+            this.btnNoteDelete.Size = new System.Drawing.Size(111, 23);
+            this.btnNoteDelete.TabIndex = 7;
+            this.btnNoteDelete.Text = "Delete";
+            this.btnNoteDelete.UseVisualStyleBackColor = true;
+            this.btnNoteDelete.Click += new System.EventHandler(this.btnNoteDelete_Click);
             // 
             // FrmMain
             // 
@@ -1582,6 +1665,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgView)).EndInit();
+            this.groupBox17.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1716,6 +1800,12 @@
         private System.Windows.Forms.TextBox txtViewBounboxMaxY;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.TextBox txtViewBounboxMaxX;
+        private System.Windows.Forms.GroupBox groupBox17;
+        private System.Windows.Forms.Button btnNoteDelete;
+        private System.Windows.Forms.Button btnNoteClear;
+        private System.Windows.Forms.Button btnNote3DNote;
+        private System.Windows.Forms.Button btnNote2DNote;
+        private System.Windows.Forms.Button btnNoteSurfaceNote;
     }
 }
 
