@@ -298,7 +298,23 @@
             // 
             // numPenetrationTolerance
             // 
+            this.numPenetrationTolerance.DecimalPlaces = 2;
+            this.numPenetrationTolerance.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
             this.numPenetrationTolerance.Location = new System.Drawing.Point(141, 105);
+            this.numPenetrationTolerance.Maximum = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.numPenetrationTolerance.Minimum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            -2147483648});
             this.numPenetrationTolerance.Name = "numPenetrationTolerance";
             this.numPenetrationTolerance.Size = new System.Drawing.Size(120, 21);
             this.numPenetrationTolerance.TabIndex = 6;
@@ -306,7 +322,7 @@
             1,
             0,
             0,
-            0});
+            -2147352576});
             // 
             // numRangeValue
             // 
