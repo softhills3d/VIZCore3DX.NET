@@ -220,19 +220,15 @@ namespace VIZCore3DX.NET.Demo
         }
 
         /// <summary>
-        /// 단면상자 핸들 활성화/비활성화
+        /// 단면상자 핸들 활성화
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ckShowHandle_CheckedChanged(object sender, EventArgs e)
+        private void btnShowHandle_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            if (ckShowHandle.Checked == false)
-                vizcore3dx.Section.ShowHandle(false);
-            else
-
-                vizcore3dx.Section.ShowHandle(true);
+            vizcore3dx.Section.ShowHandle();
         }
 
         /// <summary>
@@ -244,7 +240,7 @@ namespace VIZCore3DX.NET.Demo
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            Vertex3D center = vizcore3dx.Section.GetCenter(Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem));
+            Vertex3D center = vizcore3dx.Section.GetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem));
 
             txtSectionX.Text = center.X.ToString();
             txtSectionY.Text = center.Y.ToString();
@@ -263,7 +259,7 @@ namespace VIZCore3DX.NET.Demo
             if (String.IsNullOrEmpty(txtCenterPosition.Text)) return;
 
             float position = Convert.ToSingle(txtCenterPosition.Text);
-            vizcore3dx.Section.SetCenter(Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
+            vizcore3dx.Section.SetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
         }
 
         private void Section_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
@@ -304,7 +300,7 @@ namespace VIZCore3DX.NET.Demo
 
         private void cbSectionID_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SectionItem section = vizcore3dx.Section.FromID(Convert.ToInt32(cbSectionID.SelectedItem));
+            SectionItem section = vizcore3dx.Section.FromID((uint)Convert.ToInt32(cbSectionID.SelectedItem));
 
             cbSectionSubID.Items.Clear();
 
@@ -1094,6 +1090,5 @@ namespace VIZCore3DX.NET.Demo
             vizcore3dx.ModelTree.Focus(node);
         }
         #endregion
-
     }
 }

@@ -59,7 +59,6 @@
             this.cbSectionID = new System.Windows.Forms.ComboBox();
             this.btnSetCenter = new System.Windows.Forms.Button();
             this.btnGetCenter = new System.Windows.Forms.Button();
-            this.ckShowHandle = new System.Windows.Forms.CheckBox();
             this.btnAddSectionBox = new System.Windows.Forms.Button();
             this.btnUpdateSectionBoxSize = new System.Windows.Forms.Button();
             this.btnClearSection = new System.Windows.Forms.Button();
@@ -142,6 +141,12 @@
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tpNote = new System.Windows.Forms.TabPage();
+            this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.btnNoteDelete = new System.Windows.Forms.Button();
+            this.btnNoteClear = new System.Windows.Forms.Button();
+            this.btnNote3DNote = new System.Windows.Forms.Button();
+            this.btnNote2DNote = new System.Windows.Forms.Button();
+            this.btnNoteSurfaceNote = new System.Windows.Forms.Button();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.numNoteBoxStrokeAlpha = new System.Windows.Forms.NumericUpDown();
@@ -157,12 +162,7 @@
             this.txtModelTreeIndex = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgView = new System.Windows.Forms.DataGridView();
-            this.groupBox17 = new System.Windows.Forms.GroupBox();
-            this.btnNoteSurfaceNote = new System.Windows.Forms.Button();
-            this.btnNote2DNote = new System.Windows.Forms.Button();
-            this.btnNote3DNote = new System.Windows.Forms.Button();
-            this.btnNoteClear = new System.Windows.Forms.Button();
-            this.btnNoteDelete = new System.Windows.Forms.Button();
+            this.btnShowHandle = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -190,6 +190,7 @@
             this.groupBox10.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tpNote.SuspendLayout();
+            this.groupBox17.SuspendLayout();
             this.groupBox13.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numNoteBoxStrokeAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNoteBoxFillAlpha)).BeginInit();
@@ -199,7 +200,6 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgView)).BeginInit();
-            this.groupBox17.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -377,6 +377,7 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.btnShowHandle);
             this.groupBox6.Controls.Add(this.txtCenterPosition);
             this.groupBox6.Controls.Add(this.label11);
             this.groupBox6.Controls.Add(this.label10);
@@ -391,7 +392,6 @@
             this.groupBox6.Controls.Add(this.cbSectionID);
             this.groupBox6.Controls.Add(this.btnSetCenter);
             this.groupBox6.Controls.Add(this.btnGetCenter);
-            this.groupBox6.Controls.Add(this.ckShowHandle);
             this.groupBox6.Controls.Add(this.btnAddSectionBox);
             this.groupBox6.Controls.Add(this.btnUpdateSectionBoxSize);
             this.groupBox6.Controls.Add(this.btnClearSection);
@@ -520,17 +520,6 @@
             this.btnGetCenter.Text = "Get Center";
             this.btnGetCenter.UseVisualStyleBackColor = true;
             this.btnGetCenter.Click += new System.EventHandler(this.btnGetCenter_Click);
-            // 
-            // ckShowHandle
-            // 
-            this.ckShowHandle.AutoSize = true;
-            this.ckShowHandle.Location = new System.Drawing.Point(253, 65);
-            this.ckShowHandle.Name = "ckShowHandle";
-            this.ckShowHandle.Size = new System.Drawing.Size(99, 16);
-            this.ckShowHandle.TabIndex = 5;
-            this.ckShowHandle.Text = "Show Handle";
-            this.ckShowHandle.UseVisualStyleBackColor = true;
-            this.ckShowHandle.CheckedChanged += new System.EventHandler(this.ckShowHandle_CheckedChanged);
             // 
             // btnAddSectionBox
             // 
@@ -1370,6 +1359,70 @@
             this.tpNote.Text = "Note";
             this.tpNote.UseVisualStyleBackColor = true;
             // 
+            // groupBox17
+            // 
+            this.groupBox17.Controls.Add(this.btnNoteDelete);
+            this.groupBox17.Controls.Add(this.btnNoteClear);
+            this.groupBox17.Controls.Add(this.btnNote3DNote);
+            this.groupBox17.Controls.Add(this.btnNote2DNote);
+            this.groupBox17.Controls.Add(this.btnNoteSurfaceNote);
+            this.groupBox17.Location = new System.Drawing.Point(6, 6);
+            this.groupBox17.Name = "groupBox17";
+            this.groupBox17.Size = new System.Drawing.Size(427, 121);
+            this.groupBox17.TabIndex = 1;
+            this.groupBox17.TabStop = false;
+            this.groupBox17.Text = "Note";
+            // 
+            // btnNoteDelete
+            // 
+            this.btnNoteDelete.Location = new System.Drawing.Point(22, 73);
+            this.btnNoteDelete.Name = "btnNoteDelete";
+            this.btnNoteDelete.Size = new System.Drawing.Size(111, 23);
+            this.btnNoteDelete.TabIndex = 7;
+            this.btnNoteDelete.Text = "Delete";
+            this.btnNoteDelete.UseVisualStyleBackColor = true;
+            this.btnNoteDelete.Click += new System.EventHandler(this.btnNoteDelete_Click);
+            // 
+            // btnNoteClear
+            // 
+            this.btnNoteClear.Location = new System.Drawing.Point(290, 73);
+            this.btnNoteClear.Name = "btnNoteClear";
+            this.btnNoteClear.Size = new System.Drawing.Size(111, 23);
+            this.btnNoteClear.TabIndex = 6;
+            this.btnNoteClear.Text = "Clear";
+            this.btnNoteClear.UseVisualStyleBackColor = true;
+            this.btnNoteClear.Click += new System.EventHandler(this.btnNoteClear_Click);
+            // 
+            // btnNote3DNote
+            // 
+            this.btnNote3DNote.Location = new System.Drawing.Point(290, 29);
+            this.btnNote3DNote.Name = "btnNote3DNote";
+            this.btnNote3DNote.Size = new System.Drawing.Size(111, 23);
+            this.btnNote3DNote.TabIndex = 5;
+            this.btnNote3DNote.Text = "3D Note";
+            this.btnNote3DNote.UseVisualStyleBackColor = true;
+            this.btnNote3DNote.Click += new System.EventHandler(this.btnNote3DNote_Click);
+            // 
+            // btnNote2DNote
+            // 
+            this.btnNote2DNote.Location = new System.Drawing.Point(154, 29);
+            this.btnNote2DNote.Name = "btnNote2DNote";
+            this.btnNote2DNote.Size = new System.Drawing.Size(111, 23);
+            this.btnNote2DNote.TabIndex = 4;
+            this.btnNote2DNote.Text = "2D Note";
+            this.btnNote2DNote.UseVisualStyleBackColor = true;
+            this.btnNote2DNote.Click += new System.EventHandler(this.btnNote2DNote_Click);
+            // 
+            // btnNoteSurfaceNote
+            // 
+            this.btnNoteSurfaceNote.Location = new System.Drawing.Point(22, 29);
+            this.btnNoteSurfaceNote.Name = "btnNoteSurfaceNote";
+            this.btnNoteSurfaceNote.Size = new System.Drawing.Size(111, 23);
+            this.btnNoteSurfaceNote.TabIndex = 3;
+            this.btnNoteSurfaceNote.Text = "Surface Note";
+            this.btnNoteSurfaceNote.UseVisualStyleBackColor = true;
+            this.btnNoteSurfaceNote.Click += new System.EventHandler(this.btnNoteSurfaceNote_Click);
+            // 
             // groupBox13
             // 
             this.groupBox13.Controls.Add(this.label4);
@@ -1546,69 +1599,15 @@
             this.dgView.Size = new System.Drawing.Size(897, 191);
             this.dgView.TabIndex = 0;
             // 
-            // groupBox17
+            // btnShowHandle
             // 
-            this.groupBox17.Controls.Add(this.btnNoteDelete);
-            this.groupBox17.Controls.Add(this.btnNoteClear);
-            this.groupBox17.Controls.Add(this.btnNote3DNote);
-            this.groupBox17.Controls.Add(this.btnNote2DNote);
-            this.groupBox17.Controls.Add(this.btnNoteSurfaceNote);
-            this.groupBox17.Location = new System.Drawing.Point(6, 6);
-            this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(427, 121);
-            this.groupBox17.TabIndex = 1;
-            this.groupBox17.TabStop = false;
-            this.groupBox17.Text = "Note";
-            // 
-            // btnNoteSurfaceNote
-            // 
-            this.btnNoteSurfaceNote.Location = new System.Drawing.Point(22, 29);
-            this.btnNoteSurfaceNote.Name = "btnNoteSurfaceNote";
-            this.btnNoteSurfaceNote.Size = new System.Drawing.Size(111, 23);
-            this.btnNoteSurfaceNote.TabIndex = 3;
-            this.btnNoteSurfaceNote.Text = "Surface Note";
-            this.btnNoteSurfaceNote.UseVisualStyleBackColor = true;
-            this.btnNoteSurfaceNote.Click += new System.EventHandler(this.btnNoteSurfaceNote_Click);
-            // 
-            // btnNote2DNote
-            // 
-            this.btnNote2DNote.Location = new System.Drawing.Point(154, 29);
-            this.btnNote2DNote.Name = "btnNote2DNote";
-            this.btnNote2DNote.Size = new System.Drawing.Size(111, 23);
-            this.btnNote2DNote.TabIndex = 4;
-            this.btnNote2DNote.Text = "2D Note";
-            this.btnNote2DNote.UseVisualStyleBackColor = true;
-            this.btnNote2DNote.Click += new System.EventHandler(this.btnNote2DNote_Click);
-            // 
-            // btnNote3DNote
-            // 
-            this.btnNote3DNote.Location = new System.Drawing.Point(290, 29);
-            this.btnNote3DNote.Name = "btnNote3DNote";
-            this.btnNote3DNote.Size = new System.Drawing.Size(111, 23);
-            this.btnNote3DNote.TabIndex = 5;
-            this.btnNote3DNote.Text = "3D Note";
-            this.btnNote3DNote.UseVisualStyleBackColor = true;
-            this.btnNote3DNote.Click += new System.EventHandler(this.btnNote3DNote_Click);
-            // 
-            // btnNoteClear
-            // 
-            this.btnNoteClear.Location = new System.Drawing.Point(290, 73);
-            this.btnNoteClear.Name = "btnNoteClear";
-            this.btnNoteClear.Size = new System.Drawing.Size(111, 23);
-            this.btnNoteClear.TabIndex = 6;
-            this.btnNoteClear.Text = "Clear";
-            this.btnNoteClear.UseVisualStyleBackColor = true;
-            this.btnNoteClear.Click += new System.EventHandler(this.btnNoteClear_Click);
-            // 
-            // btnNoteDelete
-            // 
-            this.btnNoteDelete.Location = new System.Drawing.Point(22, 73);
-            this.btnNoteDelete.Name = "btnNoteDelete";
-            this.btnNoteDelete.Size = new System.Drawing.Size(111, 23);
-            this.btnNoteDelete.TabIndex = 7;
-            this.btnNoteDelete.Text = "Delete";
-            this.btnNoteDelete.UseVisualStyleBackColor = true;
-            this.btnNoteDelete.Click += new System.EventHandler(this.btnNoteDelete_Click);
+            this.btnShowHandle.Location = new System.Drawing.Point(253, 58);
+            this.btnShowHandle.Name = "btnShowHandle";
+            this.btnShowHandle.Size = new System.Drawing.Size(129, 23);
+            this.btnShowHandle.TabIndex = 21;
+            this.btnShowHandle.Text = "Show Handle";
+            this.btnShowHandle.UseVisualStyleBackColor = true;
+            this.btnShowHandle.Click += new System.EventHandler(this.btnShowHandle_Click);
             // 
             // FrmMain
             // 
@@ -1654,6 +1653,7 @@
             this.groupBox10.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.tpNote.ResumeLayout(false);
+            this.groupBox17.ResumeLayout(false);
             this.groupBox13.ResumeLayout(false);
             this.groupBox13.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numNoteBoxStrokeAlpha)).EndInit();
@@ -1665,7 +1665,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgView)).EndInit();
-            this.groupBox17.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1763,7 +1762,6 @@
         private System.Windows.Forms.CheckBox ckEnableDoubleClickFocusAndFit;
         private System.Windows.Forms.NumericUpDown numZoomRatio;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox ckShowHandle;
         private System.Windows.Forms.Button btnSetCenter;
         private System.Windows.Forms.Button btnGetCenter;
         private System.Windows.Forms.Label label7;
@@ -1806,6 +1804,7 @@
         private System.Windows.Forms.Button btnNote3DNote;
         private System.Windows.Forms.Button btnNote2DNote;
         private System.Windows.Forms.Button btnNoteSurfaceNote;
+        private System.Windows.Forms.Button btnShowHandle;
     }
 }
 
