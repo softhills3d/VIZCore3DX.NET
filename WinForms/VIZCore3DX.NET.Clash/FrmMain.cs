@@ -296,6 +296,8 @@ namespace VIZCore3DX.NET.ClashTest
         {
             if (!cbClashTestId.Items.Contains(clash.ID)) return;
 
+            vizcore3dx.Clash.ClearResultSymbol();
+
             if (_isClashTestMode)
             {
                 MessageBox.Show("간섭검사 진행 중에는 실행할 수 없습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -365,20 +367,10 @@ namespace VIZCore3DX.NET.ClashTest
                 , MessageBoxButtons.OK, MessageBoxIcon.Information
                 );
 
-            bool resultDataKind = true; // True : Assembly, False : Part
+            bool resultDataKind = false; // True : Assembly, False : Part
 
-            if (clash.TestKind != VIZCore3DX.NET.Data.ClashTest.ClashTestKind.GROUP_VS_MOVING_GROUP)
             {
                 resultItems = vizcore3dx.Clash.GetResultItem(
-                    clash
-                    , resultDataKind == true
-                    ? VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions.ASSEMBLY
-                    : VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions.PART
-                    );
-            }
-            else
-            {
-                resultItems = vizcore3dx.Clash.GetResultAllSubItem(
                     clash
                     , resultDataKind == true
                     ? VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions.ASSEMBLY
@@ -548,6 +540,29 @@ namespace VIZCore3DX.NET.ClashTest
                 }
             }
 
+        }
+
+        private void datagridviewInterferenceResult_SelectionChanged(object sender, EventArgs e)
+        {
+            if (datagridviewInterferenceResult.SelectedRows.Count == 0) return;
+
+            if (_isResultUpdating)
+                return;
+
+            int rowIndex = datagridviewInterferenceResult.SelectedRows[0].Index;
+
+            if (rowIndex >= 0 && rowIndex < _filteredResultItems.Count)
+            {
+                ClashTestResultItem item = _filteredResultItems[rowIndex] as ClashTestResultItem;
+
+                if (item != null)
+                {
+                    //vizcore3dx.View.ResetView();
+                    vizcore3dx.Clash.ClearResultSymbol();
+                    vizcore3dx.Clash.ShowResultSymbol(clash.ID, item, Color.FromArgb(100, 255, 0, 0), Color.FromArgb(100, 0, 0255), true, true, true);
+                    vizcore3dx.View.FlyToBoundingBox(item.Position1, item.Position2);
+                }
+            }
         }
     }
 }

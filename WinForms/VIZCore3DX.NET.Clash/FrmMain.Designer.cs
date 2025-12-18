@@ -39,6 +39,7 @@
             this.ckProximity = new System.Windows.Forms.CheckBox();
             this.ckClearance = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnDelete = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
@@ -64,7 +65,6 @@
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnDelete = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -142,6 +142,8 @@
             // ckIdentity
             // 
             this.ckIdentity.AutoSize = true;
+            this.ckIdentity.Checked = true;
+            this.ckIdentity.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckIdentity.Location = new System.Drawing.Point(232, 31);
             this.ckIdentity.Name = "ckIdentity";
             this.ckIdentity.Size = new System.Drawing.Size(48, 16);
@@ -153,6 +155,8 @@
             // ckClash
             // 
             this.ckClash.AutoSize = true;
+            this.ckClash.Checked = true;
+            this.ckClash.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckClash.Location = new System.Drawing.Point(178, 31);
             this.ckClash.Name = "ckClash";
             this.ckClash.Size = new System.Drawing.Size(48, 16);
@@ -164,6 +168,8 @@
             // ckContact
             // 
             this.ckContact.AutoSize = true;
+            this.ckContact.Checked = true;
+            this.ckContact.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckContact.Location = new System.Drawing.Point(124, 31);
             this.ckContact.Name = "ckContact";
             this.ckContact.Size = new System.Drawing.Size(48, 16);
@@ -175,6 +181,8 @@
             // ckProximity
             // 
             this.ckProximity.AutoSize = true;
+            this.ckProximity.Checked = true;
+            this.ckProximity.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckProximity.Location = new System.Drawing.Point(70, 31);
             this.ckProximity.Name = "ckProximity";
             this.ckProximity.Size = new System.Drawing.Size(48, 16);
@@ -186,6 +194,8 @@
             // ckClearance
             // 
             this.ckClearance.AutoSize = true;
+            this.ckClearance.Checked = true;
+            this.ckClearance.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckClearance.Location = new System.Drawing.Point(21, 31);
             this.ckClearance.Name = "ckClearance";
             this.ckClearance.Size = new System.Drawing.Size(48, 16);
@@ -206,6 +216,16 @@
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Clash";
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Location = new System.Drawing.Point(99, 20);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(73, 23);
+            this.btnDelete.TabIndex = 3;
+            this.btnDelete.Text = "Del";
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnExit
             // 
@@ -448,6 +468,7 @@
             this.datagridviewInterferenceResult.TabIndex = 0;
             this.datagridviewInterferenceResult.VirtualMode = true;
             this.datagridviewInterferenceResult.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.datagridviewInterferenceResult_CellValueNeeded);
+            this.datagridviewInterferenceResult.SelectionChanged += new System.EventHandler(this.datagridviewInterferenceResult_SelectionChanged);
             // 
             // group1NodeType
             // 
@@ -487,16 +508,6 @@
             this.Column5.HeaderText = "Direction";
             this.Column5.Name = "Column5";
             this.Column5.ReadOnly = true;
-            // 
-            // btnDelete
-            // 
-            this.btnDelete.Location = new System.Drawing.Point(99, 20);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(73, 23);
-            this.btnDelete.TabIndex = 3;
-            this.btnDelete.Text = "Del";
-            this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // FrmMain
             // 
