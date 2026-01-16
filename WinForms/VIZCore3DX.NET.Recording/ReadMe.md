@@ -28,3 +28,9 @@
 ## 요구 사항
 - .NET Framework 4.8
 - VIZCore3DX.NET 라이브러리
+- FFMpeg 화면 녹화 솔루션
+
+## FFMpeg 다운로드 방법
+- 사이트 : https://www.gyan.dev/ffmpeg/builds/
+- release builds 섹션
+- ffmpeg-release-essentials.7z 파일 다운로드
