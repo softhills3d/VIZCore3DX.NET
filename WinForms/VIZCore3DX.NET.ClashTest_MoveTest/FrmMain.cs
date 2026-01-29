@@ -309,7 +309,6 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             if (rbResultGroupingAssy.Checked) resultGroupingOptions = ResultGroupingOptions.ASSEMBLY;
             else resultGroupingOptions = ResultGroupingOptions.PART;
 
-            vizcore3dx.Clash.OnClashTestFinishedEvent += Clash_OnClashTestFinishedEvent;
             vizcore3dx.Clash.OnClashMoveTestReportFinished += Clash_OnClashMoveTestReportFinished;
 
             // 간섭검사 수행
@@ -347,17 +346,14 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         }
         
         /// <summary>
-        /// Clash Test 완료 이벤트
+        /// 이동 간섭 최종 완료 이벤트
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event Args</param>
-        private void Clash_OnClashTestFinishedEvent(object sender, VIZCore3DX.NET.Event.EventManager.ClashEventArgs e)
-        {
-            vizcore3dx.Clash.ShowResultSymbol(clash.ID, true, true);
-        }
-
         private void Clash_OnClashMoveTestReportFinished(object sender, VIZCore3DX.NET.Event.EventManager.ClashEventArgs e)
         {
+            vizcore3dx.Clash.ShowResultSymbol(clash.ID, true, true);
+
             _nodeNameCache.Clear();
 
             UpdatePathGridView();
