@@ -11,7 +11,8 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 |
 |---------|------|
 | **VIZCore3DX.NET.CameraDataSaver** | 3D 모델의 카메라 데이터를 저장하고 로드하여 동일한 뷰를 재현하는 예제 |
-| **VIZCore3DX.NET.Clash** | 3D 모델의 간섭(Clash) 검사를 수행하고 결과를 확인하는 예제 |
+| **VIZCore3DX.NET.ClashTest** | 3D 모델의 간섭(Clash) 검사를 수행하고 결과를 확인하는 예제 |
+| **VIZCore3DX.NET.ClashTest_MoveTest** | 3D 모델의 이동 간섭 검사(Clash Move Test)를 수행하고 결과를 확인하는 예제 |
 | **VIZCore3DX.NET.Demo** | VIZCore3DX.NET의 다양한 기능을 데모 형태로 시연하는 예제 |
 | **VIZCore3DX.NET.Recording** | 3D 뷰 화면을 녹화하여 동영상으로 저장하는 예제 (FFMpeg 필요) |
 | **VIZCore3DX.NET.Search** | 키워드를 사용하여 3D 모델의 노드를 검색하는 예제 |
