@@ -112,11 +112,14 @@ namespace VIZCore3DX.NET.SearchSpace
 
         private void Vizcore3dx_OnVIZCore3DXKeyDown(object sender, Event.EventManager.VIZCoreKeyDownEventArgs e)
         {
-            // 영역 선택이 완료되었을 때
-            if (vizcore3dx.View.SelectSpatialSpace != null)
+            if (e.KeyCode == Keys.Enter)
             {
-                // BoundBox 값 표시
-                SetBoundingBox(vizcore3dx.View.SelectSpatialSpace);
+                // 영역 선택이 완료되었을 때
+                if (vizcore3dx.View.SelectSpatialSpace != null)
+                {
+                    // BoundBox 값 표시
+                    SetBoundingBox(vizcore3dx.View.SelectSpatialSpace);
+                }
             }
         }
 
@@ -184,6 +187,7 @@ namespace VIZCore3DX.NET.SearchSpace
         private void SetBoundingBox(Data.BoundBox3D boundingBox)
         {
             if (boundingBox == null) return;
+            if (vizcore3dx.SelectionBox.Items.Count > 0) return;
 
             // 바운드 박스 설정
             BoundingBox = boundingBox;
