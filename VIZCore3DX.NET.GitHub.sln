@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Recording", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.ClashTest_MoveTest", "WinForms\VIZCore3DX.NET.ClashTest_MoveTest\VIZCore3DX.NET.ClashTest_MoveTest.csproj", "{FD37D066-4D1A-4514-B4F0-55D32168D5F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.SearchSpace", "WinForms\VIZCore3DX.NET.SearchSpace\VIZCore3DX.NET.SearchSpace.csproj", "{CAA4AFC2-0B95-44B6-B148-A7F9B396C848}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{FD37D066-4D1A-4514-B4F0-55D32168D5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD37D066-4D1A-4514-B4F0-55D32168D5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD37D066-4D1A-4514-B4F0-55D32168D5F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAA4AFC2-0B95-44B6-B148-A7F9B396C848}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAA4AFC2-0B95-44B6-B148-A7F9B396C848}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAA4AFC2-0B95-44B6-B148-A7F9B396C848}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAA4AFC2-0B95-44B6-B148-A7F9B396C848}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +99,7 @@ Global
 		{0FDCB17A-042C-4EAD-AAEF-90FF8060D7F2} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 		{C8D6FD36-7374-4814-90AD-FBE28DD8A647} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 		{FD37D066-4D1A-4514-B4F0-55D32168D5F7} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
+		{CAA4AFC2-0B95-44B6-B148-A7F9B396C848} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6F4C4F3-9324-4530-A853-29E8CDBED4B7}
