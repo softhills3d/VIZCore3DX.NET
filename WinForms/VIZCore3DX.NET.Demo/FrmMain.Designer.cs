@@ -45,6 +45,7 @@
             this.btnSelectedAllObjects = new System.Windows.Forms.Button();
             this.tpSection = new System.Windows.Forms.TabPage();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.btnShowHandle = new System.Windows.Forms.Button();
             this.txtCenterPosition = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -62,28 +63,6 @@
             this.btnAddSectionBox = new System.Windows.Forms.Button();
             this.btnUpdateSectionBoxSize = new System.Windows.Forms.Button();
             this.btnClearSection = new System.Windows.Forms.Button();
-            this.tpFrame = new System.Windows.Forms.TabPage();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
-            this.ckGridLabelZ = new System.Windows.Forms.CheckBox();
-            this.ckGridLabelY = new System.Windows.Forms.CheckBox();
-            this.ckGridLabelX = new System.Windows.Forms.CheckBox();
-            this.btnGridHideNum = new System.Windows.Forms.Button();
-            this.btnGridShowNum = new System.Windows.Forms.Button();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.btnGridColor = new System.Windows.Forms.Button();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.btnGetGridItemsZ = new System.Windows.Forms.Button();
-            this.btnGetGridItemsX = new System.Windows.Forms.Button();
-            this.btnHideFrame = new System.Windows.Forms.Button();
-            this.btnGetGridItemsY = new System.Windows.Forms.Button();
-            this.btnShowFrame = new System.Windows.Forms.Button();
-            this.btnOpenFrame = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.lvGridResult = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tpView = new System.Windows.Forms.TabPage();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -162,7 +141,6 @@
             this.txtModelTreeIndex = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgView = new System.Windows.Forms.DataGridView();
-            this.btnShowHandle = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -175,11 +153,6 @@
             this.groupBox5.SuspendLayout();
             this.tpSection.SuspendLayout();
             this.groupBox6.SuspendLayout();
-            this.tpFrame.SuspendLayout();
-            this.groupBox12.SuspendLayout();
-            this.groupBox11.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.tpView.SuspendLayout();
             this.groupBox16.SuspendLayout();
             this.groupBox14.SuspendLayout();
@@ -225,7 +198,6 @@
             this.tcMain.Controls.Add(this.tpModel);
             this.tcMain.Controls.Add(this.tpObjects);
             this.tcMain.Controls.Add(this.tpSection);
-            this.tcMain.Controls.Add(this.tpFrame);
             this.tcMain.Controls.Add(this.tpView);
             this.tcMain.Controls.Add(this.tpUDA);
             this.tcMain.Controls.Add(this.tpNote);
@@ -402,6 +374,16 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Section";
             // 
+            // btnShowHandle
+            // 
+            this.btnShowHandle.Location = new System.Drawing.Point(253, 58);
+            this.btnShowHandle.Name = "btnShowHandle";
+            this.btnShowHandle.Size = new System.Drawing.Size(129, 23);
+            this.btnShowHandle.TabIndex = 21;
+            this.btnShowHandle.Text = "Show Handle";
+            this.btnShowHandle.UseVisualStyleBackColor = true;
+            this.btnShowHandle.Click += new System.EventHandler(this.btnShowHandle_Click);
+            // 
             // txtCenterPosition
             // 
             this.txtCenterPosition.Location = new System.Drawing.Point(110, 293);
@@ -550,231 +532,6 @@
             this.btnClearSection.Text = "Clear";
             this.btnClearSection.UseVisualStyleBackColor = true;
             this.btnClearSection.Click += new System.EventHandler(this.btnClearSection_Click);
-            // 
-            // tpFrame
-            // 
-            this.tpFrame.Controls.Add(this.groupBox12);
-            this.tpFrame.Controls.Add(this.groupBox11);
-            this.tpFrame.Controls.Add(this.groupBox7);
-            this.tpFrame.Controls.Add(this.groupBox2);
-            this.tpFrame.Location = new System.Drawing.Point(4, 22);
-            this.tpFrame.Name = "tpFrame";
-            this.tpFrame.Padding = new System.Windows.Forms.Padding(3);
-            this.tpFrame.Size = new System.Drawing.Size(442, 708);
-            this.tpFrame.TabIndex = 3;
-            this.tpFrame.Text = "Grid";
-            this.tpFrame.UseVisualStyleBackColor = true;
-            // 
-            // groupBox12
-            // 
-            this.groupBox12.Controls.Add(this.ckGridLabelZ);
-            this.groupBox12.Controls.Add(this.ckGridLabelY);
-            this.groupBox12.Controls.Add(this.ckGridLabelX);
-            this.groupBox12.Controls.Add(this.btnGridHideNum);
-            this.groupBox12.Controls.Add(this.btnGridShowNum);
-            this.groupBox12.Location = new System.Drawing.Point(8, 220);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(428, 128);
-            this.groupBox12.TabIndex = 9;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "VIsible";
-            // 
-            // ckGridLabelZ
-            // 
-            this.ckGridLabelZ.AutoSize = true;
-            this.ckGridLabelZ.Checked = true;
-            this.ckGridLabelZ.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckGridLabelZ.Location = new System.Drawing.Point(243, 78);
-            this.ckGridLabelZ.Name = "ckGridLabelZ";
-            this.ckGridLabelZ.Size = new System.Drawing.Size(118, 16);
-            this.ckGridLabelZ.TabIndex = 8;
-            this.ckGridLabelZ.Text = "Z GridLine Label";
-            this.ckGridLabelZ.UseVisualStyleBackColor = true;
-            this.ckGridLabelZ.CheckedChanged += new System.EventHandler(this.ckGridLabelZ_CheckedChanged);
-            // 
-            // ckGridLabelY
-            // 
-            this.ckGridLabelY.AutoSize = true;
-            this.ckGridLabelY.Checked = true;
-            this.ckGridLabelY.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckGridLabelY.Location = new System.Drawing.Point(243, 56);
-            this.ckGridLabelY.Name = "ckGridLabelY";
-            this.ckGridLabelY.Size = new System.Drawing.Size(118, 16);
-            this.ckGridLabelY.TabIndex = 7;
-            this.ckGridLabelY.Text = "Y GridLine Label";
-            this.ckGridLabelY.UseVisualStyleBackColor = true;
-            this.ckGridLabelY.CheckedChanged += new System.EventHandler(this.ckGridLabelY_CheckedChanged);
-            // 
-            // ckGridLabelX
-            // 
-            this.ckGridLabelX.AutoSize = true;
-            this.ckGridLabelX.Checked = true;
-            this.ckGridLabelX.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckGridLabelX.Location = new System.Drawing.Point(243, 34);
-            this.ckGridLabelX.Name = "ckGridLabelX";
-            this.ckGridLabelX.Size = new System.Drawing.Size(118, 16);
-            this.ckGridLabelX.TabIndex = 6;
-            this.ckGridLabelX.Text = "X GridLine Label";
-            this.ckGridLabelX.UseVisualStyleBackColor = true;
-            this.ckGridLabelX.CheckedChanged += new System.EventHandler(this.ckGridLabelX_CheckedChanged);
-            // 
-            // btnGridHideNum
-            // 
-            this.btnGridHideNum.Location = new System.Drawing.Point(34, 59);
-            this.btnGridHideNum.Name = "btnGridHideNum";
-            this.btnGridHideNum.Size = new System.Drawing.Size(128, 23);
-            this.btnGridHideNum.TabIndex = 5;
-            this.btnGridHideNum.Text = "Hide Number";
-            this.btnGridHideNum.UseVisualStyleBackColor = true;
-            this.btnGridHideNum.Click += new System.EventHandler(this.btnGridHideNum_Click);
-            // 
-            // btnGridShowNum
-            // 
-            this.btnGridShowNum.Location = new System.Drawing.Point(34, 30);
-            this.btnGridShowNum.Name = "btnGridShowNum";
-            this.btnGridShowNum.Size = new System.Drawing.Size(128, 23);
-            this.btnGridShowNum.TabIndex = 1;
-            this.btnGridShowNum.Text = "Show Number";
-            this.btnGridShowNum.UseVisualStyleBackColor = true;
-            this.btnGridShowNum.Click += new System.EventHandler(this.btnGridShowNum_Click);
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.Controls.Add(this.btnGridColor);
-            this.groupBox11.Location = new System.Drawing.Point(8, 139);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(428, 75);
-            this.groupBox11.TabIndex = 8;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Option";
-            // 
-            // btnGridColor
-            // 
-            this.btnGridColor.Location = new System.Drawing.Point(34, 31);
-            this.btnGridColor.Name = "btnGridColor";
-            this.btnGridColor.Size = new System.Drawing.Size(91, 23);
-            this.btnGridColor.TabIndex = 0;
-            this.btnGridColor.Text = "Grid Color";
-            this.btnGridColor.UseVisualStyleBackColor = true;
-            this.btnGridColor.Click += new System.EventHandler(this.btnGridColor_Click);
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.btnGetGridItemsZ);
-            this.groupBox7.Controls.Add(this.btnGetGridItemsX);
-            this.groupBox7.Controls.Add(this.btnHideFrame);
-            this.groupBox7.Controls.Add(this.btnGetGridItemsY);
-            this.groupBox7.Controls.Add(this.btnShowFrame);
-            this.groupBox7.Controls.Add(this.btnOpenFrame);
-            this.groupBox7.Location = new System.Drawing.Point(8, 7);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(428, 126);
-            this.groupBox7.TabIndex = 7;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Grid";
-            // 
-            // btnGetGridItemsZ
-            // 
-            this.btnGetGridItemsZ.Location = new System.Drawing.Point(207, 81);
-            this.btnGetGridItemsZ.Name = "btnGetGridItemsZ";
-            this.btnGetGridItemsZ.Size = new System.Drawing.Size(170, 23);
-            this.btnGetGridItemsZ.TabIndex = 5;
-            this.btnGetGridItemsZ.Text = "Z - GridItems";
-            this.btnGetGridItemsZ.UseVisualStyleBackColor = true;
-            this.btnGetGridItemsZ.Click += new System.EventHandler(this.btnGetGridItemsZ_Click);
-            // 
-            // btnGetGridItemsX
-            // 
-            this.btnGetGridItemsX.Location = new System.Drawing.Point(207, 23);
-            this.btnGetGridItemsX.Name = "btnGetGridItemsX";
-            this.btnGetGridItemsX.Size = new System.Drawing.Size(170, 23);
-            this.btnGetGridItemsX.TabIndex = 3;
-            this.btnGetGridItemsX.Text = "X - GridItems";
-            this.btnGetGridItemsX.UseVisualStyleBackColor = true;
-            this.btnGetGridItemsX.Click += new System.EventHandler(this.btnGetGridItemsX_Click);
-            // 
-            // btnHideFrame
-            // 
-            this.btnHideFrame.Location = new System.Drawing.Point(34, 81);
-            this.btnHideFrame.Name = "btnHideFrame";
-            this.btnHideFrame.Size = new System.Drawing.Size(91, 23);
-            this.btnHideFrame.TabIndex = 2;
-            this.btnHideFrame.Text = "Hide";
-            this.btnHideFrame.UseVisualStyleBackColor = true;
-            this.btnHideFrame.Click += new System.EventHandler(this.btnHideFrame_Click);
-            // 
-            // btnGetGridItemsY
-            // 
-            this.btnGetGridItemsY.Location = new System.Drawing.Point(207, 52);
-            this.btnGetGridItemsY.Name = "btnGetGridItemsY";
-            this.btnGetGridItemsY.Size = new System.Drawing.Size(170, 23);
-            this.btnGetGridItemsY.TabIndex = 4;
-            this.btnGetGridItemsY.Text = "Y - GridItems";
-            this.btnGetGridItemsY.UseVisualStyleBackColor = true;
-            this.btnGetGridItemsY.Click += new System.EventHandler(this.btnGetGridItemsY_Click);
-            // 
-            // btnShowFrame
-            // 
-            this.btnShowFrame.Location = new System.Drawing.Point(34, 52);
-            this.btnShowFrame.Name = "btnShowFrame";
-            this.btnShowFrame.Size = new System.Drawing.Size(91, 23);
-            this.btnShowFrame.TabIndex = 1;
-            this.btnShowFrame.Text = "Show";
-            this.btnShowFrame.UseVisualStyleBackColor = true;
-            this.btnShowFrame.Click += new System.EventHandler(this.btnShowFrame_Click);
-            // 
-            // btnOpenFrame
-            // 
-            this.btnOpenFrame.Location = new System.Drawing.Point(34, 23);
-            this.btnOpenFrame.Name = "btnOpenFrame";
-            this.btnOpenFrame.Size = new System.Drawing.Size(91, 23);
-            this.btnOpenFrame.TabIndex = 0;
-            this.btnOpenFrame.Text = "Open";
-            this.btnOpenFrame.UseVisualStyleBackColor = true;
-            this.btnOpenFrame.Click += new System.EventHandler(this.btnOpenFrame_Click);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.lvGridResult);
-            this.groupBox2.Location = new System.Drawing.Point(8, 354);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(428, 346);
-            this.groupBox2.TabIndex = 6;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Result";
-            // 
-            // lvGridResult
-            // 
-            this.lvGridResult.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3,
-            this.columnHeader4});
-            this.lvGridResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lvGridResult.GridLines = true;
-            this.lvGridResult.HideSelection = false;
-            this.lvGridResult.Location = new System.Drawing.Point(3, 17);
-            this.lvGridResult.Name = "lvGridResult";
-            this.lvGridResult.Size = new System.Drawing.Size(422, 326);
-            this.lvGridResult.TabIndex = 6;
-            this.lvGridResult.UseCompatibleStateImageBehavior = false;
-            this.lvGridResult.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Grid ID";
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Axis";
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "Label";
-            // 
-            // columnHeader4
-            // 
-            this.columnHeader4.Text = "Offset";
             // 
             // tpView
             // 
@@ -1599,16 +1356,6 @@
             this.dgView.Size = new System.Drawing.Size(897, 191);
             this.dgView.TabIndex = 0;
             // 
-            // btnShowHandle
-            // 
-            this.btnShowHandle.Location = new System.Drawing.Point(253, 58);
-            this.btnShowHandle.Name = "btnShowHandle";
-            this.btnShowHandle.Size = new System.Drawing.Size(129, 23);
-            this.btnShowHandle.TabIndex = 21;
-            this.btnShowHandle.Text = "Show Handle";
-            this.btnShowHandle.UseVisualStyleBackColor = true;
-            this.btnShowHandle.Click += new System.EventHandler(this.btnShowHandle_Click);
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1632,12 +1379,6 @@
             this.tpSection.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
-            this.tpFrame.ResumeLayout(false);
-            this.groupBox12.ResumeLayout(false);
-            this.groupBox12.PerformLayout();
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
             this.tpView.ResumeLayout(false);
             this.groupBox16.ResumeLayout(false);
             this.groupBox16.PerformLayout();
@@ -1679,7 +1420,6 @@
         private System.Windows.Forms.Button btnAddModels;
         private System.Windows.Forms.Button btnOpenModel;
         private System.Windows.Forms.TabPage tpSection;
-        private System.Windows.Forms.TabPage tpFrame;
         private System.Windows.Forms.TabPage tpView;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.DataGridView dgView;
@@ -1688,12 +1428,6 @@
         private System.Windows.Forms.Button btnSelectedTopObjects;
         private System.Windows.Forms.Button btnAddSectionBox;
         private System.Windows.Forms.Button btnClearSection;
-        private System.Windows.Forms.Button btnOpenFrame;
-        private System.Windows.Forms.Button btnHideFrame;
-        private System.Windows.Forms.Button btnShowFrame;
-        private System.Windows.Forms.Button btnGetGridItemsZ;
-        private System.Windows.Forms.Button btnGetGridItemsY;
-        private System.Windows.Forms.Button btnGetGridItemsX;
         private System.Windows.Forms.Button btnModelBoundBox;
         private System.Windows.Forms.Button btnUpdateSectionBoxSize;
         private System.Windows.Forms.Button btnXrayDisable;
@@ -1718,12 +1452,6 @@
         private System.Windows.Forms.TextBox txtUDAValue1;
         private System.Windows.Forms.TextBox txtUDAKey1;
         private System.Windows.Forms.Button btnUDANodes;
-        private System.Windows.Forms.ListView lvGridResult;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ListView lvUDAResult;
         private System.Windows.Forms.ColumnHeader columnHeader5;
@@ -1732,20 +1460,11 @@
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.GroupBox groupBox11;
-        private System.Windows.Forms.Button btnGridColor;
-        private System.Windows.Forms.Button btnGridShowNum;
-        private System.Windows.Forms.GroupBox groupBox12;
-        private System.Windows.Forms.CheckBox ckGridLabelZ;
-        private System.Windows.Forms.CheckBox ckGridLabelY;
-        private System.Windows.Forms.CheckBox ckGridLabelX;
-        private System.Windows.Forms.Button btnGridHideNum;
         private System.Windows.Forms.TabPage tpNote;
         private System.Windows.Forms.GroupBox groupBox13;
         private System.Windows.Forms.Button btnNoteBoxFillColor;

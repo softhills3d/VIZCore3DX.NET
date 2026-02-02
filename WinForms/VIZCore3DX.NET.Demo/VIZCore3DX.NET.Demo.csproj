@@ -50,7 +50,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VIZCore3DX.NET, Version=1.0.24.626, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VIZCore3DX.NET, Version=1.1.26.202, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
     </Reference>
