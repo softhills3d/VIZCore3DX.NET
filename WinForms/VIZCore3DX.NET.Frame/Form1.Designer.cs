@@ -35,6 +35,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnClearFrameLines = new System.Windows.Forms.Button();
             this.btnToggleFrameLineEnabled = new System.Windows.Forms.Button();
             this.rbZAxis = new System.Windows.Forms.RadioButton();
             this.rbYAxis = new System.Windows.Forms.RadioButton();
@@ -48,6 +49,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnClear = new System.Windows.Forms.Button();
             this.btnHasFrame = new System.Windows.Forms.Button();
             this.btnImportFrame = new System.Windows.Forms.Button();
             this.btnExportFrame = new System.Windows.Forms.Button();
@@ -55,8 +57,6 @@
             this.btnOpenTribonFrame = new System.Windows.Forms.Button();
             this.btnOpenAMFrame = new System.Windows.Forms.Button();
             this.btnOpenModel = new System.Windows.Forms.Button();
-            this.btnClear = new System.Windows.Forms.Button();
-            this.btnClearFrameLines = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -81,7 +81,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.btnOpenModel);
             this.splitContainer1.Size = new System.Drawing.Size(1231, 786);
-            this.splitContainer1.SplitterDistance = 410;
+            this.splitContainer1.SplitterDistance = 340;
             this.splitContainer1.TabIndex = 0;
             // 
             // groupBox4
@@ -89,7 +89,7 @@
             this.groupBox4.Controls.Add(this.lvFrameLine);
             this.groupBox4.Location = new System.Drawing.Point(12, 496);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(375, 148);
+            this.groupBox4.Size = new System.Drawing.Size(318, 148);
             this.groupBox4.TabIndex = 5;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Frame Line List";
@@ -104,7 +104,7 @@
             this.lvFrameLine.HideSelection = false;
             this.lvFrameLine.Location = new System.Drawing.Point(3, 17);
             this.lvFrameLine.Name = "lvFrameLine";
-            this.lvFrameLine.Size = new System.Drawing.Size(369, 128);
+            this.lvFrameLine.Size = new System.Drawing.Size(312, 128);
             this.lvFrameLine.TabIndex = 0;
             this.lvFrameLine.UseCompatibleStateImageBehavior = false;
             this.lvFrameLine.View = System.Windows.Forms.View.Details;
@@ -133,10 +133,20 @@
             this.groupBox3.Controls.Add(this.rbXAxis);
             this.groupBox3.Location = new System.Drawing.Point(15, 382);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(375, 103);
+            this.groupBox3.Size = new System.Drawing.Size(315, 103);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Frame Axis List";
+            // 
+            // btnClearFrameLines
+            // 
+            this.btnClearFrameLines.Location = new System.Drawing.Point(6, 71);
+            this.btnClearFrameLines.Name = "btnClearFrameLines";
+            this.btnClearFrameLines.Size = new System.Drawing.Size(117, 23);
+            this.btnClearFrameLines.TabIndex = 4;
+            this.btnClearFrameLines.Text = "ClearFrameLines";
+            this.btnClearFrameLines.UseVisualStyleBackColor = true;
+            this.btnClearFrameLines.Click += new System.EventHandler(this.btnClearFrameLines_Click);
             // 
             // btnToggleFrameLineEnabled
             // 
@@ -151,7 +161,7 @@
             // rbZAxis
             // 
             this.rbZAxis.AutoSize = true;
-            this.rbZAxis.Location = new System.Drawing.Point(263, 20);
+            this.rbZAxis.Location = new System.Drawing.Point(177, 20);
             this.rbZAxis.Name = "rbZAxis";
             this.rbZAxis.Size = new System.Drawing.Size(60, 16);
             this.rbZAxis.TabIndex = 2;
@@ -162,7 +172,7 @@
             // rbYAxis
             // 
             this.rbYAxis.AutoSize = true;
-            this.rbYAxis.Location = new System.Drawing.Point(139, 20);
+            this.rbYAxis.Location = new System.Drawing.Point(96, 20);
             this.rbYAxis.Name = "rbYAxis";
             this.rbYAxis.Size = new System.Drawing.Size(60, 16);
             this.rbYAxis.TabIndex = 1;
@@ -192,7 +202,7 @@
             this.groupBox2.Controls.Add(this.lvFrame);
             this.groupBox2.Location = new System.Drawing.Point(15, 230);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(375, 127);
+            this.groupBox2.Size = new System.Drawing.Size(315, 127);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Frame List";
@@ -231,7 +241,7 @@
             // 
             this.btnToggleFrameIsVisible.Location = new System.Drawing.Point(115, 20);
             this.btnToggleFrameIsVisible.Name = "btnToggleFrameIsVisible";
-            this.btnToggleFrameIsVisible.Size = new System.Drawing.Size(114, 23);
+            this.btnToggleFrameIsVisible.Size = new System.Drawing.Size(176, 23);
             this.btnToggleFrameIsVisible.TabIndex = 1;
             this.btnToggleFrameIsVisible.Text = "Toggle IsVisible";
             this.btnToggleFrameIsVisible.UseVisualStyleBackColor = true;
@@ -262,7 +272,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox1.Location = new System.Drawing.Point(3, 659);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(404, 121);
+            this.richTextBox1.Size = new System.Drawing.Size(334, 121);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
@@ -277,9 +287,19 @@
             this.groupBox1.Controls.Add(this.btnOpenAMFrame);
             this.groupBox1.Location = new System.Drawing.Point(12, 41);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(375, 163);
+            this.groupBox1.Size = new System.Drawing.Size(318, 163);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(165, 107);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(74, 23);
+            this.btnClear.TabIndex = 6;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnHasFrame
             // 
@@ -293,7 +313,7 @@
             // 
             // btnImportFrame
             // 
-            this.btnImportFrame.Location = new System.Drawing.Point(142, 79);
+            this.btnImportFrame.Location = new System.Drawing.Point(165, 78);
             this.btnImportFrame.Name = "btnImportFrame";
             this.btnImportFrame.Size = new System.Drawing.Size(129, 23);
             this.btnImportFrame.TabIndex = 4;
@@ -323,7 +343,7 @@
             // 
             // btnOpenTribonFrame
             // 
-            this.btnOpenTribonFrame.Location = new System.Drawing.Point(142, 21);
+            this.btnOpenTribonFrame.Location = new System.Drawing.Point(165, 20);
             this.btnOpenTribonFrame.Name = "btnOpenTribonFrame";
             this.btnOpenTribonFrame.Size = new System.Drawing.Size(129, 23);
             this.btnOpenTribonFrame.TabIndex = 1;
@@ -350,26 +370,6 @@
             this.btnOpenModel.Text = "Open Model";
             this.btnOpenModel.UseVisualStyleBackColor = true;
             this.btnOpenModel.Click += new System.EventHandler(this.btnOpenModel_Click);
-            // 
-            // btnClear
-            // 
-            this.btnClear.Location = new System.Drawing.Point(101, 108);
-            this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(74, 23);
-            this.btnClear.TabIndex = 6;
-            this.btnClear.Text = "Clear";
-            this.btnClear.UseVisualStyleBackColor = true;
-            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
-            // 
-            // btnClearFrameLines
-            // 
-            this.btnClearFrameLines.Location = new System.Drawing.Point(6, 71);
-            this.btnClearFrameLines.Name = "btnClearFrameLines";
-            this.btnClearFrameLines.Size = new System.Drawing.Size(117, 23);
-            this.btnClearFrameLines.TabIndex = 4;
-            this.btnClearFrameLines.Text = "ClearFrameLines";
-            this.btnClearFrameLines.UseVisualStyleBackColor = true;
-            this.btnClearFrameLines.Click += new System.EventHandler(this.btnClearFrameLines_Click);
             // 
             // Form1
             // 
