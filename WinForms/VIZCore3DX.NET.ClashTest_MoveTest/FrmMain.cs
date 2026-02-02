@@ -153,6 +153,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                 return;
             }
 
+            // 여기서 지정한 nodesA는 간접 검사 추가 시 GroupA에 할당 됩니다.
             nodesA = nodes;
 
             nodesA[0].SetColor(Color.Black);
@@ -177,6 +178,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                 return;
             }
 
+            // 여기서 지정한 nodesB는 간접 검사 추가 시 GroupB에 할당 됩니다.
             nodesB = nodes;
 
             nodesB[0].SetColor(Color.Green);
@@ -193,19 +195,24 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <param name="e">Event Args</param>
         private void btnAdd_Click(object sender, EventArgs e)
         {
+            // 간접 검사 추가
             clash = new VIZCore3DX.NET.Data.ClashTest();
 
+            // 이동 간섭이므로 GROUP_VS_MOVING_GROUP으로 간섭 종류 설정
             clash.TestKind = VIZCore3DX.NET.Data.ClashTest.ClashTestKind.GROUP_VS_MOVING_GROUP;
 
+            // GroupA와 GroupB(이동할 그룹) 설정
             clash.GroupA.AddRange(nodesA);
             clash.GroupB.AddRange(nodesB);
 
+            // 이동간섭 옵션들에 따라 설정
             clash.UseClearanceValue = ckUseClearanceValue.Checked;
             clash.ClearanceValue = (float)numClearanceValue.Value;
             clash.UseRangeValue = ckUseRangeValue.Checked;
             clash.RangeValue = (float)numRangeValue.Value;
             clash.PenetrationTolerance = (float)numPenetrationTolerance.Value;
 
+            // 결과 유형이 파트인지 어셈블리인지 설정
             vizcore3dx.Clash.IsAssembly = true; // True : Assembly, False : Part
 
             if (clash.GroupA.Count == 0 || clash.GroupB.Count == 0)
@@ -289,6 +296,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <param name="e">Event Args</param>
         private async void btnStart_Click(object sender, EventArgs e)
         {
+            // 간섭검사 결과를 그룹화 하기 위한 옵션 ( 파트 or 어셈블리 )
             ResultGroupingOptions resultGroupingOptions;
 
             if (!cbClashTestId.Items.Contains(clash.ID)) return;
@@ -309,6 +317,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             if (rbResultGroupingAssy.Checked) resultGroupingOptions = ResultGroupingOptions.ASSEMBLY;
             else resultGroupingOptions = ResultGroupingOptions.PART;
 
+            // 이동 간섭 검사가 끝났을 때 실행하는 이벤트 ( 결과 보여주기 등 )
             vizcore3dx.Clash.OnClashMoveTestReportFinished += Clash_OnClashMoveTestReportFinished;
 
             // 간섭검사 수행
@@ -322,7 +331,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         }
 
         /// <summary>
-        /// Clash Test 종료
+        /// Clash Test Clear
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event Args</param>
@@ -352,12 +361,15 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <param name="e">Event Args</param>
         private void Clash_OnClashMoveTestReportFinished(object sender, VIZCore3DX.NET.Event.EventManager.ClashEventArgs e)
         {
+            // 이동 간섭 검사가 완료되면 결과를 보여줍니다.
             vizcore3dx.Clash.ShowResultSymbol(clash.ID, true, true);
 
             _nodeNameCache.Clear();
 
+            // 이동 간섭 검사 경로를 그리드 뷰에 넣어줍니다.
             UpdatePathGridView();
 
+            // 간섭검사가 끝났으므로 false로 변경
             _isClashTestMode = false;
         }
 
@@ -367,9 +379,11 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <param name="pathItems"></param>
         private void UpdatePathGridView()
         {
+            // 이동 경로 데이터 그리드 뷰 설정
             datagridviewInterferencePath.AutoGenerateColumns = false;
             datagridviewInterferencePath.Rows.Clear();
 
+            // 이동 경로를 문자열 배열에 추가
             for (int i = 0; i < clash.MoveTest.Count; i++) {
                 string[] row = new string[] {
                     clash.MoveTest[i].TestID.ToString(),
@@ -380,8 +394,10 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                     clash.MoveTest[i].MoveTestResult.Count.ToString()
                 };
 
+                // 이동 경로 그리드뷰에 해당 배열 삽입
                 int rowIndex = datagridviewInterferencePath.Rows.Add(row);
 
+                // 이동 경로 순번(ID)를 가져올 수 있게 Tag에 해당 ID를 등록
                 datagridviewInterferencePath.Rows[rowIndex].Tag = clash.MoveTest[i].ID;
             }
         }
@@ -404,23 +420,27 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         }
 
         /// <summary>
-        /// Clash Test 결과 그리드 뷰 갱신
+        /// 선택된 경로에 알맞는 결과 그리드 뷰 갱신
         /// </summary>
         /// <param name="pathId"></param>
         private void UpdateResultGridView(object id)
         {
+            // 결과 데이터 그리드 뷰 설정
             datagridviewInterferenceResult.Rows.Clear();
             vizcore3dx.Clash.ClearResultSymbol();
 
             int filterID = (int)id;
 
+            // 선택된 패스에 맞는 결과데이터를 찾아서 item 변수에 넣어줍니다.
             var item = clash.MoveTest.Find(x => x.ID == filterID);
 
             // 찾는 ID가 없으면 함수 종료
             if (item == null) return;
 
+            // 선택된 이동 경로 항목의 위치로 Group B를 이동
             clash.GroupB[0].Transform(item.Matrix);
 
+            // 간섭검사 결과 명칭을 치환
             foreach (var result in item.MoveTestResult)
             {
                 bool filter = false;
@@ -476,12 +496,14 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
 
                 if (filter) continue;
 
+                // 이동 경로 항목에 대한 결과 값들을 담을 변수
                 string groupA = GetNodeName(result.NodeA);
                 string groupB = GetNodeName(result.NodeB);
                 string distance = result.Distance.ToString("0.#######");
                 string position = result.Position1.ToString();
                 string direction = result.Direction.ToString();
 
+                // 결과값들을 담을 문자열 배열
                 string[] row = new string[] {
                     gridCount++.ToString(),
                     groupA,
@@ -492,8 +514,10 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                     direction
                 };
 
+                // 알맞는 결과값들을 데이터 그리드에 삽입
                 datagridviewInterferenceResult.Rows.Add(row);
 
+                // 선택된 이동경로에 저장된 결과 심볼을 보여줌
                 vizcore3dx.Clash.ShowResultSymbol(clash.ID, result, true, true);
             }
         }
@@ -520,6 +544,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         {
             if (clash == null) return;
 
+            // 이동 검사 경로를 설정합니다.
             vizcore3dx.Clash.AddTestPath(clash,
                 new Vector3D((float)numDistanceX.Value, (float)numDistanceY.Value, (float)numDistanceZ.Value),
                 (float)numDegreeX.Value, (float)numDegreeY.Value, (float)numDegreeZ.Value);
@@ -529,6 +554,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
 
         private void btnPathClear_Click(object sender, EventArgs e)
         {
+            // 이동 검사 경로를 Clear 합니다.
             vizcore3dx.Clash.ClearTestPath(clash);
 
             MessageBox.Show("이동 Path 전체 삭제 완료했습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -538,7 +564,9 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         {
             if (clash == null) return;
 
+            // Group B의 위치를 초기화
             clash.GroupB[0].ResetTransform();
+            // 선택한 ID에 해당하는 간섭검사 결과를 보여줍니다.
             vizcore3dx.Clash.ShowResultSymbol(clash.ID, true, true);
         }
     }
