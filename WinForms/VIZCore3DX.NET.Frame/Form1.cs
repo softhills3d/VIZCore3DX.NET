@@ -235,6 +235,20 @@ namespace VIZCore3DX.NET.Frame
             Log($"HasFrame: {vizcore3dx.Frame.HasFrame}");
         }
 
+        private void btnShowAllFrames_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            
+            vizcore3dx.Frame.Visible = true;
+        }
+
+        private void btnHideAllFrames_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            vizcore3dx.Frame.Visible = false;
+        }
+
         private void btnClear_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;

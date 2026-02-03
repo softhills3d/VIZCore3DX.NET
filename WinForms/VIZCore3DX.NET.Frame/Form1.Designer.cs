@@ -57,6 +57,8 @@
             this.btnOpenTribonFrame = new System.Windows.Forms.Button();
             this.btnOpenAMFrame = new System.Windows.Forms.Button();
             this.btnOpenModel = new System.Windows.Forms.Button();
+            this.btnShowAllFrames = new System.Windows.Forms.Button();
+            this.btnHideAllFrames = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -278,6 +280,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnHideAllFrames);
+            this.groupBox1.Controls.Add(this.btnShowAllFrames);
             this.groupBox1.Controls.Add(this.btnClear);
             this.groupBox1.Controls.Add(this.btnHasFrame);
             this.groupBox1.Controls.Add(this.btnImportFrame);
@@ -371,6 +375,26 @@
             this.btnOpenModel.UseVisualStyleBackColor = true;
             this.btnOpenModel.Click += new System.EventHandler(this.btnOpenModel_Click);
             // 
+            // btnShowAllFrames
+            // 
+            this.btnShowAllFrames.Location = new System.Drawing.Point(7, 134);
+            this.btnShowAllFrames.Name = "btnShowAllFrames";
+            this.btnShowAllFrames.Size = new System.Drawing.Size(126, 23);
+            this.btnShowAllFrames.TabIndex = 7;
+            this.btnShowAllFrames.Text = "Show All Frames";
+            this.btnShowAllFrames.UseVisualStyleBackColor = true;
+            this.btnShowAllFrames.Click += new System.EventHandler(this.btnShowAllFrames_Click);
+            // 
+            // btnHideAllFrames
+            // 
+            this.btnHideAllFrames.Location = new System.Drawing.Point(165, 134);
+            this.btnHideAllFrames.Name = "btnHideAllFrames";
+            this.btnHideAllFrames.Size = new System.Drawing.Size(126, 23);
+            this.btnHideAllFrames.TabIndex = 8;
+            this.btnHideAllFrames.Text = "Hide All Frames";
+            this.btnHideAllFrames.UseVisualStyleBackColor = true;
+            this.btnHideAllFrames.Click += new System.EventHandler(this.btnHideAllFrames_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -422,6 +446,8 @@
         private System.Windows.Forms.Button btnHasFrame;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnClearFrameLines;
+        private System.Windows.Forms.Button btnHideAllFrames;
+        private System.Windows.Forms.Button btnShowAllFrames;
     }
 }
 
