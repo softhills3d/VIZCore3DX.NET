@@ -53,6 +53,10 @@ namespace VIZCore3DX.NET.Frame
 
             InitializeVIZCore3DX();
             InitializeVIZCore3DXEvent();
+
+            // 버튼 초기값 설정
+            Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
+            btnFrameLineColor.BackColor = frameStyle.FrameLineStrokeColor;
         }
 
         private void InitializeVIZCore3DXEvent()
@@ -238,6 +242,7 @@ namespace VIZCore3DX.NET.Frame
         private void btnShowAllFrames_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
             
             vizcore3dx.Frame.Visible = true;
         }
@@ -245,8 +250,29 @@ namespace VIZCore3DX.NET.Frame
         private void btnHideAllFrames_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
 
             vizcore3dx.Frame.Visible = false;
+        }
+
+        private void btnFrameLineColor_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (vizcore3dx.Frame.HasFrame == false) return;
+
+            ColorDialog dlg = new ColorDialog();
+            dlg.AllowFullOpen = true;
+            dlg.ShowHelp = true;
+            dlg.Color = btnFrameLineColor.BackColor;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            btnFrameLineColor.BackColor = dlg.Color;
+
+            Data.FrameStyle frameStyle = vizcore3dx.Frame.GetStyle();
+
+            frameStyle.FrameLineStrokeColor = dlg.Color;
+
+            vizcore3dx.Frame.SetStyle(frameStyle);
         }
 
         private void btnClear_Click(object sender, EventArgs e)

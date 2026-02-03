@@ -59,6 +59,7 @@
             this.btnOpenModel = new System.Windows.Forms.Button();
             this.btnShowAllFrames = new System.Windows.Forms.Button();
             this.btnHideAllFrames = new System.Windows.Forms.Button();
+            this.btnFrameLineColor = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -82,14 +83,14 @@
             this.splitContainer1.Panel1.Controls.Add(this.richTextBox1);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.btnOpenModel);
-            this.splitContainer1.Size = new System.Drawing.Size(1231, 786);
+            this.splitContainer1.Size = new System.Drawing.Size(1231, 836);
             this.splitContainer1.SplitterDistance = 340;
             this.splitContainer1.TabIndex = 0;
             // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.lvFrameLine);
-            this.groupBox4.Location = new System.Drawing.Point(12, 496);
+            this.groupBox4.Location = new System.Drawing.Point(15, 541);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(318, 148);
             this.groupBox4.TabIndex = 5;
@@ -133,7 +134,7 @@
             this.groupBox3.Controls.Add(this.rbZAxis);
             this.groupBox3.Controls.Add(this.rbYAxis);
             this.groupBox3.Controls.Add(this.rbXAxis);
-            this.groupBox3.Location = new System.Drawing.Point(15, 382);
+            this.groupBox3.Location = new System.Drawing.Point(15, 420);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(315, 103);
             this.groupBox3.TabIndex = 4;
@@ -202,9 +203,9 @@
             this.groupBox2.Controls.Add(this.btnToggleXYPlaneEnabled);
             this.groupBox2.Controls.Add(this.btnToggleFrameIsVisible);
             this.groupBox2.Controls.Add(this.lvFrame);
-            this.groupBox2.Location = new System.Drawing.Point(15, 230);
+            this.groupBox2.Location = new System.Drawing.Point(15, 260);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(315, 127);
+            this.groupBox2.Size = new System.Drawing.Size(315, 142);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Frame List";
@@ -272,7 +273,7 @@
             // 
             this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.Location = new System.Drawing.Point(3, 659);
+            this.richTextBox1.Location = new System.Drawing.Point(3, 709);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(334, 121);
             this.richTextBox1.TabIndex = 2;
@@ -280,6 +281,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.btnFrameLineColor);
             this.groupBox1.Controls.Add(this.btnHideAllFrames);
             this.groupBox1.Controls.Add(this.btnShowAllFrames);
             this.groupBox1.Controls.Add(this.btnClear);
@@ -291,7 +293,7 @@
             this.groupBox1.Controls.Add(this.btnOpenAMFrame);
             this.groupBox1.Location = new System.Drawing.Point(12, 41);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(318, 163);
+            this.groupBox1.Size = new System.Drawing.Size(318, 198);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             // 
@@ -299,7 +301,7 @@
             // 
             this.btnClear.Location = new System.Drawing.Point(165, 107);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(74, 23);
+            this.btnClear.Size = new System.Drawing.Size(126, 23);
             this.btnClear.TabIndex = 6;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -309,7 +311,7 @@
             // 
             this.btnHasFrame.Location = new System.Drawing.Point(7, 108);
             this.btnHasFrame.Name = "btnHasFrame";
-            this.btnHasFrame.Size = new System.Drawing.Size(75, 23);
+            this.btnHasFrame.Size = new System.Drawing.Size(129, 23);
             this.btnHasFrame.TabIndex = 5;
             this.btnHasFrame.Text = "HasFrame";
             this.btnHasFrame.UseVisualStyleBackColor = true;
@@ -395,11 +397,21 @@
             this.btnHideAllFrames.UseVisualStyleBackColor = true;
             this.btnHideAllFrames.Click += new System.EventHandler(this.btnHideAllFrames_Click);
             // 
+            // btnFrameLineColor
+            // 
+            this.btnFrameLineColor.Location = new System.Drawing.Point(10, 164);
+            this.btnFrameLineColor.Name = "btnFrameLineColor";
+            this.btnFrameLineColor.Size = new System.Drawing.Size(123, 23);
+            this.btnFrameLineColor.TabIndex = 9;
+            this.btnFrameLineColor.Text = "FrameLineColor";
+            this.btnFrameLineColor.UseVisualStyleBackColor = true;
+            this.btnFrameLineColor.Click += new System.EventHandler(this.btnFrameLineColor_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1231, 786);
+            this.ClientSize = new System.Drawing.Size(1231, 836);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Form1";
             this.Text = "Form1";
@@ -448,6 +460,7 @@
         private System.Windows.Forms.Button btnClearFrameLines;
         private System.Windows.Forms.Button btnHideAllFrames;
         private System.Windows.Forms.Button btnShowAllFrames;
+        private System.Windows.Forms.Button btnFrameLineColor;
     }
 }
 
