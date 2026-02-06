@@ -106,21 +106,12 @@ namespace VIZCore3DX.NET.SearchSpace
         /// </summary>
         private void InitializeVIZCore3DXEvent()
         {
-            // 키 다운 이벤트 (영역 선택 완료 이벤트)
-            vizcore3dx.OnVIZCore3DXKeyDown += Vizcore3dx_OnVIZCore3DXKeyDown;
-        }
-
-        private void Vizcore3dx_OnVIZCore3DXKeyDown(object sender, Event.EventManager.VIZCoreKeyDownEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
+            // 영역 선택 완료 이벤트
+            vizcore3dx.View.OnSelectionBoxSelectFinished += (isSuccess) =>
             {
-                // 영역 선택이 완료되었을 때
-                if (vizcore3dx.View.SelectSpatialSpace != null)
-                {
-                    // BoundBox 값 표시
-                    SetBoundingBox(vizcore3dx.View.SelectSpatialSpace);
-                }
-            }
+                if (isSuccess) SetBoundingBox(vizcore3dx.View.SelectSpatialSpace);
+                else MessageBox.Show("선택 실패 !!!");
+            };
         }
 
         /// <summary>
