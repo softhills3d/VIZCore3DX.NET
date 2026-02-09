@@ -107,7 +107,7 @@ namespace VIZCore3DX.NET.SearchSpace
         private void InitializeVIZCore3DXEvent()
         {
             // 영역 선택 완료 이벤트
-            vizcore3dx.View.OnSelectionBoxSelectFinished += (isSuccess) =>
+            vizcore3dx.View.OnSelectionBoxCreateFinished += (isSuccess) =>
             {
                 if (isSuccess) SetBoundingBox(vizcore3dx.View.SelectSpatialSpace);
                 else MessageBox.Show("선택 실패 !!!");
