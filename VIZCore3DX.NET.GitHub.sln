@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.SearchSpace"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Frame", "WinForms\VIZCore3DX.NET.Frame\VIZCore3DX.NET.Frame.csproj", "{525E85E7-AFFA-4732-AD23-9EFEC3B81BA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.CustomModelTree", "VIZCore3DX.NET.CustomModelTree\VIZCore3DX.NET.CustomModelTree.csproj", "{BB8E2271-5D20-4E22-ACD7-0A90319772AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.CustomModelTree", "WinForms\VIZCore3DX.NET.CustomModelTree\VIZCore3DX.NET.CustomModelTree.csproj", "{BB8E2271-5D20-4E22-ACD7-0A90319772AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
