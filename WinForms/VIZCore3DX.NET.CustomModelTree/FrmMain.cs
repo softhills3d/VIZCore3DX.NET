@@ -270,6 +270,9 @@ namespace VIZCore3DX.NET.CustomModelTree
 
                 // 하위 노드들의 체크박스 UI 동기화 (확장된 노드만)
                 ReflectVisibilityToChildren(uiNode, uiNode.Checked);
+
+                // 역방향(Bottom-Up) 부모 노드 체크박스 UI 동기화
+                UpdateParentCheckState(uiNode);
             }
             finally
             {
@@ -295,6 +298,41 @@ namespace VIZCore3DX.NET.CustomModelTree
                 {
                     ReflectVisibilityToChildren(child, isVisible);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 자식 노드들의 상태를 취합하여 부모 노드의 체크 상태를 갱신 (역방향 동기화)
+        /// </summary>
+        /// <param name="node"></param>
+        private void UpdateParentCheckState(TreeNode node)
+        {
+            TreeNode parent = node.Parent;
+
+            // 최상위 루트 노드까지 계속 타고 올라감
+            while (parent != null)
+            {
+                bool allChildrenChecked = true;
+
+                // 형제 노드들 검사
+                foreach (TreeNode child in parent.Nodes)
+                {
+                    if (child.Text == DUMMY_NODE_KEY) continue; // 더미는 무시
+
+                    if (!child.Checked)
+                    {
+                        allChildrenChecked = false;
+                        break;
+                    }
+                }
+
+                // 부모의 UI 상태가 바뀌어야 한다면 갱신
+                if (parent.Checked != allChildrenChecked)
+                {
+                    parent.Checked = allChildrenChecked;
+                }
+
+                parent = parent.Parent; // 한 단계 위로
             }
         }
 
@@ -348,6 +386,190 @@ namespace VIZCore3DX.NET.CustomModelTree
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
             vizcore3dx.Model.Close();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (tbNode.Text == null) MessageBox.Show("검색어를 입력하세요.");
+
+            List<Node> foundNodes = vizcore3dx.Object3D.Find.QuickSearch(tbNode.Text, false);
+
+            if (foundNodes.Count == 0)
+            {
+                return;
+            }
+            else
+            {
+                nodeGridView.SuspendLayout();
+                nodeGridView.Rows.Clear();
+
+                foreach (Node node in foundNodes)
+                {
+                    int rowIndex = nodeGridView.Rows.Add(node.NodeName, node.NodePath);
+
+                    nodeGridView.Rows[rowIndex].Tag = node;
+                }
+
+                nodeGridView.ResumeLayout();
+            }
+        }
+
+        private void nodeGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            Node targetNode = nodeGridView.Rows[e.RowIndex].Tag as Node;
+
+            if (targetNode == null) return;
+
+            vizcore3dx.BeginUpdate();
+            vizcore3dx.Object3D.ShowSelection(targetNode);
+            vizcore3dx.EndUpdate();
+
+            _isUpdatingUI = true;
+            try
+            {
+                UncheckAllLoadedNodes(_customModelTree.Nodes);
+            }
+            finally
+            {
+                _isUpdatingUI = false;
+            }
+
+            DrillDownAndShowInTree(targetNode);
+        }
+
+        /// <summary>
+        /// 경로를 따라 트리뷰를 확장하고, 최종 노드를 선택 및 체크함
+        /// </summary>
+        /// <param name="targetNode"></param>
+        private void DrillDownAndShowInTree(Node targetNode)
+        {
+            if (_customModelTree.Nodes.Count == 0) return;
+
+            string pathString = targetNode.NodePath;
+            if (string.IsNullOrEmpty(pathString)) pathString = targetNode.NodeName;
+
+            string[] pathSegments = pathString.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+
+            TreeNode currentNode = null;
+            TreeNodeCollection currentCollection = _customModelTree.Nodes;
+
+            _customModelTree.BeginUpdate();
+
+            try
+            {
+                int startIndex = 0;
+                for (int i = 0; i < pathSegments.Length; i++)
+                {
+                    if (FindNodeByName(currentCollection, pathSegments[i].Trim()) != null)
+                    {
+                        startIndex = i;
+                        break;
+                    }
+                }
+
+                // 일치하는 시작점부터 트리를 타고 내려감 (Drill-Down)
+                for (int i = startIndex; i < pathSegments.Length; i++)
+                {
+                    string segmentName = pathSegments[i].Trim();
+                    TreeNode foundNode = FindNodeByName(currentCollection, segmentName);
+
+                    if (foundNode != null)
+                    {
+                        currentNode = foundNode;
+
+                        // 마지막 타겟 노드가 아니면 자식을 강제로 펼침
+                        if (i < pathSegments.Length - 1)
+                        {
+                            if (!foundNode.IsExpanded || (foundNode.Nodes.Count == 1 && foundNode.Nodes[0].Text == DUMMY_NODE_KEY))
+                            {
+                                foundNode.Expand();
+                            }
+                            // 다음 뎁스 탐색을 위해 컬렉션 갱신
+                            currentCollection = foundNode.Nodes;
+                        }
+                    }
+                    else
+                    {
+                        // 중간에 이름이 달라 경로가 끊긴 경우 탐색 중단
+                        break;
+                    }
+                }
+
+                // 최종 타겟(currentNode) UI 동기화 처리
+                if (currentNode != null)
+                {
+                    // 트리에서 선택 (파란색 하이라이트) 및 스크롤 이동
+                    _customModelTree.SelectedNode = currentNode;
+                    currentNode.EnsureVisible();
+
+                    _isUpdatingUI = true;
+                    try
+                    {
+                        // UI 체크박스 켜기
+                        currentNode.Checked = true;
+
+                        // 위아래 트리 UI 연동 (검색으로 켰을 때도 완벽하게 부모/자식 체크박스 갱신)
+                        ReflectVisibilityToChildren(currentNode, true);
+                        UpdateParentCheckState(currentNode);
+                    }
+                    finally
+                    {
+                        _isUpdatingUI = false;
+                    }
+
+                    _customModelTree.Focus(); // 트리에 포커스를 줘야 파란색 선택 줄이 잘 보임
+                }
+            }
+            finally
+            {
+                _customModelTree.EndUpdate();
+            }
+        }
+
+        /// <summary>
+        /// 컬렉션 내에서 NodeName(또는 Text)이 일치하는 노드 찾기
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="targetName"></param>
+        /// <returns></returns>
+        private TreeNode FindNodeByName(TreeNodeCollection collection, string targetName)
+        {
+            foreach (TreeNode node in collection)
+            {
+                Node nodeData = node.Tag as Node;
+                // Tag의 NodeName 비교가 가장 정확함
+                if (nodeData != null && nodeData.NodeName == targetName)
+                {
+                    return node;
+                }
+                // 차선책으로 UI 텍스트 비교
+                if (node.Text == targetName)
+                {
+                    return node;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 현재 화면에 로딩된 모든 트리 노드의 체크를 해제합니다. (UI만 동기화)
+        /// </summary>
+        private void UncheckAllLoadedNodes(TreeNodeCollection nodes)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Text == DUMMY_NODE_KEY) continue;
+
+                node.Checked = false;
+
+                // 펼쳐져 있는(로딩된) 자식들도 재귀적으로 모두 해제
+                if (node.Nodes.Count > 0 && node.IsExpanded)
+                {
+                    UncheckAllLoadedNodes(node.Nodes);
+                }
+            }
         }
     }
 }
