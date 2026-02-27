@@ -180,6 +180,9 @@ namespace VIZCore3DX.NET.CustomModelTree
 
                 // 자식 데이터 가져오기
                 List<Node> children = vizcore3dx.Object3D.GetChildObject3d(parentData, Object3DChildOption.CHILD_ONLY);
+
+                children.Sort((x, y) => string.Compare(x?.NodeName, y?.NodeName));
+
                 List<TreeNode> childNodesBuffer = new List<TreeNode>(children.Count);
 
                 // 부모가 체크 해제 상태라면, 자식도 해제 상태여야 함
