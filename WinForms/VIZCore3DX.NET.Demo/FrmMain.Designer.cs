@@ -32,7 +32,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tcMain = new System.Windows.Forms.TabControl();
             this.tpModel = new System.Windows.Forms.TabPage();
-            this.btnTest1 = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.btnModelBoundBox = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -142,8 +141,6 @@
             this.txtModelTreeIndex = new System.Windows.Forms.TextBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgView = new System.Windows.Forms.DataGridView();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -214,9 +211,6 @@
             // 
             // tpModel
             // 
-            this.tpModel.Controls.Add(this.button1);
-            this.tpModel.Controls.Add(this.panel1);
-            this.tpModel.Controls.Add(this.btnTest1);
             this.tpModel.Controls.Add(this.groupBox4);
             this.tpModel.Controls.Add(this.groupBox3);
             this.tpModel.Location = new System.Drawing.Point(4, 22);
@@ -226,16 +220,6 @@
             this.tpModel.TabIndex = 0;
             this.tpModel.Text = "Model";
             this.tpModel.UseVisualStyleBackColor = true;
-            // 
-            // btnTest1
-            // 
-            this.btnTest1.Location = new System.Drawing.Point(33, 245);
-            this.btnTest1.Name = "btnTest1";
-            this.btnTest1.Size = new System.Drawing.Size(101, 23);
-            this.btnTest1.TabIndex = 4;
-            this.btnTest1.Text = "Test1";
-            this.btnTest1.UseVisualStyleBackColor = true;
-            this.btnTest1.Click += new System.EventHandler(this.btnTest1_Click);
             // 
             // groupBox4
             // 
@@ -1372,23 +1356,6 @@
             this.dgView.Size = new System.Drawing.Size(897, 191);
             this.dgView.TabIndex = 0;
             // 
-            // panel1
-            // 
-            this.panel1.Location = new System.Drawing.Point(33, 319);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(380, 358);
-            this.panel1.TabIndex = 6;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(155, 245);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(101, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Test1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -1557,9 +1524,6 @@
         private System.Windows.Forms.Button btnNote2DNote;
         private System.Windows.Forms.Button btnNoteSurfaceNote;
         private System.Windows.Forms.Button btnShowHandle;
-        private System.Windows.Forms.Button btnTest1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Button button1;
     }
 }
 
