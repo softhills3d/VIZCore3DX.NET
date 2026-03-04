@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
@@ -45,9 +46,14 @@ namespace VIZCore3DX.NET.Demo
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             InitializeVIZCore3DX();
             InitializeVIZCore3DXEvent();
+
+            sw.Stop();
+            Debug.WriteLine($"실행 시간: {sw.ElapsedMilliseconds}ms");
         }
 
         private void InitializeVIZCore3DXEvent()
@@ -181,7 +187,7 @@ namespace VIZCore3DX.NET.Demo
 
             VIZCore3DX.NET.Data.SectionItem section = vizcore3dx.Section.AddBox(false);
 
-            MessageBox.Show(section.BoundBox.ToString(), "BoundBox", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show(section.BoundBox.ToString(), "BoundBox", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnClearSection_Click(object sender, EventArgs e)
@@ -216,7 +222,7 @@ namespace VIZCore3DX.NET.Demo
             vizcore3dx.Section.Clear();
             VIZCore3DX.NET.Data.SectionItem section = vizcore3dx.Section.AddBox(true);
 
-            vizcore3dx.Section.SetBoxSize(section.ID, box);
+            //vizcore3dx.Section.SetBoxSize(section.ID, box);
         }
 
         /// <summary>
@@ -240,11 +246,11 @@ namespace VIZCore3DX.NET.Demo
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            Vertex3D center = vizcore3dx.Section.GetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem));
+            //Vertex3D center = vizcore3dx.Section.GetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem));
 
-            txtSectionX.Text = center.X.ToString();
-            txtSectionY.Text = center.Y.ToString();
-            txtSectionZ.Text = center.Z.ToString();
+            //txtSectionX.Text = center.X.ToString();
+            //txtSectionY.Text = center.Y.ToString();
+            //txtSectionZ.Text = center.Z.ToString();
         }
 
         /// <summary>
@@ -259,7 +265,7 @@ namespace VIZCore3DX.NET.Demo
             if (String.IsNullOrEmpty(txtCenterPosition.Text)) return;
 
             float position = Convert.ToSingle(txtCenterPosition.Text);
-            vizcore3dx.Section.SetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
+            //vizcore3dx.Section.SetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
         }
 
         private void Section_OnSectionEvent(object sender, Event.EventManager.SectionEventArgs e)
@@ -852,5 +858,62 @@ namespace VIZCore3DX.NET.Demo
             vizcore3dx.ModelTree.Focus(node);
         }
         #endregion
+
+        private void btnTest1_Click(object sender, EventArgs e)
+        {
+            var test = vizcore3dx.Section.Sections[0].Planes;
+
+            //vizcore3dx.Section.SetCenter(1, 0, 100);
+
+            /*
+            Debug.WriteLine($"총 노드 개수: {vizcore3dx.Object3D.GetNodeCount()}");
+            Debug.WriteLine($"총 노드 개수: {vizcore3dx.Object3D.GetSelectedNodeCount()}");
+
+            Node selectNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_TOP)[0];
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            vizcore3dx.BeginUpdate();
+
+            Node rootNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.ROOT)[0];
+
+            vizcore3dx.Object3D.Show(rootNode, false);
+            vizcore3dx.Object3D.Show(selectNode, true);
+
+            vizcore3dx.EndUpdate();
+
+            sw.Stop();
+            Debug.WriteLine($"기존 방식 실행 시간: {sw.ElapsedMilliseconds}ms");
+
+            sw = new Stopwatch();
+            sw.Start();
+
+            vizcore3dx.Object3D.ShowSelection(selectNode);
+
+            sw.Stop();
+            Debug.WriteLine($"신규 메서드 실행 시간: {sw.ElapsedMilliseconds}ms");
+            */
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            UserControl miniViewContainer = new UserControl()
+            {
+                Dock = DockStyle.Fill
+            };
+
+            vizcore3dx.View.MiniView.SetMiniViewContainer(miniViewContainer, CameraDirection.Z_PLUS);
+
+            panel1.Controls.Add(miniViewContainer);
+
+            /*
+            Vector3D from = new Vector3D(1.0f, 0.0f, 0.0f);
+            Vector3D to = new Vector3D(0.0f, 1.0f, 0.0f);
+
+            var test = Matrix3D.GetRotateMatrix(from, to);
+            Debug.WriteLine(test);
+            */
+        }
     }
 }

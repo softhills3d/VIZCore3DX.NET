@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Windows.Forms;
@@ -16,6 +16,12 @@ namespace VIZCore3DX.NET.CustomModelTree
         private bool _isUpdatingUI = false;
 
         private TreeView _customModelTree;
+        private readonly HashSet<TreeNode> _selectedNodes = new HashSet<TreeNode>();
+        private TreeNode _selectionAnchorNode = null;
+        private bool _suppressTreeSelectSync = false;
+        private bool _hasPendingVisibilityRequest = false;
+        private TreeNode _pendingVisibilityNode = null;
+        private bool _pendingVisibilityChecked = false;
 
         public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
 
@@ -99,6 +105,8 @@ namespace VIZCore3DX.NET.CustomModelTree
             _customModelTree.BeforeExpand += OnNodeExpanding; // 모델 확장 시 로딩
             _customModelTree.BeforeSelect += OnNodeSelecting_Deselect; // 선택 해제 동기화
             _customModelTree.AfterSelect += OnNodeSelected_Select; // 선택 동기화
+            _customModelTree.NodeMouseClick += OnNodeMouseClick_MultiSelect; // Ctrl/Shift 멀티 선택
+            _customModelTree.MouseDown += OnTreeMouseDown_ClearSelection; // 빈 영역 클릭 시 선택 해제
             _customModelTree.AfterCheck += OnNodeChecked_Visibility; // 체크박스 동기화
 
             // 레이아웃 계산 재개
@@ -113,6 +121,8 @@ namespace VIZCore3DX.NET.CustomModelTree
             if (_customModelTree == null) return;
 
             _customModelTree.BeginUpdate();
+            _selectedNodes.Clear();
+            _selectionAnchorNode = null;
             _customModelTree.Nodes.Clear();
 
             var roots = vizcore3dx.Object3D.FromFilter(Object3dFilter.ROOT);
@@ -181,7 +191,7 @@ namespace VIZCore3DX.NET.CustomModelTree
                 // 자식 데이터 가져오기
                 List<Node> children = vizcore3dx.Object3D.GetChildObject3d(parentData, Object3DChildOption.CHILD_ONLY);
 
-                children.Sort((x, y) => string.Compare(x?.NodeName, y?.NodeName));
+                children.Sort((x, y) => string.Compare(x?.NodeName, y?.NodeName, StringComparison.OrdinalIgnoreCase));
 
                 List<TreeNode> childNodesBuffer = new List<TreeNode>(children.Count);
 
@@ -218,15 +228,12 @@ namespace VIZCore3DX.NET.CustomModelTree
         /// <param name="e"></param>
         private void OnNodeSelecting_Deselect(object sender, TreeViewCancelEventArgs e)
         {
+            if (_suppressTreeSelectSync) return;
+
             TreeNode oldNode = _customModelTree.SelectedNode;
-            if (oldNode != null)
-            {
-                Node dataNode = oldNode.Tag as Node;
-                if (dataNode != null)
-                {
-                    vizcore3dx.Object3D.Select(dataNode, false);
-                }
-            }
+            if (oldNode == null || !_selectedNodes.Contains(oldNode)) return;
+
+            SetNodeSelection(oldNode, false);
         }
 
         /// <summary>
@@ -236,15 +243,86 @@ namespace VIZCore3DX.NET.CustomModelTree
         /// <param name="e"></param>
         private void OnNodeSelected_Select(object sender, TreeViewEventArgs e)
         {
+            if (_suppressTreeSelectSync) return;
+
             TreeNode newNode = e.Node;
-            if (newNode != null)
+            if (newNode == null || _selectedNodes.Contains(newNode)) return;
+
+            SetNodeSelection(newNode, true);
+            _selectionAnchorNode = newNode;
+        }
+
+        /// <summary>
+        /// Ctrl/Shift 조합에 따라 트리 노드 멀티 선택을 처리
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnNodeMouseClick_MultiSelect(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node == null || e.Node.Text == DUMMY_NODE_KEY) return;
+
+            TreeViewHitTestInfo hitInfo = _customModelTree.HitTest(e.Location);
+            // 체크박스 클릭은 선택 로직이 아니라 가시성 로직으로 처리
+            if ((hitInfo.Location & TreeViewHitTestLocations.StateImage) == TreeViewHitTestLocations.StateImage) return;
+
+            bool isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            bool isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
+
+            if (isShift && _selectionAnchorNode != null && IsSameSiblingGroup(_selectionAnchorNode, e.Node))
             {
-                Node dataNode = newNode.Tag as Node;
-                if (dataNode != null)
+                ExecuteSelectionBatch(() =>
                 {
-                    vizcore3dx.Object3D.Select(dataNode, true);
-                }
+                    bool nextState = !_selectedNodes.Contains(e.Node);
+                    foreach (TreeNode node in GetSiblingRange(_selectionAnchorNode, e.Node))
+                    {
+                        SetNodeSelection(node, nextState);
+                    }
+                    SetCurrentSelectedNode(e.Node);
+                });
+                return;
             }
+
+            if (isCtrl)
+            {
+                ExecuteSelectionBatch(() =>
+                {
+                    SetNodeSelection(e.Node, !_selectedNodes.Contains(e.Node));
+                    SetCurrentSelectedNode(e.Node);
+                    _selectionAnchorNode = e.Node;
+                });
+                return;
+            }
+
+            ApplySingleSelection(e.Node);
+        }
+
+        /// <summary>
+        /// 트리의 빈 영역을 클릭하면 현재 선택을 모두 해제
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTreeMouseDown_ClearSelection(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left) return;
+
+            TreeViewHitTestInfo hitInfo = _customModelTree.HitTest(e.Location);
+            if (hitInfo.Node != null || hitInfo.Location != TreeViewHitTestLocations.None) return;
+
+            ExecuteSelectionBatch(() =>
+            {
+                ClearSelectedNodes();
+                _selectionAnchorNode = null;
+
+                _suppressTreeSelectSync = true;
+                try
+                {
+                    _customModelTree.SelectedNode = null;
+                }
+                finally
+                {
+                    _suppressTreeSelectSync = false;
+                }
+            });
         }
 
         /// <summary>
@@ -254,28 +332,58 @@ namespace VIZCore3DX.NET.CustomModelTree
         /// <param name="e"></param>
         private void OnNodeChecked_Visibility(object sender, TreeViewEventArgs e)
         {
-            // 코드 내부에서 변경한 경우 무한 루프 방지를 위해 이벤트 무시
-            if (_isUpdatingUI) return;
+            if (e.Node == null || e.Node.Text == DUMMY_NODE_KEY) return;
+
+            // 처리 중 발생한 사용자 입력은 마지막 요청 1건만 보류하여 순차 반영
+            if (_isUpdatingUI)
+            {
+                if (e.Action != TreeViewAction.Unknown)
+                {
+                    _pendingVisibilityNode = e.Node;
+                    _pendingVisibilityChecked = e.Node.Checked;
+                    _hasPendingVisibilityRequest = true;
+                }
+                return;
+            }
 
             TreeNode uiNode = e.Node;
-            Node dataNode = uiNode.Tag as Node;
+            bool visible = uiNode.Checked;
+            while (uiNode != null)
+            {
+                ApplyVisibilityChange(uiNode, visible);
 
+                if (!_hasPendingVisibilityRequest) break;
+                uiNode = _pendingVisibilityNode;
+                visible = _pendingVisibilityChecked;
+                _pendingVisibilityNode = null;
+                _hasPendingVisibilityRequest = false;
+            }
+        }
+
+        private void ApplyVisibilityChange(TreeNode uiNode, bool isVisible)
+        {
+            Node dataNode = uiNode.Tag as Node;
             if (dataNode == null) return;
 
             _isUpdatingUI = true;
-
-            // 모델 갱신과 UI 갱신이 동시에 일어날 때 3D 뷰어 렌더링을 잠시 멈춤(결과만 렌더링)
             vizcore3dx.BeginUpdate();
             try
             {
-                // 사용자 뷰 상의 Node Visible 설정
-                vizcore3dx.Object3D.Show(dataNode, uiNode.Checked);
+                List<TreeNode> targets = GetVisibilityTargets(uiNode);
+                foreach (TreeNode target in targets)
+                {
+                    Node targetData = target.Tag as Node;
+                    if (targetData == null) continue;
 
-                // 하위 노드들의 체크박스 UI 동기화 (확장된 노드만)
-                ReflectVisibilityToChildren(uiNode, uiNode.Checked);
+                    if (target != uiNode && target.Checked != isVisible)
+                    {
+                        target.Checked = isVisible;
+                    }
 
-                // 역방향(Bottom-Up) 부모 노드 체크박스 UI 동기화
-                UpdateParentCheckState(uiNode);
+                    vizcore3dx.Object3D.Show(targetData, isVisible);
+                    ReflectVisibilityToChildren(target, isVisible);
+                    UpdateParentCheckState(target);
+                }
             }
             finally
             {
@@ -295,7 +403,10 @@ namespace VIZCore3DX.NET.CustomModelTree
             {
                 if (child.Text == DUMMY_NODE_KEY) continue;
 
-                child.Checked = isVisible;
+                if (child.Checked != isVisible)
+                {
+                    child.Checked = isVisible;
+                }
 
                 if (child.Nodes.Count > 0 && child.IsExpanded)
                 {
@@ -337,6 +448,182 @@ namespace VIZCore3DX.NET.CustomModelTree
 
                 parent = parent.Parent; // 한 단계 위로
             }
+        }
+
+        /// <summary>
+        /// 단일 선택 모드로 전환 (기존 선택 해제 후 현재 노드만 선택)
+        /// </summary>
+        /// <param name="node"></param>
+        private void ApplySingleSelection(TreeNode node)
+        {
+            ExecuteSelectionBatch(() =>
+            {
+                ClearSelectedNodes();
+                SetNodeSelection(node, true);
+                SetCurrentSelectedNode(node);
+                _selectionAnchorNode = node;
+            });
+        }
+
+        /// <summary>
+        /// 현재 멀티 선택된 노드들을 모두 해제
+        /// </summary>
+        private void ClearSelectedNodes()
+        {
+            foreach (TreeNode node in new List<TreeNode>(_selectedNodes))
+            {
+                SetNodeSelection(node, false);
+            }
+        }
+
+        /// <summary>
+        /// 트리 선택 상태와 3D 선택 상태를 동기화
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="isSelected"></param>
+        private void SetNodeSelection(TreeNode node, bool isSelected)
+        {
+            if (node == null || node.Text == DUMMY_NODE_KEY) return;
+            bool alreadySelected = _selectedNodes.Contains(node);
+            if (alreadySelected == isSelected)
+            {
+                UpdateNodeSelectionVisual(node, isSelected);
+                return;
+            }
+
+            Node dataNode = node.Tag as Node;
+            if (dataNode == null) return;
+
+            vizcore3dx.Object3D.Select(dataNode, isSelected);
+            if (isSelected)
+            {
+                _selectedNodes.Add(node);
+            }
+            else
+            {
+                _selectedNodes.Remove(node);
+            }
+
+            UpdateNodeSelectionVisual(node, isSelected);
+        }
+
+        /// <summary>
+        /// 여러개의 노드 선택 변경 시 트리/뷰어 갱신을 배치 처리
+        /// </summary>
+        /// <param name="action"></param>
+        private void ExecuteSelectionBatch(Action action)
+        {
+            if (action == null) return;
+
+            _customModelTree.BeginUpdate();
+            vizcore3dx.BeginUpdate();
+            try
+            {
+                action();
+            }
+            finally
+            {
+                vizcore3dx.EndUpdate();
+                _customModelTree.EndUpdate();
+            }
+        }
+
+        /// <summary>
+        /// TreeView의 현재 포커스 노드를 안전하게 갱신
+        /// </summary>
+        /// <param name="node"></param>
+        private void SetCurrentSelectedNode(TreeNode node)
+        {
+            _suppressTreeSelectSync = true;
+            try
+            {
+                _customModelTree.SelectedNode = node;
+            }
+            finally
+            {
+                _suppressTreeSelectSync = false;
+            }
+        }
+
+        /// <summary>
+        /// 두 노드가 같은 부모(형제 그룹)인지 판별
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private bool IsSameSiblingGroup(TreeNode a, TreeNode b)
+        {
+            if (a == null || b == null) return false;
+            return a.Parent == b.Parent;
+        }
+
+        /// <summary>
+        /// 같은 형제 그룹에서 시작~끝 노드 범위를 반환
+        /// </summary>
+        /// <param name="startNode"></param>
+        /// <param name="endNode"></param>
+        /// <returns></returns>
+        private IEnumerable<TreeNode> GetSiblingRange(TreeNode startNode, TreeNode endNode)
+        {
+            TreeNodeCollection collection = (startNode.Parent == null) ? _customModelTree.Nodes : startNode.Parent.Nodes;
+            int startIndex = collection.IndexOf(startNode);
+            int endIndex = collection.IndexOf(endNode);
+
+            if (startIndex < 0 || endIndex < 0) yield break;
+            if (startIndex > endIndex)
+            {
+                int temp = startIndex;
+                startIndex = endIndex;
+                endIndex = temp;
+            }
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                TreeNode node = collection[i];
+                if (node.Text == DUMMY_NODE_KEY) continue;
+                yield return node;
+            }
+        }
+
+        /// <summary>
+        /// 멀티 선택 상태를 트리 UI 색상으로 표시
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="isSelected"></param>
+        private void UpdateNodeSelectionVisual(TreeNode node, bool isSelected)
+        {
+            if (node == null) return;
+
+            node.BackColor = isSelected ? System.Drawing.SystemColors.Highlight : _customModelTree.BackColor;
+            node.ForeColor = isSelected ? System.Drawing.SystemColors.HighlightText : _customModelTree.ForeColor;
+        }
+
+        /// <summary>
+        /// 체크박스 클릭 시 가시성 적용 대상 노드 집합을 계산
+        /// </summary>
+        /// <param name="clickedNode"></param>
+        /// <returns></returns>
+        private List<TreeNode> GetVisibilityTargets(TreeNode clickedNode)
+        {
+            if (_selectedNodes.Count == 0 || !_selectedNodes.Contains(clickedNode))
+            {
+                return new List<TreeNode> { clickedNode };
+            }
+
+            List<TreeNode> targets = new List<TreeNode>(_selectedNodes.Count);
+            foreach (TreeNode node in _selectedNodes)
+            {
+                if (node == null || node.TreeView != _customModelTree) continue;
+                if (node.Text == DUMMY_NODE_KEY) continue;
+                targets.Add(node);
+            }
+
+            if (targets.Count == 0)
+            {
+                targets.Add(clickedNode);
+            }
+
+            return targets;
         }
 
         /// <summary>
@@ -393,7 +680,11 @@ namespace VIZCore3DX.NET.CustomModelTree
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
-            if (tbNode.Text == null) MessageBox.Show("검색어를 입력하세요.");
+            if (string.IsNullOrWhiteSpace(tbNode.Text))
+            {
+                MessageBox.Show("검색어를 입력하세요.");
+                return;
+            }
 
             List<Node> foundNodes = vizcore3dx.Object3D.Find.QuickSearch(tbNode.Text, false);
 
@@ -565,7 +856,10 @@ namespace VIZCore3DX.NET.CustomModelTree
             {
                 if (node.Text == DUMMY_NODE_KEY) continue;
 
-                node.Checked = false;
+                if (node.Checked)
+                {
+                    node.Checked = false;
+                }
 
                 // 펼쳐져 있는(로딩된) 자식들도 재귀적으로 모두 해제
                 if (node.Nodes.Count > 0 && node.IsExpanded)
@@ -576,3 +870,4 @@ namespace VIZCore3DX.NET.CustomModelTree
         }
     }
 }
+
