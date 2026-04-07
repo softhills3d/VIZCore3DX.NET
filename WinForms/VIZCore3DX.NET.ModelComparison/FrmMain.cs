@@ -297,7 +297,7 @@ namespace VIZCore3DX.NET.ModelComparison
                     item.RESULT_EXIST_B == true ? item.Node2.NodeName : String.Empty,
                     item.RESULT_EXIST_BOTH == true ? String.Empty : (item.RESULT_EXIST_A == true ? "모델 삭제" : "모델 추가"),
                     item.RESULT_EXIST_BOTH == false ? String.Empty : (item.RESULT_LOCATION == true ? String.Empty : "위치 변경"),
-                    item.RESULT_EXIST_BOTH == false ? String.Empty : ((item.Node1.Kind == VIZCore3DX.NET.Data.NodeKind.PART || item.Node1.Kind == VIZCore3DX.NET.Data.NodeKind.BODY) ? (item.RESULT_SHAPE == true ? String.Empty : "형상 변경") : String.Empty),
+                    item.RESULT_EXIST_BOTH == false ? String.Empty : ((item.Node1.Kind == VIZCore3DX.NET.Data.NodeKind.PART) ? (item.RESULT_SHAPE == true ? String.Empty : "형상 변경") : String.Empty),
                     item.MeshCount1.ToString(),
                     item.MeshCount2.ToString(),
                     item.BBox1 != null ? item.BBox1.ToString() : String.Empty,
