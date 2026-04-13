@@ -37309,6 +37309,36 @@
             Export Structure Dialog
             </summary>
         </member>
+        <member name="M:VIZCore3DX.NET.Manager.ModelManager.ExportStl(System.String,System.Boolean)">
+            <summary>
+            전체 모델을 STL 파일 형식(ASCII, BINARY)으로 내보내기
+            </summary>
+            <param name="path">저장할 경로</param>
+            <param name="ascii">ASCII 형식 여부</param>
+        </member>
+        <member name="M:VIZCore3DX.NET.Manager.ModelManager.CalcNormal(VIZCore3DX.ColorMeshVertex,VIZCore3DX.ColorMeshVertex,VIZCore3DX.ColorMeshVertex)">
+            <summary>
+            법선 벡터를 계산합니다. 축퇴 삼각형(넓이 0)은 Zero 벡터를 반환합니다.
+            </summary>
+            <param name="v0">버텍스 0</param>
+            <param name="v1">버텍스 1</param>
+            <param name="v2">버텍스 2</param>
+        </member>
+        <member name="M:VIZCore3DX.NET.Manager.ModelManager.ExportStlAsciiInternal(System.String,System.Collections.Generic.List{VIZCore3DX.TriangleMesh{VIZCore3DX.ColorMeshVertex}})">
+            <summary>
+            ASCII STL 형식으로 파일을 저장합니다.
+            </summary>
+            <param name="path">저장 경로</param>
+            <param name="meshList">수집된 메시 목록</param>
+        </member>
+        <member name="M:VIZCore3DX.NET.Manager.ModelManager.ExportStlBinaryInternal(System.String,System.Collections.Generic.List{VIZCore3DX.TriangleMesh{VIZCore3DX.ColorMeshVertex}})">
+            <summary>
+            Binary STL 형식으로 파일을 저장합니다.
+            구조: [80 bytes 헤더] + [4 bytes 삼각형 수] + [50 bytes × 삼각형 수]
+            </summary>
+            <param name="path">저장 경로</param>
+            <param name="meshList">수집된 메시 목록</param>
+        </member>
         <member name="M:VIZCore3DX.NET.Manager.ModelManager.ExportOutsideDialog(System.Collections.Generic.List{VIZCore3DX.NET.Data.Node})">
             <summary>
             Export Outside Dialog
