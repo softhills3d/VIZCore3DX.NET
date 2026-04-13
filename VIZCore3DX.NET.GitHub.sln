@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.Animation", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.ModelComparison", "WinForms\VIZCore3DX.NET.ModelComparison\VIZCore3DX.NET.ModelComparison.csproj", "{B5C2D4E8-1A3F-4D92-8E7B-2C9D0F1A5E3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.SplitObjects", "WinForms\VIZCore3DX.NET.SplitObjects\VIZCore3DX.NET.SplitObjects.csproj", "{87279C52-15B7-4D53-8C55-B54CBAE91837}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{B5C2D4E8-1A3F-4D92-8E7B-2C9D0F1A5E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C2D4E8-1A3F-4D92-8E7B-2C9D0F1A5E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5C2D4E8-1A3F-4D92-8E7B-2C9D0F1A5E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87279C52-15B7-4D53-8C55-B54CBAE91837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87279C52-15B7-4D53-8C55-B54CBAE91837}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87279C52-15B7-4D53-8C55-B54CBAE91837}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87279C52-15B7-4D53-8C55-B54CBAE91837}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +134,7 @@ Global
 		{BB8E2271-5D20-4E22-ACD7-0A90319772AF} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 		{C448D237-E233-4449-B5BC-EF99BF9EF91D} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 		{B5C2D4E8-1A3F-4D92-8E7B-2C9D0F1A5E3C} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
+		{87279C52-15B7-4D53-8C55-B54CBAE91837} = {9F99284D-C32B-40BB-A40B-6ADC5EB54067}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6F4C4F3-9324-4530-A853-29E8CDBED4B7}
