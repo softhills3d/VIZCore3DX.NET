@@ -48,9 +48,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VIZCore3DX.NET, Version=1.1.25.1028, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\SH_VIZZARD\VIZCore3DX.NET\VIZCore3DX.NET\bin\Debug\VIZCore3DX.NET.dll</HintPath>
+    <Reference Include="VIZCore3DX.NET">
+      <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

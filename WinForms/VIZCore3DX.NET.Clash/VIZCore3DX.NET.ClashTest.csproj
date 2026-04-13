@@ -50,9 +50,8 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VIZCore3DX.NET, Version=1.1.25.827, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\VIZCore3DX.NET_V.1.1.25.827\VIZCore3DX.NET.dll</HintPath>
+    <Reference Include="VIZCore3DX.NET">
+      <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
