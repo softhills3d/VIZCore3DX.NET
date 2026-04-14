@@ -10,14 +10,14 @@ using System.Windows.Forms;
 
 namespace VIZCore3DX.NET.Search
 {
-    public partial class Form1 : Form
+    public partial class FrmMain : Form
     {
         /// <summary>
         /// VIZCore3DX.NET Control
         /// </summary>
         public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
 
-        public Form1()
+        public FrmMain()
         {
             InitializeComponent();
 
@@ -34,7 +34,7 @@ namespace VIZCore3DX.NET.Search
         private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
         {
             // 라이선스 서버를 통한 인증
-            vizcore3dx.License.LicenseServer("192.168.0.215", 8901);
+            vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
 
             vizcore3dx.Model.EnableBody = false;
 

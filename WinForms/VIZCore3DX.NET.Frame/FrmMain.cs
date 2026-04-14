@@ -12,11 +12,11 @@ using VIZCore3DX.NET.Event;
 
 namespace VIZCore3DX.NET.Frame
 {
-    public partial class Form1 : Form
+    public partial class FrmMain : Form
     {
         public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
 
-        public Form1()
+        public FrmMain()
         {
             InitializeComponent();
 

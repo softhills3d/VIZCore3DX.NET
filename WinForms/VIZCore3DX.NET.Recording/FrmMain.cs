@@ -118,7 +118,7 @@ namespace VIZCore3DX.NET.Recording
             }
             else
             {
-                recordFlag = vizcore3dx.StartRecording(chkShowCursor);
+                recordFlag = vizcore3dx.StartRecording(chkShowCursor, string.Empty, string.Empty);
             }
 
             if (recordFlag)

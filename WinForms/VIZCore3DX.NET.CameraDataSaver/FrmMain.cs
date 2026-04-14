@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace VIZCore3DX.NET.CameraDataSaver
 {
-    public partial class Form1: Form
+    public partial class FrmMain: Form
     {
         /// <summary>
         /// VIZCore3DX.NET Control
@@ -19,7 +19,7 @@ namespace VIZCore3DX.NET.CameraDataSaver
 
         private VIZCore3DX.NET.Data.CameraData cameraData { get; set; }
 
-        public Form1()
+        public FrmMain()
         {
             InitializeComponent();
 
@@ -36,7 +36,7 @@ namespace VIZCore3DX.NET.CameraDataSaver
         private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
         {
             // 라이선스 서버를 통한 인증
-            vizcore3dx.License.LicenseServer("192.168.0.215", 8901);
+            vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
         }
 
         /// <summary>

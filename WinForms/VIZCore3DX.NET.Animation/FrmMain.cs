@@ -13,13 +13,13 @@ using VIZCore3DX.NET.Event;
 
 namespace VIZCore3DX.NET.Animation
 {
-    public partial class Form1 : Form
+    public partial class FrmMain : Form
     {
         public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
 
         Data.Animation ani { get; set; }
 
-        public Form1()
+        public FrmMain()
         {
             InitializeComponent();
 

@@ -1,6 +1,6 @@
 ﻿namespace VIZCore3DX.NET.Animation
 {
-    partial class Form1
+    partial class FrmMain
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.

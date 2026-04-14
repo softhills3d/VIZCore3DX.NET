@@ -44,7 +44,7 @@ namespace VIZCore3DX.NET.Snapshot
             // ================================================================
             // License
             // ================================================================
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.0.215", 8901);
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
             if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -156,7 +156,7 @@ namespace VIZCore3DX.NET.Snapshot
             if (listView1.Items.Count == 0) return;
 
             //if (vizcore3dx.Snapshot.ExportJson(textBox1.Text)
-            if (vizcore3dx.Model.ExportMarkupJson(textBox1.Text, true, true, true, true, true))
+            if (vizcore3dx.Model.ExportMarkupJson(textBox1.Text, true, true, true, true, true, true))
             {
                 MessageBox.Show("Export Success", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -172,7 +172,7 @@ namespace VIZCore3DX.NET.Snapshot
             if (vizcore3dx.Model.IsOpen() == false) return;
 
             //vizcore3dx.Snapshot.ImportJson(textBox1.Text);
-            vizcore3dx.Model.ImportMarkupJson(textBox1.Text, true, true, true, true, true);
+            vizcore3dx.Model.ImportMarkupJson(textBox1.Text, true, true, true, true, true, true);
 
             tempSnapshot = null;
             listView1.Items.Clear();

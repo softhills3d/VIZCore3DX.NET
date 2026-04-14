@@ -12,7 +12,7 @@ using VIZCore3DX.NET.Event;
 
 namespace VIZCore3DX.NET.SectionBoxControl
 {
-    public partial class Form1: Form
+    public partial class FrmMain: Form
     {
         /// <summary>
         /// VIZCore3DX.NET Control
@@ -24,7 +24,7 @@ namespace VIZCore3DX.NET.SectionBoxControl
         /// </summary>
         public VIZCore3DX.NET.Data.SectionItem Section { get; set; }
 
-        public Form1()
+        public FrmMain()
         {
             InitializeComponent();
 
@@ -41,7 +41,7 @@ namespace VIZCore3DX.NET.SectionBoxControl
         private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
         {
             // 라이선스 서버를 통한 인증
-            vizcore3dx.License.LicenseServer("192.168.0.215", 8901);
+            vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
 
             InitializeVIZCore3DXEvent();
         }
@@ -336,7 +336,7 @@ namespace VIZCore3DX.NET.SectionBoxControl
 
             // 값 적용
             minMaxValue.Text = current.ToString();
-            vizcore3dx.Section.SetBoxPlaneSize(Section.ID, planeType, current);
+            vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)planeType, current);
             vizcore3dx.Update();
         }
 
