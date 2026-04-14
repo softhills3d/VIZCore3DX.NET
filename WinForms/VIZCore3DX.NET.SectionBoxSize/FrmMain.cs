@@ -92,8 +92,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                 }
                 else
                 {
-                    vizcore3dx.Frame.GridSpace = e.Section.BoundBox;
-
                     BoundBox3D box = e.Section.BoundBox;
 
                     cbMinX.SelectedIndexChanged -= new System.EventHandler(cbMinX_SelectedIndexChanged);
@@ -125,7 +123,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                         tbMinX.Value = MinX;
 
                     }
-                    cbMinX.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.X, tbMinX.Value);
 
                     int MaxX = Convert.ToInt32(box.MaxX);
                     if (MaxX < tbMaxX.Minimum)
@@ -141,7 +138,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                         tbMaxX.Value = MaxX;
 
                     }
-                    cbMaxX.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.X, tbMaxX.Value);
 
                     int MinY = Convert.ToInt32(box.MinY);
                     if (MinY < tbMinY.Minimum)
@@ -157,7 +153,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                         tbMinY.Value = MinY;
 
                     }
-                    cbMinY.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Y, tbMinY.Value);
 
                     int MaxY = Convert.ToInt32(box.MaxY);
                     if (MaxY < tbMaxY.Minimum)
@@ -173,7 +168,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                         tbMaxY.Value = MaxY;
 
                     }
-                    cbMaxY.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Y, tbMaxY.Value);
 
                     int MinZ = Convert.ToInt32(box.MinZ);
                     if (MinZ < tbMinZ.Minimum)
@@ -189,7 +183,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                         tbMinZ.Value = MinZ;
 
                     }
-                    cbMinZ.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Z, tbMinZ.Value);
 
                     int MaxZ = Convert.ToInt32(box.MaxZ);
                     if (MaxZ < tbMaxZ.Minimum)
@@ -205,7 +198,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
                         tbMaxZ.Value = MaxZ;
 
                     }
-                    cbMaxZ.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Z, tbMaxZ.Value);
 
                     cbMinX.SelectedIndexChanged += new System.EventHandler(cbMinX_SelectedIndexChanged);
                     cbMinY.SelectedIndexChanged += new System.EventHandler(cbMinY_SelectedIndexChanged);
@@ -231,11 +223,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
         private void btnOpenModel_Click(object sender, EventArgs e)
         {
             vizcore3dx.Model.OpenFileDialog();
-        }
-
-        private void btnOpenFrame_Click(object sender, EventArgs e)
-        {
-            vizcore3dx.Frame.OpenFileDialog();
         }
 
         private void btnAddSectionBox_Click(object sender, EventArgs e)
@@ -276,54 +263,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
             tbMinZ.Value = tbMinZ.Minimum;
             tbMaxZ.Value = tbMaxZ.Maximum;
 
-            if (vizcore3dx.Frame.HasFrame == true)
-            {
-                List<VIZCore3DX.NET.Data.FrameItem> xItems = vizcore3dx.Frame.GetGridItems(VIZCore3DX.NET.Data.Axis.X);
-
-                for (int i = 0; i < xItems.Count; i++)
-                {
-                    int position = GetFramePosition(VIZCore3DX.NET.Data.Axis.X, xItems[i].ToString());
-                    if (position < (box.MinX - 0)) continue;
-                    if ((box.MaxX + 0) < position) continue;
-
-                    cbMinX.Items.Add(xItems[i].LabelStr);
-                    cbMaxX.Items.Add(xItems[i].LabelStr);
-                }
-
-                cbMinX.Text = cbMinX.Items[0].ToString();
-                cbMaxX.Text = cbMaxX.Items[cbMaxX.Items.Count - 1].ToString();
-
-                List<VIZCore3DX.NET.Data.FrameItem> yItems = vizcore3dx.Frame.GetGridItems(VIZCore3DX.NET.Data.Axis.Y);
-
-                for (int i = 0; i < yItems.Count; i++)
-                {
-                    int position = GetFramePosition(VIZCore3DX.NET.Data.Axis.Y, yItems[i].ToString());
-                    if (position < (box.MinY - 0)) continue;
-                    if ((box.MaxY + 0) < position) continue;
-
-                    cbMinY.Items.Add(yItems[i].LabelStr);
-                    cbMaxY.Items.Add(yItems[i].LabelStr);
-                }
-
-                cbMinY.Text = cbMinY.Items[0].ToString();
-                cbMaxY.Text = cbMaxY.Items[cbMaxY.Items.Count - 1].ToString();
-
-                List<VIZCore3DX.NET.Data.FrameItem> zItems = vizcore3dx.Frame.GetGridItems(VIZCore3DX.NET.Data.Axis.Z);
-
-                for (int i = 0; i < zItems.Count; i++)
-                {
-                    int position = GetFramePosition(VIZCore3DX.NET.Data.Axis.Z, zItems[i].ToString());
-                    if (position < (box.MinZ - 0)) continue;
-                    if ((box.MaxZ + 0) < position) continue;
-
-                    cbMinZ.Items.Add(zItems[i].LabelStr);
-                    cbMaxZ.Items.Add(zItems[i].LabelStr);
-                }
-
-                cbMinZ.Text = cbMinZ.Items[0].ToString();
-                cbMaxZ.Text = cbMaxZ.Items[cbMaxZ.Items.Count - 1].ToString();
-            }
-
             cbMinX.SelectedIndexChanged += new System.EventHandler(cbMinX_SelectedIndexChanged);
             cbMinY.SelectedIndexChanged += new System.EventHandler(cbMinY_SelectedIndexChanged);
             cbMinZ.SelectedIndexChanged += new System.EventHandler(cbMinZ_SelectedIndexChanged);
@@ -340,8 +279,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
             tbMaxY.Scroll += new System.EventHandler(tbMaxY_Scroll);
             tbMaxZ.Scroll += new System.EventHandler(tbMaxZ_Scroll);
 
-            vizcore3dx.Frame.GridSpaceMode = GridSpaceMode.Fixed;
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -353,27 +290,27 @@ namespace VIZCore3DX.NET.SectionBoxSize
             {
                 case SectionPlanePositionType.XMin:
                     position = tbMinX.Value;
-                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, type, position);
+                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)type, position);
                     break;
                 case SectionPlanePositionType.XMax:
                     position = tbMaxX.Value;
-                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, type, position);
+                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)type, position);
                     break;
                 case SectionPlanePositionType.YMin:
                     position = tbMinY.Value;
-                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, type, position);
+                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)type, position);
                     break;
                 case SectionPlanePositionType.YMax:
                     position = tbMaxY.Value;
-                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, type, position);
+                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)type, position);
                     break;
                 case SectionPlanePositionType.ZMin:
                     position = tbMinZ.Value;
-                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, type, position);
+                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)type, position);
                     break;
                 case SectionPlanePositionType.ZMax:
                     position = tbMaxZ.Value;
-                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, type, position);
+                    vizcore3dx.Section.SetBoxPlaneSize(Section.ID, (int)type, position);
                     break;
             }
         }
@@ -385,19 +322,10 @@ namespace VIZCore3DX.NET.SectionBoxSize
             else return Convert.ToInt32(fp.Position);
         }
 
-        private string GetFrameLabel(VIZCore3DX.NET.Data.Axis axis, int position)
-        {
-            VIZCore3DX.NET.Data.FrameItem fi = vizcore3dx.Frame.GetSnap(axis, position);
-            string str = fi.LabelStr;
-            if (str == "0") return String.Empty;
-            else return str;
-        }
-
         private void tbMinX_Scroll(object sender, EventArgs e)
         {
             isScroll = true;
             cbMinX.SelectedIndexChanged -= new System.EventHandler(cbMinX_SelectedIndexChanged);
-            cbMinX.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.X, tbMinX.Value);
             cbMinX.SelectedIndexChanged += new System.EventHandler(cbMinX_SelectedIndexChanged);
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMin);
@@ -407,7 +335,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             isScroll = true;
             cbMaxX.SelectedIndexChanged -= new System.EventHandler(cbMaxX_SelectedIndexChanged);
-            cbMaxX.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.X, tbMaxX.Value);
             cbMaxX.SelectedIndexChanged += new System.EventHandler(cbMaxX_SelectedIndexChanged);
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMax);
@@ -417,7 +344,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             isScroll = true;
             cbMinY.SelectedIndexChanged -= new System.EventHandler(cbMinY_SelectedIndexChanged);
-            cbMinY.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Y, tbMinY.Value);
             cbMinY.SelectedIndexChanged += new System.EventHandler(cbMinY_SelectedIndexChanged);
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMin);
@@ -427,7 +353,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             isScroll = true;
             cbMaxY.SelectedIndexChanged -= new System.EventHandler(cbMaxY_SelectedIndexChanged);
-            cbMaxY.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Y, tbMaxY.Value);
             cbMaxY.SelectedIndexChanged += new System.EventHandler(cbMaxY_SelectedIndexChanged);
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMax);
@@ -437,7 +362,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             isScroll = true;
             cbMinZ.SelectedIndexChanged -= new System.EventHandler(cbMinZ_SelectedIndexChanged);
-            cbMinZ.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Z, tbMinZ.Value);
             cbMinZ.SelectedIndexChanged += new System.EventHandler(cbMinZ_SelectedIndexChanged);
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMin);
@@ -447,7 +371,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             isScroll = true;
             cbMaxZ.SelectedIndexChanged -= new System.EventHandler(cbMaxZ_SelectedIndexChanged);
-            cbMaxZ.Text = GetFrameLabel(VIZCore3DX.NET.Data.Axis.Z, tbMaxZ.Value);
             cbMaxZ.SelectedIndexChanged += new System.EventHandler(cbMaxZ_SelectedIndexChanged);
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMax);
@@ -462,7 +385,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMin);
 
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -475,7 +397,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMax);
 
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -488,7 +409,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMin);
 
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -501,7 +421,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMax);
 
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -514,7 +433,6 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMin);
 
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
@@ -527,48 +445,41 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMax);
 
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
         }
 
         private void tbMinX_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMaxX_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMinY_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMaxY_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMinZ_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }
 
         private void tbMaxZ_MouseUp(object sender, MouseEventArgs e)
         {
-            vizcore3dx.Frame.GridSpace = vizcore3dx.Section.Sections[0].BoundBox;
             vizcore3dx.Update();
             isScroll = false;
         }

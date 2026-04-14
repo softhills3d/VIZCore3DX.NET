@@ -49,7 +49,6 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnAddSectionBox = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnOpenFrame = new System.Windows.Forms.Button();
             this.btnOpenModel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -281,7 +280,6 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.btnOpenFrame);
             this.groupBox1.Controls.Add(this.btnOpenModel);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
@@ -289,16 +287,6 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Open";
-            // 
-            // btnOpenFrame
-            // 
-            this.btnOpenFrame.Location = new System.Drawing.Point(114, 20);
-            this.btnOpenFrame.Name = "btnOpenFrame";
-            this.btnOpenFrame.Size = new System.Drawing.Size(75, 23);
-            this.btnOpenFrame.TabIndex = 1;
-            this.btnOpenFrame.Text = "Frame";
-            this.btnOpenFrame.UseVisualStyleBackColor = true;
-            this.btnOpenFrame.Click += new System.EventHandler(this.btnOpenFrame_Click);
             // 
             // btnOpenModel
             // 
@@ -341,7 +329,6 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btnOpenFrame;
         private System.Windows.Forms.Button btnOpenModel;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btnAddSectionBox;
