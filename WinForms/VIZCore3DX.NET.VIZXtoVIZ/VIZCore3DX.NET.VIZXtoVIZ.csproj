@@ -99,7 +99,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="VIZZARDX.ico" />
