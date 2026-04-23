@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using VIZCore3DX.NET.Data;
 
 namespace VIZCore3DX.NET.ModelComparison
 {
