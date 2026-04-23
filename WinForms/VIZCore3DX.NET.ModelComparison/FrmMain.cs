@@ -185,12 +185,13 @@ namespace VIZCore3DX.NET.ModelComparison
 
             List<VIZCore3DX.NET.Data.Node> nodes = ctrl.Object3D.FromFilter(filter);
 
-            Dictionary<string, VIZCore3DX.NET.Data.Node> map = new Dictionary<string, VIZCore3DX.NET.Data.Node>();
+            Dictionary<string, VIZCore3DX.NET.Data.Node> map = new Dictionary<string, VIZCore3DX.NET.Data.Node>(nodes.Count, StringComparer.Ordinal);
             foreach (VIZCore3DX.NET.Data.Node node in nodes)
             {
-                if (string.IsNullOrEmpty(node.NodePath)) continue;
-                if (map.ContainsKey(node.NodePath) == false)
-                    map.Add(node.NodePath, node);
+                string nodePath = node.NodePath;
+                if (string.IsNullOrEmpty(nodePath)) continue;
+                if (!map.ContainsKey(nodePath))
+                    map.Add(nodePath, node);
             }
             return map;
         }
@@ -204,7 +205,7 @@ namespace VIZCore3DX.NET.ModelComparison
             Dictionary<string, VIZCore3DX.NET.Data.Node> map1 = BuildNodePathMap(vizcore1, includeBody);
             Dictionary<string, VIZCore3DX.NET.Data.Node> map2 = BuildNodePathMap(vizcore2, includeBody);
 
-            List<ModelComparisonItem> result = new List<ModelComparisonItem>();
+            List<ModelComparisonItem> result = new List<ModelComparisonItem>(map1.Count + map2.Count);
 
             vizcore1.ShowWaitForm();
 

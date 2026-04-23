@@ -62,7 +62,7 @@ namespace VIZCore3DX.NET.ModelComparison
             if (RESULT_EXIST_BOTH == false) return;
 
             // 바운딩 박스가 동일하면 위치 변경 없음
-            if (BBox1 != null && BBox2 != null && BBox1.Equals(BBox2, false) == true)
+            if (BBox1 != null && BBox2 != null && BBox1.Equals(BBox2, true) == true)
                 RESULT_LOCATION = true;
 
             // PART 노드는 메시 개수로 형상 동일 여부 판단
