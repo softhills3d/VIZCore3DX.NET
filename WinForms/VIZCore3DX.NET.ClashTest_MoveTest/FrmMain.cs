@@ -213,7 +213,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             clash.PenetrationTolerance = (float)numPenetrationTolerance.Value;
 
             // 결과 유형이 파트인지 어셈블리인지 설정
-            vizcore3dx.Clash.IsAssembly = true; // True : Assembly, False : Part
+            vizcore3dx.Clash.IsAssembly = false; // True : Assembly, False : Part
 
             if (clash.GroupA.Count == 0 || clash.GroupB.Count == 0)
             {
@@ -443,58 +443,35 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             // 간섭검사 결과 명칭을 치환
             foreach (var result in item.MoveTestResult)
             {
-                bool filter = false;
                 string state = "";
 
                 switch (result.ResultKind)
                 {
                     case ClashResultKind.CLEARANCE:
-                        if (!ckClearance.Checked)
-                        {
-                            filter = true;
-                            continue;
-                        }
+                        if (!ckClearance.Checked) continue;
                         state = "여유";
                         break;
 
                     case ClashResultKind.PROXIMITY:
-                        if (!ckProximity.Checked)
-                        {
-                            filter = true;
-                            continue;
-                        }
+                        if (!ckProximity.Checked) continue;
                         state = "근접";
                         break;
 
                     case ClashResultKind.CONTACT:
-                        if (!ckProximity.Checked)
-                        {
-                            filter = true;
-                            continue;
-                        }
+                        if (!ckProximity.Checked) continue;
                         state = "접촉";
                         break;
 
                     case ClashResultKind.PENETRATION:
-                        if (!ckClash.Checked)
-                        {
-                            filter = true;
-                            continue;
-                        }
+                        if (!ckClash.Checked) continue;
                         state = "충돌";
                         break;
 
                     case ClashResultKind.IDENTITY:
-                        if (!ckIdentity.Checked)
-                        {
-                            filter = true;
-                            continue;
-                        }
+                        if (!ckIdentity.Checked) continue;
                         state = "동일";
                         break;
                 }
-
-                if (filter) continue;
 
                 // 이동 경로 항목에 대한 결과 값들을 담을 변수
                 string groupA = GetNodeName(result.NodeA);
@@ -516,8 +493,11 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
 
                 // 알맞는 결과값들을 데이터 그리드에 삽입
                 datagridviewInterferenceResult.Rows.Add(row);
+            }
 
-                // 선택된 이동경로에 저장된 결과 심볼을 보여줌
+            // 선택된 이동경로에 저장된 결과 심볼을 보여줌
+            foreach (var result in item.MoveTestResult)
+            {
                 vizcore3dx.Clash.ShowResultSymbol(clash.ID, result, true, true);
             }
         }
