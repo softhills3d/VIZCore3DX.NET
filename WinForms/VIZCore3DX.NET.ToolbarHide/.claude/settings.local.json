@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"D:\\\\GitHub\\\\VIZCore3DX.NET.GitHub\\\\WinForms\\\\VIZCore3DX.NET.ToolbarHide\" -Recurse -File)",
+      "Bash(Select-Object -Property FullName)",
+      "Bash(Sort-Object FullName)",
+      "PowerShell(Test-Path \"D:\\\\GitHub\\\\VIZCore3DX.NET.GitHub\\\\WinForms\\\\VIZCore3DX.NET.ToolbarHide\"; Get-ChildItem \"D:\\\\GitHub\\\\VIZCore3DX.NET.GitHub\\\\WinForms\\\\VIZCore3DX.NET.ToolbarHide\" -Recurse | ForEach-Object { $_.FullName })"
+    ]
+  }
+}
