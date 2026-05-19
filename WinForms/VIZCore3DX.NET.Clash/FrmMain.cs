@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
+using static VIZCore3DX.NET.Data.ClashTest;
 using static VIZCore3DX.NET.Data.ClashTestResultItem;
 
 namespace VIZCore3DX.NET.ClashTest
@@ -212,10 +213,26 @@ namespace VIZCore3DX.NET.ClashTest
 
             vizcore3dx.Clash.IsAssembly = true; // True : Assembly, False : Part
 
-            if (clash.GroupA.Count == 0 || clash.GroupB.Count == 0)
+            switch (clash.TestKind)
             {
-                MessageBox.Show("간섭검사 그룹이 설정되지 않았습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                case ClashTestKind.GROUP_VS_GROUP:
+                    {
+                        if (clash.GroupA.Count == 0 || clash.GroupB.Count == 0)     // GroupA, GroupB 둘다 지정해야함.
+                        {
+                            MessageBox.Show("간섭검사 그룹이 설정되지 않았습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    break;
+                case ClashTestKind.SELECTED_MODEL_VS_OTHER:
+                    {
+                        if (clash.GroupA.Count == 0)        // GroupA 지정 해야함. GroupB 는 코어 내부에서 GroupA 이외의 노드들로 지정됨.
+                        {
+                            MessageBox.Show("간섭검사 그룹이 설정되지 않았습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    break;
             }
 
             bool result = vizcore3dx.Clash.Add(clash);
