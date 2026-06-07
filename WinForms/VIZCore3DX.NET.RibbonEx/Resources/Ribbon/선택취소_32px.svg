@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_개체_선택" data-name="개체 선택" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ff5e4b;
+      }
+
+      .cls-2 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="_선택취소" data-name="선택취소">
+    <g id="Black-2" data-name="Black">
+      <path class="cls-2" d="M3,6H1V2c0-.55.45-1,1-1h4v2h-3v3Z"/>
+      <path class="cls-2" d="M27,6h-2v-3h-3V1h4c.55,0,1,.45,1,1v4Z"/>
+      <rect class="cls-2" x="15" y="1" width="5" height="2"/>
+      <rect class="cls-2" x="8" y="1" width="5" height="2"/>
+      <path class="cls-2" d="M6,27H2c-.55,0-1-.45-1-1v-4h2v3h3v2Z"/>
+      <rect class="cls-2" x="1" y="8" width="2" height="5"/>
+      <rect class="cls-2" x="1" y="15" width="2" height="5"/>
+      <rect class="cls-2" x="25" y="8" width="2" height="5"/>
+      <rect class="cls-2" x="8" y="25" width="5" height="2"/>
+      <path class="cls-2" d="M15.88,25.88l.88-.88h-1.76v2h.18c.15-.42.38-.8.7-1.12Z"/>
+      <path class="cls-2" d="M25.88,15.88c.32-.32.71-.55,1.12-.7v-.18h-2v1.76l.88-.88Z"/>
+    </g>
+    <g id="Red">
+      <path class="cls-1" d="M27.41,24l3.29-3.29c.19-.19.29-.44.29-.71s-.11-.52-.29-.71l-2-2c-.39-.39-1.02-.39-1.41,0l-3.29,3.29-3.29-3.29c-.39-.39-1.02-.39-1.41,0l-2,2c-.19.19-.29.44-.29.71s.11.52.29.71l3.29,3.29-3.29,3.29c-.19.19-.29.44-.29.71s.11.52.29.71l2,2c.2.19.45.29.71.29s.51-.1.71-.29l3.29-3.29,3.29,3.29c.2.2.45.29.71.29s.51-.1.71-.29l2-2c.19-.19.29-.44.29-.71s-.11-.52-.29-.71l-3.29-3.29Z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_패널" data-name="패널" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="_모델트리" data-name="모델트리">
+    <g id="Black-2" data-name="Black">
+      <path class="cls-1" d="M18,21h12c.55,0,1-.45,1-1v-6c0-.55-.45-1-1-1h-12c-.55,0-1,.45-1,1v2h-9v-7h4c.55,0,1-.45,1-1V2c0-.55-.45-1-1-1H2c-.55,0-1,.45-1,1v6c0,.55.45,1,1,1h4v18c0,.55.45,1,1,1h10v2c0,.55.45,1,1,1h12c.55,0,1-.45,1-1v-6c0-.55-.45-1-1-1h-12c-.55,0-1,.45-1,1v2h-9v-8h9v2c0,.55.45,1,1,1ZM19,15h10v4h-10v-4ZM19,25h10v4h-10v-4Z"/>
+    </g>
+  </g>
+</svg>

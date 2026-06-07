@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_확대_축소" data-name="확대/축소" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #6ebcd6;
+      }
+
+      .cls-2 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="_박스줌" data-name="박스줌">
+    <g id="Black">
+      <path class="cls-2" d="M3,6H1V2c0-.55.45-1,1-1h4v2h-3v3Z"/>
+      <path class="cls-2" d="M27,6h-2v-3h-3V1h4c.55,0,1,.45,1,1v4Z"/>
+      <rect class="cls-2" x="15" y="1" width="5" height="2"/>
+      <rect class="cls-2" x="8" y="1" width="5" height="2"/>
+      <path class="cls-2" d="M6,27H2c-.55,0-1-.45-1-1v-4h2v3h3v2Z"/>
+      <rect class="cls-2" x="1" y="8" width="2" height="5"/>
+      <rect class="cls-2" x="1" y="15" width="2" height="5"/>
+      <rect class="cls-2" x="25" y="8" width="2" height="5"/>
+      <rect class="cls-2" x="8" y="25" width="5" height="2"/>
+    </g>
+    <g id="Blue">
+      <path class="cls-1" d="M30.71,29.29l-3-3s-.09-.05-.13-.08c.89-1.17,1.42-2.63,1.42-4.21,0-3.86-3.14-7-7-7s-7,3.14-7,7,3.14,7,7,7c1.58,0,3.04-.53,4.21-1.42.03.04.05.09.08.13l3,3c.2.2.45.29.71.29s.51-.1.71-.29c.39-.39.39-1.02,0-1.41ZM22,27c-2.76,0-5-2.24-5-5s2.24-5,5-5,5,2.24,5,5-2.24,5-5,5Z"/>
+      <polygon class="cls-1" points="25 21 23 21 23 19 21 19 21 21 19 21 19 23 21 23 21 25 23 25 23 23 25 23 25 21"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_음영" data-name="음영" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_무제_그라디언트_29);
+      }
+
+      .cls-2 {
+        fill: #444;
+      }
+    </style>
+    <radialGradient id="_무제_그라디언트_29" data-name="무제 그라디언트 29" cx="16" cy="16" fx="16" fy="16" r="15" gradientUnits="userSpaceOnUse">
+      <stop offset=".75" stop-color="#444"/>
+      <stop offset="1" stop-color="#444" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g id="Black">
+    <path class="cls-2" d="M16,27c-6.07,0-11-4.93-11-11s4.93-11,11-11,11,4.93,11,11-4.93,11-11,11ZM16,7c-4.96,0-9,4.04-9,9s4.04,9,9,9,9-4.04,9-9-4.04-9-9-9Z"/>
+  </g>
+  <g id="Alpha">
+    <path class="cls-1" d="M16,4c6.63,0,12,5.37,12,12s-5.37,12-12,12-12-5.37-12-12,5.37-12,12-12M16,1C7.73,1,1,7.73,1,16s6.73,15,15,15,15-6.73,15-15S24.27,1,16,1h0Z"/>
+  </g>
+</svg>

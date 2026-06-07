@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_평형" data-name="평형" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="Black">
+    <path class="cls-1" d="M30,1H2c-.55,0-1,.45-1,1v28c0,.55.45,1,1,1h28c.55,0,1-.45,1-1V2c0-.55-.45-1-1-1ZM29,10h-7V3h7v7ZM12,20v-8h8v8h-8ZM20,22v7h-8v-7h8ZM10,20H3v-8h7v8ZM12,10V3h8v7h-8ZM22,12h7v8h-7v-8ZM10,3v7H3V3h7ZM3,22h7v7H3v-7ZM22,29v-7h7v7h-7Z"/>
+  </g>
+</svg>

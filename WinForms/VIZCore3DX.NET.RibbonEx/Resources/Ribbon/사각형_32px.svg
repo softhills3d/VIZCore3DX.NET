@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_스케치" data-name="스케치" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="_사각형" data-name="사각형">
+    <g id="Black">
+      <path class="cls-1" d="M29,31H3c-1.1,0-2-.9-2-2V3c0-1.1.9-2,2-2h26c1.1,0,2,.9,2,2v26c0,1.1-.9,2-2,2ZM5,27h22V5H5v22Z"/>
+    </g>
+  </g>
+</svg>

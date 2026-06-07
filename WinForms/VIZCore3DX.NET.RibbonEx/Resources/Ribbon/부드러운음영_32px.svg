@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_부드러운_음영" data-name="부드러운 음영" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_무제_그라디언트_14);
+      }
+
+      .cls-2 {
+        fill: #444;
+      }
+    </style>
+    <linearGradient id="_무제_그라디언트_14" data-name="무제 그라디언트 14" x1="6.81" y1="6.81" x2="25.19" y2="25.19" gradientUnits="userSpaceOnUse">
+      <stop offset=".1" stop-color="#444" stop-opacity="0"/>
+      <stop offset=".9" stop-color="#444"/>
+    </linearGradient>
+  </defs>
+  <g id="Black">
+    <path class="cls-2" d="M16,31c-8.27,0-15-6.73-15-15S7.73,1,16,1s15,6.73,15,15-6.73,15-15,15ZM16,3c-7.17,0-13,5.83-13,13s5.83,13,13,13,13-5.83,13-13S23.17,3,16,3Z"/>
+    <path class="cls-1" d="M16,3c-7.17,0-13,5.83-13,13s5.83,13,13,13,13-5.83,13-13S23.17,3,16,3Z"/>
+  </g>
+</svg>

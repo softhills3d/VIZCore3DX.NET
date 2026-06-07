@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_스케치" data-name="스케치" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="_원" data-name="원">
+    <g id="Black">
+      <path class="cls-1" d="M16,31c-8.27,0-15-6.73-15-15S7.73,1,16,1s15,6.73,15,15-6.73,15-15,15ZM16,5c-6.07,0-11,4.93-11,11s4.93,11,11,11,11-4.93,11-11-4.93-11-11-11Z"/>
+    </g>
+  </g>
+</svg>

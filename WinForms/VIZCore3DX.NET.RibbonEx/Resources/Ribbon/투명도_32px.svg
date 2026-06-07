@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_투명도" data-name="투명도" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="Black">
+    <path class="cls-1" d="M31,22V2c0-.55-.45-1-1-1H10c-.55,0-1,.45-1,1v7H2c-.55,0-1,.45-1,1v20c0,.55.45,1,1,1h20c.55,0,1-.45,1-1v-7h7c.55,0,1-.45,1-1ZM3,11h18v18H3V11ZM29,21h-6v-11c0-.55-.45-1-1-1h-11V3h18v18Z"/>
+    <path class="cls-1" d="M11,19h-2v3c0,.55.45,1,1,1h3v-2h-2v-2Z"/>
+    <rect class="cls-1" x="15" y="21" width="4" height="2"/>
+    <rect class="cls-1" x="9" y="13" width="2" height="4"/>
+  </g>
+</svg>

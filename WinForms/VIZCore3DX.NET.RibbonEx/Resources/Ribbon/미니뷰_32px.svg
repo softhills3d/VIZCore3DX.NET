@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_뷰표시" data-name="뷰표시" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #6ebcd6;
+      }
+
+      .cls-2 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="Mini_View" data-name="Mini View">
+    <g id="Black-3" data-name="Black">
+      <path class="cls-2" d="M30,3H2c-.55,0-1,.45-1,1v24c0,.55.45,1,1,1h28c.55,0,1-.45,1-1V4c0-.55-.45-1-1-1ZM3,5h26v2H3v-2ZM3,9h26v8h-13c-.55,0-1,.45-1,1v9H3V9ZM17,27v-8h12v8h-12Z"/>
+    </g>
+    <g id="Blue-3" data-name="Blue">
+      <rect class="cls-1" x="17" y="19" width="12" height="8"/>
+    </g>
+  </g>
+</svg>

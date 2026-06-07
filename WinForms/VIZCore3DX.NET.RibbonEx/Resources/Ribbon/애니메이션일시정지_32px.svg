@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_일시정지" data-name="일시정지" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="Black">
+    <path class="cls-1" d="M16,31.02c-8.27,0-15-6.73-15-15S7.73,1.02,16,1.02s15,6.73,15,15-6.73,15-15,15ZM16,3.02c-7.17,0-13,5.83-13,13s5.83,13,13,13,13-5.83,13-13S23.17,3.02,16,3.02Z"/>
+    <rect class="cls-1" x="17" y="9.02" width="6" height="14" rx="1" ry="1"/>
+    <rect class="cls-1" x="9" y="9.02" width="6" height="14" rx="1" ry="1"/>
+  </g>
+</svg>

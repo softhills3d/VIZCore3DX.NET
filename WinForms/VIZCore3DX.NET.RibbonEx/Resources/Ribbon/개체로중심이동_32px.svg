@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_기본" data-name="기본" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #444;
+      }
+    </style>
+  </defs>
+  <g id="_개체로_중심이동" data-name="개체로 중심이동">
+    <g id="Black">
+      <path class="cls-1" d="M13,31H2c-.55,0-1-.45-1-1v-11h2v10h10v2Z"/>
+      <path class="cls-1" d="M3,13H1V2c0-.55.45-1,1-1h11v2H3v10Z"/>
+      <path class="cls-1" d="M30,31h-11v-2h10v-10h2v11c0,.55-.45,1-1,1Z"/>
+      <path class="cls-1" d="M31,13h-2V3h-10V1h11c.55,0,1,.45,1,1v11Z"/>
+      <path class="cls-1" d="M24,15h-4v-2c0-.55-.45-1-1-1h-2v-4h-2v4h-2c-.55,0-1,.45-1,1v2h-4v2h4v2c0,.55.45,1,1,1h2v4h2v-4h2c.55,0,1-.45,1-1v-2h4v-2ZM18,18h-4v-4h4v4Z"/>
+    </g>
+  </g>
+</svg>

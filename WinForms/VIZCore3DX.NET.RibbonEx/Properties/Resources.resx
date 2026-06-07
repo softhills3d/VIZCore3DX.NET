@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="각도_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\각도_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="거리_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\거리_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="그림자_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\그림자_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="기본단면_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\기본단면_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="노트2D_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\노트2D_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="노트3D_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\노트3D_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="노트모두보이기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\노트모두보이기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="노트모두삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\노트모두삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="노트모두숨기기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\노트모두숨기기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="노트선택삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\노트선택삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="다른이름저장_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\다른이름저장_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면상자_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면상자_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면선택삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면선택삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면전체삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면전체삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="면적_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\면적_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모델추가_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모델추가_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모두끄기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모두끄기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모두선택_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모두선택_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모두초기화_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모두초기화_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모두켜기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모두켜기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모서리표시_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모서리표시_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="부드러운음영_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\부드러운음영_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="비선택끄기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\비선택끄기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="새모델_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\새모델_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="색상_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\색상_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선택끄기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선택끄기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선택반전_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선택반전_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선택상자_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선택상자_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선택상자반복_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선택상자반복_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선택초기화_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선택초기화_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선택취소_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선택취소_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="열기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\열기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="와이어다각형_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\와이어다각형_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="원근투영_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\원근투영_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="은선제거_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\은선제거_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="좌표_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\좌표_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="초기위치로_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\초기위치로_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="최단거리_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\최단거리_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="측정모두보이기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\측정모두보이기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="측정모두삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\측정모두삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="측정모두숨기기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\측정모두숨기기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="측정선택삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\측정선택삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="클립보드로복사_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\클립보드로복사_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="투명도_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\투명도_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="평행투영_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\평행투영_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="표면노트_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\표면노트_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="화면에맞춤_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\화면에맞춤_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="ISOPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\ISOPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Rotate_XMinus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Rotate_XMinus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Rotate_XPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Rotate_XPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Rotate_YMinus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Rotate_YMinus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Rotate_YPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Rotate_YPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Rotate_ZMinus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Rotate_ZMinus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Rotate_ZPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Rotate_ZPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="X축정렬_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\X축정렬_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="XMinus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\XMinus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="XPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\XPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="XRay_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\XRay_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Y축정렬_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Y축정렬_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="YMinus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\YMinus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="YPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\YPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="Z축정렬_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\Z축정렬_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="ZMinus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\ZMinus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="ZPlus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\ZPlus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="간섭검사시작_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\간섭검사시작_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="간섭모두삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\간섭모두삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="간섭심볼지우기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\간섭심볼지우기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="데칼모두삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\데칼모두삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="문자데칼_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\문자데칼_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="사용자뷰_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\사용자뷰_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="사용자뷰모두삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\사용자뷰모두삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="사용자뷰목록_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\사용자뷰목록_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="애니메이션시작_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\애니메이션시작_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="애니메이션일시정지_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\애니메이션일시정지_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="애니메이션정지_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\애니메이션정지_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="이미지데칼_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\이미지데칼_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="개체로비행_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\개체로비행_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="개체로중심이동_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\개체로중심이동_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="거리XYZ_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\거리XYZ_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="고정구름_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\고정구름_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="구름_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\구름_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="구조내보내기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\구조내보내기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="글자_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\글자_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면모두보이기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면모두보이기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면모두숨기기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면모두숨기기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면비활성화_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면비활성화_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="단면활성화_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\단면활성화_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="렌더링_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\렌더링_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="마크업열기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\마크업열기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="마크업저장_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\마크업저장_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모델내보내기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모델내보내기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="모델트리_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\모델트리_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="미니뷰_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\미니뷰_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="미리보기_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\미리보기_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="박스줌_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\박스줌_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="방향전환_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\방향전환_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="방향회전Minus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\방향회전Minus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="방향회전Plus_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\방향회전Plus_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="분해_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\분해_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="뷰툴바_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\뷰툴바_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="빠른검색_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\빠른검색_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="사각형_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\사각형_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="선_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\선_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="스케치선택삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\스케치선택삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="스케치영역삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\스케치영역삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="스케치전체삭제_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\스케치전체삭제_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="연속거리_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\연속거리_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="연속선_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\연속선_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="원_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\원_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="음영_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\음영_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="자유곡선_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\자유곡선_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="조작자_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\조작자_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="좌표축_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\좌표축_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="축거리측정X_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\축거리측정X_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="축거리측정Y_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\축거리측정Y_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="축거리측정Z_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\축거리측정Z_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="타원_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\타원_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="펜_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\펜_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="평행면거리_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\평행면거리_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="화살표_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\화살표_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="환경조명_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\환경조명_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="회전이동_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\회전이동_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="BOP_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\BOP_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+  <data name="COP_32px" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ribbon\COP_32px.svg;DevExpress.Utils.Svg.SvgImage, DevExpress.Data.v25.2, Version=25.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a</value>
+  </data>
+</root>
