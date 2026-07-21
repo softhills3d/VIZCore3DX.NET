@@ -1,0 +1,10 @@
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.ShStructure: 형식이 더 이상 사용되지 않습니다.에 대한 스텁을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.Core.ModelFile: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 스텁을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.VIZX.VizxFile: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 스텁을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.VIZX.VizxDetector: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 스텁을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.VIZX.VizxLoader: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 스텁을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.ShStructure: 형식이 더 이상 사용되지 않습니다.에 대한 shim을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.Core.ModelFile: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 shim을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.VIZX.VizxFile: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 shim을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.VIZX.VizxDetector: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 shim을 생성할 수 없습니다.
+C:\project\VIZCore3DX.NET-main\WinForms\VIZCore3DX.NET.Structure\Fakes\ShdCore.NET.fakes : warning : ShdCore.NET.VIZX.VizxLoader: 형식이 exported or assembly(ShdCore.NET.1.11.26.519.Fakes)에 표시되지 않습니다.에 대한 shim을 생성할 수 없습니다.
