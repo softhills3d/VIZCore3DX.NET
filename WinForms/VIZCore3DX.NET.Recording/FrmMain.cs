@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VIZCore3DX.NET.Recording
@@ -25,12 +17,12 @@ namespace VIZCore3DX.NET.Recording
             vizcore3dx = new VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
 
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3D;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
             // Example
@@ -102,7 +94,7 @@ namespace VIZCore3DX.NET.Recording
 
             vizcore3dx.Model.Close();
         }
-        
+
         private void btnRecord_Click(object sender, EventArgs e)
         {
             bool recordFlag;
@@ -126,7 +118,7 @@ namespace VIZCore3DX.NET.Recording
                 btnRecord.Enabled = false;
                 btnStop.Enabled = true;
             }
-            
+
         }
         private void btnStop_Click(object sender, EventArgs e)
         {
@@ -153,6 +145,6 @@ namespace VIZCore3DX.NET.Recording
             }
         }
 
-        
+
     }
 }

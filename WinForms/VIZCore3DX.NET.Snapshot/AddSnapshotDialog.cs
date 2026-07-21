@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace VIZCore3DX.NET.Snapshot
@@ -20,7 +13,7 @@ namespace VIZCore3DX.NET.Snapshot
 
         public AddSnapshotDialog()
         {
-            InitializeComponent();            
+            InitializeComponent();
         }
 
         private void button1_Click(object sender, EventArgs e)

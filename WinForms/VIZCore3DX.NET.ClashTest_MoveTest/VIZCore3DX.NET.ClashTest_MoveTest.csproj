@@ -48,9 +48,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="VIZCore3DX.NET">
-      <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
-    </Reference>
+	<Reference Include="VIZCore3DX.NET">
+	 <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrmMain.cs">

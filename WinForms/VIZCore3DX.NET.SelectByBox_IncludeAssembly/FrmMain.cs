@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 
@@ -13,23 +9,23 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
 {
     public partial class FrmMain : Form
     {
-        public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
+        public VIZCore3DXControl vizcore3dx { get; set; }
 
         public FrmMain()
         {
             InitializeComponent();
 
-            VIZCore3DX.NET.ModuleInitializer.Run();
+            ModuleInitializer.Run();
 
             vizcore3dx = new VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
 
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3D;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
             // Example
@@ -38,14 +34,14 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             //vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
 
             // 라이선스 서버를 통한 인증
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
+            LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
 
 
             // ================================================================
             // License
             // ================================================================
             // VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
-            if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
+            if (result != LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -103,11 +99,11 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
         }
         private void btnSelectByBox_Click(object sender, EventArgs e)
         {
-            vizcore3dx.Object3D.SelectByBox(VIZCore3DX.NET.Data.Object3DSelectionBoxModes.MULTI);
+            vizcore3dx.Object3D.SelectByBox(Object3DSelectionBoxModes.MULTI);
         }
         private void btnSelectedAll_Click(object sender, EventArgs e)
         {
-            List<VIZCore3DX.NET.Data.Node> selectedNode = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.SELECTED_ALL);
+            List<Node> selectedNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_ALL);
 
             resultGrid.DataSource = selectedNode;
             resultGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -117,8 +113,8 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
 
         private void btnIncludeAssembly_Click(object sender, EventArgs e)
         {
-            List<VIZCore3DX.NET.Data.Node> selectedNode = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.SELECTED_ALL); // selectByBox로 선택한 PART 노드
-            List<VIZCore3DX.NET.Data.Node> fullNode = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.ALL); // 모델의 전체 노드
+            List<Node> selectedNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_ALL); // selectByBox로 선택한 PART 노드
+            List<Node> fullNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.ALL); // 모델의 전체 노드
 
             var mapFull = fullNode.ToDictionary(n => n.Index); // 전체 노드의 Index Dictionary
 
@@ -128,7 +124,7 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             var queue = new Queue<Node>(); // 상위 탐색 큐
             var childCounts = new Dictionary<int, int>(); // 자식노드 개수
 
-            foreach (var node in selectedNode) // [Step 1] 선택된 노드(PART)들의 부모 노드 찾기
+            foreach (var node in selectedNode) // 선택된 노드(PART)들의 부모 노드 찾기
             {
                 // 딕셔너리에서 바로 Index로 부모 조회
                 if (mapFull.TryGetValue(node.ParentIndex, out Node parent))
@@ -141,7 +137,7 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
                 }
             }
 
-            while (queue.Count > 0) // [Step 2] 모든 자식이 있는 경우 상위 노드(Assembly) 찾기
+            while (queue.Count > 0) // 모든 자식이 있는 경우 상위 노드(Assembly) 찾기
             {
                 var child = queue.Dequeue();
 

@@ -61,12 +61,12 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             vizcore3dx = new VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
 
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3DX;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
             splitContainer2.Panel1.Controls.Add(vizcore3dx);
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3DX(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
             // License

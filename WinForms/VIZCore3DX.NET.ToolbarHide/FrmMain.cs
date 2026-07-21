@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
-using VIZCore3DX.NET.Data;
-using VIZCore3DX.NET.Event;
-using VIZCore3DX.NET.Manager;
-using static VIZCore3DX.NET.Manager.SectionManager;
 
 namespace VIZCore3DX.NET.ToolbarHide
 {
     public partial class FrmMain : Form
     {
         public VIZCore3DX.NET.VIZCore3DXControl vizcore3dx { get; set; }
-
-        public VIZCore3DX.NET.Data.SectionItem Section { get; set; }
-
-        private bool isScroll = false;
 
         public FrmMain()
         {
@@ -25,12 +16,12 @@ namespace VIZCore3DX.NET.ToolbarHide
             vizcore3dx = new VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
 
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3D;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
             // Example
@@ -84,7 +75,7 @@ namespace VIZCore3DX.NET.ToolbarHide
 
         private void InitializeVIZCore3DXEvent()
         {
-            
+
         }
 
         private void AddToolbar()
@@ -113,14 +104,14 @@ namespace VIZCore3DX.NET.ToolbarHide
         {
             switch (name)
             {
-                case "ToolbarMain":      return vizcore3dx.ToolbarMain;
-                case "ToolbarNote":      return vizcore3dx.ToolbarNote;
-                case "ToolbarMeasure":   return vizcore3dx.ToolbarMeasure;
-                case "ToolbarSection":   return vizcore3dx.ToolbarSection;
-                case "ToolbarSnapshot":  return vizcore3dx.ToolbarSnapshot;
-                case "ToolbarDecal":     return vizcore3dx.ToolbarDecal;
+                case "ToolbarMain": return vizcore3dx.ToolbarMain;
+                case "ToolbarNote": return vizcore3dx.ToolbarNote;
+                case "ToolbarMeasure": return vizcore3dx.ToolbarMeasure;
+                case "ToolbarSection": return vizcore3dx.ToolbarSection;
+                case "ToolbarSnapshot": return vizcore3dx.ToolbarSnapshot;
+                case "ToolbarDecal": return vizcore3dx.ToolbarDecal;
                 case "ToolbarPrimitive": return vizcore3dx.ToolbarPrimitive;
-                default:                 return null;
+                default: return null;
             }
         }
 

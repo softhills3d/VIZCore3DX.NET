@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 using VIZCore3DX.NET.Event;
 
 namespace VIZCore3DX.NET.SectionBoxControl
 {
-    public partial class FrmMain: Form
+    public partial class FrmMain : Form
     {
         /// <summary>
         /// VIZCore3DX.NET Control
@@ -32,13 +25,13 @@ namespace VIZCore3DX.NET.SectionBoxControl
             VIZCore3DX.NET.ModuleInitializer.Run();
             vizcore3dx = new VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3D;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
             // Panel Control Add
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // 라이선스 서버를 통한 인증
             vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
@@ -73,7 +66,7 @@ namespace VIZCore3DX.NET.SectionBoxControl
                 txtMinX.Text = bbox.MinX.ToString();
                 txtMinY.Text = bbox.MinY.ToString();
                 txtMinZ.Text = bbox.MinZ.ToString();
-                
+
                 // Max 값
                 txtMaxX.Text = bbox.MaxX.ToString();
                 txtMaxY.Text = bbox.MaxY.ToString();
@@ -160,7 +153,7 @@ namespace VIZCore3DX.NET.SectionBoxControl
 
             // Section Box의 바운드 박스(사이즈) 정보 가져오기 
             VIZCore3DX.NET.Data.BoundBox3D bbox = Section.BoundBox;
-            
+
             // Min 값 지정 하여 Section Box 반영
             bbox.MinX = Convert.ToSingle(txtMinX.Text);
             bbox.MinY = Convert.ToSingle(txtMinY.Text);

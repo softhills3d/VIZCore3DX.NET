@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
-using VIZCore3DX.NET.Data;
-using VIZCore3DX.NET.Event;
-using VIZCore3DX.NET.Manager;
-using static VIZCore3DX.NET.Manager.SectionManager;
 
 namespace VIZCore3DX.NET.VIZXtoVIZ
 {
@@ -25,10 +19,10 @@ namespace VIZCore3DX.NET.VIZXtoVIZ
             vizcore3dx.Dock = DockStyle.Fill;
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
 
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3D;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
             // Example
@@ -121,25 +115,25 @@ namespace VIZCore3DX.NET.VIZXtoVIZ
                 startInfo.Arguments = $"/k {exeFileName} -mode VIZX2VIZ -i \"{inputFilePath}\" -o \"{outputFilePath}\" {argument}";
             }
 
-                try
-                {
-                    bool status = vizcore3dx.EnableWaitForm;
-                    Process p = Process.Start(startInfo);
+            try
+            {
+                bool status = vizcore3dx.EnableWaitForm;
+                Process p = Process.Start(startInfo);
 
-                    vizcore3dx.EnableWaitForm = false;
-                    vizcore3dx.ShowWaitForm();
-                    vizcore3dx.UpdateWaitForm("Please Wait...", "Processing...");
+                vizcore3dx.EnableWaitForm = false;
+                vizcore3dx.ShowWaitForm();
+                vizcore3dx.UpdateWaitForm("Please Wait...", "Processing...");
 
-                    // VIZX to VIZ 변환기가 종료될 때 까지 Wait
-                    p.WaitForExit();
+                // VIZX to VIZ 변환기가 종료될 때 까지 Wait
+                p.WaitForExit();
 
-                    vizcore3dx.CloseWaitForm();
-                    vizcore3dx.EnableWaitForm = status;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error : {ex.Message}");
-                }
+                vizcore3dx.CloseWaitForm();
+                vizcore3dx.EnableWaitForm = status;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error : {ex.Message}");
+            }
         }
 
         private void btnOpenModel_Click(object sender, EventArgs e)
@@ -194,7 +188,7 @@ namespace VIZCore3DX.NET.VIZXtoVIZ
             if (vizcore3dx.Model.IsOpen() == false) return;
             if (convertPath.Text == "") return;
 
-            DialogResult result = MessageBox.Show("The current file is saved.", "Caution", MessageBoxButtons.OKCancel,MessageBoxIcon.Information);
+            DialogResult result = MessageBox.Show("The current file is saved.", "Caution", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
             if (result == DialogResult.Cancel) return;
 
             string outputFileName = "output.viz";

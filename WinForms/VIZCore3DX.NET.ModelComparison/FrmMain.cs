@@ -21,155 +21,120 @@ namespace VIZCore3DX.NET.ModelComparison
             vizcore1.Dock = DockStyle.Fill;
             splitContainer2.Panel1.Controls.Add(vizcore1);
 
-            vizcore1.OnInitializedVIZCore3DX += VIZCore3D1_OnInitializedVIZCore3DX;
+            vizcore1.OnInitializedVIZCore3DX += VIZCore3DX1_OnInitializedVIZCore3DX;
 
             // 모델2 뷰어 생성 및 분할 패널 오른쪽에 배치
             vizcore2 = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore2.Dock = DockStyle.Fill;
             splitContainer2.Panel2.Controls.Add(vizcore2);
 
-            vizcore2.OnInitializedVIZCore3DX += VIZCore3D2_OnInitializedVIZCore3DX;
+            vizcore2.OnInitializedVIZCore3DX += VIZCore3DX2_OnInitializedVIZCore3DX;
 
             // 분할 패널을 좌우 동일한 크기로 설정
             splitContainer2.SplitterDistance = this.Width / 2;
         }
 
         #region Event - OnInitializedVIZCore3DX
-        private void VIZCore3D1_OnInitializedVIZCore3DX(object sender, EventArgs e)
+        private void VIZCore3DX1_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
-            #region 라이선스
-            VIZCore3DX.NET.Utility.LicenseHelper.LicenseData licenseData = VIZCore3DX.NET.Utility.LicenseHelper.GetLicenseDataKind();
+            // ================================================================
+            // License
+            // ================================================================
+            VIZCore3DX.NET.Data.LicenseResults result =
+                vizcore1.License.LicenseServer("192.168.100.252", 8901);
 
-            if (licenseData == VIZCore3DX.NET.Utility.LicenseHelper.LicenseData.NONE)
+            if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
-                VIZCore3DX.NET.Dialogs.LicenseDialog dlg = new VIZCore3DX.NET.Dialogs.LicenseDialog(vizcore1);
-                if (dlg.ShowDialog() != DialogResult.OK)
-                {
-                    this.Close();
-                    return;
-                }
+                MessageBox.Show(
+                    string.Format("VIEWER 1 LICENSE CODE : {0}", result.ToString()),
+                    "VIZCore3DX.NET",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
             }
 
-            licenseData = VIZCore3DX.NET.Utility.LicenseHelper.GetLicenseDataKind();
-
-            Dictionary<string, string> licenseInfo = VIZCore3DX.NET.Utility.LicenseHelper.GetLicenseInformation();
-            VIZCore3DX.NET.Data.LicenseResults licenseResult = VIZCore3DX.NET.Data.LicenseResults.NONE;
-
-            if (licenseData == VIZCore3DX.NET.Utility.LicenseHelper.LicenseData.SERVER)
-            {
-                licenseResult = vizcore1.License.LicenseServer(
-                    licenseInfo.ContainsKey("LICENSE_IP") == true ? licenseInfo["LICENSE_IP"] : String.Empty
-                    , licenseInfo.ContainsKey("LICENSE_PORT") == true ? Convert.ToInt32(licenseInfo["LICENSE_PORT"]) : 8901
-                    , VIZCore3DX.NET.Data.Products.AUTO
-                    );
-            }
-            else if (licenseData == VIZCore3DX.NET.Utility.LicenseHelper.LicenseData.FILE)
-            {
-                licenseResult = vizcore1.License.LicenseFile(
-                    licenseInfo.ContainsKey("LICENSE_FILE") == true ? licenseInfo["LICENSE_FILE"] : String.Empty
-                    , VIZCore3DX.NET.Data.Products.AUTO
-                    );
-            }
-
-            if (licenseResult != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
-            {
-                MessageBox.Show(string.Format("LICENSE CODE : {0}", licenseResult.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                VIZCore3DX.NET.Dialogs.LicenseDialog dlg = new VIZCore3DX.NET.Dialogs.LicenseDialog(vizcore1);
-                if (dlg.ShowDialog() != DialogResult.OK)
-                {
-                    this.Close();
-                    return;
-                }
-            }
-            #endregion
-
-            // 모델1 뷰어에서 불필요한 툴바 숨김
-            vizcore1.ToolbarNote.Visible = false;
-            vizcore1.ToolbarMeasure.Visible = false;
-            vizcore1.ToolbarSection.Visible = false;
-            vizcore1.ToolbarClash.Visible = false;
-            vizcore1.ToolbarAnimation.Visible = false;
-
+            InitializeVIZCore3DX(vizcore1);
         }
 
-        private void VIZCore3D2_OnInitializedVIZCore3DX(object sender, EventArgs e)
+        private void VIZCore3DX2_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
-            #region 라이선스
-            VIZCore3DX.NET.Utility.LicenseHelper.LicenseData licenseData = VIZCore3DX.NET.Utility.LicenseHelper.GetLicenseDataKind();
+            // ================================================================
+            // License
+            // ================================================================
+            VIZCore3DX.NET.Data.LicenseResults result =
+                vizcore2.License.LicenseServer("192.168.100.252", 8901);
 
-            if (licenseData == VIZCore3DX.NET.Utility.LicenseHelper.LicenseData.NONE)
+            if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
-                VIZCore3DX.NET.Dialogs.LicenseDialog dlg = new VIZCore3DX.NET.Dialogs.LicenseDialog(vizcore2);
-                if (dlg.ShowDialog() != DialogResult.OK)
-                {
-                    this.Close();
-                    return;
-                }
+                MessageBox.Show(
+                    string.Format("VIEWER 2 LICENSE CODE : {0}", result.ToString()),
+                    "VIZCore3DX.NET",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+                return;
             }
 
-            licenseData = VIZCore3DX.NET.Utility.LicenseHelper.GetLicenseDataKind();
-
-            Dictionary<string, string> licenseInfo = VIZCore3DX.NET.Utility.LicenseHelper.GetLicenseInformation();
-            VIZCore3DX.NET.Data.LicenseResults licenseResult = VIZCore3DX.NET.Data.LicenseResults.NONE;
-
-            if (licenseData == VIZCore3DX.NET.Utility.LicenseHelper.LicenseData.SERVER)
-            {
-                licenseResult = vizcore2.License.LicenseServer(
-                    licenseInfo.ContainsKey("LICENSE_IP") == true ? licenseInfo["LICENSE_IP"] : String.Empty
-                    , licenseInfo.ContainsKey("LICENSE_PORT") == true ? Convert.ToInt32(licenseInfo["LICENSE_PORT"]) : 8901
-                    , VIZCore3DX.NET.Data.Products.AUTO
-                    );
-            }
-            else if (licenseData == VIZCore3DX.NET.Utility.LicenseHelper.LicenseData.FILE)
-            {
-                licenseResult = vizcore2.License.LicenseFile(
-                    licenseInfo.ContainsKey("LICENSE_FILE") == true ? licenseInfo["LICENSE_FILE"] : String.Empty
-                    , VIZCore3DX.NET.Data.Products.AUTO
-                    );
-            }
-
-            if (licenseResult != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
-            {
-                MessageBox.Show(string.Format("LICENSE CODE : {0}", licenseResult.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                VIZCore3DX.NET.Dialogs.LicenseDialog dlg = new VIZCore3DX.NET.Dialogs.LicenseDialog(vizcore2);
-                if (dlg.ShowDialog() != DialogResult.OK)
-                {
-                    this.Close();
-                    return;
-                }
-            }
-            #endregion
-
-            // 모델2 뷰어에서 불필요한 툴바 숨김
-            vizcore2.ToolbarNote.Visible = false;
-            vizcore2.ToolbarMeasure.Visible = false;
-            vizcore2.ToolbarSection.Visible = false;
-            vizcore2.ToolbarClash.Visible = false;
-            vizcore2.ToolbarAnimation.Visible = false;
-
+            InitializeVIZCore3DX(vizcore2);
         }
         #endregion
+        private void InitializeVIZCore3DX(VIZCore3DX.NET.VIZCore3DXControl vizcore)
+        {
+            if (vizcore == null) return;
+
+            vizcore.BeginUpdate();
+
+            // ================================================================
+            // 설정 - 툴바
+            // ================================================================
+            vizcore.ToolbarMain.Visible = true;
+            vizcore.ToolbarNote.Visible = false;
+            vizcore.ToolbarMeasure.Visible = false;
+            vizcore.ToolbarSection.Visible = false;
+            vizcore.ToolbarSnapshot.Visible = false;
+
+            // 비교 예제에서 기존에 숨기던 툴바
+            vizcore.ToolbarClash.Visible = false;
+            vizcore.ToolbarAnimation.Visible = false;
+
+            vizcore.EndUpdate();
+        }
 
         private void btnOpen1_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = vizcore1.Model.OpenFilter;
+
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             txtModel1.Text = dlg.FileName;
 
-            vizcore1.Model.Open(dlg.FileName);
+            bool result = vizcore1.Model.Open(dlg.FileName);
+
+            if (result == false)
+            {
+                MessageBox.Show("모델 1 열기 실패", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
 
         private void btnOpen2_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = vizcore2.Model.OpenFilter;
+
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             txtModel2.Text = dlg.FileName;
 
-            vizcore2.Model.Open(dlg.FileName);
+            bool result = vizcore2.Model.Open(dlg.FileName);
+
+            if (result == false)
+            {
+                MessageBox.Show("모델 2 열기 실패", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
 
         /// <summary>

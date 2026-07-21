@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 using VIZCore3DX.NET.Event;
@@ -243,7 +238,7 @@ namespace VIZCore3DX.NET.Frame
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
             if (vizcore3dx.Frame.HasFrame == false) return;
-            
+
             vizcore3dx.Frame.Visible = true;
         }
 
@@ -319,7 +314,7 @@ namespace VIZCore3DX.NET.Frame
         private void lvFrame_SelectedIndexChanged(object sender, EventArgs e)
         {
             int selectedCount = lvFrame.SelectedItems.Count;
-            int selectedIndex = (selectedCount > 0 ? lvFrame.SelectedItems[0].Index : -1);
+            int selectedIndex = selectedCount > 0 ? lvFrame.SelectedItems[0].Index : -1;
             Log($"selected index changed : {selectedIndex}");
 
             UpdateFrameLineListView();
