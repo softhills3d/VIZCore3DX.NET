@@ -39,8 +39,7 @@ namespace VIZCore3DX.NET.Capture3D
             //vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
 
             // 라이선스 서버를 통한 인증
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
-
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
 
             // ================================================================
             // License
@@ -51,18 +50,31 @@ namespace VIZCore3DX.NET.Capture3D
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             // 모델 로드
             InitializeVIZCore3DX();
         }
         private void VIZCore3DX_MiniView_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
+            // ================================================================
+            // Example
+            // ================================================================
+            // 라이선스 파일을 통한 인증
+            //vizcore3dx_MiniView.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
+
             // 라이선스 서버를 통한 인증
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx_MiniView.License.LicenseServer("192.168.100.252", 8901);
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx_MiniView.License.LicenseServer("127.0.0.1", 8901);
+
+            // ================================================================
+            // License
+            // ================================================================
+            // VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx_MiniView.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
             if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("MINI LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             vizcore3dx_MiniView.ToolbarMain.Visible = false;
             vizcore3dx_MiniView.ToolbarNote.Visible = false;
             vizcore3dx_MiniView.ToolbarMeasure.Visible = false;

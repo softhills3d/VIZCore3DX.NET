@@ -16,12 +16,12 @@ namespace VIZCore3DX.NET.RenderScale
             vizcore3dx = new VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
 
-            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3D_OnInitializedVIZCore3D;
+            vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
 
-        private void VIZCore3D_OnInitializedVIZCore3D(object sender, EventArgs e)
+        private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
             // Example
@@ -30,8 +30,7 @@ namespace VIZCore3DX.NET.RenderScale
             //vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
 
             // 라이선스 서버를 통한 인증
-            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
-
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
 
             // ================================================================
             // License

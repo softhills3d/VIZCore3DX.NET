@@ -39,13 +39,13 @@ namespace VIZCore3DX.NET.ImportAttribute
             //vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
 
             // 라이선스 서버를 통한 인증
-            LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
+            VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
 
             // ================================================================
             // License
             // ================================================================
-            //LicenseResults result = vizcore3dx.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
-            if (result != LicenseResults.SUCCESS)
+            // VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
+            if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
