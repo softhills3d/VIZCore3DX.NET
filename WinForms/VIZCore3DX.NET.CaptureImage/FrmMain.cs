@@ -47,8 +47,6 @@ namespace VIZCore3DX.NET.CaptureImage
 
             InitializeVIZCore3DX();
 
-
-            // Init. Example
             InitExample();
         }
 
@@ -88,7 +86,6 @@ namespace VIZCore3DX.NET.CaptureImage
 
         private void EnableRenderingEffect(bool enable)
         {
-            vizcore3dx.View.PhongShading = enable;
             vizcore3dx.View.SilhouetteEdge = enable;
             vizcore3dx.View.RealtimeShadow = enable;
             vizcore3dx.View.ShadingEffect = enable;
@@ -135,8 +132,6 @@ namespace VIZCore3DX.NET.CaptureImage
         private void btnCapture_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-
-            // ViewManager에서 Background Color 조정. 현재 버전에서는 지원하지 않음
 
             System.Drawing.Image img = vizcore3dx.View.CaptureImage();
 

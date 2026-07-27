@@ -69,7 +69,6 @@ namespace VIZCore3DX.NET.SearchSpace
             }
 
             InitializeVIZCore3DX();
-            //InitializeVIZCore3DXEvent();
         }
 
         private void InitializeVIZCore3DX()
