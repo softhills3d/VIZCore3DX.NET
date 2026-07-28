@@ -51,11 +51,8 @@ namespace VIZCore3DX.NET.GridThreeD
             vizcore3dx.ToolbarMeasure.Visible = false;
             vizcore3dx.ToolbarSection.Visible = false;
             vizcore3dx.ToolbarSnapshot.Visible = false;
-            vizcore3dx.ToolbarClash.Visible = false;
             vizcore3dx.ToolbarDecal.Visible = false;
             vizcore3dx.ToolbarPrimitive.Visible = false;
-            vizcore3dx.ToolbarAnimation.Visible = false;
-            vizcore3dx.ToolbarSimulation.Visible = false;
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작

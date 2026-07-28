@@ -68,11 +68,8 @@ namespace VIZCore3DX.NET.SelectParentAssembly
             vizcore3dx.ToolbarMeasure.Visible = false;
             vizcore3dx.ToolbarSection.Visible = false;
             vizcore3dx.ToolbarSnapshot.Visible = false;
-            vizcore3dx.ToolbarClash.Visible = false;
             vizcore3dx.ToolbarDecal.Visible = false;
             vizcore3dx.ToolbarPrimitive.Visible = false;
-            vizcore3dx.ToolbarAnimation.Visible = false;
-            vizcore3dx.ToolbarSimulation.Visible = false;
 
 
             // ================================================================

@@ -98,10 +98,6 @@ namespace VIZCore3DX.NET.ModelComparison
             vizcore.ToolbarSection.Visible = false;
             vizcore.ToolbarSnapshot.Visible = false;
 
-            // 비교 예제에서 기존에 숨기던 툴바
-            vizcore.ToolbarClash.Visible = false;
-            vizcore.ToolbarAnimation.Visible = false;
-
             vizcore.EndUpdate();
         }
 

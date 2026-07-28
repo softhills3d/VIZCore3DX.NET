@@ -435,7 +435,6 @@ namespace VIZCore3DX.NET.GridThreeD
             viewer.SelectionBox.OnSelectionBoxSelectedEvent -= SelectionBox_OnSelected;
             viewer.SelectionBox.OnSelectionBoxSelectedEvent += SelectionBox_OnSelected;
 
-            viewer.SelectionBox.EnabledMouseSelection(true);
             viewer.SelectionBox.IsManipulatorEnabled = false;
             viewer.SelectionBox.IsNameVisible = false;
 
@@ -552,20 +551,11 @@ namespace VIZCore3DX.NET.GridThreeD
             BoundBox3D box = GetGridTotalBoundBox();
             if (box == null || box.IsValid() == false) return;
 
-            vizcore3dxGrid.SelectionBox.EnabledMouseSelection(false);
+            vizcore3dxGrid.View.EnableInitialCamera = true;
+            vizcore3dxGrid.View.InitialCameraBoundBox = box;
+            vizcore3dxGrid.View.ResetView();
 
-            try
-            {
-                vizcore3dxGrid.View.EnableInitialCamera = true;
-                vizcore3dxGrid.View.InitialCameraBoundBox = box;
-                vizcore3dxGrid.View.ResetView();
-
-                if (topView) vizcore3dxGrid.View.MoveCamera(CameraDirection.Z_PLUS);
-            }
-            finally
-            {
-                vizcore3dxGrid.SelectionBox.EnabledMouseSelection(true);
-            }
+            if (topView) vizcore3dxGrid.View.MoveCamera(CameraDirection.Z_PLUS);
         }
 
         private BoundBox3D GetGridTotalBoundBox()

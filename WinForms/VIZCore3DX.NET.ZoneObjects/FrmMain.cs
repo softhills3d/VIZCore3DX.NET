@@ -74,11 +74,8 @@ namespace VIZCore3DX.NET.ZoneObjects
             vizcore3dx.ToolbarMeasure.Visible = false;
             vizcore3dx.ToolbarSection.Visible = false;
             vizcore3dx.ToolbarSnapshot.Visible = false;
-            vizcore3dx.ToolbarClash.Visible = false;
             vizcore3dx.ToolbarDecal.Visible = false;
             vizcore3dx.ToolbarPrimitive.Visible = false;
-            vizcore3dx.ToolbarAnimation.Visible = false;
-            vizcore3dx.ToolbarSimulation.Visible = false;
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작
@@ -99,19 +96,10 @@ namespace VIZCore3DX.NET.ZoneObjects
         {
             // 선택 해제되면 핸들 비활성화
             vizcore3dx.SelectionBox.IsManipulatorEnabled = false;
-
-            // 다시 선택상자를 마우스로 선택할 수 있도록 선택 모드 활성화
-            vizcore3dx.SelectionBox.EnabledMouseSelection(true);
         }
 
         private void SelectionBox_OnSelected(object sender, SelectionBoxEventArgs e)
         {
-            // 선택상자가 선택되면 선택 모드 비활성화
-            vizcore3dx.SelectionBox.EnabledMouseSelection(false);
-
-            // 선택 후 ESC를 입력해야 핸들이 활성화됨
-            SendKeys.Send("{ESC}");
-
             // 핸들 활성화
             vizcore3dx.SelectionBox.IsManipulatorEnabled = true;
         }
