@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
 	  <Reference Include="VIZCore3DX.NET">
 		  <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
-	  </Reference>l
+	  </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrmMain.cs">
