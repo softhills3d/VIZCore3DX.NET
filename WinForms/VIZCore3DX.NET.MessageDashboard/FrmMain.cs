@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace VIZCore3DX.NET.MessageDashboard
@@ -9,24 +8,22 @@ namespace VIZCore3DX.NET.MessageDashboard
         // VIZCore3DX.NET 선언
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
 
-        private bool messageListRefreshing = false;
-
         public FrmMain()
         {
-            InitializeComponent();
-
             // Initialize VIZCore3DX.NET
             VIZCore3DX.NET.ModuleInitializer.Run();
+
+            InitializeComponent();
+            InitializeMessageDashboard();
 
             // Construction
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
-            splitContainer1.Panel2.Controls.Add(vizcore3dx);
 
             // Event
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
 
-            InitializeMessageDashboard();
+            splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
 
         private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
@@ -43,37 +40,14 @@ namespace VIZCore3DX.NET.MessageDashboard
             // ================================================================
             // License
             // ================================================================
-            // VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
+            //VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
             if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            InitializeVIZCore3DX();
-        }
-
-        private void InitializeVIZCore3DX()
-        {
-            messageListRefreshing = true;
-
-            dgvMessage.SuspendLayout();
-            dgvMessage.Rows.Clear();
-
-            if (vizcore3dx != null && vizcore3dx.View != null && vizcore3dx.View.Message != null && vizcore3dx.View.Message.Messages != null)
-            {
-                foreach (VIZCore3DX.NET.Data.MessageItem message in vizcore3dx.View.Message.Messages)
-                {
-                    if (message == null || message.IsValid == false) continue;
-
-                    AddMessageRow(message, message.IsVisible);
-                }
-            }
-
-            dgvMessage.ClearSelection();
-            dgvMessage.ResumeLayout();
-
-            messageListRefreshing = false;
+            RefreshMessageList();
         }
 
         #region Message Dashboard
@@ -82,14 +56,32 @@ namespace VIZCore3DX.NET.MessageDashboard
         {
             cboTextSize.DataSource = Enum.GetValues(typeof(VIZCore3DX.NET.Data.TextSizeType));
             cboTextSize.SelectedItem = VIZCore3DX.NET.Data.TextSizeType.Size_24;
-            pnlColor.BackColor = Color.Yellow;
         }
 
-        private DataGridViewRow AddMessageRow(VIZCore3DX.NET.Data.MessageItem message, bool visible)
+        private void RefreshMessageList()
+        {
+            dgvMessage.SuspendLayout();
+            dgvMessage.Rows.Clear();
+
+            if (vizcore3dx.View.Message.Messages != null)
+            {
+                foreach (VIZCore3DX.NET.Data.MessageItem message in vizcore3dx.View.Message.Messages)
+                {
+                    if (message == null || message.IsValid == false) continue;
+
+                    AddMessageRow(message);
+                }
+            }
+
+            dgvMessage.ClearSelection();
+            dgvMessage.ResumeLayout();
+        }
+
+        private DataGridViewRow AddMessageRow(VIZCore3DX.NET.Data.MessageItem message)
         {
             if (message == null || message.IsValid == false) return null;
 
-            int rowIndex = dgvMessage.Rows.Add(message.Text, message.Position.X, message.Position.Y, message.TextSize, visible);
+            int rowIndex = dgvMessage.Rows.Add(message.Text, message.Position.X, message.Position.Y, message.TextSize, message.IsVisible);
             DataGridViewRow row = dgvMessage.Rows[rowIndex];
             row.Tag = message;
 
@@ -114,24 +106,9 @@ namespace VIZCore3DX.NET.MessageDashboard
             return message;
         }
 
-        private void SetVisibleCell(DataGridViewRow row, bool visible)
-        {
-            if (row == null) return;
-
-            messageListRefreshing = true;
-            row.Cells[colVisible.Index].Value = visible;
-            messageListRefreshing = false;
-        }
-
         private void SetAllVisibleCells(bool visible)
         {
-            messageListRefreshing = true;
-            dgvMessage.SuspendLayout();
-
             foreach (DataGridViewRow row in dgvMessage.Rows) row.Cells[colVisible.Index].Value = visible;
-
-            dgvMessage.ResumeLayout();
-            messageListRefreshing = false;
         }
 
         private void BtnColor_Click(object sender, EventArgs e)
@@ -160,9 +137,7 @@ namespace VIZCore3DX.NET.MessageDashboard
 
             if (message == null || message.IsValid == false) return;
 
-            messageListRefreshing = true;
-            DataGridViewRow row = AddMessageRow(message, chkVisible.Checked);
-            messageListRefreshing = false;
+            DataGridViewRow row = AddMessageRow(message);
 
             dgvMessage.ClearSelection();
 
@@ -177,8 +152,7 @@ namespace VIZCore3DX.NET.MessageDashboard
             if (message == null) return;
 
             vizcore3dx.View.Message.Show(message, true);
-
-            SetVisibleCell(row, true);
+            row.Cells[colVisible.Index].Value = true;
         }
 
         private void BtnHide_Click(object sender, EventArgs e)
@@ -189,8 +163,7 @@ namespace VIZCore3DX.NET.MessageDashboard
             if (message == null) return;
 
             vizcore3dx.View.Message.Show(message, false);
-
-            SetVisibleCell(row, false);
+            row.Cells[colVisible.Index].Value = false;
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
@@ -201,10 +174,7 @@ namespace VIZCore3DX.NET.MessageDashboard
             if (message == null) return;
 
             vizcore3dx.View.Message.Delete(message);
-
-            messageListRefreshing = true;
             dgvMessage.Rows.Remove(row);
-            messageListRefreshing = false;
         }
 
         private void BtnShowAll_Click(object sender, EventArgs e)
@@ -212,7 +182,6 @@ namespace VIZCore3DX.NET.MessageDashboard
             if (dgvMessage.Rows.Count == 0) return;
 
             vizcore3dx.View.Message.ShowAll();
-
             SetAllVisibleCells(true);
         }
 
@@ -221,7 +190,6 @@ namespace VIZCore3DX.NET.MessageDashboard
             if (dgvMessage.Rows.Count == 0) return;
 
             vizcore3dx.View.Message.HideAll();
-
             SetAllVisibleCells(false);
         }
 
@@ -230,24 +198,11 @@ namespace VIZCore3DX.NET.MessageDashboard
             if (dgvMessage.Rows.Count == 0) return;
 
             vizcore3dx.View.Message.Clear();
-
-            messageListRefreshing = true;
             dgvMessage.Rows.Clear();
-            messageListRefreshing = false;
         }
 
-        private void DgvMessage_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        private void DgvMessage_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (dgvMessage.CurrentCell == null) return;
-            if (dgvMessage.CurrentCell.ColumnIndex != colVisible.Index) return;
-            if (dgvMessage.IsCurrentCellDirty == false) return;
-
-            dgvMessage.CommitEdit(DataGridViewDataErrorContexts.Commit);
-        }
-
-        private void DgvMessage_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (messageListRefreshing == true) return;
             if (e.RowIndex < 0) return;
             if (e.ColumnIndex != colVisible.Index) return;
 
@@ -256,9 +211,10 @@ namespace VIZCore3DX.NET.MessageDashboard
 
             if (message == null) return;
 
-            bool visible = Convert.ToBoolean(row.Cells[colVisible.Index].Value);
+            bool visible = !Convert.ToBoolean(row.Cells[colVisible.Index].Value);
 
             vizcore3dx.View.Message.Show(message, visible);
+            row.Cells[colVisible.Index].Value = visible;
         }
 
         #endregion

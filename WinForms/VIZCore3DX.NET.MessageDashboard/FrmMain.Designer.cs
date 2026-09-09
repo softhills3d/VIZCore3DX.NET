@@ -183,8 +183,7 @@
             this.dgvMessage.AllowUserToAddRows = false;
             this.dgvMessage.AllowUserToDeleteRows = false;
             this.dgvMessage.AllowUserToResizeRows = false;
-            this.dgvMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvMessage.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvMessage.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMessage.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -201,8 +200,7 @@
             this.dgvMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvMessage.Size = new System.Drawing.Size(340, 243);
             this.dgvMessage.TabIndex = 0;
-            this.dgvMessage.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvMessage_CellValueChanged);
-            this.dgvMessage.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvMessage_CurrentCellDirtyStateChanged);
+            this.dgvMessage.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvMessage_CellClick);
             // 
             // colText
             // 
@@ -237,6 +235,7 @@
             this.colVisible.FillWeight = 70F;
             this.colVisible.HeaderText = "Visible";
             this.colVisible.Name = "colVisible";
+            this.colVisible.ReadOnly = true;
             // 
             // grpMessage
             // 
@@ -300,8 +299,7 @@
             // 
             // cboTextSize
             // 
-            this.cboTextSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboTextSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.cboTextSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTextSize.FormattingEnabled = true;
             this.cboTextSize.Location = new System.Drawing.Point(94, 179);
@@ -348,8 +346,7 @@
             // 
             // nudPositionY
             // 
-            this.nudPositionY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.nudPositionY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.nudPositionY.Location = new System.Drawing.Point(213, 105);
             this.nudPositionY.Maximum = new decimal(new int[] {
             10000,
@@ -423,8 +420,7 @@
             // 
             // txtMessage
             // 
-            this.txtMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.txtMessage.Location = new System.Drawing.Point(19, 46);
             this.txtMessage.Name = "txtMessage";
             this.txtMessage.Size = new System.Drawing.Size(340, 21);
@@ -464,7 +460,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudPositionY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPositionX)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         #endregion

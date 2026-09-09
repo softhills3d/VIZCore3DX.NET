@@ -56,7 +56,7 @@
             // chkMarineAxisVisible
             // 
             this.chkMarineAxisVisible.AutoSize = true;
-            this.chkMarineAxisVisible.Location = new System.Drawing.Point(12, 42);
+            this.chkMarineAxisVisible.Location = new System.Drawing.Point(12, 46);
             this.chkMarineAxisVisible.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkMarineAxisVisible.Name = "chkMarineAxisVisible";
             this.chkMarineAxisVisible.Size = new System.Drawing.Size(120, 16);
