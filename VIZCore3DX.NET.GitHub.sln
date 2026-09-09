@@ -129,6 +129,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.MarineAxis",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.GroupExplode", "WinForms\VIZCore3DX.NET.GroupExplode\VIZCore3DX.NET.GroupExplode.csproj", "{B49352A5-ABD8-475D-93D4-A5AF8EF51A83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.CatenaryShape", "WinForms\VIZCore3DX.NET.CatenaryShape\VIZCore3DX.NET.CatenaryShape.csproj", "{636A22E6-E276-42BE-BE22-0224836EFEFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -383,6 +385,10 @@ Global
 		{B49352A5-ABD8-475D-93D4-A5AF8EF51A83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B49352A5-ABD8-475D-93D4-A5AF8EF51A83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B49352A5-ABD8-475D-93D4-A5AF8EF51A83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
