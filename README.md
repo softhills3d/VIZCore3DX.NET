@@ -23,11 +23,16 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.CustomModelTree** | 모델의 노드 구조를 사용자 정의 트리 형태로 조회하고 관리하는 예제 |
 | **VIZCore3DX.NET.NodeDetail** | 선택한 노드의 색상, 투명도, 이동, 회전, UDA 및 형상 정보를 조회하는 예제 |
 | **VIZCore3DX.NET.NodeVisibleChanged** | 모델 노드의 가시성 변경을 감지하고 관련 이벤트를 처리하는 예제 |
-| **VIZCore3DX.NET.GeometryProperty** | 모델의 중심점, 크기, 부피 등 기하학 속성을 조회하는 예제 |
+| **VIZCore3DX.NET.GeometryProperty** | 모델의 Surface Area, Volume, Center of Volume 및 Geometry 등 기하학 속성을 조회하는 예제 |
 | **VIZCore3DX.NET.MeshCount** | 모델의 노드별 메시 개수와 형상 정보를 조회하는 예제 |
 | **VIZCore3DX.NET.UDA** | 사용자가 선택한 모델 객체에 등록된 사용자 정의 속성 정보를 조회하는 예제 |
 | **VIZCore3DX.NET.ImportAttribute** | 외부 속성 파일을 불러와 각 모델 노드에 속성 정보를 연결하는 예제 |
 | **VIZCore3DX.NET.SplitObjects** | 모델 객체를 조건에 따라 분리하고 개별 객체로 관리하는 예제 |
+
+### PMI
+| 프로젝트 | 설명 |
+|---|---|
+| **VIZCore3DX.NET.PMI** | PMI 항목, 요소, Category, Type 및 PMI View를 조회하고 표시 상태를 관리하는 예제 |
 
 ### 카메라 / 뷰
 | 프로젝트 | 설명 |
@@ -48,12 +53,21 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.SelectByBox_IncludeAssembly** | 박스 선택으로 Part를 선택하고 상위 Assembly까지 포함하여 선택하는 예제 |
 | **VIZCore3DX.NET.SelectParentAssembly** | 3D 형상을 선택하여 해당 객체의 상위 Assembly 노드를 조회하고 선택하는 예제 |
 | **VIZCore3DX.NET.ZoneObjects** | 3D 공간을 특정 구역으로 구분하고 구역에 포함된 객체를 조회하는 예제 |
+| **VIZCore3DX.NET.SelectionBox** | Selection Box를 생성, 삭제, 이동, 크기 변경, 분할, 병합 및 그룹화하고 내부 객체를 조회하는 예제 |
+| **VIZCore3DX.NET.LockedSelect** | 잠긴 객체의 선택 가능 여부와 표시 상태를 확인하고 관리하는 예제 |
+| **VIZCore3DX.NET.NodeLock** | 모델 Node의 잠금 상태를 설정, 해제하고 잠금 여부를 확인하는 예제 |
 
 ### 그룹 / 색상
 | 프로젝트 | 설명 |
 |---|---|
 | **VIZCore3DX.NET.Group** | 선택한 객체를 그룹으로 생성하고 조회 및 관리하는 예제 |
 | **VIZCore3DX.NET.Painting** | 선택한 모델 노드의 색상을 변경하고 적용 결과를 확인하는 예제 |
+
+### 효과 / 메시지
+| 프로젝트 | 설명 |
+|---|---|
+| **VIZCore3DX.NET.Effect** | 모델에 Effect를 생성하고 조회, 표시, 숨김 및 삭제 등 효과 상태를 관리하는 예제 |
+| **VIZCore3DX.NET.MessageDashboard** | 3D 뷰에 Message Dashboard를 생성하고 표시, 숨김, 삭제 및 속성을 관리하는 예제 |
 
 ### 노트 / 리뷰
 | 프로젝트 | 설명 |
@@ -62,6 +76,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.Note.V2** | 3D 공간에 다양한 유형의 노트를 추가하고 상태를 관리하는 예제 |
 | **VIZCore3DX.NET.NoteTransform** | 노트의 위치, 회전 및 크기 변환을 수행하고 결과를 확인하는 예제 |
 | **VIZCore3DX.NET.MeetingNotes** | 3D 모델에 회의용 노트와 주석을 추가하고 관리하는 예제 |
+| **VIZCore3DX.NET.DecalAnnotation** | 모델 표면에 Decal Annotation을 추가하고 위치와 방향을 조정하는 예제 |
 | **VIZCore3DX.NET.Snapshot** | 스냅샷을 생성, 복원하고 JSON 파일로 내보내기/가져오기하는 예제 |
 
 ### 측정 / 단면
@@ -87,14 +102,20 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 ### 애니메이션 / 시뮬레이션
 | 프로젝트 | 설명 |
 |---|---|
-| **VIZCore3DX.NET.Animation** | Animation API 를 사용하여 크레인으로 탱크를 이동시키는 예제. (크레인 모델 파일 포함) |
+| **VIZCore3DX.NET.Animation** | Animation API를 사용하여 크레인으로 탱크를 이동시키는 예제 (크레인 모델 파일 포함) |
 | **VIZCore3DX.NET.Explode** | 모델의 어셈블리와 부품을 단계적으로 분해하여 표시하는 예제 |
+| **VIZCore3DX.NET.GroupExplode** | 그룹 단위로 모델을 분해하고 Explode 상태를 제어하는 예제 |
 
 ### 변환 / 회전 / 이동
 | 프로젝트 | 설명 |
 |---|---|
 | **VIZCore3DX.NET.CustomAxisRotation** | 사용자가 지정한 축을 기준으로 모델을 회전시키는 예제 |
 | **VIZCore3DX.NET.RotateModel** | 변환 행렬을 이용하여 모델의 위치와 회전을 변경하는 예제 |
+
+### 형상 / 생성
+| 프로젝트 | 설명 |
+|---|---|
+| **VIZCore3DX.NET.CatenaryShape** | 두 지점과 조건을 기준으로 Catenary 형상을 생성하고 확인하는 예제 |
 
 ### 투영 / 2D
 | 프로젝트 | 설명 |
@@ -124,9 +145,15 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 |---|---|
 | **VIZCore3DX.NET.GridThreeD** | 모델을 그리드 단위로 분할하고 내보내기, 상세 보기 및 분해 표시를 수행하는 예제 |
 | **VIZCore3DX.NET.GridThreeD.V2** | 특정 노드를 축 기준으로 회전하고 그리드 기반 공간을 분석하는 예제 |
+| **VIZCore3DX.NET.MarineAxis** | 조선 좌표계(Marine Axis)의 표시 여부와 방향을 설정하고 확인하는 예제 |
 
 ### 객체 스냅
 | 프로젝트 | 설명 |
 |---|---|
 | **VIZCore3DX.NET.Osnap** | 모델의 면, 점, 선 및 원 형상을 스냅 방식으로 선택하고 위치와 형상 정보를 확인하는 예제 |
 | **VIZCore3DX.NET.Osnap2DPoint** | Osnap으로 선택한 3D 위치를 화면의 2D 좌표로 변환하고 확인하는 예제 |
+
+### 입력 / 조작
+| 프로젝트 | 설명 |
+|---|---|
+| **VIZCore3DX.NET.Input** | InputManager를 사용하여 조작 프리셋, 감도, 이동 속도, 입력 판정 및 사용자 설정을 비교하고 적용하는 예제 |
