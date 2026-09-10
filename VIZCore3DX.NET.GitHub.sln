@@ -131,6 +131,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.GroupExplode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.CatenaryShape", "WinForms\VIZCore3DX.NET.CatenaryShape\VIZCore3DX.NET.CatenaryShape.csproj", "{636A22E6-E276-42BE-BE22-0224836EFEFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VIZCore3DX.NET.DecalAnnotation", "WinForms\VIZCore3DX.NET.DecalAnnotation\VIZCore3DX.NET.DecalAnnotation.csproj", "{2461DC6D-6FBF-4330-874E-87FEEFE63CC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -389,6 +391,10 @@ Global
 		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{636A22E6-E276-42BE-BE22-0224836EFEFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2461DC6D-6FBF-4330-874E-87FEEFE63CC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2461DC6D-6FBF-4330-874E-87FEEFE63CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2461DC6D-6FBF-4330-874E-87FEEFE63CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2461DC6D-6FBF-4330-874E-87FEEFE63CC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
