@@ -116,6 +116,8 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 |
 |---|---|
 | **VIZCore3DX.NET.CatenaryShape** | 두 지점과 조건을 기준으로 Catenary 형상을 생성하고 확인하는 예제 |
+| **VIZCore3DX.NET.Primitive** | Box, Cone, Cylinder, Mesh, Pyramid, Torus 등 Primitive 형상을 생성하고 Osnap으로 생성 위치를 지정하는 예제 |
+| **VIZCore3DX.NET.MultiPrimitive** | 여러 Primitive를 한 번에 생성하고 기준 위치, 개수 및 Interval을 설정하여 배치하는 예제 |
 
 ### 투영 / 2D
 | 프로젝트 | 설명 |
