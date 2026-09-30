@@ -1,4 +1,4 @@
-﻿namespace VIZCore3DX.NET.ZoneObjects
+﻿namespace VIZCore3DX.NET.BoxSpaceObjects
 {
     partial class FrmMain
     {
@@ -128,7 +128,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VIZCore3DX.NET.ZoneObjects";
+            this.Text = "VIZCore3DX.NET.BoxSpaceObjects";
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);

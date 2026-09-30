@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using static VIZCore3DX.NET.Event.EventManager;
 
-namespace VIZCore3DX.NET.ZoneObjects
+namespace VIZCore3DX.NET.BoxSpaceObjects
 {
     public partial class FrmMain : Form
     {

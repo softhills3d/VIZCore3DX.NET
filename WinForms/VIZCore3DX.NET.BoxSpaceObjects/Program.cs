@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace VIZCore3DX.NET.ZoneObjects
+namespace VIZCore3DX.NET.BoxSpaceObjects
 {
     internal static class Program
     {

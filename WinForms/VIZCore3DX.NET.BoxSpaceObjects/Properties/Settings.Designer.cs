@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VIZCore3DX.NET.ZoneObjects.Properties
+namespace VIZCore3DX.NET.BoxSpaceObjects.Properties
 {
 
 
