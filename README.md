@@ -17,6 +17,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.Recording** | 3D 뷰 화면을 녹화하여 동영상으로 저장하는 예제 (FFMpeg 필요) | 1.1.25.609 |
 | **VIZCore3DX.NET.RenderScale** | 3D 뷰의 렌더 스케일을 조정하여 렌더링 품질과 성능을 비교하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.RibbonEx** | DevExpress Ribbon 메뉴로 VIZCore3DX.NET 기능을 구성하는 예제 (DevExpress 26.1.5 필요) | 1.5.26.928 |
+| **VIZCore3DX.NET.RibbonCustomization** | 리본 탭·그룹·기능을 사용자 정의 탭으로 재구성하고, 순서 변경, 빠른 실행 도구 모음 및 사용자 정의 버튼 추가를 관리하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Print** | 3D 화면을 인쇄하고 미리보기, 머리글·바닥글·날짜·페이지 번호, 용지 방향 및 여백을 설정하는 예제 | 1.5.26.928 |
 
 ### 모델 구조 / 속성
@@ -62,6 +63,13 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.SelectionBox** | Selection Box를 생성, 삭제, 이동, 크기 변경, 분할, 병합, 그룹화, 집중 모드 및 JSON 저장·복원하고 내부 객체를 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.LockedSelect** | 잠긴 객체의 선택 가능 여부와 표시 상태를 확인하고, 뷰 / 모델 트리 변경과 목록을 동기화하여 관리하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.NodeLock** | 노드 잠금 기능을 켜고 모델 Node의 잠금 상태를 설정, 해제하고 잠금 여부를 확인하는 예제 (끄면 모든 잠금 해제) | 1.5.26.928 |
+
+### 포커스 강조 (Transparent / Plastic / X-Ray)
+| 프로젝트 | 설명 | API version |
+|---|---|---|
+| **VIZCore3DX.NET.FocusTransparent** | 선택한 노드를 반투명(Transparent) 처리로 강조하고, 색상 방식과 강조 대상 형식을 설정하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.PlasticFocusReview** | 선택한 노드를 Plastic(조소 재질) 색상으로 강조 표시하고, 회전 중심(Pivot) 적용 여부를 관리하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.XRayInspection** | 선택한 노드를 X-Ray(투과) 효과로 강조하고, 투명도, 색상 방식 및 엣지 렌더링을 설정하는 예제 | 1.5.26.928 |
 
 ### 그룹 / 색상
 | 프로젝트 | 설명 | API version |
