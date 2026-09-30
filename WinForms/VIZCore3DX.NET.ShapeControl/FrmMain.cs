@@ -73,6 +73,7 @@ namespace VIZCore3DX.NET.ShapeControl
             vizcore3dx.Shape.Selectable(chkSelectable.Checked);
 
             UpdateCreateUI();
+            UpdateHeatmapUI();
             UpdateShapeList(vizcore3dx.Shape.Shapes, "전체 목록");
         }
 
@@ -866,6 +867,109 @@ namespace VIZCore3DX.NET.ShapeControl
         {
             lblCategoryCount.Text = "결과 : -";
             UpdateShapeList();
+        }
+
+        private void cmbHeatmapSource_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateHeatmapUI();
+        }
+
+        private void UpdateHeatmapUI()
+        {
+            // 기준점 거리 방식에서만 기준점 입력을 사용합니다.
+            bool usePoint = cmbHeatmapSource.SelectedIndex == 3;
+
+            lblHeatmapPoint.Enabled = usePoint;
+            lblHeatmapX.Enabled = numHeatmapX.Enabled = usePoint;
+            lblHeatmapY.Enabled = numHeatmapY.Enabled = usePoint;
+            lblHeatmapZ.Enabled = numHeatmapZ.Enabled = usePoint;
+            btnHeatmapPointOsnap.Enabled = usePoint;
+        }
+
+        private async void btnHeatmapPointOsnap_Click(object sender, EventArgs e)
+        {
+            await SetOsnapPosition("히트맵 기준점을 선택하세요.", numHeatmapX, numHeatmapY, numHeatmapZ);
+        }
+
+        private Func<Vertex3D, double> GetHeatmapScalar()
+        {
+            // 정점마다 계산할 스칼라 함수를 반환합니다.
+            switch (cmbHeatmapSource.SelectedIndex)
+            {
+                case 0:
+                    return v => v.X;
+
+                case 1:
+                    return v => v.Y;
+
+                case 3:
+                    {
+                        double px = (double)numHeatmapX.Value;
+                        double py = (double)numHeatmapY.Value;
+                        double pz = (double)numHeatmapZ.Value;
+                        return v => Math.Sqrt((v.X - px) * (v.X - px) + (v.Y - py) * (v.Y - py) + (v.Z - pz) * (v.Z - pz));
+                    }
+
+                default:
+                    return v => v.Z;
+            }
+        }
+
+        private void btnHeatmapCreate_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            List<Node> nodes = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_TOP);
+            if (nodes.Count == 0)
+            {
+                MessageBox.Show("히트맵을 생성할 노드를 선택해주세요.", "VIZCore3DX.NET.ShapeControl", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string category = txtHeatmapCategory.Text.Trim();
+            if (category.Length == 0)
+            {
+                MessageBox.Show("히트맵 카테고리를 입력해주세요.", "VIZCore3DX.NET.ShapeControl", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            HeatmapResult result;
+
+            // 같은 카테고리의 이전 히트맵을 지우고 새로 생성합니다.
+            using (vizcore3dx.BeginUpdateScope())
+            {
+                vizcore3dx.Shape.Delete(category);
+                result = vizcore3dx.Shape.CreateHeatmap(nodes, GetHeatmapScalar(), category);
+            }
+
+            if (result == null || result.Shapes == null || result.Shapes.Count == 0)
+            {
+                lblHeatmapResult.Text = "결과 : 실패";
+                ShowShapeOperationFailure("히트맵을 생성하지 못했습니다.");
+                UpdateShapeList();
+                return;
+            }
+
+            UpdateShapeList();
+            lblHeatmapResult.Text = string.Format("결과 : 형상 {0}개 / 정점 {1}개 / 최소 {2:0.###} / 최대 {3:0.###}{4}", result.Shapes.Count, result.VertexCount, result.Minimum, result.Maximum, result.Truncated ? " (상한 초과로 일부 생략)" : string.Empty);
+        }
+
+        private void btnHeatmapClear_Click(object sender, EventArgs e)
+        {
+            string category = txtHeatmapCategory.Text.Trim();
+            if (category.Length == 0) return;
+
+            vizcore3dx.Shape.Delete(category);
+            lblHeatmapResult.Text = "결과 : -";
+            UpdateShapeList();
+        }
+
+        private void ShowShapeOperationFailure(string message)
+        {
+            OperationStatus status = vizcore3dx.Shape.LastOperationStatus;
+            string detail = status == null ? string.Empty : string.Format("\n원인 : {0}", status.Result);
+
+            MessageBox.Show(message + detail, "VIZCore3DX.NET.ShapeControl", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void UpdateStatus()

@@ -51,6 +51,7 @@
             this.lblCount = new System.Windows.Forms.Label();
             this.numCount = new System.Windows.Forms.NumericUpDown();
             this.btnOsnap = new System.Windows.Forms.Button();
+            this.tlpPlacement = new System.Windows.Forms.TableLayoutPanel();
             this.lblMoveX = new System.Windows.Forms.Label();
             this.numMoveX = new System.Windows.Forms.NumericUpDown();
             this.lblMoveY = new System.Windows.Forms.Label();
@@ -75,6 +76,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numValue3)).BeginInit();
             this.grpPlacement.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numCount)).BeginInit();
+            this.tlpPlacement.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveZ)).BeginInit();
@@ -93,14 +95,17 @@
             this.splitContainer1.Panel2.Controls.Add(this.grpPlacement);
             this.splitContainer1.Panel2.Controls.Add(this.btnCreate);
             this.splitContainer1.Panel2.Controls.Add(this.lblResult);
-            this.splitContainer1.Size = new System.Drawing.Size(1184, 661);
-            this.splitContainer1.SplitterDistance = 830;
+            this.splitContainer1.Panel2MinSize = 300;
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
+            this.splitContainer1.SplitterDistance = 896;
             this.splitContainer1.TabIndex = 0;
 
             // grpMain
+            this.grpMain.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpMain.Location = new System.Drawing.Point(8, 8);
             this.grpMain.Name = "grpMain";
-            this.grpMain.Size = new System.Drawing.Size(326, 155);
+            this.grpMain.Size = new System.Drawing.Size(364, 155);
             this.grpMain.TabIndex = 0;
             this.grpMain.TabStop = false;
             this.grpMain.Text = "Multi Primitive";
@@ -121,12 +126,14 @@
             this.lblPrimitiveType.TabIndex = 0;
             this.lblPrimitiveType.Text = "종류";
             // cmbPrimitiveType
+            this.cmbPrimitiveType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbPrimitiveType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbPrimitiveType.FormattingEnabled = true;
             this.cmbPrimitiveType.Items.AddRange(new object[] { "Box", "Cone", "Cylinder", "Mesh", "Pyramid", "RectangularTorus", "Sphere", "SphericalCap", "Torus" });
             this.cmbPrimitiveType.Location = new System.Drawing.Point(90, 24);
             this.cmbPrimitiveType.Name = "cmbPrimitiveType";
-            this.cmbPrimitiveType.Size = new System.Drawing.Size(220, 20);
+            this.cmbPrimitiveType.Size = new System.Drawing.Size(258, 20);
             this.cmbPrimitiveType.TabIndex = 1;
             this.cmbPrimitiveType.SelectedIndexChanged += new System.EventHandler(this.cmbPrimitiveType_SelectedIndexChanged);
 
@@ -137,9 +144,11 @@
             this.lblNodeName.TabIndex = 2;
             this.lblNodeName.Text = "노드 이름";
             // txtNodeName
+            this.txtNodeName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtNodeName.Location = new System.Drawing.Point(90, 58);
             this.txtNodeName.Name = "txtNodeName";
-            this.txtNodeName.Size = new System.Drawing.Size(220, 21);
+            this.txtNodeName.Size = new System.Drawing.Size(258, 21);
             this.txtNodeName.TabIndex = 3;
             this.txtNodeName.Text = "Multi Primitive Box";
 
@@ -173,16 +182,18 @@
             this.cmbAxisAnchor.TabIndex = 6;
             this.cmbAxisAnchor.SelectedIndex = 0;
 
+            this.lblColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblColor.AutoSize = true;
-            this.lblColor.Location = new System.Drawing.Point(205, 129);
+            this.lblColor.Location = new System.Drawing.Point(243, 129);
             this.lblColor.Name = "lblColor";
             this.lblColor.Size = new System.Drawing.Size(29, 12);
             this.lblColor.TabIndex = 7;
             this.lblColor.Text = "색상";
             // btnColor
+            this.btnColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnColor.BackColor = System.Drawing.Color.CornflowerBlue;
             this.btnColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnColor.Location = new System.Drawing.Point(250, 122);
+            this.btnColor.Location = new System.Drawing.Point(288, 122);
             this.btnColor.Name = "btnColor";
             this.btnColor.Size = new System.Drawing.Size(60, 27);
             this.btnColor.TabIndex = 8;
@@ -190,9 +201,11 @@
             this.btnColor.Click += new System.EventHandler(this.btnColor_Click);
 
             // grpParameter
+            this.grpParameter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpParameter.Location = new System.Drawing.Point(8, 171);
             this.grpParameter.Name = "grpParameter";
-            this.grpParameter.Size = new System.Drawing.Size(326, 170);
+            this.grpParameter.Size = new System.Drawing.Size(364, 170);
             this.grpParameter.TabIndex = 1;
             this.grpParameter.TabStop = false;
             this.grpParameter.Text = "형상 파라미터";
@@ -211,12 +224,14 @@
             this.lblValue1.TabIndex = 0;
             this.lblValue1.Text = "Size X";
             // numValue1
+            this.numValue1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numValue1.DecimalPlaces = 1;
             this.numValue1.Location = new System.Drawing.Point(120, 26);
             this.numValue1.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numValue1.Minimum = new decimal(new int[] { 1, 0, 0, 65536 });
             this.numValue1.Name = "numValue1";
-            this.numValue1.Size = new System.Drawing.Size(190, 21);
+            this.numValue1.Size = new System.Drawing.Size(228, 21);
             this.numValue1.TabIndex = 1;
             this.numValue1.Value = new decimal(new int[] { 1000, 0, 0, 0 });
 
@@ -227,12 +242,14 @@
             this.lblValue2.TabIndex = 2;
             this.lblValue2.Text = "Size Y";
             // numValue2
+            this.numValue2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numValue2.DecimalPlaces = 1;
             this.numValue2.Location = new System.Drawing.Point(120, 58);
             this.numValue2.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numValue2.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             this.numValue2.Name = "numValue2";
-            this.numValue2.Size = new System.Drawing.Size(190, 21);
+            this.numValue2.Size = new System.Drawing.Size(228, 21);
             this.numValue2.TabIndex = 3;
             this.numValue2.Value = new decimal(new int[] { 1000, 0, 0, 0 });
 
@@ -243,27 +260,33 @@
             this.lblValue3.TabIndex = 4;
             this.lblValue3.Text = "Size Z";
             // numValue3
+            this.numValue3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numValue3.DecimalPlaces = 1;
             this.numValue3.Location = new System.Drawing.Point(120, 90);
             this.numValue3.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numValue3.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             this.numValue3.Name = "numValue3";
-            this.numValue3.Size = new System.Drawing.Size(190, 21);
+            this.numValue3.Size = new System.Drawing.Size(228, 21);
             this.numValue3.TabIndex = 5;
             this.numValue3.Value = new decimal(new int[] { 1000, 0, 0, 0 });
 
             // lblGuide
+            this.lblGuide.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblGuide.ForeColor = System.Drawing.SystemColors.GrayText;
             this.lblGuide.Location = new System.Drawing.Point(12, 126);
             this.lblGuide.Name = "lblGuide";
-            this.lblGuide.Size = new System.Drawing.Size(298, 32);
+            this.lblGuide.Size = new System.Drawing.Size(336, 32);
             this.lblGuide.TabIndex = 6;
             this.lblGuide.Text = "API : AddMultiPrimitiveBox";
 
             // grpPlacement
+            this.grpPlacement.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpPlacement.Location = new System.Drawing.Point(8, 349);
             this.grpPlacement.Name = "grpPlacement";
-            this.grpPlacement.Size = new System.Drawing.Size(326, 180);
+            this.grpPlacement.Size = new System.Drawing.Size(364, 180);
             this.grpPlacement.TabIndex = 2;
             this.grpPlacement.TabStop = false;
             this.grpPlacement.Text = "배치";
@@ -271,18 +294,7 @@
             this.grpPlacement.Controls.Add(this.lblCount);
             this.grpPlacement.Controls.Add(this.numCount);
             this.grpPlacement.Controls.Add(this.btnOsnap);
-            this.grpPlacement.Controls.Add(this.lblMoveX);
-            this.grpPlacement.Controls.Add(this.numMoveX);
-            this.grpPlacement.Controls.Add(this.lblMoveY);
-            this.grpPlacement.Controls.Add(this.numMoveY);
-            this.grpPlacement.Controls.Add(this.lblMoveZ);
-            this.grpPlacement.Controls.Add(this.numMoveZ);
-            this.grpPlacement.Controls.Add(this.lblIntervalX);
-            this.grpPlacement.Controls.Add(this.numIntervalX);
-            this.grpPlacement.Controls.Add(this.lblIntervalY);
-            this.grpPlacement.Controls.Add(this.numIntervalY);
-            this.grpPlacement.Controls.Add(this.lblIntervalZ);
-            this.grpPlacement.Controls.Add(this.numIntervalZ);
+            this.grpPlacement.Controls.Add(this.tlpPlacement);
 
             this.lblCount.AutoSize = true;
             this.lblCount.Location = new System.Drawing.Point(12, 30);
@@ -300,7 +312,8 @@
             this.numCount.Value = new decimal(new int[] { 3, 0, 0, 0 });
 
             // btnOsnap
-            this.btnOsnap.Location = new System.Drawing.Point(205, 24);
+            this.btnOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOsnap.Location = new System.Drawing.Point(243, 24);
             this.btnOsnap.Name = "btnOsnap";
             this.btnOsnap.Size = new System.Drawing.Size(105, 25);
             this.btnOsnap.TabIndex = 2;
@@ -308,124 +321,170 @@
             this.btnOsnap.UseVisualStyleBackColor = true;
             this.btnOsnap.Click += new System.EventHandler(this.btnOsnap_Click);
 
+            // tlpPlacement
+            this.tlpPlacement.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpPlacement.ColumnCount = 3;
+            this.tlpPlacement.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpPlacement.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpPlacement.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpPlacement.Controls.Add(this.lblMoveX, 0, 0);
+            this.tlpPlacement.Controls.Add(this.lblMoveY, 1, 0);
+            this.tlpPlacement.Controls.Add(this.lblMoveZ, 2, 0);
+            this.tlpPlacement.Controls.Add(this.numMoveX, 0, 1);
+            this.tlpPlacement.Controls.Add(this.numMoveY, 1, 1);
+            this.tlpPlacement.Controls.Add(this.numMoveZ, 2, 1);
+            this.tlpPlacement.Controls.Add(this.lblIntervalX, 0, 2);
+            this.tlpPlacement.Controls.Add(this.lblIntervalY, 1, 2);
+            this.tlpPlacement.Controls.Add(this.lblIntervalZ, 2, 2);
+            this.tlpPlacement.Controls.Add(this.numIntervalX, 0, 3);
+            this.tlpPlacement.Controls.Add(this.numIntervalY, 1, 3);
+            this.tlpPlacement.Controls.Add(this.numIntervalZ, 2, 3);
+            this.tlpPlacement.Location = new System.Drawing.Point(9, 62);
+            this.tlpPlacement.Name = "tlpPlacement";
+            this.tlpPlacement.RowCount = 4;
+            this.tlpPlacement.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlpPlacement.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            this.tlpPlacement.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlpPlacement.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 33F));
+            this.tlpPlacement.Size = new System.Drawing.Size(346, 106);
+            this.tlpPlacement.TabIndex = 3;
+
             // lblMoveX
+            this.lblMoveX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMoveX.AutoSize = true;
-            this.lblMoveX.Location = new System.Drawing.Point(12, 68);
+            this.lblMoveX.Location = new System.Drawing.Point(3, 5);
             this.lblMoveX.Name = "lblMoveX";
             this.lblMoveX.Size = new System.Drawing.Size(42, 12);
             this.lblMoveX.TabIndex = 2;
             this.lblMoveX.Text = "Move X";
             // numMoveX
+            this.numMoveX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMoveX.DecimalPlaces = 1;
-            this.numMoveX.Location = new System.Drawing.Point(12, 85);
+            this.numMoveX.Location = new System.Drawing.Point(3, 23);
             this.numMoveX.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numMoveX.Minimum = new decimal(new int[] { 10000000, 0, 0, -2147483648 });
             this.numMoveX.Name = "numMoveX";
-            this.numMoveX.Size = new System.Drawing.Size(95, 21);
+            this.numMoveX.Size = new System.Drawing.Size(109, 21);
             this.numMoveX.TabIndex = 3;
 
             // lblMoveY
+            this.lblMoveY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMoveY.AutoSize = true;
-            this.lblMoveY.Location = new System.Drawing.Point(121, 68);
+            this.lblMoveY.Location = new System.Drawing.Point(118, 5);
             this.lblMoveY.Name = "lblMoveY";
             this.lblMoveY.Size = new System.Drawing.Size(42, 12);
             this.lblMoveY.TabIndex = 4;
             this.lblMoveY.Text = "Move Y";
             // numMoveY
+            this.numMoveY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMoveY.DecimalPlaces = 1;
-            this.numMoveY.Location = new System.Drawing.Point(121, 85);
+            this.numMoveY.Location = new System.Drawing.Point(118, 23);
             this.numMoveY.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numMoveY.Minimum = new decimal(new int[] { 10000000, 0, 0, -2147483648 });
             this.numMoveY.Name = "numMoveY";
-            this.numMoveY.Size = new System.Drawing.Size(95, 21);
+            this.numMoveY.Size = new System.Drawing.Size(109, 21);
             this.numMoveY.TabIndex = 5;
 
             // lblMoveZ
+            this.lblMoveZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblMoveZ.AutoSize = true;
-            this.lblMoveZ.Location = new System.Drawing.Point(230, 68);
+            this.lblMoveZ.Location = new System.Drawing.Point(233, 5);
             this.lblMoveZ.Name = "lblMoveZ";
             this.lblMoveZ.Size = new System.Drawing.Size(42, 12);
             this.lblMoveZ.TabIndex = 6;
             this.lblMoveZ.Text = "Move Z";
             // numMoveZ
+            this.numMoveZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMoveZ.DecimalPlaces = 1;
-            this.numMoveZ.Location = new System.Drawing.Point(230, 85);
+            this.numMoveZ.Location = new System.Drawing.Point(233, 23);
             this.numMoveZ.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numMoveZ.Minimum = new decimal(new int[] { 10000000, 0, 0, -2147483648 });
             this.numMoveZ.Name = "numMoveZ";
-            this.numMoveZ.Size = new System.Drawing.Size(80, 21);
+            this.numMoveZ.Size = new System.Drawing.Size(109, 21);
             this.numMoveZ.TabIndex = 7;
 
             // lblIntervalX
+            this.lblIntervalX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblIntervalX.AutoSize = true;
-            this.lblIntervalX.Location = new System.Drawing.Point(12, 121);
+            this.lblIntervalX.Location = new System.Drawing.Point(3, 58);
             this.lblIntervalX.Name = "lblIntervalX";
             this.lblIntervalX.Size = new System.Drawing.Size(54, 12);
             this.lblIntervalX.TabIndex = 8;
             this.lblIntervalX.Text = "Interval X";
             // numIntervalX
+            this.numIntervalX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numIntervalX.DecimalPlaces = 1;
-            this.numIntervalX.Location = new System.Drawing.Point(12, 138);
+            this.numIntervalX.Location = new System.Drawing.Point(3, 76);
             this.numIntervalX.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numIntervalX.Minimum = new decimal(new int[] { 10000000, 0, 0, -2147483648 });
             this.numIntervalX.Name = "numIntervalX";
-            this.numIntervalX.Size = new System.Drawing.Size(95, 21);
+            this.numIntervalX.Size = new System.Drawing.Size(109, 21);
             this.numIntervalX.TabIndex = 9;
             this.numIntervalX.Value = new decimal(new int[] { 2000, 0, 0, 0 });
 
             // lblIntervalY
+            this.lblIntervalY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblIntervalY.AutoSize = true;
-            this.lblIntervalY.Location = new System.Drawing.Point(121, 121);
+            this.lblIntervalY.Location = new System.Drawing.Point(118, 58);
             this.lblIntervalY.Name = "lblIntervalY";
             this.lblIntervalY.Size = new System.Drawing.Size(54, 12);
             this.lblIntervalY.TabIndex = 10;
             this.lblIntervalY.Text = "Interval Y";
             // numIntervalY
+            this.numIntervalY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numIntervalY.DecimalPlaces = 1;
-            this.numIntervalY.Location = new System.Drawing.Point(121, 138);
+            this.numIntervalY.Location = new System.Drawing.Point(118, 76);
             this.numIntervalY.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numIntervalY.Minimum = new decimal(new int[] { 10000000, 0, 0, -2147483648 });
             this.numIntervalY.Name = "numIntervalY";
-            this.numIntervalY.Size = new System.Drawing.Size(95, 21);
+            this.numIntervalY.Size = new System.Drawing.Size(109, 21);
             this.numIntervalY.TabIndex = 11;
 
             // lblIntervalZ
+            this.lblIntervalZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblIntervalZ.AutoSize = true;
-            this.lblIntervalZ.Location = new System.Drawing.Point(230, 121);
+            this.lblIntervalZ.Location = new System.Drawing.Point(233, 58);
             this.lblIntervalZ.Name = "lblIntervalZ";
             this.lblIntervalZ.Size = new System.Drawing.Size(54, 12);
             this.lblIntervalZ.TabIndex = 12;
             this.lblIntervalZ.Text = "Interval Z";
             // numIntervalZ
+            this.numIntervalZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numIntervalZ.DecimalPlaces = 1;
-            this.numIntervalZ.Location = new System.Drawing.Point(230, 138);
+            this.numIntervalZ.Location = new System.Drawing.Point(233, 76);
             this.numIntervalZ.Maximum = new decimal(new int[] { 10000000, 0, 0, 0 });
             this.numIntervalZ.Minimum = new decimal(new int[] { 10000000, 0, 0, -2147483648 });
             this.numIntervalZ.Name = "numIntervalZ";
-            this.numIntervalZ.Size = new System.Drawing.Size(80, 21);
+            this.numIntervalZ.Size = new System.Drawing.Size(109, 21);
             this.numIntervalZ.TabIndex = 13;
 
             // btnCreate
+            this.btnCreate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCreate.Location = new System.Drawing.Point(8, 539);
             this.btnCreate.Name = "btnCreate";
-            this.btnCreate.Size = new System.Drawing.Size(326, 38);
+            this.btnCreate.Size = new System.Drawing.Size(364, 32);
             this.btnCreate.TabIndex = 3;
             this.btnCreate.Text = "Multi Primitive 생성";
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
 
             // lblResult
-            this.lblResult.AutoSize = true;
-            this.lblResult.Location = new System.Drawing.Point(10, 592);
+            this.lblResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblResult.AutoEllipsis = true;
+            this.lblResult.Location = new System.Drawing.Point(8, 580);
             this.lblResult.Name = "lblResult";
-            this.lblResult.Size = new System.Drawing.Size(81, 12);
+            this.lblResult.Size = new System.Drawing.Size(364, 20);
             this.lblResult.TabIndex = 4;
             this.lblResult.Text = "생성 결과 : -";
+            this.lblResult.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 
             // FrmMain
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -445,6 +504,8 @@
             this.grpPlacement.ResumeLayout(false);
             this.grpPlacement.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numCount)).EndInit();
+            this.tlpPlacement.ResumeLayout(false);
+            this.tlpPlacement.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveZ)).EndInit();
@@ -479,6 +540,7 @@
         private System.Windows.Forms.Label lblCount;
         private System.Windows.Forms.NumericUpDown numCount;
         private System.Windows.Forms.Button btnOsnap;
+        private System.Windows.Forms.TableLayoutPanel tlpPlacement;
         private System.Windows.Forms.Label lblMoveX;
         private System.Windows.Forms.NumericUpDown numMoveX;
         private System.Windows.Forms.Label lblMoveY;

@@ -94,31 +94,70 @@ namespace VIZCore3DX.NET.Animation
         private void Animation_OnAnimationCreatedEvent(object sender, EventManager.AnimationEventArgs e)
         {
             Console.WriteLine($"OnAnimationCreatedEvent: Ani Count: {e.Animations.Count}");
+            UpdateAnimationInfo();
         }
 
         private void Animation_OnAnimationDeletedEvent(object sender, EventManager.AnimationEventArgs e)
         {
             Console.WriteLine($"OnAnimationDeletedEvent: Ani Count: {e.Animations.Count}");
+            UpdateAnimationInfo();
         }
 
         private void Animation_OnAnimationActivatedEvent(object sender, EventManager.AnimationEventArgs e)
         {
             Console.WriteLine($"OnAnimationActivatedEvent: Ani Count: {e.Animations.Count}");
+            UpdateAnimationInfo();
         }
 
         private void Animation_OnAnimationDeactivatedEvent(object sender, EventManager.AnimationEventArgs e)
         {
             Console.WriteLine($"OnAnimationDeactivatedEvent: Ani Count: {e.Animations.Count}");
+            UpdateAnimationInfo();
         }
 
         private void Animation_OnModelFileLoadedEvent(object sender, EventManager.AnimationEventArgs e)
         {
             Console.WriteLine($"OnModelFileLoadedEvent: Ani Count: {e.Animations.Count}");
+            UpdateAnimationInfo();
         }
 
         private void Animation_OnModelFileClosedEvent(object sender, EventManager.AnimationEventArgs e)
         {
             Console.WriteLine($"OnModelFileClosedEvent: Ani Count: {e.Animations.Count}");
+
+            // 모델을 닫으면 애니메이션 목록이 초기화되므로 보관 중인 참조도 해제
+            ani = null;
+            UpdateAnimationInfo();
+        }
+
+        /// <summary>
+        /// 애니메이션 정보 표시 갱신
+        /// </summary>
+        private void UpdateAnimationInfo()
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(UpdateAnimationInfo));
+                return;
+            }
+
+            int count = vizcore3dx.Animation.Animations == null ? 0 : vizcore3dx.Animation.Animations.Count;
+            if (ani == null || ani.IsValid == false)
+                lblAnimationInfo.Text = string.Format("애니메이션 : 없음 (전체 {0}개)", count);
+            else
+                lblAnimationInfo.Text = string.Format("애니메이션 : {0} ({1:0.#}초){2}\n전체 {3}개", ani.Name, ani.Duration.TotalSeconds, ani.IsActive ? " - 활성" : "", count);
+        }
+
+        /// <summary>
+        /// 사용 가능한 애니메이션 여부 확인
+        /// </summary>
+        /// <returns>사용 가능 여부</returns>
+        private bool CheckAnimation()
+        {
+            if (ani != null && ani.IsValid) return true;
+
+            MessageBox.Show("모델을 열어 애니메이션을 생성해 주세요.", "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
         }
 
         private void btnOpenModel_Click(object sender, EventArgs e)
@@ -127,27 +166,203 @@ namespace VIZCore3DX.NET.Animation
 
             // 애니메이션 생성
             CreateAnimation();
+            UpdateAnimationInfo();
         }
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
+            if (CheckAnimation() == false) return;
+
             ani.Play();
         }
 
         private void btnPause_Click(object sender, EventArgs e)
         {
+            if (CheckAnimation() == false) return;
+
             ani.Pause();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
+            if (CheckAnimation() == false) return;
+
             ani.Stop();
+        }
+
+        // ================================================================
+        // 프레임 시퀀스 내보내기 : ExportFrameSequenceAsync / StopFrameSequenceExport
+        // ================================================================
+        private void btnOutputFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dlg = new FolderBrowserDialog();
+            if (String.IsNullOrEmpty(txtOutputFolder.Text) == false) dlg.SelectedPath = txtOutputFolder.Text;
+
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            txtOutputFolder.Text = dlg.SelectedPath;
+        }
+
+        /// <summary>
+        /// 프레임 내보내기 중 UI 상태 변경
+        /// </summary>
+        /// <param name="exporting">내보내기 중 여부</param>
+        private void SetFrameExporting(bool exporting)
+        {
+            btnExportFrames.Enabled = !exporting;
+            btnStopFrameExport.Enabled = exporting;
+            btnOpenModel.Enabled = !exporting;
+            btnPlay.Enabled = !exporting;
+            btnPause.Enabled = !exporting;
+            btnStop.Enabled = !exporting;
+            numFps.Enabled = !exporting;
+            txtFilePrefix.Enabled = !exporting;
+            btnOutputFolder.Enabled = !exporting;
+            btnRecordVideo.Enabled = !exporting;
+        }
+
+        private async void btnExportFrames_Click(object sender, EventArgs e)
+        {
+            if (CheckAnimation() == false) return;
+
+            if (String.IsNullOrEmpty(txtOutputFolder.Text))
+            {
+                MessageBox.Show("출력 폴더를 선택해 주세요.", "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string prefix = String.IsNullOrWhiteSpace(txtFilePrefix.Text) ? "frame" : txtFilePrefix.Text.Trim();
+            int fps = (int)numFps.Value;
+
+            SetFrameExporting(true);
+            lblFrameStatus.Text = string.Format("상태 : 내보내는 중... ({0} fps, 예상 {1}프레임)", fps, (int)Math.Ceiling(ani.Duration.TotalSeconds * fps));
+
+            // 기본 진행창(Please Wait)이 3D 화면 위에 표시되면 캡처 이미지에 함께 저장되므로 내보내는 동안 비활성화
+            bool enableProgressForm = vizcore3dx.EnableProgressForm;
+            vizcore3dx.EnableProgressForm = false;
+
+            int count = 0;
+            try
+            {
+                // 애니메이션을 지정 fps로 재생하며 각 프레임을 PNG 파일로 저장 (반환값 : 저장된 프레임 수)
+                count = await vizcore3dx.Animation.ExportFrameSequenceAsync(ani, txtOutputFolder.Text, fps, prefix);
+            }
+            finally
+            {
+                vizcore3dx.EnableProgressForm = enableProgressForm;
+                SetFrameExporting(false);
+            }
+
+            VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Animation.LastOperationStatus;
+            if (count <= 0 || (status != null && status.IsFailure))
+            {
+                lblFrameStatus.Text = string.Format("상태 : 중지 또는 실패 ({0}프레임 저장)", count);
+                MessageBox.Show(string.Format("프레임 시퀀스 내보내기가 중지되었거나 실패하였습니다.\n\n저장된 프레임 : {0}\n사유 : {1}", count, status == null ? "알 수 없음" : status.ToString()), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            lblFrameStatus.Text = string.Format("상태 : 완료 ({0}프레임 저장)", count);
+            MessageBox.Show(string.Format("프레임 시퀀스 내보내기 완료\n\n저장된 프레임 : {0}\n폴더 : {1}", count, txtOutputFolder.Text), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnStopFrameExport_Click(object sender, EventArgs e)
+        {
+            // 프레임 시퀀스 내보내기 중지
+            vizcore3dx.Animation.StopFrameSequenceExport();
+            lblFrameStatus.Text = "상태 : 중지 요청";
+        }
+
+        // ================================================================
+        // 동영상 저장 (MP4) : StartRecordingWithWMF / StopRecording
+        // ================================================================
+
+        /// <summary>
+        /// 동영상 녹화 중 여부
+        /// </summary>
+        private bool isRecordingVideo = false;
+
+        /// <summary>
+        /// 동영상 녹화 중 UI 상태 변경
+        /// </summary>
+        /// <param name="recording">녹화 중 여부</param>
+        private void SetVideoRecording(bool recording)
+        {
+            btnRecordVideo.Enabled = !recording;
+            btnStopVideo.Enabled = recording;
+            btnOpenModel.Enabled = !recording;
+            btnPlay.Enabled = !recording;
+            btnPause.Enabled = !recording;
+            btnStop.Enabled = !recording;
+            btnExportFrames.Enabled = !recording;
+        }
+
+        private void btnRecordVideo_Click(object sender, EventArgs e)
+        {
+            if (CheckAnimation() == false) return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "MP4 (*.mp4)|*.mp4";
+            dlg.FileName = string.Format("{0}.mp4", ani.Name);
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            // 재생 위치를 처음으로 되돌림
+            ani.Stop();
+
+            // WMF(Windows Media Foundation) 방식 녹화 : 별도 외부 도구(FFmpeg) 없이 MP4로 저장
+            // 녹화 중 3D 화면 크기가 변경되면 녹화가 자동으로 중지됩니다.
+            if (vizcore3dx.StartRecordingWithWMF(false, dlg.FileName) == false)
+            {
+                lblVideoStatus.Text = "상태 : 녹화 시작 실패";
+                return;
+            }
+
+            isRecordingVideo = true;
+            SetVideoRecording(true);
+            lblVideoStatus.Text = string.Format("상태 : 녹화 중... ({0:0.#}초)", ani.Duration.TotalSeconds);
+
+            // 애니메이션 재생 : 끝에 도달하면 OnAnimationPausedEvent 에서 녹화 종료
+            ani.Play();
+        }
+
+        private void btnStopVideo_Click(object sender, EventArgs e)
+        {
+            if (isRecordingVideo == false) return;
+
+            ani.Pause();
+            FinishVideoRecording(false);
+        }
+
+        /// <summary>
+        /// 동영상 녹화 종료
+        /// </summary>
+        /// <param name="completed">애니메이션 끝까지 녹화했는지 여부</param>
+        private void FinishVideoRecording(bool completed)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action<bool>(FinishVideoRecording), completed);
+                return;
+            }
+
+            if (isRecordingVideo == false) return;
+            isRecordingVideo = false;
+
+            // 녹화 종료 및 MP4 파일 저장
+            vizcore3dx.StopRecording();
+
+            SetVideoRecording(false);
+            lblVideoStatus.Text = completed ? "상태 : 저장 완료" : "상태 : 중지 (중지 시점까지 저장)";
         }
 
         private void CreateAnimation()
         {
             // Animation 은 여러 개 생성할 수 있습니다.
             ani = vizcore3dx.Animation.CreateAnimation("Animation1");
+            if (ani == null)
+            {
+                VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Animation.LastOperationStatus;
+                MessageBox.Show(string.Format("애니메이션 생성에 실패하였습니다.\n\n사유 : {0}", status == null ? "알 수 없음" : status.ToString()), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             ani.OnAnimationPlayedEvent += Ani_OnAnimationPlayedEvent;
             ani.OnAnimationPausedEvent += Ani_OnAnimationPausedEvent;           // 애니메이션을 플레이해서 끝에 도달할때도 콜백됩니다.
@@ -336,6 +551,10 @@ namespace VIZCore3DX.NET.Animation
         private void Ani_OnAnimationPausedEvent(object sender, EventManager.AnimationPlaybackEventArgs e)
         {
             Console.WriteLine($"OnAnimationPausedEvent: Ani name: {e.Animation.Name}");
+
+            // 동영상 녹화 중 애니메이션이 끝에 도달하면 녹화 종료
+            if (isRecordingVideo && e.Animation.IsPlaybackCompleted)
+                FinishVideoRecording(true);
         }
 
         private void Ani_OnAnimationStoppedEvent(object sender, EventManager.AnimationPlaybackEventArgs e)

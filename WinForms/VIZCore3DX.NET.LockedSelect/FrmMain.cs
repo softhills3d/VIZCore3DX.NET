@@ -55,6 +55,9 @@ namespace VIZCore3DX.NET.LockedSelect
         {
             vizcore3dx.Object3D.OnObject3DVisibleChangedEvent += Object3D_OnObject3DVisibleChangedEvent;
 
+            // 선택 고정 목록 변경 이벤트 : 뷰/모델 트리 등 외부에서 변경된 경우에도 목록 동기화
+            vizcore3dx.Object3D.LockedSelect.OnObject3DLockedSelectChangedEvent += LockedSelect_OnObject3DLockedSelectChangedEvent;
+
             InitializeObjectList();
         }
 
@@ -62,8 +65,35 @@ namespace VIZCore3DX.NET.LockedSelect
 
         private void InitializeObjectList()
         {
-            dgvLockedSelect.Rows.Clear();
-            UpdateCount();
+            synchronizingVisibleState = true;
+            dgvLockedSelect.SuspendLayout();
+
+            try
+            {
+                dgvLockedSelect.Rows.Clear();
+
+                // 엔진의 선택 고정 목록(LockedSelect.List)을 기준으로 목록 구성
+                if (vizcore3dx.Model.IsOpen() == true)
+                {
+                    List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.LockedSelect.List();
+
+                    if (nodes != null)
+                    {
+                        foreach (VIZCore3DX.NET.Data.Node node in nodes)
+                        {
+                            AddGridNode(node);
+                        }
+                    }
+                }
+
+                UpdateCount();
+                dgvLockedSelect.ClearSelection();
+            }
+            finally
+            {
+                dgvLockedSelect.ResumeLayout();
+                synchronizingVisibleState = false;
+            }
         }
 
         private bool ContainsGridNode(VIZCore3DX.NET.Data.Node node)
@@ -209,24 +239,7 @@ namespace VIZCore3DX.NET.LockedSelect
 
             vizcore3dx.Object3D.LockedSelect.Add(targets);
 
-            synchronizingVisibleState = true;
-            dgvLockedSelect.SuspendLayout();
-
-            try
-            {
-                foreach (VIZCore3DX.NET.Data.Node node in targets)
-                {
-                    AddGridNode(node);
-                }
-
-                UpdateCount();
-                dgvLockedSelect.ClearSelection();
-            }
-            finally
-            {
-                dgvLockedSelect.ResumeLayout();
-                synchronizingVisibleState = false;
-            }
+            InitializeObjectList();
         }
 
         private void BtnUnlockSelected_Click(object sender, EventArgs e)
@@ -236,32 +249,22 @@ namespace VIZCore3DX.NET.LockedSelect
             if (nodes.Count == 0) return;
 
             vizcore3dx.Object3D.LockedSelect.Delete(nodes);
-            dgvLockedSelect.SuspendLayout();
 
-            try
-            {
-                foreach (DataGridViewRow row in dgvLockedSelect.SelectedRows)
-                {
-                    dgvLockedSelect.Rows.Remove(row);
-                }
-
-                UpdateCount();
-            }
-            finally
-            {
-                dgvLockedSelect.ResumeLayout();
-            }
+            InitializeObjectList();
         }
 
         private void BtnClearLock_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            // LockedSelect.Clear()는 DLL 버그로 멈추는 경우가 있어 Delete로 전체 해제
             List<VIZCore3DX.NET.Data.Node> nodes = GetAllGridNodes();
 
             if (nodes.Count == 0) return;
 
             vizcore3dx.Object3D.LockedSelect.Delete(nodes);
-            dgvLockedSelect.Rows.Clear();
-            UpdateCount();
+
+            InitializeObjectList();
         }
 
         private void BtnShow_Click(object sender, EventArgs e)
@@ -308,6 +311,14 @@ namespace VIZCore3DX.NET.LockedSelect
             List<VIZCore3DX.NET.Data.Node> nodes = new List<VIZCore3DX.NET.Data.Node> { node };
 
             SetObjectVisible(nodes, visible);
+        }
+
+        private void LockedSelect_OnObject3DLockedSelectChangedEvent(object sender, EventArgs e)
+        {
+            if (IsDisposed == true || Disposing == true) return;
+
+            // 재진입으로 멈추는 것 방지 위해 항상 BeginInvoke로 미룸
+            BeginInvoke(new Action(InitializeObjectList));
         }
 
         private void Object3D_OnObject3DVisibleChangedEvent(object sender, VIZCore3DX.NET.Event.EventManager.Object3DVisibleChangedEventArgs e)

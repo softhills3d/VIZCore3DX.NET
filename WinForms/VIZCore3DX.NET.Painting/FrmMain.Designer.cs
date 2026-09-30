@@ -67,7 +67,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1310, 729);
+            this.splitContainer1.Size = new System.Drawing.Size(1310, 760);
             this.splitContainer1.SplitterDistance = 448;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -262,7 +262,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1310, 729);
+            this.ClientSize = new System.Drawing.Size(1310, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

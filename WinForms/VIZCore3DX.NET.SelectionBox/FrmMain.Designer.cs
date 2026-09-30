@@ -30,6 +30,12 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panelControl = new System.Windows.Forms.Panel();
+            this.tlpFocus = new System.Windows.Forms.TableLayoutPanel();
+            this.tlpEdit = new System.Windows.Forms.TableLayoutPanel();
+            this.tlpDelete = new System.Windows.Forms.TableLayoutPanel();
+            this.tlpLength = new System.Windows.Forms.TableLayoutPanel();
+            this.tlpCreate = new System.Windows.Forms.TableLayoutPanel();
+            this.tlpSize = new System.Windows.Forms.TableLayoutPanel();
             this.lblBasicTitle = new System.Windows.Forms.Label();
             this.btnOpenModel = new System.Windows.Forms.Button();
             this.chkManipulator = new System.Windows.Forms.CheckBox();
@@ -90,10 +96,22 @@
             this.numLengthX = new System.Windows.Forms.NumericUpDown();
             this.numLengthY = new System.Windows.Forms.NumericUpDown();
             this.numLengthZ = new System.Windows.Forms.NumericUpDown();
+            this.lblJsonFocusTitle = new System.Windows.Forms.Label();
+            this.btnExportJson = new System.Windows.Forms.Button();
+            this.btnImportJson = new System.Windows.Forms.Button();
+            this.chkReplaceExisting = new System.Windows.Forms.CheckBox();
+            this.btnEnterFocusMode = new System.Windows.Forms.Button();
+            this.btnExitFocusMode = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.panelControl.SuspendLayout();
+            this.tlpFocus.SuspendLayout();
+            this.tlpEdit.SuspendLayout();
+            this.tlpDelete.SuspendLayout();
+            this.tlpLength.SuspendLayout();
+            this.tlpCreate.SuspendLayout();
+            this.tlpSize.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMinX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinZ)).BeginInit();
@@ -116,7 +134,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.panelControl);
-            this.splitContainer1.Size = new System.Drawing.Size(1400, 850);
+            this.splitContainer1.Size = new System.Drawing.Size(1400, 900);
             this.splitContainer1.SplitterDistance = 480;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -128,32 +146,17 @@
             this.panelControl.Controls.Add(this.chkManipulator);
             this.panelControl.Controls.Add(this.chkNameVisible);
             this.panelControl.Controls.Add(this.lblSizeTitle);
-            this.panelControl.Controls.Add(this.lblX);
-            this.panelControl.Controls.Add(this.lblY);
-            this.panelControl.Controls.Add(this.lblZ);
-            this.panelControl.Controls.Add(this.lblMin);
-            this.panelControl.Controls.Add(this.lblMax);
-            this.panelControl.Controls.Add(this.numMinX);
-            this.panelControl.Controls.Add(this.numMinY);
-            this.panelControl.Controls.Add(this.numMinZ);
-            this.panelControl.Controls.Add(this.numMaxX);
-            this.panelControl.Controls.Add(this.numMaxY);
-            this.panelControl.Controls.Add(this.numMaxZ);
-            this.panelControl.Controls.Add(this.btnCreate);
-            this.panelControl.Controls.Add(this.btnSetSize);
+            this.panelControl.Controls.Add(this.tlpSize);
+            this.panelControl.Controls.Add(this.tlpCreate);
             this.panelControl.Controls.Add(this.lblListTitle);
             this.panelControl.Controls.Add(this.lstSelectionBoxes);
             this.panelControl.Controls.Add(this.txtSelectionBoxTitle);
             this.panelControl.Controls.Add(this.btnSetTitle);
-            this.panelControl.Controls.Add(this.btnDelete);
-            this.panelControl.Controls.Add(this.btnClear);
+            this.panelControl.Controls.Add(this.tlpDelete);
             this.panelControl.Controls.Add(this.lblEditTitle);
             this.panelControl.Controls.Add(this.cmbAxis);
             this.panelControl.Controls.Add(this.chkGroupAxis);
-            this.panelControl.Controls.Add(this.btnDivide);
-            this.panelControl.Controls.Add(this.btnMerge);
-            this.panelControl.Controls.Add(this.btnGroup);
-            this.panelControl.Controls.Add(this.btnUngroup);
+            this.panelControl.Controls.Add(this.tlpEdit);
             this.panelControl.Controls.Add(this.lblObjectTitle);
             this.panelControl.Controls.Add(this.lblSearchOption);
             this.panelControl.Controls.Add(this.cmbSearchOption);
@@ -177,23 +180,24 @@
             this.panelControl.Controls.Add(this.chkPlaneSnap);
             this.panelControl.Controls.Add(this.btnPickOsnap);
             this.panelControl.Controls.Add(this.btnCancelOsnap);
-            this.panelControl.Controls.Add(this.lblLengthX);
-            this.panelControl.Controls.Add(this.lblLengthY);
-            this.panelControl.Controls.Add(this.lblLengthZ);
-            this.panelControl.Controls.Add(this.numLengthX);
-            this.panelControl.Controls.Add(this.numLengthY);
-            this.panelControl.Controls.Add(this.numLengthZ);
+            this.panelControl.Controls.Add(this.tlpLength);
+            this.panelControl.Controls.Add(this.lblJsonFocusTitle);
+            this.panelControl.Controls.Add(this.btnExportJson);
+            this.panelControl.Controls.Add(this.btnImportJson);
+            this.panelControl.Controls.Add(this.chkReplaceExisting);
+            this.panelControl.Controls.Add(this.tlpFocus);
             this.panelControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelControl.Location = new System.Drawing.Point(0, 0);
             this.panelControl.Name = "panelControl";
-            this.panelControl.Size = new System.Drawing.Size(480, 850);
+            this.panelControl.Size = new System.Drawing.Size(480, 900);
             this.panelControl.TabIndex = 0;
             // 
             // lblBasicTitle
             // 
+            this.lblBasicTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblBasicTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblBasicTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblBasicTitle.Location = new System.Drawing.Point(10, 15);
+            this.lblBasicTitle.Location = new System.Drawing.Point(10, 12);
             this.lblBasicTitle.Name = "lblBasicTitle";
             this.lblBasicTitle.Size = new System.Drawing.Size(445, 24);
             this.lblBasicTitle.TabIndex = 0;
@@ -202,9 +206,9 @@
             // 
             // btnOpenModel
             // 
-            this.btnOpenModel.Location = new System.Drawing.Point(20, 50);
+            this.btnOpenModel.Location = new System.Drawing.Point(20, 46);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(130, 32);
+            this.btnOpenModel.Size = new System.Drawing.Size(130, 30);
             this.btnOpenModel.TabIndex = 1;
             this.btnOpenModel.Text = "모델 열기";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -215,7 +219,7 @@
             this.chkManipulator.AutoSize = true;
             this.chkManipulator.Checked = true;
             this.chkManipulator.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkManipulator.Location = new System.Drawing.Point(165, 58);
+            this.chkManipulator.Location = new System.Drawing.Point(165, 53);
             this.chkManipulator.Name = "chkManipulator";
             this.chkManipulator.Size = new System.Drawing.Size(118, 16);
             this.chkManipulator.TabIndex = 2;
@@ -228,7 +232,7 @@
             this.chkNameVisible.AutoSize = true;
             this.chkNameVisible.Checked = true;
             this.chkNameVisible.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkNameVisible.Location = new System.Drawing.Point(305, 58);
+            this.chkNameVisible.Location = new System.Drawing.Point(305, 53);
             this.chkNameVisible.Name = "chkNameVisible";
             this.chkNameVisible.Size = new System.Drawing.Size(102, 16);
             this.chkNameVisible.TabIndex = 3;
@@ -238,64 +242,99 @@
             // 
             // lblSizeTitle
             // 
+            this.lblSizeTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblSizeTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblSizeTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblSizeTitle.Location = new System.Drawing.Point(10, 95);
+            this.lblSizeTitle.Location = new System.Drawing.Point(10, 90);
             this.lblSizeTitle.Name = "lblSizeTitle";
             this.lblSizeTitle.Size = new System.Drawing.Size(445, 24);
             this.lblSizeTitle.TabIndex = 4;
             this.lblSizeTitle.Text = "위치 및 크기 (Min / Max)";
             this.lblSizeTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // tlpSize
+            // 
+            this.tlpSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpSize.ColumnCount = 4;
+            this.tlpSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tlpSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpSize.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpSize.Controls.Add(this.lblX, 1, 0);
+            this.tlpSize.Controls.Add(this.lblY, 2, 0);
+            this.tlpSize.Controls.Add(this.lblZ, 3, 0);
+            this.tlpSize.Controls.Add(this.lblMin, 0, 1);
+            this.tlpSize.Controls.Add(this.numMinX, 1, 1);
+            this.tlpSize.Controls.Add(this.numMinY, 2, 1);
+            this.tlpSize.Controls.Add(this.numMinZ, 3, 1);
+            this.tlpSize.Controls.Add(this.lblMax, 0, 2);
+            this.tlpSize.Controls.Add(this.numMaxX, 1, 2);
+            this.tlpSize.Controls.Add(this.numMaxY, 2, 2);
+            this.tlpSize.Controls.Add(this.numMaxZ, 3, 2);
+            this.tlpSize.Location = new System.Drawing.Point(17, 122);
+            this.tlpSize.Name = "tlpSize";
+            this.tlpSize.RowCount = 3;
+            this.tlpSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlpSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tlpSize.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tlpSize.Size = new System.Drawing.Size(441, 76);
+            this.tlpSize.TabIndex = 5;
+            // 
             // lblX
             // 
+            this.lblX.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblX.AutoSize = true;
-            this.lblX.Location = new System.Drawing.Point(118, 130);
+            this.lblX.Location = new System.Drawing.Point(58, 4);
             this.lblX.Name = "lblX";
             this.lblX.Size = new System.Drawing.Size(13, 12);
-            this.lblX.TabIndex = 5;
+            this.lblX.TabIndex = 0;
             this.lblX.Text = "X";
             // 
             // lblY
             // 
+            this.lblY.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblY.AutoSize = true;
-            this.lblY.Location = new System.Drawing.Point(228, 130);
+            this.lblY.Location = new System.Drawing.Point(187, 4);
             this.lblY.Name = "lblY";
             this.lblY.Size = new System.Drawing.Size(13, 12);
-            this.lblY.TabIndex = 6;
+            this.lblY.TabIndex = 1;
             this.lblY.Text = "Y";
             // 
             // lblZ
             // 
+            this.lblZ.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblZ.AutoSize = true;
-            this.lblZ.Location = new System.Drawing.Point(338, 130);
+            this.lblZ.Location = new System.Drawing.Point(315, 4);
             this.lblZ.Name = "lblZ";
             this.lblZ.Size = new System.Drawing.Size(13, 12);
-            this.lblZ.TabIndex = 7;
+            this.lblZ.TabIndex = 2;
             this.lblZ.Text = "Z";
             // 
             // lblMin
             // 
+            this.lblMin.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblMin.AutoSize = true;
-            this.lblMin.Location = new System.Drawing.Point(20, 160);
+            this.lblMin.Location = new System.Drawing.Point(3, 28);
             this.lblMin.Name = "lblMin";
             this.lblMin.Size = new System.Drawing.Size(26, 12);
-            this.lblMin.TabIndex = 8;
+            this.lblMin.TabIndex = 3;
             this.lblMin.Text = "Min";
             // 
             // lblMax
             // 
+            this.lblMax.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblMax.AutoSize = true;
-            this.lblMax.Location = new System.Drawing.Point(20, 200);
+            this.lblMax.Location = new System.Drawing.Point(3, 56);
             this.lblMax.Name = "lblMax";
             this.lblMax.Size = new System.Drawing.Size(30, 12);
-            this.lblMax.TabIndex = 9;
+            this.lblMax.TabIndex = 7;
             this.lblMax.Text = "Max";
             // 
             // numMinX
             // 
+            this.numMinX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMinX.DecimalPlaces = 3;
-            this.numMinX.Location = new System.Drawing.Point(75, 155);
+            this.numMinX.Location = new System.Drawing.Point(58, 23);
             this.numMinX.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -307,13 +346,14 @@
             0,
             -2147483648});
             this.numMinX.Name = "numMinX";
-            this.numMinX.Size = new System.Drawing.Size(100, 21);
-            this.numMinX.TabIndex = 10;
+            this.numMinX.Size = new System.Drawing.Size(123, 21);
+            this.numMinX.TabIndex = 4;
             // 
             // numMinY
             // 
+            this.numMinY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMinY.DecimalPlaces = 3;
-            this.numMinY.Location = new System.Drawing.Point(185, 155);
+            this.numMinY.Location = new System.Drawing.Point(187, 23);
             this.numMinY.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -325,13 +365,14 @@
             0,
             -2147483648});
             this.numMinY.Name = "numMinY";
-            this.numMinY.Size = new System.Drawing.Size(100, 21);
-            this.numMinY.TabIndex = 11;
+            this.numMinY.Size = new System.Drawing.Size(122, 21);
+            this.numMinY.TabIndex = 5;
             // 
             // numMinZ
             // 
+            this.numMinZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMinZ.DecimalPlaces = 3;
-            this.numMinZ.Location = new System.Drawing.Point(295, 155);
+            this.numMinZ.Location = new System.Drawing.Point(315, 23);
             this.numMinZ.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -343,13 +384,14 @@
             0,
             -2147483648});
             this.numMinZ.Name = "numMinZ";
-            this.numMinZ.Size = new System.Drawing.Size(100, 21);
-            this.numMinZ.TabIndex = 12;
+            this.numMinZ.Size = new System.Drawing.Size(123, 21);
+            this.numMinZ.TabIndex = 6;
             // 
             // numMaxX
             // 
+            this.numMaxX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMaxX.DecimalPlaces = 3;
-            this.numMaxX.Location = new System.Drawing.Point(75, 195);
+            this.numMaxX.Location = new System.Drawing.Point(58, 51);
             this.numMaxX.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -361,8 +403,8 @@
             0,
             -2147483648});
             this.numMaxX.Name = "numMaxX";
-            this.numMaxX.Size = new System.Drawing.Size(100, 21);
-            this.numMaxX.TabIndex = 13;
+            this.numMaxX.Size = new System.Drawing.Size(123, 21);
+            this.numMaxX.TabIndex = 8;
             this.numMaxX.Value = new decimal(new int[] {
             5000,
             0,
@@ -371,8 +413,9 @@
             // 
             // numMaxY
             // 
+            this.numMaxY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMaxY.DecimalPlaces = 3;
-            this.numMaxY.Location = new System.Drawing.Point(185, 195);
+            this.numMaxY.Location = new System.Drawing.Point(187, 51);
             this.numMaxY.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -384,8 +427,8 @@
             0,
             -2147483648});
             this.numMaxY.Name = "numMaxY";
-            this.numMaxY.Size = new System.Drawing.Size(100, 21);
-            this.numMaxY.TabIndex = 14;
+            this.numMaxY.Size = new System.Drawing.Size(122, 21);
+            this.numMaxY.TabIndex = 9;
             this.numMaxY.Value = new decimal(new int[] {
             5000,
             0,
@@ -394,8 +437,9 @@
             // 
             // numMaxZ
             // 
+            this.numMaxZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numMaxZ.DecimalPlaces = 3;
-            this.numMaxZ.Location = new System.Drawing.Point(295, 195);
+            this.numMaxZ.Location = new System.Drawing.Point(315, 51);
             this.numMaxZ.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -407,39 +451,57 @@
             0,
             -2147483648});
             this.numMaxZ.Name = "numMaxZ";
-            this.numMaxZ.Size = new System.Drawing.Size(100, 21);
-            this.numMaxZ.TabIndex = 15;
+            this.numMaxZ.Size = new System.Drawing.Size(123, 21);
+            this.numMaxZ.TabIndex = 10;
             this.numMaxZ.Value = new decimal(new int[] {
             5000,
             0,
             0,
             0});
             // 
+            // tlpCreate
+            // 
+            this.tlpCreate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpCreate.ColumnCount = 2;
+            this.tlpCreate.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpCreate.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpCreate.Controls.Add(this.btnCreate, 0, 0);
+            this.tlpCreate.Controls.Add(this.btnSetSize, 1, 0);
+            this.tlpCreate.Location = new System.Drawing.Point(17, 204);
+            this.tlpCreate.Name = "tlpCreate";
+            this.tlpCreate.RowCount = 1;
+            this.tlpCreate.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpCreate.Size = new System.Drawing.Size(441, 36);
+            this.tlpCreate.TabIndex = 16;
+            // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(20, 230);
+            this.btnCreate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCreate.Location = new System.Drawing.Point(3, 3);
             this.btnCreate.Name = "btnCreate";
-            this.btnCreate.Size = new System.Drawing.Size(205, 32);
-            this.btnCreate.TabIndex = 16;
+            this.btnCreate.Size = new System.Drawing.Size(214, 30);
+            this.btnCreate.TabIndex = 0;
             this.btnCreate.Text = "Selection Box 생성";
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
             // 
             // btnSetSize
             // 
-            this.btnSetSize.Location = new System.Drawing.Point(235, 230);
+            this.btnSetSize.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSetSize.Location = new System.Drawing.Point(223, 3);
             this.btnSetSize.Name = "btnSetSize";
-            this.btnSetSize.Size = new System.Drawing.Size(220, 32);
-            this.btnSetSize.TabIndex = 17;
+            this.btnSetSize.Size = new System.Drawing.Size(215, 30);
+            this.btnSetSize.TabIndex = 1;
             this.btnSetSize.Text = "선택 Box 위치/크기 적용";
             this.btnSetSize.UseVisualStyleBackColor = true;
             this.btnSetSize.Click += new System.EventHandler(this.btnSetSize_Click);
             // 
             // lblListTitle
             // 
+            this.lblListTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblListTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblListTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblListTitle.Location = new System.Drawing.Point(10, 425);
+            this.lblListTitle.Location = new System.Drawing.Point(10, 394);
             this.lblListTitle.Name = "lblListTitle";
             this.lblListTitle.Size = new System.Drawing.Size(445, 24);
             this.lblListTitle.TabIndex = 18;
@@ -448,9 +510,10 @@
             // 
             // lstSelectionBoxes
             // 
+            this.lstSelectionBoxes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lstSelectionBoxes.FormattingEnabled = true;
             this.lstSelectionBoxes.ItemHeight = 12;
-            this.lstSelectionBoxes.Location = new System.Drawing.Point(20, 460);
+            this.lstSelectionBoxes.Location = new System.Drawing.Point(20, 428);
             this.lstSelectionBoxes.Name = "lstSelectionBoxes";
             this.lstSelectionBoxes.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lstSelectionBoxes.Size = new System.Drawing.Size(435, 100);
@@ -460,14 +523,16 @@
             // 
             // txtSelectionBoxTitle
             // 
-            this.txtSelectionBoxTitle.Location = new System.Drawing.Point(20, 570);
+            this.txtSelectionBoxTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtSelectionBoxTitle.Location = new System.Drawing.Point(20, 541);
             this.txtSelectionBoxTitle.Name = "txtSelectionBoxTitle";
-            this.txtSelectionBoxTitle.Size = new System.Drawing.Size(285, 21);
+            this.txtSelectionBoxTitle.Size = new System.Drawing.Size(289, 21);
             this.txtSelectionBoxTitle.TabIndex = 20;
             // 
             // btnSetTitle
             // 
-            this.btnSetTitle.Location = new System.Drawing.Point(315, 566);
+            this.btnSetTitle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSetTitle.Location = new System.Drawing.Point(315, 536);
             this.btnSetTitle.Name = "btnSetTitle";
             this.btnSetTitle.Size = new System.Drawing.Size(140, 30);
             this.btnSetTitle.TabIndex = 21;
@@ -475,31 +540,49 @@
             this.btnSetTitle.UseVisualStyleBackColor = true;
             this.btnSetTitle.Click += new System.EventHandler(this.btnSetTitle_Click);
             // 
+            // tlpDelete
+            // 
+            this.tlpDelete.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpDelete.ColumnCount = 2;
+            this.tlpDelete.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpDelete.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpDelete.Controls.Add(this.btnDelete, 0, 0);
+            this.tlpDelete.Controls.Add(this.btnClear, 1, 0);
+            this.tlpDelete.Location = new System.Drawing.Point(17, 572);
+            this.tlpDelete.Name = "tlpDelete";
+            this.tlpDelete.RowCount = 1;
+            this.tlpDelete.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpDelete.Size = new System.Drawing.Size(441, 36);
+            this.tlpDelete.TabIndex = 22;
+            // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(20, 605);
+            this.btnDelete.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnDelete.Location = new System.Drawing.Point(3, 3);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(205, 30);
-            this.btnDelete.TabIndex = 22;
+            this.btnDelete.Size = new System.Drawing.Size(214, 30);
+            this.btnDelete.TabIndex = 0;
             this.btnDelete.Text = "선택 삭제";
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(235, 605);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClear.Location = new System.Drawing.Point(223, 3);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(220, 30);
-            this.btnClear.TabIndex = 23;
+            this.btnClear.Size = new System.Drawing.Size(215, 30);
+            this.btnClear.TabIndex = 1;
             this.btnClear.Text = "전체 삭제";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // lblEditTitle
             // 
+            this.lblEditTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblEditTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblEditTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblEditTitle.Location = new System.Drawing.Point(10, 650);
+            this.lblEditTitle.Location = new System.Drawing.Point(10, 622);
             this.lblEditTitle.Name = "lblEditTitle";
             this.lblEditTitle.Size = new System.Drawing.Size(445, 24);
             this.lblEditTitle.TabIndex = 24;
@@ -511,7 +594,7 @@
             this.cmbAxis.DataSource = System.Enum.GetValues(typeof(VIZCore3DX.NET.Data.Axis));
             this.cmbAxis.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbAxis.FormattingEnabled = true;
-            this.cmbAxis.Location = new System.Drawing.Point(20, 685);
+            this.cmbAxis.Location = new System.Drawing.Point(20, 656);
             this.cmbAxis.Name = "cmbAxis";
             this.cmbAxis.Size = new System.Drawing.Size(205, 20);
             this.cmbAxis.TabIndex = 25;
@@ -519,58 +602,82 @@
             // chkGroupAxis
             // 
             this.chkGroupAxis.AutoSize = true;
-            this.chkGroupAxis.Location = new System.Drawing.Point(245, 687);
+            this.chkGroupAxis.Location = new System.Drawing.Point(245, 658);
             this.chkGroupAxis.Name = "chkGroupAxis";
             this.chkGroupAxis.Size = new System.Drawing.Size(102, 16);
             this.chkGroupAxis.TabIndex = 26;
             this.chkGroupAxis.Text = "Group 축 지정";
             this.chkGroupAxis.UseVisualStyleBackColor = true;
             // 
+            // tlpEdit
+            // 
+            this.tlpEdit.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpEdit.ColumnCount = 4;
+            this.tlpEdit.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpEdit.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpEdit.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpEdit.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tlpEdit.Controls.Add(this.btnDivide, 0, 0);
+            this.tlpEdit.Controls.Add(this.btnMerge, 1, 0);
+            this.tlpEdit.Controls.Add(this.btnGroup, 2, 0);
+            this.tlpEdit.Controls.Add(this.btnUngroup, 3, 0);
+            this.tlpEdit.Location = new System.Drawing.Point(17, 684);
+            this.tlpEdit.Name = "tlpEdit";
+            this.tlpEdit.RowCount = 1;
+            this.tlpEdit.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpEdit.Size = new System.Drawing.Size(441, 36);
+            this.tlpEdit.TabIndex = 27;
+            // 
             // btnDivide
             // 
-            this.btnDivide.Location = new System.Drawing.Point(20, 715);
+            this.btnDivide.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnDivide.Location = new System.Drawing.Point(3, 3);
             this.btnDivide.Name = "btnDivide";
-            this.btnDivide.Size = new System.Drawing.Size(100, 30);
-            this.btnDivide.TabIndex = 27;
+            this.btnDivide.Size = new System.Drawing.Size(104, 30);
+            this.btnDivide.TabIndex = 0;
             this.btnDivide.Text = "Divide";
             this.btnDivide.UseVisualStyleBackColor = true;
             this.btnDivide.Click += new System.EventHandler(this.btnDivide_Click);
             // 
             // btnMerge
             // 
-            this.btnMerge.Location = new System.Drawing.Point(130, 715);
+            this.btnMerge.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnMerge.Location = new System.Drawing.Point(113, 3);
             this.btnMerge.Name = "btnMerge";
-            this.btnMerge.Size = new System.Drawing.Size(100, 30);
-            this.btnMerge.TabIndex = 28;
+            this.btnMerge.Size = new System.Drawing.Size(104, 30);
+            this.btnMerge.TabIndex = 1;
             this.btnMerge.Text = "Merge";
             this.btnMerge.UseVisualStyleBackColor = true;
             this.btnMerge.Click += new System.EventHandler(this.btnMerge_Click);
             // 
             // btnGroup
             // 
-            this.btnGroup.Location = new System.Drawing.Point(240, 715);
+            this.btnGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnGroup.Location = new System.Drawing.Point(223, 3);
             this.btnGroup.Name = "btnGroup";
-            this.btnGroup.Size = new System.Drawing.Size(100, 30);
-            this.btnGroup.TabIndex = 29;
+            this.btnGroup.Size = new System.Drawing.Size(105, 30);
+            this.btnGroup.TabIndex = 2;
             this.btnGroup.Text = "Group";
             this.btnGroup.UseVisualStyleBackColor = true;
             this.btnGroup.Click += new System.EventHandler(this.btnGroup_Click);
             // 
             // btnUngroup
             // 
-            this.btnUngroup.Location = new System.Drawing.Point(350, 715);
+            this.btnUngroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnUngroup.Location = new System.Drawing.Point(334, 3);
             this.btnUngroup.Name = "btnUngroup";
-            this.btnUngroup.Size = new System.Drawing.Size(105, 30);
-            this.btnUngroup.TabIndex = 30;
+            this.btnUngroup.Size = new System.Drawing.Size(104, 30);
+            this.btnUngroup.TabIndex = 3;
             this.btnUngroup.Text = "Ungroup";
             this.btnUngroup.UseVisualStyleBackColor = true;
             this.btnUngroup.Click += new System.EventHandler(this.btnUngroup_Click);
             // 
             // lblObjectTitle
             // 
+            this.lblObjectTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblObjectTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblObjectTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblObjectTitle.Location = new System.Drawing.Point(10, 760);
+            this.lblObjectTitle.Location = new System.Drawing.Point(10, 734);
             this.lblObjectTitle.Name = "lblObjectTitle";
             this.lblObjectTitle.Size = new System.Drawing.Size(445, 24);
             this.lblObjectTitle.TabIndex = 31;
@@ -580,7 +687,7 @@
             // lblSearchOption
             // 
             this.lblSearchOption.AutoSize = true;
-            this.lblSearchOption.Location = new System.Drawing.Point(20, 800);
+            this.lblSearchOption.Location = new System.Drawing.Point(20, 772);
             this.lblSearchOption.Name = "lblSearchOption";
             this.lblSearchOption.Size = new System.Drawing.Size(85, 12);
             this.lblSearchOption.TabIndex = 32;
@@ -588,10 +695,11 @@
             // 
             // cmbSearchOption
             // 
+            this.cmbSearchOption.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbSearchOption.DataSource = System.Enum.GetValues(typeof(VIZCore3DX.NET.Data.BoundBoxSearchOption));
             this.cmbSearchOption.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbSearchOption.FormattingEnabled = true;
-            this.cmbSearchOption.Location = new System.Drawing.Point(120, 795);
+            this.cmbSearchOption.Location = new System.Drawing.Point(120, 768);
             this.cmbSearchOption.Name = "cmbSearchOption";
             this.cmbSearchOption.Size = new System.Drawing.Size(335, 20);
             this.cmbSearchOption.TabIndex = 33;
@@ -601,7 +709,7 @@
             this.chkVisibleOnly.AutoSize = true;
             this.chkVisibleOnly.Checked = true;
             this.chkVisibleOnly.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkVisibleOnly.Location = new System.Drawing.Point(20, 830);
+            this.chkVisibleOnly.Location = new System.Drawing.Point(20, 803);
             this.chkVisibleOnly.Name = "chkVisibleOnly";
             this.chkVisibleOnly.Size = new System.Drawing.Size(92, 16);
             this.chkVisibleOnly.TabIndex = 34;
@@ -612,7 +720,7 @@
             // 
             this.rdoPart.AutoSize = true;
             this.rdoPart.Checked = true;
-            this.rdoPart.Location = new System.Drawing.Point(130, 830);
+            this.rdoPart.Location = new System.Drawing.Point(130, 803);
             this.rdoPart.Name = "rdoPart";
             this.rdoPart.Size = new System.Drawing.Size(45, 16);
             this.rdoPart.TabIndex = 35;
@@ -623,7 +731,7 @@
             // rdoAssembly
             // 
             this.rdoAssembly.AutoSize = true;
-            this.rdoAssembly.Location = new System.Drawing.Point(200, 830);
+            this.rdoAssembly.Location = new System.Drawing.Point(200, 803);
             this.rdoAssembly.Name = "rdoAssembly";
             this.rdoAssembly.Size = new System.Drawing.Size(80, 16);
             this.rdoAssembly.TabIndex = 36;
@@ -632,7 +740,8 @@
             // 
             // btnGetObjects
             // 
-            this.btnGetObjects.Location = new System.Drawing.Point(345, 825);
+            this.btnGetObjects.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGetObjects.Location = new System.Drawing.Point(345, 796);
             this.btnGetObjects.Name = "btnGetObjects";
             this.btnGetObjects.Size = new System.Drawing.Size(110, 28);
             this.btnGetObjects.TabIndex = 37;
@@ -642,18 +751,20 @@
             // 
             // lstObjects
             // 
+            this.lstObjects.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lstObjects.FormattingEnabled = true;
             this.lstObjects.HorizontalScrollbar = true;
             this.lstObjects.ItemHeight = 12;
-            this.lstObjects.Location = new System.Drawing.Point(20, 860);
+            this.lstObjects.Location = new System.Drawing.Point(20, 832);
             this.lstObjects.Name = "lstObjects";
             this.lstObjects.Size = new System.Drawing.Size(435, 88);
             this.lstObjects.TabIndex = 38;
             // 
             // lblStatus
             // 
+            this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblStatus.Location = new System.Drawing.Point(20, 960);
+            this.lblStatus.Location = new System.Drawing.Point(20, 928);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Padding = new System.Windows.Forms.Padding(6);
             this.lblStatus.Size = new System.Drawing.Size(435, 55);
@@ -662,9 +773,10 @@
             // 
             // lblLinkedCreateTitle
             // 
+            this.lblLinkedCreateTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblLinkedCreateTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblLinkedCreateTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblLinkedCreateTitle.Location = new System.Drawing.Point(10, 1030);
+            this.lblLinkedCreateTitle.Location = new System.Drawing.Point(10, 997);
             this.lblLinkedCreateTitle.Name = "lblLinkedCreateTitle";
             this.lblLinkedCreateTitle.Size = new System.Drawing.Size(445, 24);
             this.lblLinkedCreateTitle.TabIndex = 40;
@@ -674,7 +786,7 @@
             // lblMargin
             // 
             this.lblMargin.AutoSize = true;
-            this.lblMargin.Location = new System.Drawing.Point(20, 1071);
+            this.lblMargin.Location = new System.Drawing.Point(20, 1040);
             this.lblMargin.Name = "lblMargin";
             this.lblMargin.Size = new System.Drawing.Size(57, 12);
             this.lblMargin.TabIndex = 41;
@@ -683,7 +795,7 @@
             // numMargin
             // 
             this.numMargin.DecimalPlaces = 3;
-            this.numMargin.Location = new System.Drawing.Point(90, 1066);
+            this.numMargin.Location = new System.Drawing.Point(90, 1035);
             this.numMargin.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -695,7 +807,8 @@
             // 
             // btnCreateFromSelected
             // 
-            this.btnCreateFromSelected.Location = new System.Drawing.Point(220, 1062);
+            this.btnCreateFromSelected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreateFromSelected.Location = new System.Drawing.Point(220, 1031);
             this.btnCreateFromSelected.Name = "btnCreateFromSelected";
             this.btnCreateFromSelected.Size = new System.Drawing.Size(235, 30);
             this.btnCreateFromSelected.TabIndex = 43;
@@ -705,9 +818,10 @@
             // 
             // lblOsnapTitle
             // 
+            this.lblOsnapTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.lblOsnapTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             this.lblOsnapTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblOsnapTitle.Location = new System.Drawing.Point(10, 275);
+            this.lblOsnapTitle.Location = new System.Drawing.Point(10, 254);
             this.lblOsnapTitle.Name = "lblOsnapTitle";
             this.lblOsnapTitle.Size = new System.Drawing.Size(445, 24);
             this.lblOsnapTitle.TabIndex = 44;
@@ -719,7 +833,7 @@
             this.chkEdgeEndpointSnap.AutoSize = true;
             this.chkEdgeEndpointSnap.Checked = true;
             this.chkEdgeEndpointSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkEdgeEndpointSnap.Location = new System.Drawing.Point(20, 313);
+            this.chkEdgeEndpointSnap.Location = new System.Drawing.Point(20, 290);
             this.chkEdgeEndpointSnap.Name = "chkEdgeEndpointSnap";
             this.chkEdgeEndpointSnap.Size = new System.Drawing.Size(48, 16);
             this.chkEdgeEndpointSnap.TabIndex = 45;
@@ -731,7 +845,7 @@
             this.chkEdgeMidpointSnap.AutoSize = true;
             this.chkEdgeMidpointSnap.Checked = true;
             this.chkEdgeMidpointSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkEdgeMidpointSnap.Location = new System.Drawing.Point(85, 313);
+            this.chkEdgeMidpointSnap.Location = new System.Drawing.Point(85, 290);
             this.chkEdgeMidpointSnap.Name = "chkEdgeMidpointSnap";
             this.chkEdgeMidpointSnap.Size = new System.Drawing.Size(48, 16);
             this.chkEdgeMidpointSnap.TabIndex = 46;
@@ -743,7 +857,7 @@
             this.chkLineSnap.AutoSize = true;
             this.chkLineSnap.Checked = true;
             this.chkLineSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkLineSnap.Location = new System.Drawing.Point(150, 313);
+            this.chkLineSnap.Location = new System.Drawing.Point(150, 290);
             this.chkLineSnap.Name = "chkLineSnap";
             this.chkLineSnap.Size = new System.Drawing.Size(36, 16);
             this.chkLineSnap.TabIndex = 47;
@@ -755,7 +869,7 @@
             this.chkCircleSnap.AutoSize = true;
             this.chkCircleSnap.Checked = true;
             this.chkCircleSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCircleSnap.Location = new System.Drawing.Point(205, 313);
+            this.chkCircleSnap.Location = new System.Drawing.Point(205, 290);
             this.chkCircleSnap.Name = "chkCircleSnap";
             this.chkCircleSnap.Size = new System.Drawing.Size(36, 16);
             this.chkCircleSnap.TabIndex = 48;
@@ -767,7 +881,7 @@
             this.chkCircleCenterSnap.AutoSize = true;
             this.chkCircleCenterSnap.Checked = true;
             this.chkCircleCenterSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCircleCenterSnap.Location = new System.Drawing.Point(260, 313);
+            this.chkCircleCenterSnap.Location = new System.Drawing.Point(260, 290);
             this.chkCircleCenterSnap.Name = "chkCircleCenterSnap";
             this.chkCircleCenterSnap.Size = new System.Drawing.Size(64, 16);
             this.chkCircleCenterSnap.TabIndex = 49;
@@ -779,7 +893,7 @@
             this.chkCylinderSnap.AutoSize = true;
             this.chkCylinderSnap.Checked = true;
             this.chkCylinderSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCylinderSnap.Location = new System.Drawing.Point(345, 313);
+            this.chkCylinderSnap.Location = new System.Drawing.Point(345, 290);
             this.chkCylinderSnap.Name = "chkCylinderSnap";
             this.chkCylinderSnap.Size = new System.Drawing.Size(48, 16);
             this.chkCylinderSnap.TabIndex = 50;
@@ -791,7 +905,7 @@
             this.chkPlaneSnap.AutoSize = true;
             this.chkPlaneSnap.Checked = true;
             this.chkPlaneSnap.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkPlaneSnap.Location = new System.Drawing.Point(410, 313);
+            this.chkPlaneSnap.Location = new System.Drawing.Point(410, 290);
             this.chkPlaneSnap.Name = "chkPlaneSnap";
             this.chkPlaneSnap.Size = new System.Drawing.Size(36, 16);
             this.chkPlaneSnap.TabIndex = 51;
@@ -800,9 +914,10 @@
             // 
             // btnPickOsnap
             // 
-            this.btnPickOsnap.Location = new System.Drawing.Point(20, 370);
+            this.btnPickOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPickOsnap.Location = new System.Drawing.Point(20, 350);
             this.btnPickOsnap.Name = "btnPickOsnap";
-            this.btnPickOsnap.Size = new System.Drawing.Size(270, 30);
+            this.btnPickOsnap.Size = new System.Drawing.Size(289, 30);
             this.btnPickOsnap.TabIndex = 52;
             this.btnPickOsnap.Text = "Osnap으로 위치 설정";
             this.btnPickOsnap.UseVisualStyleBackColor = true;
@@ -810,45 +925,73 @@
             // 
             // btnCancelOsnap
             // 
-            this.btnCancelOsnap.Location = new System.Drawing.Point(300, 370);
+            this.btnCancelOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancelOsnap.Location = new System.Drawing.Point(315, 350);
             this.btnCancelOsnap.Name = "btnCancelOsnap";
-            this.btnCancelOsnap.Size = new System.Drawing.Size(155, 30);
+            this.btnCancelOsnap.Size = new System.Drawing.Size(140, 30);
             this.btnCancelOsnap.TabIndex = 53;
             this.btnCancelOsnap.Text = "Osnap 취소";
             this.btnCancelOsnap.UseVisualStyleBackColor = true;
             this.btnCancelOsnap.Click += new System.EventHandler(this.btnCancelOsnap_Click);
             // 
+            // tlpLength
+            // 
+            this.tlpLength.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpLength.ColumnCount = 6;
+            this.tlpLength.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this.tlpLength.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpLength.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this.tlpLength.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpLength.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+            this.tlpLength.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpLength.Controls.Add(this.lblLengthX, 0, 0);
+            this.tlpLength.Controls.Add(this.numLengthX, 1, 0);
+            this.tlpLength.Controls.Add(this.lblLengthY, 2, 0);
+            this.tlpLength.Controls.Add(this.numLengthY, 3, 0);
+            this.tlpLength.Controls.Add(this.lblLengthZ, 4, 0);
+            this.tlpLength.Controls.Add(this.numLengthZ, 5, 0);
+            this.tlpLength.Location = new System.Drawing.Point(17, 314);
+            this.tlpLength.Name = "tlpLength";
+            this.tlpLength.RowCount = 1;
+            this.tlpLength.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpLength.Size = new System.Drawing.Size(441, 28);
+            this.tlpLength.TabIndex = 52;
+            // 
             // lblLengthX
             // 
+            this.lblLengthX.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblLengthX.AutoSize = true;
-            this.lblLengthX.Location = new System.Drawing.Point(20, 343);
+            this.lblLengthX.Location = new System.Drawing.Point(3, 8);
             this.lblLengthX.Name = "lblLengthX";
             this.lblLengthX.Size = new System.Drawing.Size(41, 12);
-            this.lblLengthX.TabIndex = 54;
+            this.lblLengthX.TabIndex = 0;
             this.lblLengthX.Text = "크기 X";
             // 
             // lblLengthY
             // 
+            this.lblLengthY.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblLengthY.AutoSize = true;
-            this.lblLengthY.Location = new System.Drawing.Point(165, 343);
+            this.lblLengthY.Location = new System.Drawing.Point(150, 8);
             this.lblLengthY.Name = "lblLengthY";
             this.lblLengthY.Size = new System.Drawing.Size(41, 12);
-            this.lblLengthY.TabIndex = 55;
+            this.lblLengthY.TabIndex = 2;
             this.lblLengthY.Text = "크기 Y";
             // 
             // lblLengthZ
             // 
+            this.lblLengthZ.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.lblLengthZ.AutoSize = true;
-            this.lblLengthZ.Location = new System.Drawing.Point(310, 343);
+            this.lblLengthZ.Location = new System.Drawing.Point(297, 8);
             this.lblLengthZ.Name = "lblLengthZ";
             this.lblLengthZ.Size = new System.Drawing.Size(41, 12);
-            this.lblLengthZ.TabIndex = 56;
+            this.lblLengthZ.TabIndex = 4;
             this.lblLengthZ.Text = "크기 Z";
             // 
             // numLengthX
             // 
+            this.numLengthX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numLengthX.DecimalPlaces = 3;
-            this.numLengthX.Location = new System.Drawing.Point(65, 338);
+            this.numLengthX.Location = new System.Drawing.Point(51, 3);
             this.numLengthX.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -860,8 +1003,8 @@
             0,
             196608});
             this.numLengthX.Name = "numLengthX";
-            this.numLengthX.Size = new System.Drawing.Size(90, 21);
-            this.numLengthX.TabIndex = 57;
+            this.numLengthX.Size = new System.Drawing.Size(93, 21);
+            this.numLengthX.TabIndex = 1;
             this.numLengthX.Value = new decimal(new int[] {
             5000,
             0,
@@ -870,8 +1013,9 @@
             // 
             // numLengthY
             // 
+            this.numLengthY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numLengthY.DecimalPlaces = 3;
-            this.numLengthY.Location = new System.Drawing.Point(210, 338);
+            this.numLengthY.Location = new System.Drawing.Point(198, 3);
             this.numLengthY.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -883,8 +1027,8 @@
             0,
             196608});
             this.numLengthY.Name = "numLengthY";
-            this.numLengthY.Size = new System.Drawing.Size(90, 21);
-            this.numLengthY.TabIndex = 58;
+            this.numLengthY.Size = new System.Drawing.Size(93, 21);
+            this.numLengthY.TabIndex = 3;
             this.numLengthY.Value = new decimal(new int[] {
             5000,
             0,
@@ -893,8 +1037,9 @@
             // 
             // numLengthZ
             // 
+            this.numLengthZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.numLengthZ.DecimalPlaces = 3;
-            this.numLengthZ.Location = new System.Drawing.Point(355, 338);
+            this.numLengthZ.Location = new System.Drawing.Point(345, 3);
             this.numLengthZ.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -906,19 +1051,100 @@
             0,
             196608});
             this.numLengthZ.Name = "numLengthZ";
-            this.numLengthZ.Size = new System.Drawing.Size(100, 21);
-            this.numLengthZ.TabIndex = 59;
+            this.numLengthZ.Size = new System.Drawing.Size(93, 21);
+            this.numLengthZ.TabIndex = 5;
             this.numLengthZ.Value = new decimal(new int[] {
             5000,
             0,
             0,
             0});
             // 
+            // lblJsonFocusTitle
+            // 
+            this.lblJsonFocusTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblJsonFocusTitle.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.lblJsonFocusTitle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblJsonFocusTitle.Location = new System.Drawing.Point(10, 1075);
+            this.lblJsonFocusTitle.Name = "lblJsonFocusTitle";
+            this.lblJsonFocusTitle.Size = new System.Drawing.Size(445, 24);
+            this.lblJsonFocusTitle.TabIndex = 60;
+            this.lblJsonFocusTitle.Text = "JSON 저장 / 복원 및 집중 모드";
+            this.lblJsonFocusTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnExportJson
+            // 
+            this.btnExportJson.Location = new System.Drawing.Point(20, 1109);
+            this.btnExportJson.Name = "btnExportJson";
+            this.btnExportJson.Size = new System.Drawing.Size(130, 30);
+            this.btnExportJson.TabIndex = 61;
+            this.btnExportJson.Text = "JSON 내보내기";
+            this.btnExportJson.UseVisualStyleBackColor = true;
+            this.btnExportJson.Click += new System.EventHandler(this.btnExportJson_Click);
+            // 
+            // btnImportJson
+            // 
+            this.btnImportJson.Location = new System.Drawing.Point(160, 1109);
+            this.btnImportJson.Name = "btnImportJson";
+            this.btnImportJson.Size = new System.Drawing.Size(130, 30);
+            this.btnImportJson.TabIndex = 62;
+            this.btnImportJson.Text = "JSON 가져오기";
+            this.btnImportJson.UseVisualStyleBackColor = true;
+            this.btnImportJson.Click += new System.EventHandler(this.btnImportJson_Click);
+            // 
+            // chkReplaceExisting
+            // 
+            this.chkReplaceExisting.AutoSize = true;
+            this.chkReplaceExisting.Checked = true;
+            this.chkReplaceExisting.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkReplaceExisting.Location = new System.Drawing.Point(305, 1116);
+            this.chkReplaceExisting.Name = "chkReplaceExisting";
+            this.chkReplaceExisting.Size = new System.Drawing.Size(128, 16);
+            this.chkReplaceExisting.TabIndex = 63;
+            this.chkReplaceExisting.Text = "기존 Box 대체";
+            this.chkReplaceExisting.UseVisualStyleBackColor = true;
+            // 
+            // tlpFocus
+            // 
+            this.tlpFocus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpFocus.ColumnCount = 2;
+            this.tlpFocus.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpFocus.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpFocus.Controls.Add(this.btnEnterFocusMode, 0, 0);
+            this.tlpFocus.Controls.Add(this.btnExitFocusMode, 1, 0);
+            this.tlpFocus.Location = new System.Drawing.Point(17, 1145);
+            this.tlpFocus.Name = "tlpFocus";
+            this.tlpFocus.RowCount = 1;
+            this.tlpFocus.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpFocus.Size = new System.Drawing.Size(441, 36);
+            this.tlpFocus.TabIndex = 64;
+            // 
+            // btnEnterFocusMode
+            // 
+            this.btnEnterFocusMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnEnterFocusMode.Location = new System.Drawing.Point(3, 3);
+            this.btnEnterFocusMode.Name = "btnEnterFocusMode";
+            this.btnEnterFocusMode.Size = new System.Drawing.Size(214, 30);
+            this.btnEnterFocusMode.TabIndex = 0;
+            this.btnEnterFocusMode.Text = "선택 Box 집중 모드";
+            this.btnEnterFocusMode.UseVisualStyleBackColor = true;
+            this.btnEnterFocusMode.Click += new System.EventHandler(this.btnEnterFocusMode_Click);
+            // 
+            // btnExitFocusMode
+            // 
+            this.btnExitFocusMode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExitFocusMode.Location = new System.Drawing.Point(223, 3);
+            this.btnExitFocusMode.Name = "btnExitFocusMode";
+            this.btnExitFocusMode.Size = new System.Drawing.Size(215, 30);
+            this.btnExitFocusMode.TabIndex = 1;
+            this.btnExitFocusMode.Text = "집중 모드 해제";
+            this.btnExitFocusMode.UseVisualStyleBackColor = true;
+            this.btnExitFocusMode.Click += new System.EventHandler(this.btnExitFocusMode_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1400, 850);
+            this.ClientSize = new System.Drawing.Size(1400, 900);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(1200, 760);
             this.Name = "FrmMain";
@@ -929,6 +1155,14 @@
             this.splitContainer1.ResumeLayout(false);
             this.panelControl.ResumeLayout(false);
             this.panelControl.PerformLayout();
+            this.tlpFocus.ResumeLayout(false);
+            this.tlpEdit.ResumeLayout(false);
+            this.tlpDelete.ResumeLayout(false);
+            this.tlpLength.ResumeLayout(false);
+            this.tlpLength.PerformLayout();
+            this.tlpCreate.ResumeLayout(false);
+            this.tlpSize.ResumeLayout(false);
+            this.tlpSize.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMinX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMinZ)).EndInit();
@@ -947,6 +1181,12 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Panel panelControl;
+        private System.Windows.Forms.TableLayoutPanel tlpFocus;
+        private System.Windows.Forms.TableLayoutPanel tlpEdit;
+        private System.Windows.Forms.TableLayoutPanel tlpDelete;
+        private System.Windows.Forms.TableLayoutPanel tlpLength;
+        private System.Windows.Forms.TableLayoutPanel tlpCreate;
+        private System.Windows.Forms.TableLayoutPanel tlpSize;
         private System.Windows.Forms.Label lblBasicTitle;
         private System.Windows.Forms.Button btnOpenModel;
         private System.Windows.Forms.CheckBox chkManipulator;
@@ -1007,5 +1247,11 @@
         private System.Windows.Forms.NumericUpDown numLengthX;
         private System.Windows.Forms.NumericUpDown numLengthY;
         private System.Windows.Forms.NumericUpDown numLengthZ;
+        private System.Windows.Forms.Label lblJsonFocusTitle;
+        private System.Windows.Forms.Button btnExportJson;
+        private System.Windows.Forms.Button btnImportJson;
+        private System.Windows.Forms.CheckBox chkReplaceExisting;
+        private System.Windows.Forms.Button btnEnterFocusMode;
+        private System.Windows.Forms.Button btnExitFocusMode;
     }
 }

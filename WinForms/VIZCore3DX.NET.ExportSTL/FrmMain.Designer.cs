@@ -48,7 +48,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(984, 605);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 248;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -60,16 +60,18 @@
             this.groupBox1.Controls.Add(this.btnExportStlAscii);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(227, 112);
+            this.groupBox1.Size = new System.Drawing.Size(227, 98);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Export";
             // 
             // btnExportStlAscii
             // 
-            this.btnExportStlAscii.Location = new System.Drawing.Point(29, 36);
+            this.btnExportStlAscii.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExportStlAscii.Location = new System.Drawing.Point(12, 24);
             this.btnExportStlAscii.Name = "btnExportStlAscii";
-            this.btnExportStlAscii.Size = new System.Drawing.Size(160, 23);
+            this.btnExportStlAscii.Size = new System.Drawing.Size(203, 28);
             this.btnExportStlAscii.TabIndex = 0;
             this.btnExportStlAscii.Text = "STL (ASCII)";
             this.btnExportStlAscii.UseVisualStyleBackColor = true;
@@ -77,9 +79,11 @@
             // 
             // btnExportStlBinary
             // 
-            this.btnExportStlBinary.Location = new System.Drawing.Point(29, 65);
+            this.btnExportStlBinary.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExportStlBinary.Location = new System.Drawing.Point(12, 58);
             this.btnExportStlBinary.Name = "btnExportStlBinary";
-            this.btnExportStlBinary.Size = new System.Drawing.Size(160, 23);
+            this.btnExportStlBinary.Size = new System.Drawing.Size(203, 28);
             this.btnExportStlBinary.TabIndex = 1;
             this.btnExportStlBinary.Text = "STL (BINARY)";
             this.btnExportStlBinary.UseVisualStyleBackColor = true;
@@ -89,7 +93,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 605);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

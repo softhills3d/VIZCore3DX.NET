@@ -63,6 +63,10 @@ namespace VIZCore3DX.NET.ToolbarHide
             vizcore3dx.ToolbarSnapshot.Visible = false;
             vizcore3dx.ToolbarDecal.Visible = false;
             vizcore3dx.ToolbarPrimitive.Visible = false;
+            vizcore3dx.ToolbarObserver.Visible = false;
+            vizcore3dx.ToolbarSelectionBox.Visible = false;
+            vizcore3dx.ToolbarZone.Visible = false;
+            vizcore3dx.ToolbarEffect.Visible = false;
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작
@@ -87,6 +91,10 @@ namespace VIZCore3DX.NET.ToolbarHide
             cbToolbarList.Items.Add("ToolbarSnapshot");
             cbToolbarList.Items.Add("ToolbarDecal");
             cbToolbarList.Items.Add("ToolbarPrimitive");
+            cbToolbarList.Items.Add("ToolbarObserver");
+            cbToolbarList.Items.Add("ToolbarSelectionBox");
+            cbToolbarList.Items.Add("ToolbarZone");
+            cbToolbarList.Items.Add("ToolbarEffect");
 
             if (cbToolbarList.Items.Count > 0)
                 cbToolbarList.SelectedIndex = 0;
@@ -110,6 +118,10 @@ namespace VIZCore3DX.NET.ToolbarHide
                 case "ToolbarSnapshot": return vizcore3dx.ToolbarSnapshot;
                 case "ToolbarDecal": return vizcore3dx.ToolbarDecal;
                 case "ToolbarPrimitive": return vizcore3dx.ToolbarPrimitive;
+                case "ToolbarObserver": return vizcore3dx.ToolbarObserver;
+                case "ToolbarSelectionBox": return vizcore3dx.ToolbarSelectionBox;
+                case "ToolbarZone": return vizcore3dx.ToolbarZone;
+                case "ToolbarEffect": return vizcore3dx.ToolbarEffect;
                 default: return null;
             }
         }
@@ -154,7 +166,7 @@ namespace VIZCore3DX.NET.ToolbarHide
             {
                 ListViewItem lvi = new ListViewItem(item.Name);
                 lvi.SubItems.Add(item.GetType().Name);
-                lvi.SubItems.Add(item.Visible.ToString());
+                lvi.SubItems.Add(item.Available.ToString());
                 lvi.Tag = Tuple.Create<string, string>(null, item.Name);
                 lvToolbar.Items.Add(lvi);
 
@@ -165,7 +177,7 @@ namespace VIZCore3DX.NET.ToolbarHide
                     {
                         ListViewItem subLvi = new ListViewItem("  └ " + subItem.Name);
                         subLvi.SubItems.Add(subItem.GetType().Name);
-                        subLvi.SubItems.Add(subItem.Visible.ToString());
+                        subLvi.SubItems.Add(subItem.Available.ToString());
                         subLvi.Tag = Tuple.Create(dropDown.Name, subItem.Name);
                         lvToolbar.Items.Add(subLvi);
                     }

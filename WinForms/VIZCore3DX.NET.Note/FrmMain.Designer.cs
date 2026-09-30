@@ -61,7 +61,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox4);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1061, 701);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 353;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -73,20 +73,21 @@
             this.groupBox4.Controls.Add(this.lbEvent);
             this.groupBox4.Location = new System.Drawing.Point(12, 252);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(328, 437);
+            this.groupBox4.Size = new System.Drawing.Size(328, 496);
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Event";
             // 
             // lbEvent
             // 
-            this.lbEvent.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lbEvent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lbEvent.FormattingEnabled = true;
             this.lbEvent.ItemHeight = 12;
             this.lbEvent.Location = new System.Drawing.Point(3, 17);
             this.lbEvent.Name = "lbEvent";
-            this.lbEvent.Size = new System.Drawing.Size(322, 412);
+            this.lbEvent.Size = new System.Drawing.Size(322, 471);
             this.lbEvent.TabIndex = 0;
             // 
             // groupBox3
@@ -204,7 +205,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1061, 701);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

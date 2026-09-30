@@ -55,6 +55,8 @@ namespace VIZCore3DX.NET.CameraDataSaver
         /// <param name="e"></param>
         private void btnCameraSave_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
             // 카메라 데이터 저장 
             cameraData = vizcore3dx.View.GetCameraData();
             if (cameraData != null)
@@ -103,6 +105,12 @@ namespace VIZCore3DX.NET.CameraDataSaver
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine($"{cameraData.Zoom}");
 
+                // Fov
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Fov              : ");
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine($"{cameraData.Fov}");
+
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("===========================================");
 
@@ -120,10 +128,11 @@ namespace VIZCore3DX.NET.CameraDataSaver
         /// <param name="e"></param>
         private void btnCameraLoad_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
             if (cameraData == null) return;
 
             // 카메라 데이터 로드
-            // 실제 필요한 카메라 데이터 [ CameraDirection, EyePosition, PivotPosition, ProjectionType, UpDirection, Zoom ]
+            // 실제 필요한 카메라 데이터 [ CameraDirection, EyePosition, PivotPosition, ProjectionType, UpDirection, Zoom, Fov ]
             vizcore3dx.View.SetCameraData(cameraData);
         }
 
@@ -134,6 +143,7 @@ namespace VIZCore3DX.NET.CameraDataSaver
         /// <param name="e"></param>
         private void btnActionLoad_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
             if (cameraData == null) return;
 
             // 카메라 액션 이동 시간 지정

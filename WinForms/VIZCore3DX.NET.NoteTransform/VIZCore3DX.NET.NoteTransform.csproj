@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{90338C3C-34CF-4C7A-8319-1EC19523EF17}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>VIZCore3D.NET.NoteTransform</RootNamespace>
-    <AssemblyName>VIZCore3D.NET.NoteTransform</AssemblyName>
+    <RootNamespace>VIZCore3DX.NET.NoteTransform</RootNamespace>
+    <AssemblyName>VIZCore3DX.NET.NoteTransform</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

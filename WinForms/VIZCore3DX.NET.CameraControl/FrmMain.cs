@@ -86,6 +86,8 @@ namespace VIZCore3DX.NET.CameraControl
                 CameraDirection = cam.CameraDirection,
                 UpDirection = cam.UpDirection,
                 Zoom = cam.Zoom,
+                Fov = cam.Fov,
+                ProjectionType = cam.ProjectionType,
                 Snapshot = vizcore3dx.View.CaptureImage()
             };
 
@@ -124,6 +126,7 @@ namespace VIZCore3DX.NET.CameraControl
             cam.CameraDirection = item.CameraDirection;
             cam.UpDirection = item.UpDirection;
             cam.Zoom = item.Zoom;
+            cam.Fov = item.Fov;
             cam.ProjectionType = item.ProjectionType;
 
             vizcore3dx.View.SetCameraData(cam);

@@ -39,6 +39,7 @@ namespace VIZCore3DX.NET.CustomModelTree
             vizcore3dx.Dock = DockStyle.Fill;
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
             vizcore3dx.Model.OnModelOpenedEvent += VIZCore3DX_OnModelOpenedEvent;
+            vizcore3dx.Model.OnModelClosedEvent += VIZCore3DX_OnModelClosedEvent;
 
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
         }
@@ -75,8 +76,31 @@ namespace VIZCore3DX.NET.CustomModelTree
 
         private void VIZCore3DX_OnModelOpenedEvent(object sender, ModelOpendEventArgs e)
         {
+            if (InvokeRequired == true)
+            {
+                BeginInvoke(new Action(() => VIZCore3DX_OnModelOpenedEvent(sender, e)));
+                return;
+            }
+
             InitializeCustomModelTree(treePanel);
             LoadRootNode();
+        }
+
+        private void VIZCore3DX_OnModelClosedEvent(object sender, EventArgs e)
+        {
+            if (InvokeRequired == true)
+            {
+                BeginInvoke(new Action(() => VIZCore3DX_OnModelClosedEvent(sender, e)));
+                return;
+            }
+
+            // 모델을 닫으면 트리와 검색 결과를 비움 (닫힌 모델의 Node 참조 방지)
+            _selectedNodes.Clear();
+            _selectionAnchorNode = null;
+            _pendingVisibilityNode = null;
+            _hasPendingVisibilityRequest = false;
+            if (_customModelTree != null) _customModelTree.Nodes.Clear();
+            nodeGridView.Rows.Clear();
         }
 
         // ====================================================================================
@@ -691,6 +715,8 @@ namespace VIZCore3DX.NET.CustomModelTree
 
         private void btnSearch_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
             if (string.IsNullOrWhiteSpace(tbNode.Text))
             {
                 MessageBox.Show("검색어를 입력하세요.");
@@ -699,8 +725,10 @@ namespace VIZCore3DX.NET.CustomModelTree
 
             List<Node> foundNodes = vizcore3dx.Object3D.Find.QuickSearch(tbNode.Text, false);
 
-            if (foundNodes.Count == 0)
+            if (foundNodes == null || foundNodes.Count == 0)
             {
+                // 이전 검색 결과가 남지 않도록 비움
+                nodeGridView.Rows.Clear();
                 return;
             }
             else
@@ -725,7 +753,7 @@ namespace VIZCore3DX.NET.CustomModelTree
 
             Node targetNode = nodeGridView.Rows[e.RowIndex].Tag as Node;
 
-            if (targetNode == null) return;
+            if (targetNode == null || _customModelTree == null) return;
 
             vizcore3dx.BeginUpdate();
             vizcore3dx.Object3D.ShowSelection(targetNode);

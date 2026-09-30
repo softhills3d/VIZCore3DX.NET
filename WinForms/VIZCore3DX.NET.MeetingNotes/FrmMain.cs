@@ -118,7 +118,7 @@ namespace VIZCore3DX.NET.MeetingNotes
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
-            vizcore3dx.Model.OpenFileDialog();
+            if (vizcore3dx.Model.OpenFileDialog() == false) return;
 
             lvNotes.Items.Clear();
             NoteNo = 1;

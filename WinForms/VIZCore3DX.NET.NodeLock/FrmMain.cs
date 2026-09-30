@@ -56,12 +56,26 @@ namespace VIZCore3DX.NET.NodeLock
             vizcore3dx.Object3D.NodeLock.OnNodeLockChangedEvent += NodeLock_OnNodeLockChangedEvent;
 
             UpdateNodeLockList();
+            UpdateNodeLockButtonsUI();
         }
 
         #region Node Lock
         private void ckEnable_CheckedChanged(object sender, EventArgs e)
         {
-            vizcore3dx.Object3D.NodeLock.Enable = checkBox1.Checked;
+            vizcore3dx.Object3D.NodeLock.Enable = ckEnable.Checked;
+
+            // 비활성화 시 잠금이 모두 해제되므로 목록 갱신
+            UpdateNodeLockList();
+            UpdateNodeLockButtonsUI();
+        }
+
+        private void UpdateNodeLockButtonsUI()
+        {
+            bool enabled = ckEnable.Checked;
+
+            btnLockSelected.Enabled = enabled;
+            btnUnlockSelected.Enabled = enabled;
+            btnUnlockAll.Enabled = enabled;
         }
 
         private void UpdateNodeLockList()
@@ -121,7 +135,15 @@ namespace VIZCore3DX.NET.NodeLock
                 return;
             }
 
-            vizcore3dx.Object3D.NodeLock.Lock(nodes);
+            // 노드 잠금 기능이 비활성화 상태이면 잠금이 적용되지 않음
+            if (vizcore3dx.Object3D.NodeLock.Enable == false)
+            {
+                MessageBox.Show("노드 잠금 기능을 먼저 활성화(체크)하세요.", "Node Lock", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 선택된 개체 잠금 (하위 전개 비용이 적은 인자 없는 Lock() 사용)
+            vizcore3dx.Object3D.NodeLock.Lock();
         }
 
         private void BtnUnlockSelected_Click(object sender, EventArgs e)

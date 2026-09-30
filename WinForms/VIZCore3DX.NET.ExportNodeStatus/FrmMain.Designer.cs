@@ -40,6 +40,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.txtLog = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnPart = new System.Windows.Forms.Button();
             this.btnPlate = new System.Windows.Forms.Button();
             this.btnValve = new System.Windows.Forms.Button();
@@ -47,6 +48,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.label2 = new System.Windows.Forms.Label();
             this.btnAddReview = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnOpenModel = new System.Windows.Forms.Button();
             this.btnAddModels = new System.Windows.Forms.Button();
             this.btnCloseModel = new System.Windows.Forms.Button();
@@ -57,7 +59,9 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -73,7 +77,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox4);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
-            this.splitContainer1.Size = new System.Drawing.Size(1130, 687);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -86,7 +90,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.btnImportStatus);
             this.groupBox1.Controls.Add(this.btnExportStatus);
-            this.groupBox1.Location = new System.Drawing.Point(12, 300);
+            this.groupBox1.Location = new System.Drawing.Point(12, 275);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(355, 133);
             this.groupBox1.TabIndex = 3;
@@ -95,6 +99,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // cbIncludeMarkup
             // 
+            this.cbIncludeMarkup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbIncludeMarkup.AutoSize = true;
             this.cbIncludeMarkup.Checked = true;
             this.cbIncludeMarkup.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -107,6 +112,8 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // textBox1
             // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox1.Location = new System.Drawing.Point(58, 23);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(282, 21);
@@ -148,9 +155,9 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.txtLog);
-            this.groupBox2.Location = new System.Drawing.Point(12, 439);
+            this.groupBox2.Location = new System.Drawing.Point(12, 414);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(355, 236);
+            this.groupBox2.Size = new System.Drawing.Size(355, 334);
             this.groupBox2.TabIndex = 8;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Log";
@@ -163,16 +170,18 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.txtLog.Name = "txtLog";
             this.txtLog.ReadOnly = true;
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(349, 216);
+            this.txtLog.Size = new System.Drawing.Size(349, 314);
             this.txtLog.TabIndex = 0;
             this.txtLog.WordWrap = false;
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.groupBox5);
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.btnAddReview);
-            this.groupBox4.Location = new System.Drawing.Point(12, 99);
+            this.groupBox4.Location = new System.Drawing.Point(12, 74);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(355, 195);
             this.groupBox4.TabIndex = 9;
@@ -181,10 +190,9 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.btnPart);
-            this.groupBox5.Controls.Add(this.btnPlate);
-            this.groupBox5.Controls.Add(this.btnValve);
-            this.groupBox5.Controls.Add(this.btnPipe);
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.tableLayoutPanel2);
             this.groupBox5.Location = new System.Drawing.Point(16, 85);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(324, 95);
@@ -192,11 +200,30 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Node Visible Control (UDA)";
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.btnPipe, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnValve, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnPlate, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.btnPart, 1, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(318, 75);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
             // btnPart
             // 
-            this.btnPart.Location = new System.Drawing.Point(180, 60);
+            this.btnPart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPart.Location = new System.Drawing.Point(162, 40);
             this.btnPart.Name = "btnPart";
-            this.btnPart.Size = new System.Drawing.Size(111, 23);
+            this.btnPart.Size = new System.Drawing.Size(153, 31);
             this.btnPart.TabIndex = 3;
             this.btnPart.Text = "PART";
             this.btnPart.UseVisualStyleBackColor = true;
@@ -204,9 +231,10 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnPlate
             // 
-            this.btnPlate.Location = new System.Drawing.Point(25, 60);
+            this.btnPlate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPlate.Location = new System.Drawing.Point(3, 40);
             this.btnPlate.Name = "btnPlate";
-            this.btnPlate.Size = new System.Drawing.Size(111, 23);
+            this.btnPlate.Size = new System.Drawing.Size(153, 31);
             this.btnPlate.TabIndex = 2;
             this.btnPlate.Text = "PLATE";
             this.btnPlate.UseVisualStyleBackColor = true;
@@ -214,9 +242,10 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnValve
             // 
-            this.btnValve.Location = new System.Drawing.Point(180, 31);
+            this.btnValve.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnValve.Location = new System.Drawing.Point(162, 3);
             this.btnValve.Name = "btnValve";
-            this.btnValve.Size = new System.Drawing.Size(111, 23);
+            this.btnValve.Size = new System.Drawing.Size(153, 31);
             this.btnValve.TabIndex = 1;
             this.btnValve.Text = "VALVE";
             this.btnValve.UseVisualStyleBackColor = true;
@@ -224,9 +253,10 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnPipe
             // 
-            this.btnPipe.Location = new System.Drawing.Point(25, 31);
+            this.btnPipe.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPipe.Location = new System.Drawing.Point(3, 3);
             this.btnPipe.Name = "btnPipe";
-            this.btnPipe.Size = new System.Drawing.Size(111, 23);
+            this.btnPipe.Size = new System.Drawing.Size(153, 31);
             this.btnPipe.TabIndex = 0;
             this.btnPipe.Text = "PIPE";
             this.btnPipe.UseVisualStyleBackColor = true;
@@ -244,6 +274,8 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnAddReview
             // 
+            this.btnAddReview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddReview.Location = new System.Drawing.Point(16, 24);
             this.btnAddReview.Name = "btnAddReview";
             this.btnAddReview.Size = new System.Drawing.Size(325, 23);
@@ -254,21 +286,39 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.btnOpenModel);
-            this.groupBox3.Controls.Add(this.btnAddModels);
-            this.groupBox3.Controls.Add(this.btnCloseModel);
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.tableLayoutPanel1);
             this.groupBox3.Location = new System.Drawing.Point(12, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(355, 81);
+            this.groupBox3.Size = new System.Drawing.Size(355, 56);
             this.groupBox3.TabIndex = 7;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Model";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.Controls.Add(this.btnOpenModel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnAddModels, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnCloseModel, 2, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(349, 36);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
             // btnOpenModel
             // 
-            this.btnOpenModel.Location = new System.Drawing.Point(15, 38);
+            this.btnOpenModel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnOpenModel.Location = new System.Drawing.Point(3, 3);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(101, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(110, 30);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Open";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -276,9 +326,10 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnAddModels
             // 
-            this.btnAddModels.Location = new System.Drawing.Point(126, 38);
+            this.btnAddModels.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAddModels.Location = new System.Drawing.Point(119, 3);
             this.btnAddModels.Name = "btnAddModels";
-            this.btnAddModels.Size = new System.Drawing.Size(101, 23);
+            this.btnAddModels.Size = new System.Drawing.Size(110, 30);
             this.btnAddModels.TabIndex = 1;
             this.btnAddModels.Text = "Add";
             this.btnAddModels.UseVisualStyleBackColor = true;
@@ -286,9 +337,10 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnCloseModel
             // 
-            this.btnCloseModel.Location = new System.Drawing.Point(239, 38);
+            this.btnCloseModel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCloseModel.Location = new System.Drawing.Point(235, 3);
             this.btnCloseModel.Name = "btnCloseModel";
-            this.btnCloseModel.Size = new System.Drawing.Size(101, 23);
+            this.btnCloseModel.Size = new System.Drawing.Size(111, 30);
             this.btnCloseModel.TabIndex = 2;
             this.btnCloseModel.Text = "Close";
             this.btnCloseModel.UseVisualStyleBackColor = true;
@@ -298,7 +350,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1130, 687);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -314,7 +366,9 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -342,5 +396,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
         private System.Windows.Forms.Button btnValve;
         private System.Windows.Forms.Button btnPipe;
         private System.Windows.Forms.CheckBox cbIncludeMarkup;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }

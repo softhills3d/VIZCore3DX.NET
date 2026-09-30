@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VIZCore3D.NET.NoteTransform.Properties
+namespace VIZCore3DX.NET.NoteTransform.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace VIZCore3D.NET.NoteTransform.Properties
             {
                 if ((resourceMan == null))
                 {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VIZCore3D.NET.NoteTransform.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("VIZCore3DX.NET.NoteTransform.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

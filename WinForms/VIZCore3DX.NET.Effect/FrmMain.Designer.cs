@@ -25,6 +25,7 @@
             this.colPointNo = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPointType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPointPosition = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tlpPoint = new System.Windows.Forms.TableLayoutPanel();
             this.btnClearPoints = new System.Windows.Forms.Button();
             this.btnRemovePoint = new System.Windows.Forms.Button();
             this.btnPickPoint = new System.Windows.Forms.Button();
@@ -70,6 +71,7 @@
             this.btnClearType = new System.Windows.Forms.Button();
             this.cmbClearType = new System.Windows.Forms.ComboBox();
             this.lblClearType = new System.Windows.Forms.Label();
+            this.tlpRemove = new System.Windows.Forms.TableLayoutPanel();
             this.btnClearAll = new System.Windows.Forms.Button();
             this.btnRemoveSelected = new System.Windows.Forms.Button();
             this.lvEffects = new System.Windows.Forms.ListView();
@@ -99,6 +101,7 @@
             this.tabControlEffect.SuspendLayout();
             this.tabPageCreate.SuspendLayout();
             this.groupBoxOsnap.SuspendLayout();
+            this.tlpPoint.SuspendLayout();
             this.groupBoxOptions.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numOption3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numOption2)).BeginInit();
@@ -111,6 +114,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numSpinnerProgress)).BeginInit();
             this.groupBoxVisible.SuspendLayout();
             this.groupBoxRemove.SuspendLayout();
+            this.tlpRemove.SuspendLayout();
             this.groupBoxQuery.SuspendLayout();
             this.tabPageStatus.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerStatus1)).BeginInit();
@@ -173,6 +177,8 @@
             // 
             this.groupBoxEffectType.Controls.Add(this.cmbEffectType);
             this.groupBoxEffectType.Controls.Add(this.lblEffectType);
+            this.groupBoxEffectType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxEffectType.Location = new System.Drawing.Point(10, 10);
             this.groupBoxEffectType.Name = "groupBoxEffectType";
             this.groupBoxEffectType.Size = new System.Drawing.Size(550, 65);
@@ -208,6 +214,8 @@
             "텍스트 라벨",
             "유증기",
             "용접 불꽃 효과"});
+            this.cmbEffectType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbEffectType.Location = new System.Drawing.Point(95, 25);
             this.cmbEffectType.Name = "cmbEffectType";
             this.cmbEffectType.Size = new System.Drawing.Size(435, 20);
@@ -231,6 +239,8 @@
             this.groupBoxOptions.Controls.Add(this.lblOption1);
             this.groupBoxOptions.Controls.Add(this.btnEffectColor);
             this.groupBoxOptions.Controls.Add(this.lblColor);
+            this.groupBoxOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxOptions.Location = new System.Drawing.Point(10, 83);
             this.groupBoxOptions.Name = "groupBoxOptions";
             this.groupBoxOptions.Size = new System.Drawing.Size(550, 260);
@@ -249,6 +259,8 @@
             // 
             // btnEffectColor
             // 
+            this.btnEffectColor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEffectColor.Location = new System.Drawing.Point(155, 23);
             this.btnEffectColor.Name = "btnEffectColor";
             this.btnEffectColor.Size = new System.Drawing.Size(375, 28);
@@ -338,6 +350,8 @@
             // 
             this.cmbSpecial.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbSpecial.FormattingEnabled = true;
+            this.cmbSpecial.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbSpecial.Location = new System.Drawing.Point(155, 170);
             this.cmbSpecial.Name = "cmbSpecial";
             this.cmbSpecial.Size = new System.Drawing.Size(375, 20);
@@ -355,6 +369,8 @@
             // 
             // txtOptionText
             // 
+            this.txtOptionText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtOptionText.Location = new System.Drawing.Point(155, 207);
             this.txtOptionText.Name = "txtOptionText";
             this.txtOptionText.Size = new System.Drawing.Size(375, 21);
@@ -362,6 +378,8 @@
             // 
             // lblNoOptions
             // 
+            this.lblNoOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblNoOptions.Location = new System.Drawing.Point(15, 30);
             this.lblNoOptions.Name = "lblNoOptions";
             this.lblNoOptions.Size = new System.Drawing.Size(515, 40);
@@ -371,14 +389,15 @@
             // groupBoxOsnap
             // 
             this.groupBoxOsnap.Controls.Add(this.lvPoints);
-            this.groupBoxOsnap.Controls.Add(this.btnClearPoints);
-            this.groupBoxOsnap.Controls.Add(this.btnRemovePoint);
-            this.groupBoxOsnap.Controls.Add(this.btnPickPoint);
+            this.groupBoxOsnap.Controls.Add(this.tlpPoint);
             this.groupBoxOsnap.Controls.Add(this.chkSnapCircle);
             this.groupBoxOsnap.Controls.Add(this.chkSnapLine);
             this.groupBoxOsnap.Controls.Add(this.chkSnapVertex);
             this.groupBoxOsnap.Controls.Add(this.chkSnapSurface);
             this.groupBoxOsnap.Controls.Add(this.lblPointGuide);
+            this.groupBoxOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxOsnap.Location = new System.Drawing.Point(10, 351);
             this.groupBoxOsnap.Name = "groupBoxOsnap";
             this.groupBoxOsnap.Size = new System.Drawing.Size(550, 390);
@@ -388,6 +407,8 @@
             // 
             // lblPointGuide
             // 
+            this.lblPointGuide.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPointGuide.Location = new System.Drawing.Point(12, 22);
             this.lblPointGuide.Name = "lblPointGuide";
             this.lblPointGuide.Size = new System.Drawing.Size(518, 34);
@@ -442,32 +463,53 @@
             this.chkSnapCircle.Text = "원";
             this.chkSnapCircle.UseVisualStyleBackColor = true;
             // 
+            // tlpPoint
+            // 
+            this.tlpPoint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpPoint.ColumnCount = 3;
+            this.tlpPoint.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpPoint.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpPoint.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpPoint.Controls.Add(this.btnPickPoint, 0, 0);
+            this.tlpPoint.Controls.Add(this.btnRemovePoint, 1, 0);
+            this.tlpPoint.Controls.Add(this.btnClearPoints, 2, 0);
+            this.tlpPoint.Location = new System.Drawing.Point(9, 89);
+            this.tlpPoint.Name = "tlpPoint";
+            this.tlpPoint.RowCount = 1;
+            this.tlpPoint.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpPoint.Size = new System.Drawing.Size(524, 36);
+            this.tlpPoint.TabIndex = 5;
+            // 
             // btnPickPoint
             // 
-            this.btnPickPoint.Location = new System.Drawing.Point(12, 92);
+            this.btnPickPoint.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnPickPoint.Location = new System.Drawing.Point(3, 3);
             this.btnPickPoint.Name = "btnPickPoint";
             this.btnPickPoint.Size = new System.Drawing.Size(168, 30);
-            this.btnPickPoint.TabIndex = 5;
+            this.btnPickPoint.TabIndex = 0;
             this.btnPickPoint.Text = "오스냅 점 선택";
             this.btnPickPoint.UseVisualStyleBackColor = true;
             this.btnPickPoint.Click += new System.EventHandler(this.btnPickPoint_Click);
             // 
             // btnRemovePoint
             // 
-            this.btnRemovePoint.Location = new System.Drawing.Point(191, 92);
+            this.btnRemovePoint.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnRemovePoint.Location = new System.Drawing.Point(177, 3);
             this.btnRemovePoint.Name = "btnRemovePoint";
             this.btnRemovePoint.Size = new System.Drawing.Size(168, 30);
-            this.btnRemovePoint.TabIndex = 6;
+            this.btnRemovePoint.TabIndex = 1;
             this.btnRemovePoint.Text = "선택 점 제거";
             this.btnRemovePoint.UseVisualStyleBackColor = true;
             this.btnRemovePoint.Click += new System.EventHandler(this.btnRemovePoint_Click);
             // 
             // btnClearPoints
             // 
-            this.btnClearPoints.Location = new System.Drawing.Point(370, 92);
+            this.btnClearPoints.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearPoints.Location = new System.Drawing.Point(351, 3);
             this.btnClearPoints.Name = "btnClearPoints";
-            this.btnClearPoints.Size = new System.Drawing.Size(160, 30);
-            this.btnClearPoints.TabIndex = 7;
+            this.btnClearPoints.Size = new System.Drawing.Size(170, 30);
+            this.btnClearPoints.TabIndex = 2;
             this.btnClearPoints.Text = "점 전체 제거";
             this.btnClearPoints.UseVisualStyleBackColor = true;
             this.btnClearPoints.Click += new System.EventHandler(this.btnClearPoints_Click);
@@ -481,6 +523,9 @@
             this.lvPoints.FullRowSelect = true;
             this.lvPoints.GridLines = true;
             this.lvPoints.HideSelection = false;
+            this.lvPoints.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvPoints.Location = new System.Drawing.Point(12, 134);
             this.lvPoints.MultiSelect = false;
             this.lvPoints.Name = "lvPoints";
@@ -507,6 +552,7 @@
             // lblCreateResult
             // 
             this.lblCreateResult.AutoSize = true;
+            this.lblCreateResult.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblCreateResult.Location = new System.Drawing.Point(12, 754);
             this.lblCreateResult.Name = "lblCreateResult";
             this.lblCreateResult.Size = new System.Drawing.Size(85, 12);
@@ -515,9 +561,11 @@
             // 
             // btnCreateEffect
             // 
-            this.btnCreateEffect.Location = new System.Drawing.Point(10, 780);
+            this.btnCreateEffect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreateEffect.Location = new System.Drawing.Point(10, 785);
             this.btnCreateEffect.Name = "btnCreateEffect";
-            this.btnCreateEffect.Size = new System.Drawing.Size(550, 42);
+            this.btnCreateEffect.Size = new System.Drawing.Size(550, 32);
             this.btnCreateEffect.TabIndex = 4;
             this.btnCreateEffect.Text = "이펙트 생성";
             this.btnCreateEffect.UseVisualStyleBackColor = true;
@@ -548,6 +596,8 @@
             this.groupBoxQuery.Controls.Add(this.lblQueryType);
             this.groupBoxQuery.Controls.Add(this.cmbQueryMode);
             this.groupBoxQuery.Controls.Add(this.lblQueryMode);
+            this.groupBoxQuery.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxQuery.Location = new System.Drawing.Point(10, 10);
             this.groupBoxQuery.Name = "groupBoxQuery";
             this.groupBoxQuery.Size = new System.Drawing.Size(550, 70);
@@ -604,6 +654,8 @@
             "회전 스피너",
             "지면 투영 링",
             "좌표·색 데이터"});
+            this.cmbQueryType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbQueryType.Location = new System.Drawing.Point(240, 26);
             this.cmbQueryType.Name = "cmbQueryType";
             this.cmbQueryType.Size = new System.Drawing.Size(195, 20);
@@ -611,6 +663,7 @@
             // 
             // btnRefreshEffects
             // 
+            this.btnRefreshEffects.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnRefreshEffects.Location = new System.Drawing.Point(445, 24);
             this.btnRefreshEffects.Name = "btnRefreshEffects";
             this.btnRefreshEffects.Size = new System.Drawing.Size(90, 25);
@@ -638,6 +691,9 @@
             this.lvEffects.FullRowSelect = true;
             this.lvEffects.GridLines = true;
             this.lvEffects.HideSelection = false;
+            this.lvEffects.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lvEffects.Location = new System.Drawing.Point(10, 112);
             this.lvEffects.MultiSelect = false;
             this.lvEffects.Name = "lvEffects";
@@ -671,8 +727,9 @@
             this.groupBoxRemove.Controls.Add(this.btnClearType);
             this.groupBoxRemove.Controls.Add(this.cmbClearType);
             this.groupBoxRemove.Controls.Add(this.lblClearType);
-            this.groupBoxRemove.Controls.Add(this.btnClearAll);
-            this.groupBoxRemove.Controls.Add(this.btnRemoveSelected);
+            this.groupBoxRemove.Controls.Add(this.tlpRemove);
+            this.groupBoxRemove.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxRemove.Location = new System.Drawing.Point(10, 378);
             this.groupBoxRemove.Name = "groupBoxRemove";
             this.groupBoxRemove.Size = new System.Drawing.Size(550, 115);
@@ -680,11 +737,28 @@
             this.groupBoxRemove.TabStop = false;
             this.groupBoxRemove.Text = "이펙트 제거";
             // 
+            // tlpRemove
+            // 
+            this.tlpRemove.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpRemove.ColumnCount = 2;
+            this.tlpRemove.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpRemove.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpRemove.Controls.Add(this.btnRemoveSelected, 0, 0);
+            this.tlpRemove.Controls.Add(this.btnClearAll, 1, 0);
+            this.tlpRemove.Location = new System.Drawing.Point(9, 22);
+            this.tlpRemove.Name = "tlpRemove";
+            this.tlpRemove.RowCount = 1;
+            this.tlpRemove.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpRemove.Size = new System.Drawing.Size(532, 36);
+            this.tlpRemove.TabIndex = 0;
+            // 
             // btnRemoveSelected
             // 
-            this.btnRemoveSelected.Location = new System.Drawing.Point(12, 25);
+            this.btnRemoveSelected.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnRemoveSelected.Location = new System.Drawing.Point(3, 3);
             this.btnRemoveSelected.Name = "btnRemoveSelected";
-            this.btnRemoveSelected.Size = new System.Drawing.Size(258, 30);
+            this.btnRemoveSelected.Size = new System.Drawing.Size(260, 30);
             this.btnRemoveSelected.TabIndex = 0;
             this.btnRemoveSelected.Text = "선택 이펙트 제거";
             this.btnRemoveSelected.UseVisualStyleBackColor = true;
@@ -692,9 +766,10 @@
             // 
             // btnClearAll
             // 
-            this.btnClearAll.Location = new System.Drawing.Point(280, 25);
+            this.btnClearAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearAll.Location = new System.Drawing.Point(269, 3);
             this.btnClearAll.Name = "btnClearAll";
-            this.btnClearAll.Size = new System.Drawing.Size(258, 30);
+            this.btnClearAll.Size = new System.Drawing.Size(260, 30);
             this.btnClearAll.TabIndex = 1;
             this.btnClearAll.Text = "전체 이펙트 제거";
             this.btnClearAll.UseVisualStyleBackColor = true;
@@ -727,6 +802,8 @@
             "회전 스피너",
             "지면 투영 링",
             "좌표·색 데이터"});
+            this.cmbClearType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbClearType.Location = new System.Drawing.Point(60, 74);
             this.cmbClearType.Name = "cmbClearType";
             this.cmbClearType.Size = new System.Drawing.Size(315, 20);
@@ -734,6 +811,7 @@
             // 
             // btnClearType
             // 
+            this.btnClearType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClearType.Location = new System.Drawing.Point(385, 72);
             this.btnClearType.Name = "btnClearType";
             this.btnClearType.Size = new System.Drawing.Size(153, 25);
@@ -746,6 +824,8 @@
             // 
             this.groupBoxVisible.Controls.Add(this.chkTextLabelVisible);
             this.groupBoxVisible.Controls.Add(this.chkMarkerVisible);
+            this.groupBoxVisible.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxVisible.Location = new System.Drawing.Point(10, 503);
             this.groupBoxVisible.Name = "groupBoxVisible";
             this.groupBoxVisible.Size = new System.Drawing.Size(550, 70);
@@ -785,6 +865,8 @@
             this.groupBoxSpinner.Controls.Add(this.chkSpinnerContinuous);
             this.groupBoxSpinner.Controls.Add(this.numSpinnerProgress);
             this.groupBoxSpinner.Controls.Add(this.lblSpinnerProgress);
+            this.groupBoxSpinner.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxSpinner.Location = new System.Drawing.Point(10, 583);
             this.groupBoxSpinner.Name = "groupBoxSpinner";
             this.groupBoxSpinner.Size = new System.Drawing.Size(550, 85);
@@ -830,6 +912,7 @@
             // 
             // btnSetSpinnerProgress
             // 
+            this.btnSetSpinnerProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSetSpinnerProgress.Location = new System.Drawing.Point(390, 28);
             this.btnSetSpinnerProgress.Name = "btnSetSpinnerProgress";
             this.btnSetSpinnerProgress.Size = new System.Drawing.Size(145, 30);
@@ -844,6 +927,8 @@
             this.groupBoxWelding.Controls.Add(this.numWeldingSparkCapacity);
             this.groupBoxWelding.Controls.Add(this.lblWeldingSparkCapacity);
             this.groupBoxWelding.Controls.Add(this.chkWeldingSparkBounce);
+            this.groupBoxWelding.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxWelding.Location = new System.Drawing.Point(10, 678);
             this.groupBoxWelding.Name = "groupBoxWelding";
             this.groupBoxWelding.Size = new System.Drawing.Size(550, 125);
@@ -894,6 +979,7 @@
             // 
             // btnApplyWeldingSettings
             // 
+            this.btnApplyWeldingSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnApplyWeldingSettings.Location = new System.Drawing.Point(390, 60);
             this.btnApplyWeldingSettings.Name = "btnApplyWeldingSettings";
             this.btnApplyWeldingSettings.Size = new System.Drawing.Size(145, 32);
@@ -1037,6 +1123,7 @@
             this.tabPageCreate.PerformLayout();
             this.groupBoxOsnap.ResumeLayout(false);
             this.groupBoxOsnap.PerformLayout();
+            this.tlpPoint.ResumeLayout(false);
             this.groupBoxOptions.ResumeLayout(false);
             this.groupBoxOptions.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numOption3)).EndInit();
@@ -1056,6 +1143,7 @@
             this.groupBoxVisible.PerformLayout();
             this.groupBoxRemove.ResumeLayout(false);
             this.groupBoxRemove.PerformLayout();
+            this.tlpRemove.ResumeLayout(false);
             this.groupBoxQuery.ResumeLayout(false);
             this.groupBoxQuery.PerformLayout();
             this.tabPageStatus.ResumeLayout(false);
@@ -1111,6 +1199,7 @@
         private System.Windows.Forms.CheckBox chkSnapVertex;
         private System.Windows.Forms.CheckBox chkSnapLine;
         private System.Windows.Forms.CheckBox chkSnapCircle;
+        private System.Windows.Forms.TableLayoutPanel tlpPoint;
         private System.Windows.Forms.Button btnPickPoint;
         private System.Windows.Forms.Button btnRemovePoint;
         private System.Windows.Forms.Button btnClearPoints;
@@ -1135,6 +1224,7 @@
         private System.Windows.Forms.ColumnHeader colEffectPosition;
         private System.Windows.Forms.ColumnHeader colEffectSummary;
         private System.Windows.Forms.GroupBox groupBoxRemove;
+        private System.Windows.Forms.TableLayoutPanel tlpRemove;
         private System.Windows.Forms.Button btnRemoveSelected;
         private System.Windows.Forms.Button btnClearAll;
         private System.Windows.Forms.Label lblClearType;

@@ -33,6 +33,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.treePanel = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnOpenModel = new System.Windows.Forms.Button();
             this.btnAddModels = new System.Windows.Forms.Button();
             this.btnCloseModel = new System.Windows.Forms.Button();
@@ -48,6 +49,7 @@
             this.splitContainer1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nodeGridView)).BeginInit();
             this.SuspendLayout();
@@ -64,16 +66,18 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
-            this.splitContainer1.Size = new System.Drawing.Size(1130, 687);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 0;
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.treePanel);
-            this.groupBox1.Location = new System.Drawing.Point(12, 113);
+            this.groupBox1.Location = new System.Drawing.Point(12, 74);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(355, 296);
+            this.groupBox1.Size = new System.Drawing.Size(355, 335);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "ModelTree";
@@ -84,26 +88,44 @@
             this.treePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treePanel.Location = new System.Drawing.Point(3, 17);
             this.treePanel.Name = "treePanel";
-            this.treePanel.Size = new System.Drawing.Size(349, 276);
+            this.treePanel.Size = new System.Drawing.Size(349, 315);
             this.treePanel.TabIndex = 0;
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.btnOpenModel);
-            this.groupBox3.Controls.Add(this.btnAddModels);
-            this.groupBox3.Controls.Add(this.btnCloseModel);
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.tableLayoutPanel1);
             this.groupBox3.Location = new System.Drawing.Point(12, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(355, 82);
+            this.groupBox3.Size = new System.Drawing.Size(355, 56);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Model";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tableLayoutPanel1.Controls.Add(this.btnOpenModel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnAddModels, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnCloseModel, 2, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(349, 36);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
             // btnOpenModel
             // 
-            this.btnOpenModel.Location = new System.Drawing.Point(15, 33);
+            this.btnOpenModel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnOpenModel.Location = new System.Drawing.Point(3, 3);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(101, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(110, 30);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Open";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -111,9 +133,10 @@
             // 
             // btnAddModels
             // 
-            this.btnAddModels.Location = new System.Drawing.Point(126, 33);
+            this.btnAddModels.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAddModels.Location = new System.Drawing.Point(119, 3);
             this.btnAddModels.Name = "btnAddModels";
-            this.btnAddModels.Size = new System.Drawing.Size(101, 23);
+            this.btnAddModels.Size = new System.Drawing.Size(110, 30);
             this.btnAddModels.TabIndex = 1;
             this.btnAddModels.Text = "Add";
             this.btnAddModels.UseVisualStyleBackColor = true;
@@ -121,9 +144,10 @@
             // 
             // btnCloseModel
             // 
-            this.btnCloseModel.Location = new System.Drawing.Point(239, 33);
+            this.btnCloseModel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCloseModel.Location = new System.Drawing.Point(235, 3);
             this.btnCloseModel.Name = "btnCloseModel";
-            this.btnCloseModel.Size = new System.Drawing.Size(101, 23);
+            this.btnCloseModel.Size = new System.Drawing.Size(111, 30);
             this.btnCloseModel.TabIndex = 2;
             this.btnCloseModel.Text = "Close";
             this.btnCloseModel.UseVisualStyleBackColor = true;
@@ -131,19 +155,25 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.nodeGridView);
             this.groupBox2.Controls.Add(this.btnSearch);
             this.groupBox2.Controls.Add(this.tbNode);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(15, 415);
+            this.groupBox2.Location = new System.Drawing.Point(12, 415);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(352, 265);
+            this.groupBox2.Size = new System.Drawing.Size(355, 338);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Search";
             // 
             // nodeGridView
             // 
+            this.nodeGridView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.nodeGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.nodeGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.nodeName,
@@ -151,7 +181,7 @@
             this.nodeGridView.Location = new System.Drawing.Point(6, 47);
             this.nodeGridView.Name = "nodeGridView";
             this.nodeGridView.RowTemplate.Height = 23;
-            this.nodeGridView.Size = new System.Drawing.Size(340, 212);
+            this.nodeGridView.Size = new System.Drawing.Size(343, 285);
             this.nodeGridView.TabIndex = 11;
             this.nodeGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.nodeGridView_CellClick);
             // 
@@ -169,7 +199,8 @@
             // 
             // btnSearch
             // 
-            this.btnSearch.Location = new System.Drawing.Point(272, 18);
+            this.btnSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSearch.Location = new System.Drawing.Point(274, 18);
             this.btnSearch.Name = "btnSearch";
             this.btnSearch.Size = new System.Drawing.Size(75, 23);
             this.btnSearch.TabIndex = 10;
@@ -179,9 +210,11 @@
             // 
             // tbNode
             // 
+            this.tbNode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbNode.Location = new System.Drawing.Point(73, 19);
             this.tbNode.Name = "tbNode";
-            this.tbNode.Size = new System.Drawing.Size(191, 21);
+            this.tbNode.Size = new System.Drawing.Size(194, 21);
             this.tbNode.TabIndex = 9;
             // 
             // label1
@@ -197,7 +230,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1130, 687);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -208,6 +241,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nodeGridView)).EndInit();
@@ -231,6 +265,7 @@
         private System.Windows.Forms.DataGridView nodeGridView;
         private System.Windows.Forms.DataGridViewTextBoxColumn nodeName;
         private System.Windows.Forms.DataGridViewTextBoxColumn nodePath;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

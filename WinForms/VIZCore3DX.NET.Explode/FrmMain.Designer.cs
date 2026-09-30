@@ -32,6 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.cbGroupLevel = new System.Windows.Forms.ComboBox();
+            this.tlpGroup = new System.Windows.Forms.TableLayoutPanel();
             this.btnClearGroup = new System.Windows.Forms.Button();
             this.btnAddGroup = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -51,6 +52,7 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.tlpGroup.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -69,7 +71,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1334, 689);
+            this.splitContainer1.Size = new System.Drawing.Size(1334, 760);
             this.splitContainer1.SplitterDistance = 385;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -78,8 +80,7 @@
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.cbGroupLevel);
-            this.groupBox4.Controls.Add(this.btnClearGroup);
-            this.groupBox4.Controls.Add(this.btnAddGroup);
+            this.groupBox4.Controls.Add(this.tlpGroup);
             this.groupBox4.Location = new System.Drawing.Point(12, 157);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(359, 100);
@@ -99,18 +100,34 @@
             "HIERARCHICAL LEVEL 1",
             "HIERARCHICAL  LEVEL 2",
             "HIERARCHICAL  LEVEL 3",
-            "HIERARCHICAL  LEVEL 4"});
+            "HIERARCHICAL  LEVEL 4",
+            "HIERARCHICAL ALL (전체 계층)"});
             this.cbGroupLevel.Location = new System.Drawing.Point(49, 24);
             this.cbGroupLevel.Name = "cbGroupLevel";
             this.cbGroupLevel.Size = new System.Drawing.Size(173, 20);
             this.cbGroupLevel.TabIndex = 2;
             this.cbGroupLevel.Text = "FLAT or HIERARCHICAL";
             // 
+            // tlpGroup
+            // 
+            this.tlpGroup.ColumnCount = 2;
+            this.tlpGroup.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpGroup.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpGroup.Controls.Add(this.btnAddGroup, 0, 0);
+            this.tlpGroup.Controls.Add(this.btnClearGroup, 1, 0);
+            this.tlpGroup.Location = new System.Drawing.Point(46, 57);
+            this.tlpGroup.Name = "tlpGroup";
+            this.tlpGroup.RowCount = 1;
+            this.tlpGroup.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpGroup.Size = new System.Drawing.Size(179, 29);
+            this.tlpGroup.TabIndex = 0;
+            // 
             // btnClearGroup
             // 
-            this.btnClearGroup.Location = new System.Drawing.Point(147, 60);
+            this.btnClearGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearGroup.Location = new System.Drawing.Point(92, 3);
             this.btnClearGroup.Name = "btnClearGroup";
-            this.btnClearGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnClearGroup.Size = new System.Drawing.Size(84, 23);
             this.btnClearGroup.TabIndex = 1;
             this.btnClearGroup.Text = "Clear";
             this.btnClearGroup.UseVisualStyleBackColor = true;
@@ -118,9 +135,10 @@
             // 
             // btnAddGroup
             // 
-            this.btnAddGroup.Location = new System.Drawing.Point(49, 60);
+            this.btnAddGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAddGroup.Location = new System.Drawing.Point(3, 3);
             this.btnAddGroup.Name = "btnAddGroup";
-            this.btnAddGroup.Size = new System.Drawing.Size(75, 23);
+            this.btnAddGroup.Size = new System.Drawing.Size(83, 23);
             this.btnAddGroup.TabIndex = 0;
             this.btnAddGroup.Text = "Add Group";
             this.btnAddGroup.UseVisualStyleBackColor = true;
@@ -270,7 +288,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1334, 689);
+            this.ClientSize = new System.Drawing.Size(1334, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -281,6 +299,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.tlpGroup.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -295,6 +314,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.ComboBox cbGroupLevel;
+        private System.Windows.Forms.TableLayoutPanel tlpGroup;
         private System.Windows.Forms.Button btnClearGroup;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button btnRestoreAll;

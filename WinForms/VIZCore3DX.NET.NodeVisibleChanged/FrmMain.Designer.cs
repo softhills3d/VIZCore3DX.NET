@@ -52,7 +52,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(982, 511);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 327;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -64,7 +64,7 @@
             this.groupBox1.Controls.Add(this.lvList);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(306, 487);
+            this.groupBox1.Size = new System.Drawing.Size(306, 736);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Event";
@@ -82,7 +82,7 @@
             this.lvList.HideSelection = false;
             this.lvList.Location = new System.Drawing.Point(3, 17);
             this.lvList.Name = "lvList";
-            this.lvList.Size = new System.Drawing.Size(300, 467);
+            this.lvList.Size = new System.Drawing.Size(300, 716);
             this.lvList.TabIndex = 0;
             this.lvList.UseCompatibleStateImageBehavior = false;
             this.lvList.View = System.Windows.Forms.View.Details;
@@ -110,7 +110,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(982, 511);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

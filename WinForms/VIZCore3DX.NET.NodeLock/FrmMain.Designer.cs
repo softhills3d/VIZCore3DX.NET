@@ -35,9 +35,10 @@
             this.colNodeName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colKind = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.grpNodeLock = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ckEnable = new System.Windows.Forms.CheckBox();
             this.lblCount = new System.Windows.Forms.Label();
             this.lblCountTitle = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnUnlockAll = new System.Windows.Forms.Button();
             this.btnUnlockSelected = new System.Windows.Forms.Button();
             this.btnLockSelected = new System.Windows.Forms.Button();
@@ -50,6 +51,7 @@
             this.grpNodeLockList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvNodeLock)).BeginInit();
             this.grpNodeLock.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.grpModel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,7 +68,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.grpNodeLock);
             this.splitContainer1.Panel1.Controls.Add(this.grpModel);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(8);
-            this.splitContainer1.Size = new System.Drawing.Size(1184, 661);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 394;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -119,12 +121,10 @@
             // 
             // grpNodeLock
             // 
-            this.grpNodeLock.Controls.Add(this.checkBox1);
+            this.grpNodeLock.Controls.Add(this.ckEnable);
             this.grpNodeLock.Controls.Add(this.lblCount);
             this.grpNodeLock.Controls.Add(this.lblCountTitle);
-            this.grpNodeLock.Controls.Add(this.btnUnlockAll);
-            this.grpNodeLock.Controls.Add(this.btnUnlockSelected);
-            this.grpNodeLock.Controls.Add(this.btnLockSelected);
+            this.grpNodeLock.Controls.Add(this.tableLayoutPanel1);
             this.grpNodeLock.Controls.Add(this.lblDescription);
             this.grpNodeLock.Dock = System.Windows.Forms.DockStyle.Top;
             this.grpNodeLock.Location = new System.Drawing.Point(8, 72);
@@ -134,16 +134,16 @@
             this.grpNodeLock.TabStop = false;
             this.grpNodeLock.Text = "Node Lock";
             // 
-            // checkBox1
+            // ckEnable
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(18, 33);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(320, 16);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "View에서 선택한 개체만 노드 잠금 목록에 추가됩니다.";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.ckEnable_CheckedChanged);
+            this.ckEnable.AutoSize = true;
+            this.ckEnable.Location = new System.Drawing.Point(18, 33);
+            this.ckEnable.Name = "ckEnable";
+            this.ckEnable.Size = new System.Drawing.Size(320, 16);
+            this.ckEnable.TabIndex = 6;
+            this.ckEnable.Text = "노드 잠금 사용 (끄면 모든 잠금 해제)";
+            this.ckEnable.UseVisualStyleBackColor = true;
+            this.ckEnable.CheckedChanged += new System.EventHandler(this.ckEnable_CheckedChanged);
             // 
             // lblCount
             // 
@@ -163,11 +163,30 @@
             this.lblCountTitle.TabIndex = 4;
             this.lblCountTitle.Text = "Count :";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.Controls.Add(this.btnLockSelected, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnUnlockSelected, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnUnlockAll, 2, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 58);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(347, 34);
+            this.tableLayoutPanel1.TabIndex = 1;
+            // 
             // btnUnlockAll
             // 
-            this.btnUnlockAll.Location = new System.Drawing.Point(249, 63);
+            this.btnUnlockAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnUnlockAll.Location = new System.Drawing.Point(233, 3);
             this.btnUnlockAll.Name = "btnUnlockAll";
-            this.btnUnlockAll.Size = new System.Drawing.Size(110, 23);
+            this.btnUnlockAll.Size = new System.Drawing.Size(111, 28);
             this.btnUnlockAll.TabIndex = 3;
             this.btnUnlockAll.Text = "Unlock All";
             this.btnUnlockAll.UseVisualStyleBackColor = true;
@@ -175,9 +194,10 @@
             // 
             // btnUnlockSelected
             // 
-            this.btnUnlockSelected.Location = new System.Drawing.Point(134, 63);
+            this.btnUnlockSelected.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnUnlockSelected.Location = new System.Drawing.Point(118, 3);
             this.btnUnlockSelected.Name = "btnUnlockSelected";
-            this.btnUnlockSelected.Size = new System.Drawing.Size(110, 23);
+            this.btnUnlockSelected.Size = new System.Drawing.Size(109, 28);
             this.btnUnlockSelected.TabIndex = 2;
             this.btnUnlockSelected.Text = "Unlock Selected";
             this.btnUnlockSelected.UseVisualStyleBackColor = true;
@@ -185,9 +205,10 @@
             // 
             // btnLockSelected
             // 
-            this.btnLockSelected.Location = new System.Drawing.Point(18, 63);
+            this.btnLockSelected.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnLockSelected.Location = new System.Drawing.Point(3, 3);
             this.btnLockSelected.Name = "btnLockSelected";
-            this.btnLockSelected.Size = new System.Drawing.Size(110, 23);
+            this.btnLockSelected.Size = new System.Drawing.Size(109, 28);
             this.btnLockSelected.TabIndex = 1;
             this.btnLockSelected.Text = "Lock Selected";
             this.btnLockSelected.UseVisualStyleBackColor = true;
@@ -214,9 +235,11 @@
             // 
             // btnOpenModel
             // 
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenModel.Location = new System.Drawing.Point(18, 24);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(120, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(341, 26);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Open Model";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -226,7 +249,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -238,6 +261,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvNodeLock)).EndInit();
             this.grpNodeLock.ResumeLayout(false);
             this.grpNodeLock.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.grpModel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -259,6 +283,7 @@
         private System.Windows.Forms.DataGridView dgvNodeLock;
         private System.Windows.Forms.DataGridViewTextBoxColumn colNodeName;
         private System.Windows.Forms.DataGridViewTextBoxColumn colKind;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ckEnable;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }

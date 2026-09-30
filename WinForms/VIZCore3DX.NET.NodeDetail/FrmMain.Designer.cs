@@ -45,6 +45,7 @@
             this.txtColorR = new System.Windows.Forms.TextBox();
             this.txtColorG = new System.Windows.Forms.TextBox();
             this.txtColorB = new System.Windows.Forms.TextBox();
+            this.tlpColorButton = new System.Windows.Forms.TableLayoutPanel();
             this.btnGetColor = new System.Windows.Forms.Button();
             this.btnColorReset = new System.Windows.Forms.Button();
             this.btnSetColor = new System.Windows.Forms.Button();
@@ -61,6 +62,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.tbRotateX = new System.Windows.Forms.TrackBar();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tlpMoveButton = new System.Windows.Forms.TableLayoutPanel();
             this.btnResetMove = new System.Windows.Forms.Button();
             this.btnMove = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -87,6 +89,7 @@
             this.tpColor.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tlpColorButton.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbTransparency)).BeginInit();
             this.tpTransform.SuspendLayout();
@@ -96,6 +99,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.tbRotateX)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.tlpMoveButton.SuspendLayout();
             this.tpUDA.SuspendLayout();
             this.tpGeometry.SuspendLayout();
             this.SuspendLayout();
@@ -110,7 +114,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.tcMain);
-            this.splitContainer1.Size = new System.Drawing.Size(1160, 656);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 386;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -125,7 +129,7 @@
             this.tcMain.Location = new System.Drawing.Point(0, 0);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
-            this.tcMain.Size = new System.Drawing.Size(386, 656);
+            this.tcMain.Size = new System.Drawing.Size(386, 760);
             this.tcMain.TabIndex = 0;
             // 
             // tpNode
@@ -135,7 +139,7 @@
             this.tpNode.Location = new System.Drawing.Point(4, 22);
             this.tpNode.Name = "tpNode";
             this.tpNode.Padding = new System.Windows.Forms.Padding(3);
-            this.tpNode.Size = new System.Drawing.Size(378, 630);
+            this.tpNode.Size = new System.Drawing.Size(378, 734);
             this.tpNode.TabIndex = 0;
             this.tpNode.Text = "Node";
             this.tpNode.UseVisualStyleBackColor = true;
@@ -176,7 +180,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pgNode.Location = new System.Drawing.Point(8, 78);
             this.pgNode.Name = "pgNode";
-            this.pgNode.Size = new System.Drawing.Size(364, 544);
+            this.pgNode.Size = new System.Drawing.Size(364, 648);
             this.pgNode.TabIndex = 2;
             // 
             // tpColor
@@ -186,7 +190,7 @@
             this.tpColor.Location = new System.Drawing.Point(4, 22);
             this.tpColor.Name = "tpColor";
             this.tpColor.Padding = new System.Windows.Forms.Padding(3);
-            this.tpColor.Size = new System.Drawing.Size(378, 630);
+            this.tpColor.Size = new System.Drawing.Size(378, 734);
             this.tpColor.TabIndex = 1;
             this.tpColor.Text = "Color";
             this.tpColor.UseVisualStyleBackColor = true;
@@ -196,9 +200,7 @@
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox2.Controls.Add(this.btnGetColor);
-            this.groupBox2.Controls.Add(this.btnColorReset);
-            this.groupBox2.Controls.Add(this.btnSetColor);
+            this.groupBox2.Controls.Add(this.tlpColorButton);
             this.groupBox2.Location = new System.Drawing.Point(8, 6);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(361, 159);
@@ -276,11 +278,30 @@
             this.txtColorB.Size = new System.Drawing.Size(75, 21);
             this.txtColorB.TabIndex = 7;
             // 
+            // tlpColorButton
+            // 
+            this.tlpColorButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpColorButton.ColumnCount = 3;
+            this.tlpColorButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpColorButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpColorButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpColorButton.Controls.Add(this.btnGetColor, 0, 0);
+            this.tlpColorButton.Controls.Add(this.btnSetColor, 1, 0);
+            this.tlpColorButton.Controls.Add(this.btnColorReset, 2, 0);
+            this.tlpColorButton.Location = new System.Drawing.Point(6, 99);
+            this.tlpColorButton.Name = "tlpColorButton";
+            this.tlpColorButton.RowCount = 1;
+            this.tlpColorButton.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpColorButton.Size = new System.Drawing.Size(349, 32);
+            this.tlpColorButton.TabIndex = 2;
+            // 
             // btnGetColor
             // 
-            this.btnGetColor.Location = new System.Drawing.Point(11, 105);
+            this.btnGetColor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnGetColor.Location = new System.Drawing.Point(3, 3);
             this.btnGetColor.Name = "btnGetColor";
-            this.btnGetColor.Size = new System.Drawing.Size(92, 23);
+            this.btnGetColor.Size = new System.Drawing.Size(110, 26);
             this.btnGetColor.TabIndex = 2;
             this.btnGetColor.Text = "Get Color";
             this.btnGetColor.UseVisualStyleBackColor = true;
@@ -288,9 +309,10 @@
             // 
             // btnColorReset
             // 
-            this.btnColorReset.Location = new System.Drawing.Point(207, 105);
+            this.btnColorReset.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnColorReset.Location = new System.Drawing.Point(235, 3);
             this.btnColorReset.Name = "btnColorReset";
-            this.btnColorReset.Size = new System.Drawing.Size(92, 23);
+            this.btnColorReset.Size = new System.Drawing.Size(111, 26);
             this.btnColorReset.TabIndex = 4;
             this.btnColorReset.Text = "Reset";
             this.btnColorReset.UseVisualStyleBackColor = true;
@@ -298,9 +320,10 @@
             // 
             // btnSetColor
             // 
-            this.btnSetColor.Location = new System.Drawing.Point(109, 105);
+            this.btnSetColor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSetColor.Location = new System.Drawing.Point(119, 3);
             this.btnSetColor.Name = "btnSetColor";
-            this.btnSetColor.Size = new System.Drawing.Size(92, 23);
+            this.btnSetColor.Size = new System.Drawing.Size(110, 26);
             this.btnSetColor.TabIndex = 3;
             this.btnSetColor.Text = "Set Color";
             this.btnSetColor.UseVisualStyleBackColor = true;
@@ -347,7 +370,7 @@
             this.tpTransform.Controls.Add(this.groupBox4);
             this.tpTransform.Location = new System.Drawing.Point(4, 22);
             this.tpTransform.Name = "tpTransform";
-            this.tpTransform.Size = new System.Drawing.Size(378, 630);
+            this.tpTransform.Size = new System.Drawing.Size(378, 734);
             this.tpTransform.TabIndex = 2;
             this.tpTransform.Text = "Transform";
             this.tpTransform.UseVisualStyleBackColor = true;
@@ -447,8 +470,7 @@
             // 
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.btnResetMove);
-            this.groupBox4.Controls.Add(this.btnMove);
+            this.groupBox4.Controls.Add(this.tlpMoveButton);
             this.groupBox4.Controls.Add(this.tableLayoutPanel2);
             this.groupBox4.Location = new System.Drawing.Point(8, 14);
             this.groupBox4.Name = "groupBox4";
@@ -457,11 +479,28 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Move";
             // 
+            // tlpMoveButton
+            // 
+            this.tlpMoveButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpMoveButton.ColumnCount = 2;
+            this.tlpMoveButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpMoveButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpMoveButton.Controls.Add(this.btnMove, 0, 0);
+            this.tlpMoveButton.Controls.Add(this.btnResetMove, 1, 0);
+            this.tlpMoveButton.Location = new System.Drawing.Point(6, 98);
+            this.tlpMoveButton.Name = "tlpMoveButton";
+            this.tlpMoveButton.RowCount = 1;
+            this.tlpMoveButton.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpMoveButton.Size = new System.Drawing.Size(349, 32);
+            this.tlpMoveButton.TabIndex = 3;
+            // 
             // btnResetMove
             // 
-            this.btnResetMove.Location = new System.Drawing.Point(99, 104);
+            this.btnResetMove.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnResetMove.Location = new System.Drawing.Point(177, 3);
             this.btnResetMove.Name = "btnResetMove";
-            this.btnResetMove.Size = new System.Drawing.Size(75, 23);
+            this.btnResetMove.Size = new System.Drawing.Size(169, 26);
             this.btnResetMove.TabIndex = 4;
             this.btnResetMove.Text = "Reset";
             this.btnResetMove.UseVisualStyleBackColor = true;
@@ -469,9 +508,10 @@
             // 
             // btnMove
             // 
-            this.btnMove.Location = new System.Drawing.Point(9, 104);
+            this.btnMove.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnMove.Location = new System.Drawing.Point(3, 3);
             this.btnMove.Name = "btnMove";
-            this.btnMove.Size = new System.Drawing.Size(75, 23);
+            this.btnMove.Size = new System.Drawing.Size(168, 26);
             this.btnMove.TabIndex = 3;
             this.btnMove.Text = "Move";
             this.btnMove.UseVisualStyleBackColor = true;
@@ -556,7 +596,7 @@
             this.tpUDA.Controls.Add(this.lvList);
             this.tpUDA.Location = new System.Drawing.Point(4, 22);
             this.tpUDA.Name = "tpUDA";
-            this.tpUDA.Size = new System.Drawing.Size(378, 630);
+            this.tpUDA.Size = new System.Drawing.Size(378, 734);
             this.tpUDA.TabIndex = 3;
             this.tpUDA.Text = "UDA";
             this.tpUDA.UseVisualStyleBackColor = true;
@@ -584,7 +624,7 @@
             this.lvList.HideSelection = false;
             this.lvList.Location = new System.Drawing.Point(8, 61);
             this.lvList.Name = "lvList";
-            this.lvList.Size = new System.Drawing.Size(354, 561);
+            this.lvList.Size = new System.Drawing.Size(354, 665);
             this.lvList.TabIndex = 1;
             this.lvList.UseCompatibleStateImageBehavior = false;
             this.lvList.View = System.Windows.Forms.View.Details;
@@ -605,7 +645,7 @@
             this.tpGeometry.Controls.Add(this.propertyGrid);
             this.tpGeometry.Location = new System.Drawing.Point(4, 22);
             this.tpGeometry.Name = "tpGeometry";
-            this.tpGeometry.Size = new System.Drawing.Size(378, 630);
+            this.tpGeometry.Size = new System.Drawing.Size(378, 734);
             this.tpGeometry.TabIndex = 4;
             this.tpGeometry.Text = "Geometry";
             this.tpGeometry.UseVisualStyleBackColor = true;
@@ -627,14 +667,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGrid.Location = new System.Drawing.Point(8, 62);
             this.propertyGrid.Name = "propertyGrid";
-            this.propertyGrid.Size = new System.Drawing.Size(358, 560);
+            this.propertyGrid.Size = new System.Drawing.Size(358, 664);
             this.propertyGrid.TabIndex = 1;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1160, 656);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -651,6 +691,7 @@
             this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.tlpColorButton.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbTransparency)).EndInit();
@@ -663,6 +704,7 @@
             this.groupBox4.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            this.tlpMoveButton.ResumeLayout(false);
             this.tpUDA.ResumeLayout(false);
             this.tpGeometry.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -687,6 +729,7 @@
         private System.Windows.Forms.TextBox txtColorR;
         private System.Windows.Forms.TextBox txtColorG;
         private System.Windows.Forms.TextBox txtColorB;
+        private System.Windows.Forms.TableLayoutPanel tlpColorButton;
         private System.Windows.Forms.Button btnGetColor;
         private System.Windows.Forms.Button btnColorReset;
         private System.Windows.Forms.Button btnSetColor;
@@ -704,6 +747,7 @@
         private System.Windows.Forms.TrackBar tbRotateX;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btnResetMove;
+        private System.Windows.Forms.TableLayoutPanel tlpMoveButton;
         private System.Windows.Forms.Button btnMove;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label label2;

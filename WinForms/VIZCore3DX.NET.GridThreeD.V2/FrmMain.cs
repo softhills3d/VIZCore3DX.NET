@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 
@@ -16,7 +17,7 @@ namespace VIZCore3DX.NET.GridThreeD.V2
         // 현재 회전 누적 각도. 타이머 Tick마다 갱신됨.
         private float Block_Rotate_Angle = 0.0f;
 
-        // 회전 대상 노드
+        // 회전 대상 노드 (GRID_S.vizx 에서 추가된 노드)
         private List<Node> RotateNodes;
 
         // 회전축을 만들기 위한 두 점.
@@ -24,7 +25,6 @@ namespace VIZCore3DX.NET.GridThreeD.V2
         private Vertex3D RotateV2;
 
         // 애니메이션 설정값은 코드 중간에 숫자로 박지 말고 상수로 분리
-        private const string BlockNodeName = "GRID_S";
         private const float RotateStepDegree = -5.0f;   // Tick 1회당 회전 각도
         private const float RotateEndDegree = -180.0f;  // 최종 회전 각도
 
@@ -106,10 +106,8 @@ namespace VIZCore3DX.NET.GridThreeD.V2
         {
             StopBlockAnimation();
 
-            if (vizcore3dx.Model.IsOpen() == true)
-                vizcore3dx.Model.Close();
-
-            string basePath = string.Format("C:\\project\\VIZCore3DX.NET-main\\bin\\Debug", vizcore3dx.GetEntryAssemblyPath());
+            // GRID_P.vizx / GRID_S.vizx : 실행 폴더 기준
+            string basePath = vizcore3dx.GetEntryAssemblyPath();
 
             string gridPPath = Path.Combine(basePath, "GRID_P.vizx");
             string gridSPath = Path.Combine(basePath, "GRID_S.vizx");
@@ -124,7 +122,7 @@ namespace VIZCore3DX.NET.GridThreeD.V2
 
                 gridPPath = dlg.FileName;
 
-                if (File.Exists(gridSPath) == false)
+                if (File.Exists(gridPPath) == false)
                 {
                     MessageBox.Show("GRID_P.vizx 파일을 찾을 수 없습니다.\n\n" + gridPPath, "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
@@ -146,16 +144,19 @@ namespace VIZCore3DX.NET.GridThreeD.V2
                 }
             }
 
-            List<string> paths = new List<string>();
-            paths.Add(gridPPath);
-            paths.Add(gridSPath);
+            // GRID_P 를 먼저 열고 GRID_S 를 추가 : GRID_S 에서 새로 들어온 노드를 회전 대상으로 사용
+            bool result = vizcore3dx.Model.Open(gridPPath);
+            HashSet<int> gridPEntities = new HashSet<int>(vizcore3dx.Object3D.FromFilter(Object3dFilter.ALL).Select(x => x.EntityID));
 
-            bool result = vizcore3dx.Model.Add(paths.ToArray(), true);
+            if (result == true) result = vizcore3dx.Model.Add(new string[] { gridSPath }, true);
             if (result == false || vizcore3dx.Model.IsOpen() == false)
             {
                 MessageBox.Show("모델 로드에 실패했습니다.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            RotateNodes = vizcore3dx.Object3D.GetRootNodes().Where(x => gridPEntities.Contains(x.EntityID) == false).ToList();
+            Block_Rotate_Angle = 0.0f;
 
             BoundBox = vizcore3dx.Model.BoundBox;
 
@@ -177,13 +178,16 @@ namespace VIZCore3DX.NET.GridThreeD.V2
                 return;
             }
 
-            RotateNodes = vizcore3dx.Object3D.Find.QuickSearch(BlockNodeName, true);
-
             if (RotateNodes == null || RotateNodes.Count == 0)
             {
-                MessageBox.Show(BlockNodeName + " 노드를 찾을 수 없습니다.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("GRID_S 노드를 찾을 수 없습니다.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            // 이미 회전했으면 회전한 각도만큼 되돌린 뒤 다시 회전
+            StopBlockAnimation();
+            if (Block_Rotate_Angle != 0.0f && RotateV1 != null && RotateV2 != null)
+                vizcore3dx.Object3D.Transform.Rotate(RotateNodes, RotateV1, RotateV2, -Block_Rotate_Angle, false);
 
             float centerY = BoundBox.MinY + (BoundBox.LengthY * 0.5f);
 
@@ -209,13 +213,15 @@ namespace VIZCore3DX.NET.GridThreeD.V2
 
             if (nextAngle < RotateEndDegree) nextAngle = RotateEndDegree;
 
+            // 파트에 원래 배치 행렬이 있으므로 초기 상태 기준(zeroBase = true)이 아니라 현재 상태에서 이번 Tick 만큼만 회전
+            float stepAngle = nextAngle - Block_Rotate_Angle;
             Block_Rotate_Angle = nextAngle;
 
             vizcore3dx.BeginUpdate();
 
             try
             {
-                vizcore3dx.Object3D.Transform.Rotate(RotateNodes, RotateV1, RotateV2, Block_Rotate_Angle, true);
+                vizcore3dx.Object3D.Transform.Rotate(RotateNodes, RotateV1, RotateV2, stepAngle, false);
             }
             finally
             {

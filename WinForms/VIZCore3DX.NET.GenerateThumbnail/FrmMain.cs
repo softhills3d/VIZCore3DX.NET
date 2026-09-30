@@ -98,10 +98,14 @@ namespace VIZCore3DX.NET.GenerateThumbnail
                 foreach (string item in fileNames)
                 {
                     // 다음 파일 준비
-                    vizcore3dx.Model.Close();
+                    if (vizcore3dx.Model.IsOpen() == true) vizcore3dx.Model.Close();
 
                     // 모델 열기
-                    vizcore3dx.Model.Open(item);
+                    if (vizcore3dx.Model.Open(item) == false)
+                    {
+                        Console.WriteLine("OPEN FAIL : " + item);
+                        continue;
+                    }
 
                     // 화면 맞춤
                     vizcore3dx.View.FitToView();

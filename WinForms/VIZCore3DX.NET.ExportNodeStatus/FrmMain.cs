@@ -239,7 +239,9 @@ namespace VIZCore3DX.NET.ExportNodeStatus
 
             try
             {
-                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+                // 파일 이름만 입력한 경우 폴더 부분이 비어 있으므로 폴더가 있을 때만 생성
+                string directory = System.IO.Path.GetDirectoryName(path);
+                if (string.IsNullOrEmpty(directory) == false) System.IO.Directory.CreateDirectory(directory);
 
                 System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 

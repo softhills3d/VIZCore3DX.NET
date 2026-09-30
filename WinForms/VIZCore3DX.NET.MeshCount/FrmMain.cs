@@ -215,7 +215,7 @@ namespace VIZCore3DX.NET.MeshCount
                     if (boundBox == null || boundBox.IsValid() == false) continue;
 
                     float volume = boundBox.LengthX * boundBox.LengthY * boundBox.LengthZ;
-                    int averageMesh = Convert.ToInt32(volume / meshCount * 0.01f);
+                    long averageMesh = Convert.ToInt64(volume / meshCount * 0.01f);
 
                     ListViewItem lvi = new ListViewItem(new string[]
                     {

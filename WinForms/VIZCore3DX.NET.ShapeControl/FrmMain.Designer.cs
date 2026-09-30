@@ -148,6 +148,24 @@
             this.btnHighlightColor = new System.Windows.Forms.Button();
             this.lblSelectedColor = new System.Windows.Forms.Label();
             this.btnSelectedColor = new System.Windows.Forms.Button();
+            this.tlpManage = new System.Windows.Forms.TableLayoutPanel();
+            this.grpHeatmap = new System.Windows.Forms.GroupBox();
+            this.lblHeatmapSource = new System.Windows.Forms.Label();
+            this.cmbHeatmapSource = new System.Windows.Forms.ComboBox();
+            this.lblHeatmapCategory = new System.Windows.Forms.Label();
+            this.txtHeatmapCategory = new System.Windows.Forms.TextBox();
+            this.lblHeatmapPoint = new System.Windows.Forms.Label();
+            this.lblHeatmapX = new System.Windows.Forms.Label();
+            this.numHeatmapX = new System.Windows.Forms.NumericUpDown();
+            this.lblHeatmapY = new System.Windows.Forms.Label();
+            this.numHeatmapY = new System.Windows.Forms.NumericUpDown();
+            this.lblHeatmapZ = new System.Windows.Forms.Label();
+            this.numHeatmapZ = new System.Windows.Forms.NumericUpDown();
+            this.btnHeatmapPointOsnap = new System.Windows.Forms.Button();
+            this.btnHeatmapCreate = new System.Windows.Forms.Button();
+            this.btnHeatmapClear = new System.Windows.Forms.Button();
+            this.lblHeatmapResult = new System.Windows.Forms.Label();
+            this.tlpHeatmap = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -180,6 +198,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numRotZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRotDegree)).BeginInit();
             this.grpShapeList.SuspendLayout();
+            this.tlpManage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvShapes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveY)).BeginInit();
@@ -189,6 +208,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.numTransformZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numTransformDegree)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSelectionRadius)).BeginInit();
+            this.grpHeatmap.SuspendLayout();
+            this.tlpHeatmap.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeatmapX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeatmapY)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeatmapZ)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlViewHost
@@ -196,7 +220,7 @@
             this.pnlViewHost.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlViewHost.Location = new System.Drawing.Point(0, 0);
             this.pnlViewHost.Name = "pnlViewHost";
-            this.pnlViewHost.Size = new System.Drawing.Size(870, 760);
+            this.pnlViewHost.Size = new System.Drawing.Size(816, 900);
             this.pnlViewHost.TabIndex = 0;
             // 
             // splitContainer1
@@ -213,19 +237,21 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.pnlOption);
-            this.splitContainer1.Size = new System.Drawing.Size(1360, 760);
-            this.splitContainer1.SplitterDistance = 870;
+            this.splitContainer1.Size = new System.Drawing.Size(1360, 900);
+            this.splitContainer1.SplitterDistance = 816;
             this.splitContainer1.TabIndex = 0;
             // 
             // pnlOption
             // 
+            this.pnlOption.AutoScroll = true;
             this.pnlOption.Controls.Add(this.grpCreate);
             this.pnlOption.Controls.Add(this.grpShapeList);
+            this.pnlOption.Controls.Add(this.grpHeatmap);
             this.pnlOption.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlOption.Location = new System.Drawing.Point(0, 0);
             this.pnlOption.Name = "pnlOption";
             this.pnlOption.Padding = new System.Windows.Forms.Padding(7);
-            this.pnlOption.Size = new System.Drawing.Size(486, 760);
+            this.pnlOption.Size = new System.Drawing.Size(540, 900);
             this.pnlOption.TabIndex = 0;
             // 
             // grpCreate
@@ -247,9 +273,11 @@
             this.grpCreate.Controls.Add(this.lblModeInfo);
             this.grpCreate.Controls.Add(this.lblCreateHint);
             this.grpCreate.Controls.Add(this.btnCreate);
+            this.grpCreate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpCreate.Location = new System.Drawing.Point(7, 7);
             this.grpCreate.Name = "grpCreate";
-            this.grpCreate.Size = new System.Drawing.Size(472, 324);
+            this.grpCreate.Size = new System.Drawing.Size(526, 326);
             this.grpCreate.TabIndex = 0;
             this.grpCreate.TabStop = false;
             this.grpCreate.Text = "1. 형상 생성";
@@ -257,7 +285,7 @@
             // lblShapeType
             // 
             this.lblShapeType.AutoSize = true;
-            this.lblShapeType.Location = new System.Drawing.Point(13, 27);
+            this.lblShapeType.Location = new System.Drawing.Point(13, 29);
             this.lblShapeType.Name = "lblShapeType";
             this.lblShapeType.Size = new System.Drawing.Size(29, 12);
             this.lblShapeType.TabIndex = 0;
@@ -283,9 +311,9 @@
             "화살표",
             "좌표축",
             "바운딩 박스"});
-            this.cmbShapeType.Location = new System.Drawing.Point(50, 23);
+            this.cmbShapeType.Location = new System.Drawing.Point(50, 25);
             this.cmbShapeType.Name = "cmbShapeType";
-            this.cmbShapeType.Size = new System.Drawing.Size(126, 20);
+            this.cmbShapeType.Size = new System.Drawing.Size(140, 20);
             this.cmbShapeType.TabIndex = 1;
             this.cmbShapeType.SelectedIndex = 0;
             this.cmbShapeType.SelectedIndexChanged += new System.EventHandler(this.cmbShapeType_SelectedIndexChanged);
@@ -293,7 +321,7 @@
             // lblCreateMode
             // 
             this.lblCreateMode.AutoSize = true;
-            this.lblCreateMode.Location = new System.Drawing.Point(190, 27);
+            this.lblCreateMode.Location = new System.Drawing.Point(204, 29);
             this.lblCreateMode.Name = "lblCreateMode";
             this.lblCreateMode.Size = new System.Drawing.Size(29, 12);
             this.lblCreateMode.TabIndex = 2;
@@ -308,9 +336,11 @@
             "위치·회전",
             "방향 벡터",
             "선택 객체 기준"});
-            this.cmbCreateMode.Location = new System.Drawing.Point(228, 23);
+            this.cmbCreateMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbCreateMode.Location = new System.Drawing.Point(240, 25);
             this.cmbCreateMode.Name = "cmbCreateMode";
-            this.cmbCreateMode.Size = new System.Drawing.Size(126, 20);
+            this.cmbCreateMode.Size = new System.Drawing.Size(150, 20);
             this.cmbCreateMode.TabIndex = 3;
             this.cmbCreateMode.SelectedIndex = 0;
             this.cmbCreateMode.SelectedIndexChanged += new System.EventHandler(this.cmbCreateMode_SelectedIndexChanged);
@@ -319,9 +349,10 @@
             // 
             this.btnCreateColor.BackColor = System.Drawing.Color.Orange;
             this.btnCreateColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCreateColor.Location = new System.Drawing.Point(366, 21);
+            this.btnCreateColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreateColor.Location = new System.Drawing.Point(404, 22);
             this.btnCreateColor.Name = "btnCreateColor";
-            this.btnCreateColor.Size = new System.Drawing.Size(90, 24);
+            this.btnCreateColor.Size = new System.Drawing.Size(110, 26);
             this.btnCreateColor.TabIndex = 4;
             this.btnCreateColor.Text = "색상";
             this.btnCreateColor.UseVisualStyleBackColor = false;
@@ -337,9 +368,11 @@
             this.pnlPoint1.Controls.Add(this.lblP1Z);
             this.pnlPoint1.Controls.Add(this.numP1Z);
             this.pnlPoint1.Controls.Add(this.btnPoint1Osnap);
-            this.pnlPoint1.Location = new System.Drawing.Point(10, 52);
+            this.pnlPoint1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlPoint1.Location = new System.Drawing.Point(10, 54);
             this.pnlPoint1.Name = "pnlPoint1";
-            this.pnlPoint1.Size = new System.Drawing.Size(446, 30);
+            this.pnlPoint1.Size = new System.Drawing.Size(506, 28);
             this.pnlPoint1.TabIndex = 5;
             // 
             // lblPoint1Title
@@ -374,13 +407,13 @@
             0,
             -2147483648});
             this.numP1X.Name = "numP1X";
-            this.numP1X.Size = new System.Drawing.Size(78, 21);
+            this.numP1X.Size = new System.Drawing.Size(96, 21);
             this.numP1X.TabIndex = 2;
             // 
             // lblP1Y
             // 
             this.lblP1Y.AutoSize = true;
-            this.lblP1Y.Location = new System.Drawing.Point(162, 8);
+            this.lblP1Y.Location = new System.Drawing.Point(182, 8);
             this.lblP1Y.Name = "lblP1Y";
             this.lblP1Y.Size = new System.Drawing.Size(13, 12);
             this.lblP1Y.TabIndex = 3;
@@ -389,7 +422,7 @@
             // numP1Y
             // 
             this.numP1Y.DecimalPlaces = 3;
-            this.numP1Y.Location = new System.Drawing.Point(178, 4);
+            this.numP1Y.Location = new System.Drawing.Point(198, 4);
             this.numP1Y.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -401,13 +434,13 @@
             0,
             -2147483648});
             this.numP1Y.Name = "numP1Y";
-            this.numP1Y.Size = new System.Drawing.Size(78, 21);
+            this.numP1Y.Size = new System.Drawing.Size(96, 21);
             this.numP1Y.TabIndex = 4;
             // 
             // lblP1Z
             // 
             this.lblP1Z.AutoSize = true;
-            this.lblP1Z.Location = new System.Drawing.Point(262, 8);
+            this.lblP1Z.Location = new System.Drawing.Point(302, 8);
             this.lblP1Z.Name = "lblP1Z";
             this.lblP1Z.Size = new System.Drawing.Size(13, 12);
             this.lblP1Z.TabIndex = 5;
@@ -416,7 +449,7 @@
             // numP1Z
             // 
             this.numP1Z.DecimalPlaces = 3;
-            this.numP1Z.Location = new System.Drawing.Point(278, 4);
+            this.numP1Z.Location = new System.Drawing.Point(318, 4);
             this.numP1Z.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -428,14 +461,15 @@
             0,
             -2147483648});
             this.numP1Z.Name = "numP1Z";
-            this.numP1Z.Size = new System.Drawing.Size(78, 21);
+            this.numP1Z.Size = new System.Drawing.Size(96, 21);
             this.numP1Z.TabIndex = 6;
             // 
             // btnPoint1Osnap
             // 
-            this.btnPoint1Osnap.Location = new System.Drawing.Point(366, 3);
+            this.btnPoint1Osnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPoint1Osnap.Location = new System.Drawing.Point(424, 1);
             this.btnPoint1Osnap.Name = "btnPoint1Osnap";
-            this.btnPoint1Osnap.Size = new System.Drawing.Size(76, 23);
+            this.btnPoint1Osnap.Size = new System.Drawing.Size(79, 26);
             this.btnPoint1Osnap.TabIndex = 7;
             this.btnPoint1Osnap.Text = "Osnap";
             this.btnPoint1Osnap.UseVisualStyleBackColor = true;
@@ -451,9 +485,11 @@
             this.pnlPoint2.Controls.Add(this.lblP2Z);
             this.pnlPoint2.Controls.Add(this.numP2Z);
             this.pnlPoint2.Controls.Add(this.btnPoint2Osnap);
-            this.pnlPoint2.Location = new System.Drawing.Point(10, 83);
+            this.pnlPoint2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlPoint2.Location = new System.Drawing.Point(10, 84);
             this.pnlPoint2.Name = "pnlPoint2";
-            this.pnlPoint2.Size = new System.Drawing.Size(446, 30);
+            this.pnlPoint2.Size = new System.Drawing.Size(506, 28);
             this.pnlPoint2.TabIndex = 6;
             // 
             // lblPoint2Title
@@ -488,7 +524,7 @@
             0,
             -2147483648});
             this.numP2X.Name = "numP2X";
-            this.numP2X.Size = new System.Drawing.Size(78, 21);
+            this.numP2X.Size = new System.Drawing.Size(96, 21);
             this.numP2X.TabIndex = 2;
             this.numP2X.Value = new decimal(new int[] {
             1,
@@ -499,7 +535,7 @@
             // lblP2Y
             // 
             this.lblP2Y.AutoSize = true;
-            this.lblP2Y.Location = new System.Drawing.Point(162, 8);
+            this.lblP2Y.Location = new System.Drawing.Point(182, 8);
             this.lblP2Y.Name = "lblP2Y";
             this.lblP2Y.Size = new System.Drawing.Size(13, 12);
             this.lblP2Y.TabIndex = 3;
@@ -508,7 +544,7 @@
             // numP2Y
             // 
             this.numP2Y.DecimalPlaces = 3;
-            this.numP2Y.Location = new System.Drawing.Point(178, 4);
+            this.numP2Y.Location = new System.Drawing.Point(198, 4);
             this.numP2Y.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -520,13 +556,13 @@
             0,
             -2147483648});
             this.numP2Y.Name = "numP2Y";
-            this.numP2Y.Size = new System.Drawing.Size(78, 21);
+            this.numP2Y.Size = new System.Drawing.Size(96, 21);
             this.numP2Y.TabIndex = 4;
             // 
             // lblP2Z
             // 
             this.lblP2Z.AutoSize = true;
-            this.lblP2Z.Location = new System.Drawing.Point(262, 8);
+            this.lblP2Z.Location = new System.Drawing.Point(302, 8);
             this.lblP2Z.Name = "lblP2Z";
             this.lblP2Z.Size = new System.Drawing.Size(13, 12);
             this.lblP2Z.TabIndex = 5;
@@ -535,7 +571,7 @@
             // numP2Z
             // 
             this.numP2Z.DecimalPlaces = 3;
-            this.numP2Z.Location = new System.Drawing.Point(278, 4);
+            this.numP2Z.Location = new System.Drawing.Point(318, 4);
             this.numP2Z.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -547,14 +583,15 @@
             0,
             -2147483648});
             this.numP2Z.Name = "numP2Z";
-            this.numP2Z.Size = new System.Drawing.Size(78, 21);
+            this.numP2Z.Size = new System.Drawing.Size(96, 21);
             this.numP2Z.TabIndex = 6;
             // 
             // btnPoint2Osnap
             // 
-            this.btnPoint2Osnap.Location = new System.Drawing.Point(366, 3);
+            this.btnPoint2Osnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPoint2Osnap.Location = new System.Drawing.Point(424, 1);
             this.btnPoint2Osnap.Name = "btnPoint2Osnap";
-            this.btnPoint2Osnap.Size = new System.Drawing.Size(76, 23);
+            this.btnPoint2Osnap.Size = new System.Drawing.Size(79, 26);
             this.btnPoint2Osnap.TabIndex = 7;
             this.btnPoint2Osnap.Text = "Osnap";
             this.btnPoint2Osnap.UseVisualStyleBackColor = true;
@@ -570,9 +607,11 @@
             this.pnlPoint3.Controls.Add(this.lblP3Z);
             this.pnlPoint3.Controls.Add(this.numP3Z);
             this.pnlPoint3.Controls.Add(this.btnPoint3Osnap);
+            this.pnlPoint3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlPoint3.Location = new System.Drawing.Point(10, 114);
             this.pnlPoint3.Name = "pnlPoint3";
-            this.pnlPoint3.Size = new System.Drawing.Size(446, 30);
+            this.pnlPoint3.Size = new System.Drawing.Size(506, 28);
             this.pnlPoint3.TabIndex = 7;
             // 
             // lblPoint3Title
@@ -607,13 +646,13 @@
             0,
             -2147483648});
             this.numP3X.Name = "numP3X";
-            this.numP3X.Size = new System.Drawing.Size(78, 21);
+            this.numP3X.Size = new System.Drawing.Size(96, 21);
             this.numP3X.TabIndex = 2;
             // 
             // lblP3Y
             // 
             this.lblP3Y.AutoSize = true;
-            this.lblP3Y.Location = new System.Drawing.Point(162, 8);
+            this.lblP3Y.Location = new System.Drawing.Point(182, 8);
             this.lblP3Y.Name = "lblP3Y";
             this.lblP3Y.Size = new System.Drawing.Size(13, 12);
             this.lblP3Y.TabIndex = 3;
@@ -622,7 +661,7 @@
             // numP3Y
             // 
             this.numP3Y.DecimalPlaces = 3;
-            this.numP3Y.Location = new System.Drawing.Point(178, 4);
+            this.numP3Y.Location = new System.Drawing.Point(198, 4);
             this.numP3Y.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -634,13 +673,13 @@
             0,
             -2147483648});
             this.numP3Y.Name = "numP3Y";
-            this.numP3Y.Size = new System.Drawing.Size(78, 21);
+            this.numP3Y.Size = new System.Drawing.Size(96, 21);
             this.numP3Y.TabIndex = 4;
             // 
             // lblP3Z
             // 
             this.lblP3Z.AutoSize = true;
-            this.lblP3Z.Location = new System.Drawing.Point(262, 8);
+            this.lblP3Z.Location = new System.Drawing.Point(302, 8);
             this.lblP3Z.Name = "lblP3Z";
             this.lblP3Z.Size = new System.Drawing.Size(13, 12);
             this.lblP3Z.TabIndex = 5;
@@ -649,7 +688,7 @@
             // numP3Z
             // 
             this.numP3Z.DecimalPlaces = 3;
-            this.numP3Z.Location = new System.Drawing.Point(278, 4);
+            this.numP3Z.Location = new System.Drawing.Point(318, 4);
             this.numP3Z.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -661,14 +700,15 @@
             0,
             -2147483648});
             this.numP3Z.Name = "numP3Z";
-            this.numP3Z.Size = new System.Drawing.Size(78, 21);
+            this.numP3Z.Size = new System.Drawing.Size(96, 21);
             this.numP3Z.TabIndex = 6;
             // 
             // btnPoint3Osnap
             // 
-            this.btnPoint3Osnap.Location = new System.Drawing.Point(366, 3);
+            this.btnPoint3Osnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPoint3Osnap.Location = new System.Drawing.Point(424, 1);
             this.btnPoint3Osnap.Name = "btnPoint3Osnap";
-            this.btnPoint3Osnap.Size = new System.Drawing.Size(76, 23);
+            this.btnPoint3Osnap.Size = new System.Drawing.Size(79, 26);
             this.btnPoint3Osnap.TabIndex = 7;
             this.btnPoint3Osnap.Text = "Osnap";
             this.btnPoint3Osnap.UseVisualStyleBackColor = true;
@@ -680,9 +720,11 @@
             this.pnlLineSegments.Controls.Add(this.btnLineSegmentAdd);
             this.pnlLineSegments.Controls.Add(this.btnLineSegmentRemove);
             this.pnlLineSegments.Controls.Add(this.btnLineSegmentClear);
+            this.pnlLineSegments.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlLineSegments.Location = new System.Drawing.Point(10, 114);
             this.pnlLineSegments.Name = "pnlLineSegments";
-            this.pnlLineSegments.Size = new System.Drawing.Size(446, 62);
+            this.pnlLineSegments.Size = new System.Drawing.Size(506, 58);
             this.pnlLineSegments.TabIndex = 8;
             this.pnlLineSegments.Visible = false;
             // 
@@ -696,6 +738,8 @@
             this.colLineNo,
             this.colLineStart,
             this.colLineEnd});
+            this.dgvLineSegments.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvLineSegments.Location = new System.Drawing.Point(0, 0);
             this.dgvLineSegments.MultiSelect = false;
             this.dgvLineSegments.Name = "dgvLineSegments";
@@ -703,7 +747,7 @@
             this.dgvLineSegments.RowHeadersVisible = false;
             this.dgvLineSegments.RowTemplate.Height = 20;
             this.dgvLineSegments.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvLineSegments.Size = new System.Drawing.Size(340, 62);
+            this.dgvLineSegments.Size = new System.Drawing.Size(340, 58);
             this.dgvLineSegments.TabIndex = 0;
             // 
             // colLineNo
@@ -720,7 +764,7 @@
             this.colLineStart.Name = "colLineStart";
             this.colLineStart.ReadOnly = true;
             this.colLineStart.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colLineStart.Width = 148;
+            this.colLineStart.Width = 140;
             // 
             // colLineEnd
             // 
@@ -728,13 +772,14 @@
             this.colLineEnd.Name = "colLineEnd";
             this.colLineEnd.ReadOnly = true;
             this.colLineEnd.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.colLineEnd.Width = 148;
+            this.colLineEnd.Width = 140;
             // 
             // btnLineSegmentAdd
             // 
+            this.btnLineSegmentAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnLineSegmentAdd.Location = new System.Drawing.Point(346, 0);
             this.btnLineSegmentAdd.Name = "btnLineSegmentAdd";
-            this.btnLineSegmentAdd.Size = new System.Drawing.Size(96, 19);
+            this.btnLineSegmentAdd.Size = new System.Drawing.Size(78, 28);
             this.btnLineSegmentAdd.TabIndex = 1;
             this.btnLineSegmentAdd.Text = "선분 추가";
             this.btnLineSegmentAdd.UseVisualStyleBackColor = true;
@@ -742,9 +787,10 @@
             // 
             // btnLineSegmentRemove
             // 
-            this.btnLineSegmentRemove.Location = new System.Drawing.Point(346, 21);
+            this.btnLineSegmentRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLineSegmentRemove.Location = new System.Drawing.Point(428, 0);
             this.btnLineSegmentRemove.Name = "btnLineSegmentRemove";
-            this.btnLineSegmentRemove.Size = new System.Drawing.Size(96, 19);
+            this.btnLineSegmentRemove.Size = new System.Drawing.Size(78, 28);
             this.btnLineSegmentRemove.TabIndex = 2;
             this.btnLineSegmentRemove.Text = "선택 제거";
             this.btnLineSegmentRemove.UseVisualStyleBackColor = true;
@@ -752,9 +798,10 @@
             // 
             // btnLineSegmentClear
             // 
-            this.btnLineSegmentClear.Location = new System.Drawing.Point(346, 42);
+            this.btnLineSegmentClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnLineSegmentClear.Location = new System.Drawing.Point(346, 30);
             this.btnLineSegmentClear.Name = "btnLineSegmentClear";
-            this.btnLineSegmentClear.Size = new System.Drawing.Size(96, 19);
+            this.btnLineSegmentClear.Size = new System.Drawing.Size(160, 28);
             this.btnLineSegmentClear.TabIndex = 3;
             this.btnLineSegmentClear.Text = "전체 지우기";
             this.btnLineSegmentClear.UseVisualStyleBackColor = true;
@@ -768,9 +815,11 @@
             this.pnlValues.Controls.Add(this.numValue2);
             this.pnlValues.Controls.Add(this.lblValue3);
             this.pnlValues.Controls.Add(this.numValue3);
-            this.pnlValues.Location = new System.Drawing.Point(10, 145);
+            this.pnlValues.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlValues.Location = new System.Drawing.Point(10, 144);
             this.pnlValues.Name = "pnlValues";
-            this.pnlValues.Size = new System.Drawing.Size(446, 31);
+            this.pnlValues.Size = new System.Drawing.Size(506, 28);
             this.pnlValues.TabIndex = 8;
             // 
             // lblValue1
@@ -796,12 +845,12 @@
             0,
             -2147483648});
             this.numValue1.Name = "numValue1";
-            this.numValue1.Size = new System.Drawing.Size(82, 21);
+            this.numValue1.Size = new System.Drawing.Size(100, 21);
             this.numValue1.TabIndex = 1;
             // 
             // lblValue2
             // 
-            this.lblValue2.Location = new System.Drawing.Point(150, 8);
+            this.lblValue2.Location = new System.Drawing.Point(170, 8);
             this.lblValue2.Name = "lblValue2";
             this.lblValue2.Size = new System.Drawing.Size(52, 12);
             this.lblValue2.TabIndex = 2;
@@ -810,7 +859,7 @@
             // numValue2
             // 
             this.numValue2.DecimalPlaces = 2;
-            this.numValue2.Location = new System.Drawing.Point(205, 4);
+            this.numValue2.Location = new System.Drawing.Point(225, 4);
             this.numValue2.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -822,12 +871,12 @@
             0,
             -2147483648});
             this.numValue2.Name = "numValue2";
-            this.numValue2.Size = new System.Drawing.Size(82, 21);
+            this.numValue2.Size = new System.Drawing.Size(100, 21);
             this.numValue2.TabIndex = 3;
             // 
             // lblValue3
             // 
-            this.lblValue3.Location = new System.Drawing.Point(297, 8);
+            this.lblValue3.Location = new System.Drawing.Point(337, 8);
             this.lblValue3.Name = "lblValue3";
             this.lblValue3.Size = new System.Drawing.Size(52, 12);
             this.lblValue3.TabIndex = 4;
@@ -836,7 +885,7 @@
             // numValue3
             // 
             this.numValue3.DecimalPlaces = 2;
-            this.numValue3.Location = new System.Drawing.Point(352, 4);
+            this.numValue3.Location = new System.Drawing.Point(392, 4);
             this.numValue3.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -848,7 +897,7 @@
             0,
             -2147483648});
             this.numValue3.Name = "numValue3";
-            this.numValue3.Size = new System.Drawing.Size(90, 21);
+            this.numValue3.Size = new System.Drawing.Size(100, 21);
             this.numValue3.TabIndex = 5;
             // 
             // pnlStroke
@@ -861,9 +910,11 @@
             this.pnlStroke.Controls.Add(this.numSegmentCount);
             this.pnlStroke.Controls.Add(this.lblAxisAnchor);
             this.pnlStroke.Controls.Add(this.cmbAxisAnchor);
-            this.pnlStroke.Location = new System.Drawing.Point(10, 177);
+            this.pnlStroke.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlStroke.Location = new System.Drawing.Point(10, 174);
             this.pnlStroke.Name = "pnlStroke";
-            this.pnlStroke.Size = new System.Drawing.Size(446, 31);
+            this.pnlStroke.Size = new System.Drawing.Size(506, 28);
             this.pnlStroke.TabIndex = 9;
             // 
             // lblStrokeThickness
@@ -890,7 +941,7 @@
             0,
             0});
             this.numStrokeThickness.Name = "numStrokeThickness";
-            this.numStrokeThickness.Size = new System.Drawing.Size(48, 21);
+            this.numStrokeThickness.Size = new System.Drawing.Size(56, 21);
             this.numStrokeThickness.TabIndex = 1;
             this.numStrokeThickness.Value = new decimal(new int[] {
             2,
@@ -901,7 +952,7 @@
             // lblStrokePattern
             // 
             this.lblStrokePattern.AutoSize = true;
-            this.lblStrokePattern.Location = new System.Drawing.Point(111, 8);
+            this.lblStrokePattern.Location = new System.Drawing.Point(120, 8);
             this.lblStrokePattern.Name = "lblStrokePattern";
             this.lblStrokePattern.Size = new System.Drawing.Size(29, 12);
             this.lblStrokePattern.TabIndex = 2;
@@ -915,16 +966,16 @@
             "Solid",
             "Dashed",
             "Dotted"});
-            this.cmbStrokePattern.Location = new System.Drawing.Point(145, 4);
+            this.cmbStrokePattern.Location = new System.Drawing.Point(154, 4);
             this.cmbStrokePattern.Name = "cmbStrokePattern";
-            this.cmbStrokePattern.Size = new System.Drawing.Size(72, 20);
+            this.cmbStrokePattern.Size = new System.Drawing.Size(90, 20);
             this.cmbStrokePattern.TabIndex = 3;
             this.cmbStrokePattern.SelectedIndex = 0;
             // 
             // lblSegmentCount
             // 
             this.lblSegmentCount.AutoSize = true;
-            this.lblSegmentCount.Location = new System.Drawing.Point(226, 8);
+            this.lblSegmentCount.Location = new System.Drawing.Point(254, 8);
             this.lblSegmentCount.Name = "lblSegmentCount";
             this.lblSegmentCount.Size = new System.Drawing.Size(29, 12);
             this.lblSegmentCount.TabIndex = 4;
@@ -932,7 +983,7 @@
             // 
             // numSegmentCount
             // 
-            this.numSegmentCount.Location = new System.Drawing.Point(260, 4);
+            this.numSegmentCount.Location = new System.Drawing.Point(288, 4);
             this.numSegmentCount.Maximum = new decimal(new int[] {
             128,
             0,
@@ -944,7 +995,7 @@
             0,
             0});
             this.numSegmentCount.Name = "numSegmentCount";
-            this.numSegmentCount.Size = new System.Drawing.Size(52, 21);
+            this.numSegmentCount.Size = new System.Drawing.Size(60, 21);
             this.numSegmentCount.TabIndex = 5;
             this.numSegmentCount.Value = new decimal(new int[] {
             32,
@@ -955,7 +1006,7 @@
             // lblAxisAnchor
             // 
             this.lblAxisAnchor.AutoSize = true;
-            this.lblAxisAnchor.Location = new System.Drawing.Point(320, 8);
+            this.lblAxisAnchor.Location = new System.Drawing.Point(360, 8);
             this.lblAxisAnchor.Name = "lblAxisAnchor";
             this.lblAxisAnchor.Size = new System.Drawing.Size(41, 12);
             this.lblAxisAnchor.TabIndex = 6;
@@ -969,9 +1020,9 @@
             "Min",
             "Center",
             "Max"});
-            this.cmbAxisAnchor.Location = new System.Drawing.Point(366, 4);
+            this.cmbAxisAnchor.Location = new System.Drawing.Point(406, 4);
             this.cmbAxisAnchor.Name = "cmbAxisAnchor";
-            this.cmbAxisAnchor.Size = new System.Drawing.Size(76, 20);
+            this.cmbAxisAnchor.Size = new System.Drawing.Size(97, 20);
             this.cmbAxisAnchor.TabIndex = 7;
             this.cmbAxisAnchor.SelectedIndex = 1;
             // 
@@ -986,9 +1037,11 @@
             this.pnlRotation.Controls.Add(this.numRotZ);
             this.pnlRotation.Controls.Add(this.lblRotDegree);
             this.pnlRotation.Controls.Add(this.numRotDegree);
-            this.pnlRotation.Location = new System.Drawing.Point(10, 209);
+            this.pnlRotation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlRotation.Location = new System.Drawing.Point(10, 204);
             this.pnlRotation.Name = "pnlRotation";
-            this.pnlRotation.Size = new System.Drawing.Size(446, 31);
+            this.pnlRotation.Size = new System.Drawing.Size(506, 28);
             this.pnlRotation.TabIndex = 10;
             // 
             // lblRotation
@@ -1023,13 +1076,13 @@
             0,
             -2147483648});
             this.numRotX.Name = "numRotX";
-            this.numRotX.Size = new System.Drawing.Size(52, 21);
+            this.numRotX.Size = new System.Drawing.Size(70, 21);
             this.numRotX.TabIndex = 2;
             // 
             // lblRotY
             // 
             this.lblRotY.AutoSize = true;
-            this.lblRotY.Location = new System.Drawing.Point(132, 8);
+            this.lblRotY.Location = new System.Drawing.Point(152, 8);
             this.lblRotY.Name = "lblRotY";
             this.lblRotY.Size = new System.Drawing.Size(13, 12);
             this.lblRotY.TabIndex = 3;
@@ -1038,7 +1091,7 @@
             // numRotY
             // 
             this.numRotY.DecimalPlaces = 2;
-            this.numRotY.Location = new System.Drawing.Point(148, 4);
+            this.numRotY.Location = new System.Drawing.Point(168, 4);
             this.numRotY.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -1050,13 +1103,13 @@
             0,
             -2147483648});
             this.numRotY.Name = "numRotY";
-            this.numRotY.Size = new System.Drawing.Size(52, 21);
+            this.numRotY.Size = new System.Drawing.Size(70, 21);
             this.numRotY.TabIndex = 4;
             // 
             // lblRotZ
             // 
             this.lblRotZ.AutoSize = true;
-            this.lblRotZ.Location = new System.Drawing.Point(206, 8);
+            this.lblRotZ.Location = new System.Drawing.Point(246, 8);
             this.lblRotZ.Name = "lblRotZ";
             this.lblRotZ.Size = new System.Drawing.Size(13, 12);
             this.lblRotZ.TabIndex = 5;
@@ -1065,7 +1118,7 @@
             // numRotZ
             // 
             this.numRotZ.DecimalPlaces = 2;
-            this.numRotZ.Location = new System.Drawing.Point(222, 4);
+            this.numRotZ.Location = new System.Drawing.Point(262, 4);
             this.numRotZ.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -1077,7 +1130,7 @@
             0,
             -2147483648});
             this.numRotZ.Name = "numRotZ";
-            this.numRotZ.Size = new System.Drawing.Size(52, 21);
+            this.numRotZ.Size = new System.Drawing.Size(70, 21);
             this.numRotZ.TabIndex = 6;
             this.numRotZ.Value = new decimal(new int[] {
             1,
@@ -1088,7 +1141,7 @@
             // lblRotDegree
             // 
             this.lblRotDegree.AutoSize = true;
-            this.lblRotDegree.Location = new System.Drawing.Point(286, 8);
+            this.lblRotDegree.Location = new System.Drawing.Point(346, 8);
             this.lblRotDegree.Name = "lblRotDegree";
             this.lblRotDegree.Size = new System.Drawing.Size(29, 12);
             this.lblRotDegree.TabIndex = 7;
@@ -1097,7 +1150,7 @@
             // numRotDegree
             // 
             this.numRotDegree.DecimalPlaces = 1;
-            this.numRotDegree.Location = new System.Drawing.Point(320, 4);
+            this.numRotDegree.Location = new System.Drawing.Point(380, 4);
             this.numRotDegree.Maximum = new decimal(new int[] {
             360,
             0,
@@ -1109,13 +1162,13 @@
             0,
             -2147483648});
             this.numRotDegree.Name = "numRotDegree";
-            this.numRotDegree.Size = new System.Drawing.Size(70, 21);
+            this.numRotDegree.Size = new System.Drawing.Size(80, 21);
             this.numRotDegree.TabIndex = 8;
             // 
             // lblCreateCategory
             // 
             this.lblCreateCategory.AutoSize = true;
-            this.lblCreateCategory.Location = new System.Drawing.Point(13, 251);
+            this.lblCreateCategory.Location = new System.Drawing.Point(13, 243);
             this.lblCreateCategory.Name = "lblCreateCategory";
             this.lblCreateCategory.Size = new System.Drawing.Size(53, 12);
             this.lblCreateCategory.TabIndex = 11;
@@ -1123,16 +1176,16 @@
             // 
             // txtCreateCategory
             // 
-            this.txtCreateCategory.Location = new System.Drawing.Point(72, 247);
+            this.txtCreateCategory.Location = new System.Drawing.Point(72, 239);
             this.txtCreateCategory.Name = "txtCreateCategory";
-            this.txtCreateCategory.Size = new System.Drawing.Size(164, 21);
+            this.txtCreateCategory.Size = new System.Drawing.Size(200, 21);
             this.txtCreateCategory.TabIndex = 12;
             this.txtCreateCategory.Text = "SHAPE_SAMPLE";
             // 
             // lblModeInfo
             // 
             this.lblModeInfo.AutoSize = true;
-            this.lblModeInfo.Location = new System.Drawing.Point(247, 251);
+            this.lblModeInfo.Location = new System.Drawing.Point(290, 243);
             this.lblModeInfo.Name = "lblModeInfo";
             this.lblModeInfo.Size = new System.Drawing.Size(65, 12);
             this.lblModeInfo.TabIndex = 13;
@@ -1141,17 +1194,21 @@
             // lblCreateHint
             // 
             this.lblCreateHint.AutoEllipsis = true;
-            this.lblCreateHint.Location = new System.Drawing.Point(13, 272);
+            this.lblCreateHint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCreateHint.Location = new System.Drawing.Point(13, 266);
             this.lblCreateHint.Name = "lblCreateHint";
-            this.lblCreateHint.Size = new System.Drawing.Size(443, 15);
+            this.lblCreateHint.Size = new System.Drawing.Size(500, 15);
             this.lblCreateHint.TabIndex = 14;
             this.lblCreateHint.Text = "형상 설명";
             // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(10, 290);
+            this.btnCreate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCreate.Location = new System.Drawing.Point(12, 286);
             this.btnCreate.Name = "btnCreate";
-            this.btnCreate.Size = new System.Drawing.Size(446, 26);
+            this.btnCreate.Size = new System.Drawing.Size(502, 30);
             this.btnCreate.TabIndex = 15;
             this.btnCreate.Text = "생성";
             this.btnCreate.UseVisualStyleBackColor = true;
@@ -1165,13 +1222,7 @@
             this.grpShapeList.Controls.Add(this.txtManageCategory);
             this.grpShapeList.Controls.Add(this.btnCategoryCount);
             this.grpShapeList.Controls.Add(this.btnRefresh);
-            this.grpShapeList.Controls.Add(this.btnCategoryApply);
-            this.grpShapeList.Controls.Add(this.btnCategoryClear);
-            this.grpShapeList.Controls.Add(this.btnShow);
-            this.grpShapeList.Controls.Add(this.btnHide);
-            this.grpShapeList.Controls.Add(this.btnSelectedDelete);
-            this.grpShapeList.Controls.Add(this.btnCategoryDelete);
-            this.grpShapeList.Controls.Add(this.btnClearAll);
+            this.grpShapeList.Controls.Add(this.tlpManage);
             this.grpShapeList.Controls.Add(this.chkSelectable);
             this.grpShapeList.Controls.Add(this.chkHighlightable);
             this.grpShapeList.Controls.Add(this.chkDepthTest);
@@ -1181,7 +1232,6 @@
             this.grpShapeList.Controls.Add(this.btnHighlightColor);
             this.grpShapeList.Controls.Add(this.lblSelectedColor);
             this.grpShapeList.Controls.Add(this.btnSelectedColor);
-            this.grpShapeList.Controls.Add(this.lblCategoryCount);
             this.grpShapeList.Controls.Add(this.lblShapeListInfo);
             this.grpShapeList.Controls.Add(this.dgvShapes);
             this.grpShapeList.Controls.Add(this.lblSelectedShapeInfo);
@@ -1200,9 +1250,11 @@
             this.grpShapeList.Controls.Add(this.numTransformDegree);
             this.grpShapeList.Controls.Add(this.btnRotateSelected);
             this.grpShapeList.Controls.Add(this.btnDirectionSelected);
-            this.grpShapeList.Location = new System.Drawing.Point(7, 337);
+            this.grpShapeList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpShapeList.Location = new System.Drawing.Point(7, 339);
             this.grpShapeList.Name = "grpShapeList";
-            this.grpShapeList.Size = new System.Drawing.Size(472, 414);
+            this.grpShapeList.Size = new System.Drawing.Size(526, 398);
             this.grpShapeList.TabIndex = 1;
             this.grpShapeList.TabStop = false;
             this.grpShapeList.Text = "2. 형상 목록 / 대상 관리 / 이동 / 회전";
@@ -1210,7 +1262,7 @@
             // lblManageTarget
             // 
             this.lblManageTarget.AutoSize = true;
-            this.lblManageTarget.Location = new System.Drawing.Point(13, 27);
+            this.lblManageTarget.Location = new System.Drawing.Point(13, 29);
             this.lblManageTarget.Name = "lblManageTarget";
             this.lblManageTarget.Size = new System.Drawing.Size(53, 12);
             this.lblManageTarget.TabIndex = 0;
@@ -1223,16 +1275,16 @@
             this.cmbManageTarget.Items.AddRange(new object[] {
             "현재 선택",
             "전체"});
-            this.cmbManageTarget.Location = new System.Drawing.Point(72, 23);
+            this.cmbManageTarget.Location = new System.Drawing.Point(72, 25);
             this.cmbManageTarget.Name = "cmbManageTarget";
-            this.cmbManageTarget.Size = new System.Drawing.Size(92, 20);
+            this.cmbManageTarget.Size = new System.Drawing.Size(110, 20);
             this.cmbManageTarget.TabIndex = 1;
             this.cmbManageTarget.SelectedIndex = 0;
             // 
             // lblManageCategory
             // 
             this.lblManageCategory.AutoSize = true;
-            this.lblManageCategory.Location = new System.Drawing.Point(177, 27);
+            this.lblManageCategory.Location = new System.Drawing.Point(194, 29);
             this.lblManageCategory.Name = "lblManageCategory";
             this.lblManageCategory.Size = new System.Drawing.Size(53, 12);
             this.lblManageCategory.TabIndex = 2;
@@ -1240,17 +1292,20 @@
             // 
             // txtManageCategory
             // 
-            this.txtManageCategory.Location = new System.Drawing.Point(236, 23);
+            this.txtManageCategory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtManageCategory.Location = new System.Drawing.Point(253, 25);
             this.txtManageCategory.Name = "txtManageCategory";
-            this.txtManageCategory.Size = new System.Drawing.Size(98, 21);
+            this.txtManageCategory.Size = new System.Drawing.Size(127, 21);
             this.txtManageCategory.TabIndex = 3;
             this.txtManageCategory.Text = "SHAPE_SAMPLE";
             // 
             // btnCategoryCount
             // 
-            this.btnCategoryCount.Location = new System.Drawing.Point(340, 21);
+            this.btnCategoryCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCategoryCount.Location = new System.Drawing.Point(388, 22);
             this.btnCategoryCount.Name = "btnCategoryCount";
-            this.btnCategoryCount.Size = new System.Drawing.Size(54, 24);
+            this.btnCategoryCount.Size = new System.Drawing.Size(60, 26);
             this.btnCategoryCount.TabIndex = 4;
             this.btnCategoryCount.Text = "조회";
             this.btnCategoryCount.UseVisualStyleBackColor = true;
@@ -1258,19 +1313,48 @@
             // 
             // btnRefresh
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(400, 21);
+            this.btnRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRefresh.Location = new System.Drawing.Point(454, 22);
             this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(54, 24);
+            this.btnRefresh.Size = new System.Drawing.Size(60, 26);
             this.btnRefresh.TabIndex = 5;
             this.btnRefresh.Text = "전체";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // tlpManage
+            // 
+            this.tlpManage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpManage.ColumnCount = 5;
+            this.tlpManage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpManage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpManage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpManage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpManage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tlpManage.Controls.Add(this.btnCategoryApply, 0, 0);
+            this.tlpManage.Controls.Add(this.btnCategoryClear, 1, 0);
+            this.tlpManage.Controls.Add(this.btnShow, 2, 0);
+            this.tlpManage.Controls.Add(this.btnHide, 3, 0);
+            this.tlpManage.Controls.Add(this.btnSelectedDelete, 4, 0);
+            this.tlpManage.Controls.Add(this.btnCategoryDelete, 0, 1);
+            this.tlpManage.Controls.Add(this.btnClearAll, 1, 1);
+            this.tlpManage.Controls.Add(this.lblCategoryCount, 2, 1);
+            this.tlpManage.Location = new System.Drawing.Point(9, 52);
+            this.tlpManage.Name = "tlpManage";
+            this.tlpManage.RowCount = 2;
+            this.tlpManage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpManage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpManage.SetColumnSpan(this.lblCategoryCount, 3);
+            this.tlpManage.Size = new System.Drawing.Size(508, 64);
+            this.tlpManage.TabIndex = 6;
+            // 
             // btnCategoryApply
             // 
-            this.btnCategoryApply.Location = new System.Drawing.Point(13, 54);
+            this.btnCategoryApply.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCategoryApply.Location = new System.Drawing.Point(3, 3);
             this.btnCategoryApply.Name = "btnCategoryApply";
-            this.btnCategoryApply.Size = new System.Drawing.Size(76, 24);
+            this.btnCategoryApply.Size = new System.Drawing.Size(95, 26);
             this.btnCategoryApply.TabIndex = 6;
             this.btnCategoryApply.Text = "분류 지정";
             this.btnCategoryApply.UseVisualStyleBackColor = true;
@@ -1278,9 +1362,10 @@
             // 
             // btnCategoryClear
             // 
-            this.btnCategoryClear.Location = new System.Drawing.Point(95, 54);
+            this.btnCategoryClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCategoryClear.Location = new System.Drawing.Point(104, 3);
             this.btnCategoryClear.Name = "btnCategoryClear";
-            this.btnCategoryClear.Size = new System.Drawing.Size(76, 24);
+            this.btnCategoryClear.Size = new System.Drawing.Size(95, 26);
             this.btnCategoryClear.TabIndex = 7;
             this.btnCategoryClear.Text = "분류 해제";
             this.btnCategoryClear.UseVisualStyleBackColor = true;
@@ -1288,9 +1373,10 @@
             // 
             // btnShow
             // 
-            this.btnShow.Location = new System.Drawing.Point(177, 54);
+            this.btnShow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShow.Location = new System.Drawing.Point(206, 3);
             this.btnShow.Name = "btnShow";
-            this.btnShow.Size = new System.Drawing.Size(58, 24);
+            this.btnShow.Size = new System.Drawing.Size(95, 26);
             this.btnShow.TabIndex = 8;
             this.btnShow.Text = "표시";
             this.btnShow.UseVisualStyleBackColor = true;
@@ -1298,9 +1384,10 @@
             // 
             // btnHide
             // 
-            this.btnHide.Location = new System.Drawing.Point(241, 54);
+            this.btnHide.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHide.Location = new System.Drawing.Point(307, 3);
             this.btnHide.Name = "btnHide";
-            this.btnHide.Size = new System.Drawing.Size(58, 24);
+            this.btnHide.Size = new System.Drawing.Size(95, 26);
             this.btnHide.TabIndex = 9;
             this.btnHide.Text = "숨김";
             this.btnHide.UseVisualStyleBackColor = true;
@@ -1308,9 +1395,10 @@
             // 
             // btnSelectedDelete
             // 
-            this.btnSelectedDelete.Location = new System.Drawing.Point(305, 54);
+            this.btnSelectedDelete.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSelectedDelete.Location = new System.Drawing.Point(409, 3);
             this.btnSelectedDelete.Name = "btnSelectedDelete";
-            this.btnSelectedDelete.Size = new System.Drawing.Size(72, 24);
+            this.btnSelectedDelete.Size = new System.Drawing.Size(95, 26);
             this.btnSelectedDelete.TabIndex = 10;
             this.btnSelectedDelete.Text = "선택 삭제";
             this.btnSelectedDelete.UseVisualStyleBackColor = true;
@@ -1318,9 +1406,10 @@
             // 
             // btnCategoryDelete
             // 
-            this.btnCategoryDelete.Location = new System.Drawing.Point(13, 83);
+            this.btnCategoryDelete.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCategoryDelete.Location = new System.Drawing.Point(3, 35);
             this.btnCategoryDelete.Name = "btnCategoryDelete";
-            this.btnCategoryDelete.Size = new System.Drawing.Size(76, 24);
+            this.btnCategoryDelete.Size = new System.Drawing.Size(95, 26);
             this.btnCategoryDelete.TabIndex = 11;
             this.btnCategoryDelete.Text = "분류 삭제";
             this.btnCategoryDelete.UseVisualStyleBackColor = true;
@@ -1328,9 +1417,10 @@
             // 
             // btnClearAll
             // 
-            this.btnClearAll.Location = new System.Drawing.Point(95, 83);
+            this.btnClearAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearAll.Location = new System.Drawing.Point(104, 35);
             this.btnClearAll.Name = "btnClearAll";
-            this.btnClearAll.Size = new System.Drawing.Size(76, 24);
+            this.btnClearAll.Size = new System.Drawing.Size(95, 26);
             this.btnClearAll.TabIndex = 12;
             this.btnClearAll.Text = "전체 삭제";
             this.btnClearAll.UseVisualStyleBackColor = true;
@@ -1338,19 +1428,21 @@
             // 
             // lblCategoryCount
             // 
-            this.lblCategoryCount.AutoSize = true;
-            this.lblCategoryCount.Location = new System.Drawing.Point(185, 89);
+            this.lblCategoryCount.AutoEllipsis = true;
+            this.lblCategoryCount.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblCategoryCount.Location = new System.Drawing.Point(206, 35);
             this.lblCategoryCount.Name = "lblCategoryCount";
-            this.lblCategoryCount.Size = new System.Drawing.Size(47, 12);
+            this.lblCategoryCount.Size = new System.Drawing.Size(299, 26);
             this.lblCategoryCount.TabIndex = 11;
             this.lblCategoryCount.Text = "결과 : -";
+            this.lblCategoryCount.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // chkSelectable
             // 
             this.chkSelectable.AutoSize = true;
             this.chkSelectable.Checked = true;
             this.chkSelectable.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSelectable.Location = new System.Drawing.Point(13, 118);
+            this.chkSelectable.Location = new System.Drawing.Point(13, 124);
             this.chkSelectable.Name = "chkSelectable";
             this.chkSelectable.Size = new System.Drawing.Size(76, 16);
             this.chkSelectable.TabIndex = 12;
@@ -1363,7 +1455,7 @@
             this.chkHighlightable.AutoSize = true;
             this.chkHighlightable.Checked = true;
             this.chkHighlightable.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkHighlightable.Location = new System.Drawing.Point(99, 118);
+            this.chkHighlightable.Location = new System.Drawing.Point(101, 124);
             this.chkHighlightable.Name = "chkHighlightable";
             this.chkHighlightable.Size = new System.Drawing.Size(76, 16);
             this.chkHighlightable.TabIndex = 13;
@@ -1376,7 +1468,7 @@
             this.chkDepthTest.AutoSize = true;
             this.chkDepthTest.Checked = true;
             this.chkDepthTest.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkDepthTest.Location = new System.Drawing.Point(185, 118);
+            this.chkDepthTest.Location = new System.Drawing.Point(189, 124);
             this.chkDepthTest.Name = "chkDepthTest";
             this.chkDepthTest.Size = new System.Drawing.Size(88, 16);
             this.chkDepthTest.TabIndex = 14;
@@ -1387,7 +1479,7 @@
             // lblSelectionRadius
             // 
             this.lblSelectionRadius.AutoSize = true;
-            this.lblSelectionRadius.Location = new System.Drawing.Point(282, 119);
+            this.lblSelectionRadius.Location = new System.Drawing.Point(291, 125);
             this.lblSelectionRadius.Name = "lblSelectionRadius";
             this.lblSelectionRadius.Size = new System.Drawing.Size(57, 12);
             this.lblSelectionRadius.TabIndex = 15;
@@ -1395,11 +1487,11 @@
             // 
             // numSelectionRadius
             // 
-            this.numSelectionRadius.Location = new System.Drawing.Point(345, 115);
+            this.numSelectionRadius.Location = new System.Drawing.Point(354, 121);
             this.numSelectionRadius.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
             this.numSelectionRadius.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             this.numSelectionRadius.Name = "numSelectionRadius";
-            this.numSelectionRadius.Size = new System.Drawing.Size(48, 21);
+            this.numSelectionRadius.Size = new System.Drawing.Size(60, 21);
             this.numSelectionRadius.TabIndex = 16;
             this.numSelectionRadius.Value = new decimal(new int[] { 6, 0, 0, 0 });
             this.numSelectionRadius.ValueChanged += new System.EventHandler(this.numSelectionRadius_ValueChanged);
@@ -1407,7 +1499,7 @@
             // lblHighlightColor
             // 
             this.lblHighlightColor.AutoSize = true;
-            this.lblHighlightColor.Location = new System.Drawing.Point(13, 149);
+            this.lblHighlightColor.Location = new System.Drawing.Point(13, 156);
             this.lblHighlightColor.Name = "lblHighlightColor";
             this.lblHighlightColor.Size = new System.Drawing.Size(57, 12);
             this.lblHighlightColor.TabIndex = 17;
@@ -1417,9 +1509,9 @@
             // 
             this.btnHighlightColor.BackColor = System.Drawing.Color.Yellow;
             this.btnHighlightColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnHighlightColor.Location = new System.Drawing.Point(76, 143);
+            this.btnHighlightColor.Location = new System.Drawing.Point(76, 150);
             this.btnHighlightColor.Name = "btnHighlightColor";
-            this.btnHighlightColor.Size = new System.Drawing.Size(52, 24);
+            this.btnHighlightColor.Size = new System.Drawing.Size(60, 26);
             this.btnHighlightColor.TabIndex = 18;
             this.btnHighlightColor.Text = "선택";
             this.btnHighlightColor.UseVisualStyleBackColor = false;
@@ -1428,7 +1520,7 @@
             // lblSelectedColor
             // 
             this.lblSelectedColor.AutoSize = true;
-            this.lblSelectedColor.Location = new System.Drawing.Point(148, 149);
+            this.lblSelectedColor.Location = new System.Drawing.Point(156, 156);
             this.lblSelectedColor.Name = "lblSelectedColor";
             this.lblSelectedColor.Size = new System.Drawing.Size(57, 12);
             this.lblSelectedColor.TabIndex = 19;
@@ -1438,9 +1530,9 @@
             // 
             this.btnSelectedColor.BackColor = System.Drawing.Color.Red;
             this.btnSelectedColor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSelectedColor.Location = new System.Drawing.Point(211, 143);
+            this.btnSelectedColor.Location = new System.Drawing.Point(219, 150);
             this.btnSelectedColor.Name = "btnSelectedColor";
-            this.btnSelectedColor.Size = new System.Drawing.Size(52, 24);
+            this.btnSelectedColor.Size = new System.Drawing.Size(60, 26);
             this.btnSelectedColor.TabIndex = 20;
             this.btnSelectedColor.Text = "선택";
             this.btnSelectedColor.UseVisualStyleBackColor = false;
@@ -1449,7 +1541,7 @@
             // lblShapeListInfo
             // 
             this.lblShapeListInfo.AutoSize = true;
-            this.lblShapeListInfo.Location = new System.Drawing.Point(13, 180);
+            this.lblShapeListInfo.Location = new System.Drawing.Point(13, 186);
             this.lblShapeListInfo.Name = "lblShapeListInfo";
             this.lblShapeListInfo.Size = new System.Drawing.Size(75, 12);
             this.lblShapeListInfo.TabIndex = 21;
@@ -1466,14 +1558,16 @@
             this.colShapeNo,
             this.colShapeType,
             this.colShapeCategory});
-            this.dgvShapes.Location = new System.Drawing.Point(13, 198);
+            this.dgvShapes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvShapes.Location = new System.Drawing.Point(13, 204);
             this.dgvShapes.MultiSelect = false;
             this.dgvShapes.Name = "dgvShapes";
             this.dgvShapes.ReadOnly = true;
             this.dgvShapes.RowHeadersVisible = false;
             this.dgvShapes.RowTemplate.Height = 23;
             this.dgvShapes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvShapes.Size = new System.Drawing.Size(443, 96);
+            this.dgvShapes.Size = new System.Drawing.Size(500, 96);
             this.dgvShapes.TabIndex = 22;
             this.dgvShapes.SelectionChanged += new System.EventHandler(this.dgvShapes_SelectionChanged);
             // 
@@ -1506,10 +1600,11 @@
             this.colShapeCategory.HeaderText = "카테고리";
             this.colShapeCategory.Name = "colShapeCategory";
             this.colShapeCategory.ReadOnly = true;
+            // 
             // lblMoveX
             // 
             this.lblMoveX.AutoSize = true;
-            this.lblMoveX.Location = new System.Drawing.Point(15, 334);
+            this.lblMoveX.Location = new System.Drawing.Point(15, 335);
             this.lblMoveX.Name = "lblMoveX";
             this.lblMoveX.Size = new System.Drawing.Size(13, 12);
             this.lblMoveX.TabIndex = 0;
@@ -1518,7 +1613,7 @@
             // numMoveX
             // 
             this.numMoveX.DecimalPlaces = 3;
-            this.numMoveX.Location = new System.Drawing.Point(32, 330);
+            this.numMoveX.Location = new System.Drawing.Point(32, 331);
             this.numMoveX.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -1530,13 +1625,13 @@
             0,
             -2147483648});
             this.numMoveX.Name = "numMoveX";
-            this.numMoveX.Size = new System.Drawing.Size(78, 21);
+            this.numMoveX.Size = new System.Drawing.Size(90, 21);
             this.numMoveX.TabIndex = 1;
             // 
             // lblMoveY
             // 
             this.lblMoveY.AutoSize = true;
-            this.lblMoveY.Location = new System.Drawing.Point(118, 334);
+            this.lblMoveY.Location = new System.Drawing.Point(132, 335);
             this.lblMoveY.Name = "lblMoveY";
             this.lblMoveY.Size = new System.Drawing.Size(13, 12);
             this.lblMoveY.TabIndex = 2;
@@ -1545,7 +1640,7 @@
             // numMoveY
             // 
             this.numMoveY.DecimalPlaces = 3;
-            this.numMoveY.Location = new System.Drawing.Point(135, 330);
+            this.numMoveY.Location = new System.Drawing.Point(149, 331);
             this.numMoveY.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -1557,13 +1652,13 @@
             0,
             -2147483648});
             this.numMoveY.Name = "numMoveY";
-            this.numMoveY.Size = new System.Drawing.Size(78, 21);
+            this.numMoveY.Size = new System.Drawing.Size(90, 21);
             this.numMoveY.TabIndex = 3;
             // 
             // lblMoveZ
             // 
             this.lblMoveZ.AutoSize = true;
-            this.lblMoveZ.Location = new System.Drawing.Point(221, 334);
+            this.lblMoveZ.Location = new System.Drawing.Point(249, 335);
             this.lblMoveZ.Name = "lblMoveZ";
             this.lblMoveZ.Size = new System.Drawing.Size(13, 12);
             this.lblMoveZ.TabIndex = 4;
@@ -1572,7 +1667,7 @@
             // numMoveZ
             // 
             this.numMoveZ.DecimalPlaces = 3;
-            this.numMoveZ.Location = new System.Drawing.Point(238, 330);
+            this.numMoveZ.Location = new System.Drawing.Point(266, 331);
             this.numMoveZ.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -1584,14 +1679,15 @@
             0,
             -2147483648});
             this.numMoveZ.Name = "numMoveZ";
-            this.numMoveZ.Size = new System.Drawing.Size(78, 21);
+            this.numMoveZ.Size = new System.Drawing.Size(90, 21);
             this.numMoveZ.TabIndex = 5;
             // 
             // btnMoveOsnap
             // 
-            this.btnMoveOsnap.Location = new System.Drawing.Point(326, 328);
+            this.btnMoveOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMoveOsnap.Location = new System.Drawing.Point(384, 328);
             this.btnMoveOsnap.Name = "btnMoveOsnap";
-            this.btnMoveOsnap.Size = new System.Drawing.Size(130, 25);
+            this.btnMoveOsnap.Size = new System.Drawing.Size(130, 26);
             this.btnMoveOsnap.TabIndex = 6;
             this.btnMoveOsnap.Text = "Osnap 이동";
             this.btnMoveOsnap.UseVisualStyleBackColor = true;
@@ -1600,7 +1696,7 @@
             // lblTransformVector
             // 
             this.lblTransformVector.AutoSize = true;
-            this.lblTransformVector.Location = new System.Drawing.Point(15, 372);
+            this.lblTransformVector.Location = new System.Drawing.Point(15, 369);
             this.lblTransformVector.Name = "lblTransformVector";
             this.lblTransformVector.Size = new System.Drawing.Size(47, 12);
             this.lblTransformVector.TabIndex = 7;
@@ -1609,7 +1705,7 @@
             // numTransformX
             // 
             this.numTransformX.DecimalPlaces = 2;
-            this.numTransformX.Location = new System.Drawing.Point(70, 368);
+            this.numTransformX.Location = new System.Drawing.Point(70, 365);
             this.numTransformX.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -1621,7 +1717,7 @@
             0,
             -2147483648});
             this.numTransformX.Name = "numTransformX";
-            this.numTransformX.Size = new System.Drawing.Size(48, 21);
+            this.numTransformX.Size = new System.Drawing.Size(56, 21);
             this.numTransformX.TabIndex = 8;
             this.numTransformX.Value = new decimal(new int[] {
             1,
@@ -1632,7 +1728,7 @@
             // numTransformY
             // 
             this.numTransformY.DecimalPlaces = 2;
-            this.numTransformY.Location = new System.Drawing.Point(124, 368);
+            this.numTransformY.Location = new System.Drawing.Point(132, 365);
             this.numTransformY.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -1644,13 +1740,13 @@
             0,
             -2147483648});
             this.numTransformY.Name = "numTransformY";
-            this.numTransformY.Size = new System.Drawing.Size(48, 21);
+            this.numTransformY.Size = new System.Drawing.Size(56, 21);
             this.numTransformY.TabIndex = 9;
             // 
             // numTransformZ
             // 
             this.numTransformZ.DecimalPlaces = 2;
-            this.numTransformZ.Location = new System.Drawing.Point(178, 368);
+            this.numTransformZ.Location = new System.Drawing.Point(194, 365);
             this.numTransformZ.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -1662,13 +1758,13 @@
             0,
             -2147483648});
             this.numTransformZ.Name = "numTransformZ";
-            this.numTransformZ.Size = new System.Drawing.Size(48, 21);
+            this.numTransformZ.Size = new System.Drawing.Size(56, 21);
             this.numTransformZ.TabIndex = 10;
             // 
             // lblTransformDegree
             // 
             this.lblTransformDegree.AutoSize = true;
-            this.lblTransformDegree.Location = new System.Drawing.Point(239, 372);
+            this.lblTransformDegree.Location = new System.Drawing.Point(262, 369);
             this.lblTransformDegree.Name = "lblTransformDegree";
             this.lblTransformDegree.Size = new System.Drawing.Size(29, 12);
             this.lblTransformDegree.TabIndex = 11;
@@ -1677,7 +1773,7 @@
             // numTransformDegree
             // 
             this.numTransformDegree.DecimalPlaces = 1;
-            this.numTransformDegree.Location = new System.Drawing.Point(274, 368);
+            this.numTransformDegree.Location = new System.Drawing.Point(296, 365);
             this.numTransformDegree.Maximum = new decimal(new int[] {
             360,
             0,
@@ -1689,14 +1785,15 @@
             0,
             -2147483648});
             this.numTransformDegree.Name = "numTransformDegree";
-            this.numTransformDegree.Size = new System.Drawing.Size(62, 21);
+            this.numTransformDegree.Size = new System.Drawing.Size(66, 21);
             this.numTransformDegree.TabIndex = 12;
             // 
             // btnRotateSelected
             // 
-            this.btnRotateSelected.Location = new System.Drawing.Point(344, 366);
+            this.btnRotateSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnRotateSelected.Location = new System.Drawing.Point(388, 362);
             this.btnRotateSelected.Name = "btnRotateSelected";
-            this.btnRotateSelected.Size = new System.Drawing.Size(52, 24);
+            this.btnRotateSelected.Size = new System.Drawing.Size(60, 26);
             this.btnRotateSelected.TabIndex = 13;
             this.btnRotateSelected.Text = "회전";
             this.btnRotateSelected.UseVisualStyleBackColor = true;
@@ -1704,19 +1801,238 @@
             // 
             // btnDirectionSelected
             // 
-            this.btnDirectionSelected.Location = new System.Drawing.Point(404, 366);
+            this.btnDirectionSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDirectionSelected.Location = new System.Drawing.Point(454, 362);
             this.btnDirectionSelected.Name = "btnDirectionSelected";
-            this.btnDirectionSelected.Size = new System.Drawing.Size(52, 24);
+            this.btnDirectionSelected.Size = new System.Drawing.Size(60, 26);
             this.btnDirectionSelected.TabIndex = 14;
             this.btnDirectionSelected.Text = "방향";
             this.btnDirectionSelected.UseVisualStyleBackColor = true;
             this.btnDirectionSelected.Click += new System.EventHandler(this.btnDirectionSelected_Click);
             // 
+            // grpHeatmap
+            // 
+            this.grpHeatmap.Controls.Add(this.lblHeatmapSource);
+            this.grpHeatmap.Controls.Add(this.cmbHeatmapSource);
+            this.grpHeatmap.Controls.Add(this.lblHeatmapCategory);
+            this.grpHeatmap.Controls.Add(this.txtHeatmapCategory);
+            this.grpHeatmap.Controls.Add(this.lblHeatmapPoint);
+            this.grpHeatmap.Controls.Add(this.lblHeatmapX);
+            this.grpHeatmap.Controls.Add(this.numHeatmapX);
+            this.grpHeatmap.Controls.Add(this.lblHeatmapY);
+            this.grpHeatmap.Controls.Add(this.numHeatmapY);
+            this.grpHeatmap.Controls.Add(this.lblHeatmapZ);
+            this.grpHeatmap.Controls.Add(this.numHeatmapZ);
+            this.grpHeatmap.Controls.Add(this.btnHeatmapPointOsnap);
+            this.grpHeatmap.Controls.Add(this.tlpHeatmap);
+            this.grpHeatmap.Controls.Add(this.lblHeatmapResult);
+            this.grpHeatmap.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpHeatmap.Location = new System.Drawing.Point(7, 743);
+            this.grpHeatmap.Name = "grpHeatmap";
+            this.grpHeatmap.Size = new System.Drawing.Size(526, 146);
+            this.grpHeatmap.TabIndex = 2;
+            this.grpHeatmap.TabStop = false;
+            this.grpHeatmap.Text = "3. 히트맵 (CreateHeatmap)";
+            // 
+            // lblHeatmapSource
+            // 
+            this.lblHeatmapSource.AutoSize = true;
+            this.lblHeatmapSource.Location = new System.Drawing.Point(13, 29);
+            this.lblHeatmapSource.Name = "lblHeatmapSource";
+            this.lblHeatmapSource.Size = new System.Drawing.Size(53, 12);
+            this.lblHeatmapSource.TabIndex = 0;
+            this.lblHeatmapSource.Text = "스칼라 값";
+            // 
+            // cmbHeatmapSource
+            // 
+            this.cmbHeatmapSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbHeatmapSource.FormattingEnabled = true;
+            this.cmbHeatmapSource.Items.AddRange(new object[] {
+            "X 좌표 (높이)",
+            "Y 좌표 (높이)",
+            "Z 좌표 (높이)",
+            "기준점 거리"});
+            this.cmbHeatmapSource.Location = new System.Drawing.Point(72, 25);
+            this.cmbHeatmapSource.Name = "cmbHeatmapSource";
+            this.cmbHeatmapSource.Size = new System.Drawing.Size(170, 20);
+            this.cmbHeatmapSource.TabIndex = 1;
+            this.cmbHeatmapSource.SelectedIndex = 2;
+            this.cmbHeatmapSource.SelectedIndexChanged += new System.EventHandler(this.cmbHeatmapSource_SelectedIndexChanged);
+            // 
+            // lblHeatmapCategory
+            // 
+            this.lblHeatmapCategory.AutoSize = true;
+            this.lblHeatmapCategory.Location = new System.Drawing.Point(256, 29);
+            this.lblHeatmapCategory.Name = "lblHeatmapCategory";
+            this.lblHeatmapCategory.Size = new System.Drawing.Size(53, 12);
+            this.lblHeatmapCategory.TabIndex = 2;
+            this.lblHeatmapCategory.Text = "카테고리";
+            // 
+            // txtHeatmapCategory
+            // 
+            this.txtHeatmapCategory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtHeatmapCategory.Location = new System.Drawing.Point(315, 25);
+            this.txtHeatmapCategory.Name = "txtHeatmapCategory";
+            this.txtHeatmapCategory.Size = new System.Drawing.Size(199, 21);
+            this.txtHeatmapCategory.TabIndex = 3;
+            this.txtHeatmapCategory.Text = "HEATMAP";
+            // 
+            // lblHeatmapPoint
+            // 
+            this.lblHeatmapPoint.AutoSize = true;
+            this.lblHeatmapPoint.Location = new System.Drawing.Point(13, 61);
+            this.lblHeatmapPoint.Name = "lblHeatmapPoint";
+            this.lblHeatmapPoint.Size = new System.Drawing.Size(41, 12);
+            this.lblHeatmapPoint.TabIndex = 4;
+            this.lblHeatmapPoint.Text = "기준점";
+            // 
+            // lblHeatmapX
+            // 
+            this.lblHeatmapX.AutoSize = true;
+            this.lblHeatmapX.Location = new System.Drawing.Point(72, 61);
+            this.lblHeatmapX.Name = "lblHeatmapX";
+            this.lblHeatmapX.Size = new System.Drawing.Size(13, 12);
+            this.lblHeatmapX.TabIndex = 5;
+            this.lblHeatmapX.Text = "X";
+            // 
+            // numHeatmapX
+            // 
+            this.numHeatmapX.DecimalPlaces = 3;
+            this.numHeatmapX.Location = new System.Drawing.Point(88, 57);
+            this.numHeatmapX.Maximum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            0});
+            this.numHeatmapX.Minimum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            -2147483648});
+            this.numHeatmapX.Name = "numHeatmapX";
+            this.numHeatmapX.Size = new System.Drawing.Size(90, 21);
+            this.numHeatmapX.TabIndex = 6;
+            // 
+            // lblHeatmapY
+            // 
+            this.lblHeatmapY.AutoSize = true;
+            this.lblHeatmapY.Location = new System.Drawing.Point(186, 61);
+            this.lblHeatmapY.Name = "lblHeatmapY";
+            this.lblHeatmapY.Size = new System.Drawing.Size(13, 12);
+            this.lblHeatmapY.TabIndex = 7;
+            this.lblHeatmapY.Text = "Y";
+            // 
+            // numHeatmapY
+            // 
+            this.numHeatmapY.DecimalPlaces = 3;
+            this.numHeatmapY.Location = new System.Drawing.Point(202, 57);
+            this.numHeatmapY.Maximum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            0});
+            this.numHeatmapY.Minimum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            -2147483648});
+            this.numHeatmapY.Name = "numHeatmapY";
+            this.numHeatmapY.Size = new System.Drawing.Size(90, 21);
+            this.numHeatmapY.TabIndex = 8;
+            // 
+            // lblHeatmapZ
+            // 
+            this.lblHeatmapZ.AutoSize = true;
+            this.lblHeatmapZ.Location = new System.Drawing.Point(300, 61);
+            this.lblHeatmapZ.Name = "lblHeatmapZ";
+            this.lblHeatmapZ.Size = new System.Drawing.Size(13, 12);
+            this.lblHeatmapZ.TabIndex = 9;
+            this.lblHeatmapZ.Text = "Z";
+            // 
+            // numHeatmapZ
+            // 
+            this.numHeatmapZ.DecimalPlaces = 3;
+            this.numHeatmapZ.Location = new System.Drawing.Point(316, 57);
+            this.numHeatmapZ.Maximum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            0});
+            this.numHeatmapZ.Minimum = new decimal(new int[] {
+            100000000,
+            0,
+            0,
+            -2147483648});
+            this.numHeatmapZ.Name = "numHeatmapZ";
+            this.numHeatmapZ.Size = new System.Drawing.Size(90, 21);
+            this.numHeatmapZ.TabIndex = 10;
+            // 
+            // btnHeatmapPointOsnap
+            // 
+            this.btnHeatmapPointOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnHeatmapPointOsnap.Location = new System.Drawing.Point(434, 54);
+            this.btnHeatmapPointOsnap.Name = "btnHeatmapPointOsnap";
+            this.btnHeatmapPointOsnap.Size = new System.Drawing.Size(80, 26);
+            this.btnHeatmapPointOsnap.TabIndex = 11;
+            this.btnHeatmapPointOsnap.Text = "Osnap";
+            this.btnHeatmapPointOsnap.UseVisualStyleBackColor = true;
+            this.btnHeatmapPointOsnap.Click += new System.EventHandler(this.btnHeatmapPointOsnap_Click);
+            // 
+            // tlpHeatmap
+            // 
+            this.tlpHeatmap.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpHeatmap.ColumnCount = 2;
+            this.tlpHeatmap.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpHeatmap.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpHeatmap.Controls.Add(this.btnHeatmapCreate, 0, 0);
+            this.tlpHeatmap.Controls.Add(this.btnHeatmapClear, 1, 0);
+            this.tlpHeatmap.Location = new System.Drawing.Point(9, 86);
+            this.tlpHeatmap.Name = "tlpHeatmap";
+            this.tlpHeatmap.RowCount = 1;
+            this.tlpHeatmap.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpHeatmap.Size = new System.Drawing.Size(508, 32);
+            this.tlpHeatmap.TabIndex = 12;
+            // 
+            // btnHeatmapCreate
+            // 
+            this.btnHeatmapCreate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHeatmapCreate.Location = new System.Drawing.Point(3, 3);
+            this.btnHeatmapCreate.Name = "btnHeatmapCreate";
+            this.btnHeatmapCreate.Size = new System.Drawing.Size(248, 26);
+            this.btnHeatmapCreate.TabIndex = 12;
+            this.btnHeatmapCreate.Text = "히트맵 생성 (선택 노드)";
+            this.btnHeatmapCreate.UseVisualStyleBackColor = true;
+            this.btnHeatmapCreate.Click += new System.EventHandler(this.btnHeatmapCreate_Click);
+            // 
+            // btnHeatmapClear
+            // 
+            this.btnHeatmapClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHeatmapClear.Location = new System.Drawing.Point(257, 3);
+            this.btnHeatmapClear.Name = "btnHeatmapClear";
+            this.btnHeatmapClear.Size = new System.Drawing.Size(248, 26);
+            this.btnHeatmapClear.TabIndex = 13;
+            this.btnHeatmapClear.Text = "히트맵 삭제";
+            this.btnHeatmapClear.UseVisualStyleBackColor = true;
+            this.btnHeatmapClear.Click += new System.EventHandler(this.btnHeatmapClear_Click);
+            // 
+            // lblHeatmapResult
+            // 
+            this.lblHeatmapResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblHeatmapResult.Location = new System.Drawing.Point(13, 124);
+            this.lblHeatmapResult.Name = "lblHeatmapResult";
+            this.lblHeatmapResult.Size = new System.Drawing.Size(500, 14);
+            this.lblHeatmapResult.TabIndex = 14;
+            this.lblHeatmapResult.Text = "결과 : -";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1360, 760);
+            this.ClientSize = new System.Drawing.Size(1360, 900);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -1760,6 +2076,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numRotDegree)).EndInit();
             this.grpShapeList.ResumeLayout(false);
             this.grpShapeList.PerformLayout();
+            this.tlpManage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvShapes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMoveY)).EndInit();
@@ -1769,6 +2086,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.numTransformZ)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numTransformDegree)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSelectionRadius)).EndInit();
+            this.grpHeatmap.ResumeLayout(false);
+            this.grpHeatmap.PerformLayout();
+            this.tlpHeatmap.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numHeatmapX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeatmapY)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeatmapZ)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1895,5 +2218,23 @@
         private System.Windows.Forms.Label lblSelectedColor;
         private System.Windows.Forms.Button btnSelectedColor;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.TableLayoutPanel tlpManage;
+        private System.Windows.Forms.TableLayoutPanel tlpHeatmap;
+        private System.Windows.Forms.GroupBox grpHeatmap;
+        private System.Windows.Forms.Label lblHeatmapSource;
+        private System.Windows.Forms.ComboBox cmbHeatmapSource;
+        private System.Windows.Forms.Label lblHeatmapCategory;
+        private System.Windows.Forms.TextBox txtHeatmapCategory;
+        private System.Windows.Forms.Label lblHeatmapPoint;
+        private System.Windows.Forms.Label lblHeatmapX;
+        private System.Windows.Forms.NumericUpDown numHeatmapX;
+        private System.Windows.Forms.Label lblHeatmapY;
+        private System.Windows.Forms.NumericUpDown numHeatmapY;
+        private System.Windows.Forms.Label lblHeatmapZ;
+        private System.Windows.Forms.NumericUpDown numHeatmapZ;
+        private System.Windows.Forms.Button btnHeatmapPointOsnap;
+        private System.Windows.Forms.Button btnHeatmapCreate;
+        private System.Windows.Forms.Button btnHeatmapClear;
+        private System.Windows.Forms.Label lblHeatmapResult;
     }
 }

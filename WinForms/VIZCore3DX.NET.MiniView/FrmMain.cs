@@ -94,7 +94,9 @@ namespace VIZCore3DX.NET.MiniView
 
         private void ckTopMost_CheckedChanged(object sender, EventArgs e)
         {
-            // TopMost는 선택 노드와 관계없는 Dialog 속성이므로 바로 반영한다.
+            Form defaultDlg = GetDefaultMiniViewDialog();
+            if (defaultDlg != null) defaultDlg.TopMost = ckTopMost.Checked;
+
             if (MiniViewDlg == null || MiniViewDlg.IsDisposed == true) return;
 
             MiniViewDlg.TopMost = ckTopMost.Checked;
@@ -157,7 +159,9 @@ namespace VIZCore3DX.NET.MiniView
 
             if (rbDefault＿Dialog.Checked == true)
             {
-                ShowMiniViewInDialog(CameraDirection.ISO_PLUS);
+                // SDK 기본 MiniView Dialog 표시 (크기, 카메라 방향, TopMost)
+                vizcore3dx.View.MiniView.ShowDialog(400, 400, CameraDirection.ISO_PLUS, ckTopMost.Checked);
+                vizcore3dx.View.MiniView.FitToView();
                 return;
             }
             else if (rbEmbedded＿Panel.Checked == true)
@@ -303,8 +307,25 @@ namespace VIZCore3DX.NET.MiniView
             view.Refresh();
         }
 
+        /// <summary>
+        /// View.MiniView.ShowDialog()로 표시한 SDK 기본 MiniView Dialog를 찾는다.
+        /// </summary>
+        private Form GetDefaultMiniViewDialog()
+        {
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is VIZCore3DX.NET.Dialogs.MiniViewDialog) return form;
+            }
+
+            return null;
+        }
+
         private void ResetMiniView()
         {
+            // SDK 기본 Dialog 닫기 (닫을 때 SDK가 MiniView를 해제하고 Dialog를 숨김)
+            Form defaultDlg = GetDefaultMiniViewDialog();
+            if (defaultDlg != null && defaultDlg.Visible == true) defaultDlg.Close();
+
             // Dialog 숨김
             if (MiniViewDlg != null && MiniViewDlg.IsDisposed == false)
             {

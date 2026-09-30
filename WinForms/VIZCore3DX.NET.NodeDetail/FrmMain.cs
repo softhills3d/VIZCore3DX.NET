@@ -19,6 +19,9 @@ namespace VIZCore3DX.NET.NodeDetail
 
         private Vector3D _rotateStartValue = new Vector3D(0, 0, 0);
 
+        // TrackBar 마우스 드래그 중 여부
+        private bool _isRotateDragging = false;
+
         private class RotateHistory
         {
             public float X { get; private set; }
@@ -230,12 +233,13 @@ namespace VIZCore3DX.NET.NodeDetail
                 return;
             }
 
-            node.Move(x, y, z, false);
-
             Vector3D current;
             if (_nodeMoveMap.TryGetValue(node.Index, out current) == false) current = new Vector3D(0, 0, 0);
 
-            _nodeMoveMap[node.Index] = new Vector3D(current.X + x, current.Y + y, current.Z + z);
+            // 입력값은 원래 위치 기준 누적 이동량이므로 현재 이동량과의 차이만큼만 이동
+            node.Move(x - current.X, y - current.Y, z - current.Z, false);
+
+            _nodeMoveMap[node.Index] = new Vector3D(x, y, z);
 
             txtMoveX.Text = _nodeMoveMap[node.Index].X.ToString();
             txtMoveY.Text = _nodeMoveMap[node.Index].Y.ToString();
@@ -312,6 +316,7 @@ namespace VIZCore3DX.NET.NodeDetail
             if (node == null) return;
 
             _rotateStartValue = new Vector3D(tbRotateX.Value, tbRotateY.Value, tbRotateZ.Value);
+            _isRotateDragging = true;
 
             // 드래그 중 발생하는 Rotate는 SDK Undo에 기록하지 않음
             vizcore3dx.Model.EnableUndoRedo = false;
@@ -319,6 +324,8 @@ namespace VIZCore3DX.NET.NodeDetail
 
         private void TrackBarRotate_MouseUp(object sender, MouseEventArgs e)
         {
+            _isRotateDragging = false;
+
             if (node == null) return;
 
             float dx = tbRotateX.Value - _rotateStartValue.X;
@@ -371,6 +378,19 @@ namespace VIZCore3DX.NET.NodeDetail
             if (deltaZ != 0) node.Rotate(0, 0, deltaZ, false);
 
             _nodeRotateValueMap[node.Index] = new Vector3D(currentX, currentY, currentZ);
+
+            // 키보드/마우스 휠 조작은 MouseUp이 없으므로 적용한 회전을 바로 이력에 저장 (회전 초기화용)
+            if (_isRotateDragging == false && (deltaX != 0 || deltaY != 0 || deltaZ != 0))
+            {
+                List<RotateHistory> histories;
+                if (_nodeRotateHistoryMap.TryGetValue(node.Index, out histories) == false)
+                {
+                    histories = new List<RotateHistory>();
+                    _nodeRotateHistoryMap[node.Index] = histories;
+                }
+
+                histories.Add(new RotateHistory(deltaX, deltaY, deltaZ));
+            }
         }
 
         private void ResetInputValues()

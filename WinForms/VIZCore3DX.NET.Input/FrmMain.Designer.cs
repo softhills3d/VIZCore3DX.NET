@@ -68,6 +68,7 @@
             this.groupBoxProfile = new System.Windows.Forms.GroupBox();
             this.cmbPreset = new System.Windows.Forms.ComboBox();
             this.lblPreset = new System.Windows.Forms.Label();
+            this.tlpProfileButton = new System.Windows.Forms.TableLayoutPanel();
             this.btnRestoreDefault = new System.Windows.Forms.Button();
             this.btnSaveUserProfile = new System.Windows.Forms.Button();
             this.cmbProfile = new System.Windows.Forms.ComboBox();
@@ -94,6 +95,7 @@
             this.groupBoxComparison.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvComparison)).BeginInit();
             this.groupBoxProfile.SuspendLayout();
+            this.tlpProfileButton.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -113,7 +115,6 @@
             // 
             // panelSetting
             // 
-            this.panelSetting.AutoScroll = true;
             this.panelSetting.Controls.Add(this.btnApplyInputSetting);
             this.panelSetting.Controls.Add(this.groupBoxInputDecision);
             this.panelSetting.Controls.Add(this.groupBoxMovement);
@@ -128,9 +129,11 @@
             // 
             // btnApplyInputSetting
             // 
-            this.btnApplyInputSetting.Location = new System.Drawing.Point(10, 767);
+            this.btnApplyInputSetting.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnApplyInputSetting.Location = new System.Drawing.Point(10, 858);
             this.btnApplyInputSetting.Name = "btnApplyInputSetting";
-            this.btnApplyInputSetting.Size = new System.Drawing.Size(600, 42);
+            this.btnApplyInputSetting.Size = new System.Drawing.Size(600, 32);
             this.btnApplyInputSetting.TabIndex = 6;
             this.btnApplyInputSetting.Text = "현재 조작 설정 적용";
             this.btnApplyInputSetting.UseVisualStyleBackColor = true;
@@ -138,6 +141,8 @@
             // 
             // groupBoxInputDecision
             // 
+            this.groupBoxInputDecision.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxInputDecision.Controls.Add(this.chkWheelDirectionInverted);
             this.groupBoxInputDecision.Controls.Add(this.numClickTolerance);
             this.groupBoxInputDecision.Controls.Add(this.lblClickTolerance);
@@ -145,7 +150,7 @@
             this.groupBoxInputDecision.Controls.Add(this.lblLongPressDuration);
             this.groupBoxInputDecision.Controls.Add(this.numClickDuration);
             this.groupBoxInputDecision.Controls.Add(this.lblClickDuration);
-            this.groupBoxInputDecision.Location = new System.Drawing.Point(10, 649);
+            this.groupBoxInputDecision.Location = new System.Drawing.Point(10, 740);
             this.groupBoxInputDecision.Name = "groupBoxInputDecision";
             this.groupBoxInputDecision.Size = new System.Drawing.Size(600, 108);
             this.groupBoxInputDecision.TabIndex = 5;
@@ -227,6 +232,8 @@
             // 
             // groupBoxMovement
             // 
+            this.groupBoxMovement.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxMovement.Controls.Add(this.numFlySpeedBoostScale);
             this.groupBoxMovement.Controls.Add(this.lblFlySpeedBoostScale);
             this.groupBoxMovement.Controls.Add(this.numFlySpeedRatio);
@@ -235,7 +242,7 @@
             this.groupBoxMovement.Controls.Add(this.lblWalkSpeedBoostScale);
             this.groupBoxMovement.Controls.Add(this.numWalkSpeedRatio);
             this.groupBoxMovement.Controls.Add(this.lblWalkSpeedRatio);
-            this.groupBoxMovement.Location = new System.Drawing.Point(10, 540);
+            this.groupBoxMovement.Location = new System.Drawing.Point(10, 631);
             this.groupBoxMovement.Name = "groupBoxMovement";
             this.groupBoxMovement.Size = new System.Drawing.Size(600, 103);
             this.groupBoxMovement.TabIndex = 4;
@@ -372,6 +379,8 @@
             // 
             // groupBoxSensitivity
             // 
+            this.groupBoxSensitivity.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxSensitivity.Controls.Add(this.numLookSensitivity);
             this.groupBoxSensitivity.Controls.Add(this.lblLookSensitivity);
             this.groupBoxSensitivity.Controls.Add(this.numRollSensitivity);
@@ -382,7 +391,7 @@
             this.groupBoxSensitivity.Controls.Add(this.lblPanSensitivity);
             this.groupBoxSensitivity.Controls.Add(this.numOrbitSensitivity);
             this.groupBoxSensitivity.Controls.Add(this.lblOrbitSensitivity);
-            this.groupBoxSensitivity.Location = new System.Drawing.Point(10, 394);
+            this.groupBoxSensitivity.Location = new System.Drawing.Point(10, 485);
             this.groupBoxSensitivity.Name = "groupBoxSensitivity";
             this.groupBoxSensitivity.Size = new System.Drawing.Size(600, 140);
             this.groupBoxSensitivity.TabIndex = 3;
@@ -551,10 +560,13 @@
             // 
             // groupBoxComparison
             // 
+            this.groupBoxComparison.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxComparison.Controls.Add(this.dgvComparison);
             this.groupBoxComparison.Location = new System.Drawing.Point(10, 123);
             this.groupBoxComparison.Name = "groupBoxComparison";
-            this.groupBoxComparison.Size = new System.Drawing.Size(600, 265);
+            this.groupBoxComparison.Size = new System.Drawing.Size(600, 356);
             this.groupBoxComparison.TabIndex = 2;
             this.groupBoxComparison.TabStop = false;
             this.groupBoxComparison.Text = "현재 설정 / 선택 프로필 비교";
@@ -563,6 +575,9 @@
             // 
             this.dgvComparison.AllowUserToAddRows = false;
             this.dgvComparison.AllowUserToDeleteRows = false;
+            this.dgvComparison.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvComparison.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvComparison.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvComparison.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -575,7 +590,7 @@
             this.dgvComparison.ReadOnly = true;
             this.dgvComparison.RowHeadersVisible = false;
             this.dgvComparison.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvComparison.Size = new System.Drawing.Size(565, 220);
+            this.dgvComparison.Size = new System.Drawing.Size(565, 311);
             this.dgvComparison.TabIndex = 0;
             // 
             // colSettingName
@@ -604,10 +619,11 @@
             // 
             // groupBoxProfile
             // 
+            this.groupBoxProfile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBoxProfile.Controls.Add(this.cmbPreset);
             this.groupBoxProfile.Controls.Add(this.lblPreset);
-            this.groupBoxProfile.Controls.Add(this.btnRestoreDefault);
-            this.groupBoxProfile.Controls.Add(this.btnSaveUserProfile);
+            this.groupBoxProfile.Controls.Add(this.tlpProfileButton);
             this.groupBoxProfile.Controls.Add(this.cmbProfile);
             this.groupBoxProfile.Controls.Add(this.lblProfile);
             this.groupBoxProfile.Location = new System.Drawing.Point(10, 10);
@@ -636,11 +652,28 @@
             this.lblPreset.TabIndex = 2;
             this.lblPreset.Text = "프리셋";
             // 
+            // tlpProfileButton
+            // 
+            this.tlpProfileButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpProfileButton.ColumnCount = 2;
+            this.tlpProfileButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpProfileButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpProfileButton.Controls.Add(this.btnSaveUserProfile, 0, 0);
+            this.tlpProfileButton.Controls.Add(this.btnRestoreDefault, 1, 0);
+            this.tlpProfileButton.Location = new System.Drawing.Point(17, 58);
+            this.tlpProfileButton.Name = "tlpProfileButton";
+            this.tlpProfileButton.RowCount = 1;
+            this.tlpProfileButton.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpProfileButton.Size = new System.Drawing.Size(566, 38);
+            this.tlpProfileButton.TabIndex = 4;
+            // 
             // btnRestoreDefault
             // 
-            this.btnRestoreDefault.Location = new System.Drawing.Point(305, 61);
+            this.btnRestoreDefault.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnRestoreDefault.Location = new System.Drawing.Point(286, 3);
             this.btnRestoreDefault.Name = "btnRestoreDefault";
-            this.btnRestoreDefault.Size = new System.Drawing.Size(275, 32);
+            this.btnRestoreDefault.Size = new System.Drawing.Size(277, 32);
             this.btnRestoreDefault.TabIndex = 6;
             this.btnRestoreDefault.Text = "기본값 복원";
             this.btnRestoreDefault.UseVisualStyleBackColor = true;
@@ -648,9 +681,10 @@
             // 
             // btnSaveUserProfile
             // 
-            this.btnSaveUserProfile.Location = new System.Drawing.Point(20, 61);
+            this.btnSaveUserProfile.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSaveUserProfile.Location = new System.Drawing.Point(3, 3);
             this.btnSaveUserProfile.Name = "btnSaveUserProfile";
-            this.btnSaveUserProfile.Size = new System.Drawing.Size(275, 32);
+            this.btnSaveUserProfile.Size = new System.Drawing.Size(277, 32);
             this.btnSaveUserProfile.TabIndex = 5;
             this.btnSaveUserProfile.Text = "현재 입력값 → 사용자 설정 저장";
             this.btnSaveUserProfile.UseVisualStyleBackColor = true;
@@ -712,6 +746,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvComparison)).EndInit();
             this.groupBoxProfile.ResumeLayout(false);
             this.groupBoxProfile.PerformLayout();
+            this.tlpProfileButton.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -725,6 +760,7 @@
         private System.Windows.Forms.ComboBox cmbProfile;
         private System.Windows.Forms.Label lblPreset;
         private System.Windows.Forms.ComboBox cmbPreset;
+        private System.Windows.Forms.TableLayoutPanel tlpProfileButton;
         private System.Windows.Forms.Button btnSaveUserProfile;
         private System.Windows.Forms.Button btnRestoreDefault;
         private System.Windows.Forms.GroupBox groupBoxComparison;

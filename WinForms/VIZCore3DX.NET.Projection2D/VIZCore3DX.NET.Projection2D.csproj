@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="VIZCore3DX.NET, Version=1.2.26.615, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\VIZCore3DX.NET_V.1.2.26.618\VIZCore3DX.NET.dll</HintPath>
+      <HintPath>..\..\VIZCore3DX.NET.dll</HintPath>
     </Reference>
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>

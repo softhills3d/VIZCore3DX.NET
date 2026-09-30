@@ -21,6 +21,8 @@ namespace VIZCore3DX.NET.ChildView
             // Construction
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
+            // 저장된 사용자 설정(리본 모드 등)을 무시하고 기본 설정으로 시작 (컨트롤 Load 전에 설정)
+            vizcore3dx.LoadSavedSettingOnStartup = false;
             this.Controls.Add(vizcore3dx);
 
             // license 인증
@@ -66,11 +68,15 @@ namespace VIZCore3DX.NET.ChildView
             // ================================================================
             // 설정 - 툴바
             // ================================================================
-            vizcore3dx.ToolbarMain.Visible = true;
+            // 팝업은 화면만 표시 (리본 / 상단 툴바 숨김)
+            vizcore3dx.RibbonMode = false;
+            vizcore3dx.ToolbarMain.Visible = false;
+            vizcore3dx.Statusbar.Visible = false;
             vizcore3dx.ToolbarNote.Visible = false;
             vizcore3dx.ToolbarMeasure.Visible = false;
             vizcore3dx.ToolbarSection.Visible = false;
             vizcore3dx.ToolbarSnapshot.Visible = false;
+            vizcore3dx.View.Toolbar.Enable = false;
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작
@@ -80,7 +86,6 @@ namespace VIZCore3DX.NET.ChildView
         private void LoadModel()
         {
             if (ModelFiles == null || ModelFiles.Count == 0) return;
-            if (SelectedNodeKeys == null || SelectedNodeKeys.Count == 0) return;
 
             try
             {
@@ -99,11 +104,11 @@ namespace VIZCore3DX.NET.ChildView
                         selectedNodes.Add(node);
                 }
 
+                // 선택한 파트가 없으면 모델 전체 표시
                 if (selectedNodes.Count > 0)
-                {
                     vizcore3dx.Object3D.ShowSelection(selectedNodes);
-                    vizcore3dx.View.FitToView();
-                }
+
+                vizcore3dx.View.FitToView();
             }
             finally
             {

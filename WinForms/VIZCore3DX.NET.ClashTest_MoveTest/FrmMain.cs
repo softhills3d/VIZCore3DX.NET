@@ -110,6 +110,84 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             // 모델 열기 시, 3D 화면 Rendering 재시작
             // ================================================================
             vizcore3dx.EndUpdate();
+
+            // 모델 열기 / 닫기 : 테스트 시나리오 버튼 활성화 갱신
+            vizcore3dx.Model.OnModelOpenedEvent += Model_OnModelChanged;
+            vizcore3dx.Model.OnModelClosedEvent += Model_OnModelChanged;
+
+            // 시나리오 버튼 안내 (primitiveCrane.vizx 를 열었을 때만 활성화)
+            new ToolTip().SetToolTip(btnLoadScenario, "primitiveCrane.vizx 모델(Animation 예제의 크레인 모델)을 열면 활성화됩니다.");
+        }
+
+        // ================================================================
+        // 테스트 시나리오 (primitiveCrane.vizx 전용)
+        // ================================================================
+        private const string ScenarioModelName = "primitiveCrane.vizx";
+
+        private void Model_OnModelChanged(object sender, EventArgs e)
+        {
+            if (InvokeRequired == true)
+            {
+                BeginInvoke(new Action(UpdateScenarioButton));
+                return;
+            }
+
+            UpdateScenarioButton();
+        }
+
+        private void UpdateScenarioButton()
+        {
+            btnLoadScenario.Enabled = vizcore3dx.Model.IsOpen() == true && vizcore3dx.Model.Files != null
+                && vizcore3dx.Model.Files.Any(x => string.Equals(Path.GetFileName(x), ScenarioModelName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// 테스트 시나리오 선택 메뉴 표시
+        /// </summary>
+        private void btnLoadScenario_Click(object sender, EventArgs e)
+        {
+            ContextMenuStrip menu = new ContextMenuStrip();
+
+            // (표시 이름, 그룹 A, 그룹 A 가 파트인지, 이동 그룹 B, 이동량) : 경로는 이동량 x 3 회
+            menu.Items.Add("1. 바퀴 상승 → 차대 충돌 (Wheels +Z 300 x 3)", null, (s, args) => LoadScenario("Chassis", false, "Wheels", new Vector3D(0.0f, 0.0f, 300.0f)));
+            menu.Items.Add("2. 캐빈 하강 → 차대 프레임 충돌 (Cabin -Z 800 x 3)", null, (s, args) => LoadScenario("Chassis Frame", true, "Cabin", new Vector3D(0.0f, 0.0f, -800.0f)));
+            menu.Items.Add("3. 탱크 이동 → 크레인 (Tanks -Y 4000 x 3)", null, (s, args) => LoadScenario("Truck Crane", false, "Tanks", new Vector3D(0.0f, -4000.0f, 0.0f)));
+
+            menu.Show(btnLoadScenario, 0, btnLoadScenario.Height);
+        }
+
+        /// <summary>
+        /// 테스트 시나리오 불러오기 : 그룹 A / 이동 그룹 B(어셈블리) 지정, 이동 간섭 검사 추가, 이동 경로 3 개 추가
+        /// </summary>
+        private void LoadScenario(string groupAName, bool groupAIsPart, string groupBName, Vector3D move)
+        {
+            List<Node> parts = vizcore3dx.Object3D.FromFilter(Object3dFilter.PART);
+            List<Node> assemblies = vizcore3dx.Object3D.FromFilter(Object3dFilter.ASSEMBLY);
+
+            List<Node> groupA = (groupAIsPart ? parts : assemblies).Where(x => x.NodeName == groupAName).Take(1).ToList();
+            List<Node> groupB = assemblies.Where(x => x.NodeName == groupBName).Take(1).ToList();
+
+            if (groupA.Count == 0 || groupB.Count == 0)
+            {
+                MessageBox.Show(string.Format("시나리오 대상 노드({0} / {1})를 찾을 수 없습니다.", groupAName, groupBName), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            nodesA = groupA;
+            nodesB = groupB;
+
+            // 이동 간섭 검사 추가
+            btnAdd_Click(btnLoadScenario, EventArgs.Empty);
+            if (clash == null || cbClashTestId.Items.Contains(clash.ID) == false) return;
+
+            // 이동 경로 추가 (경로마다 이동량만큼 누적 이동)
+            for (int i = 0; i < 3; i++)
+                vizcore3dx.Clash.AddTestPath(clash, move, 0.0f, 0.0f, 0.0f);
+
+            UpdateTestPathList(clash);
+
+            // 이동 간섭 검사 바로 실행 (완료 시 결과가 있는 첫 경로가 선택되어 결과 목록에 표시)
+            btnStart_Click(btnLoadScenario, EventArgs.Empty);
         }
 
         private void btnOpenModel_Click(object sender, EventArgs e)
@@ -153,12 +231,12 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                 return;
             }
 
-            // 여기서 지정한 nodesA는 간접 검사 추가 시 GroupA에 할당 됩니다.
+            // 여기서 지정한 nodesA는 간섭 검사 추가 시 GroupA에 할당됩니다.
             nodesA = nodes;
 
             nodesA[0].SetColor(Color.Black);
 
-            MessageBox.Show("선택된 모델을 그룹에 설정 하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("선택된 모델을 그룹에 설정하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             vizcore3dx.Object3D.Select(Data.Object3dSelectionModes.DESELECT_ALL);
         }
@@ -178,12 +256,12 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                 return;
             }
 
-            // 여기서 지정한 nodesB는 간접 검사 추가 시 GroupB에 할당 됩니다.
+            // 여기서 지정한 nodesB는 간섭 검사 추가 시 GroupB에 할당됩니다.
             nodesB = nodes;
 
             nodesB[0].SetColor(Color.Green);
 
-            MessageBox.Show("선택된 모델을 그룹에 설정 하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("선택된 모델을 그룹에 설정하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             vizcore3dx.Object3D.Select(Data.Object3dSelectionModes.DESELECT_ALL);
         }
@@ -195,7 +273,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <param name="e">Event Args</param>
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            // 간접 검사 추가
+            // 간섭 검사 추가
             clash = new VIZCore3DX.NET.Data.ClashTest();
 
             // 이동 간섭이므로 GROUP_VS_MOVING_GROUP으로 간섭 종류 설정
@@ -205,7 +283,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             clash.GroupA.AddRange(nodesA);
             clash.GroupB.AddRange(nodesB);
 
-            // 이동간섭 옵션들에 따라 설정
+            // 이동 간섭 옵션들에 따라 설정
             clash.UseClearanceValue = ckUseClearanceValue.Checked;
             clash.ClearanceValue = (float)numClearanceValue.Value;
             clash.UseRangeValue = ckUseRangeValue.Checked;
@@ -296,7 +374,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <param name="e">Event Args</param>
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            // 간섭검사 결과를 그룹화 하기 위한 옵션 ( 파트 or 어셈블리 )
+            // 간섭검사 결과를 그룹화하기 위한 옵션 ( 파트 or 어셈블리 )
             ResultGroupingOptions resultGroupingOptions;
 
             if (!cbClashTestId.Items.Contains(clash.ID)) return;
@@ -342,13 +420,14 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             _isClashTestMode = false;
 
             vizcore3dx.Clash.ClearResultSymbol();
-            clash.GroupB[0].ResetTransform();
+            RestoreGroupBTransform();
             vizcore3dx.Clash.Clear();
             vizcore3dx.View.ResetView();
             cbClashTestId.Items.Clear();
 
             datagridviewInterferencePath.Rows.Clear();
             datagridviewInterferenceResult.Rows.Clear();
+            lstTestPaths.Items.Clear();
 
             List<Node> nodes = vizcore3dx.Object3D.FromFilter(Object3dFilter.ROOT);
             vizcore3dx.Object3D.Color.RestoreAll();
@@ -369,6 +448,16 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             // 이동 간섭 검사 경로를 그리드 뷰에 넣어줍니다.
             UpdatePathGridView();
 
+            // 결과가 있는 첫 번째 경로를 선택하여 아래 결과 목록에 표시
+            foreach (DataGridViewRow row in datagridviewInterferencePath.Rows)
+            {
+                if (Convert.ToInt32(row.Cells[row.Cells.Count - 1].Value) == 0) continue;
+
+                datagridviewInterferencePath.ClearSelection();
+                row.Selected = true;
+                break;
+            }
+
             // 간섭검사가 끝났으므로 false로 변경
             _isClashTestMode = false;
         }
@@ -376,7 +465,6 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <summary>
         /// Clash Test Path 그리드 뷰 갱신
         /// </summary>
-        /// <param name="pathItems"></param>
         private void UpdatePathGridView()
         {
             // 이동 경로 데이터 그리드 뷰 설정
@@ -397,7 +485,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                 // 이동 경로 그리드뷰에 해당 배열 삽입
                 int rowIndex = datagridviewInterferencePath.Rows.Add(row);
 
-                // 이동 경로 순번(ID)를 가져올 수 있게 Tag에 해당 ID를 등록
+                // 이동 경로 순번(ID)을 가져올 수 있게 Tag에 해당 ID를 등록
                 datagridviewInterferencePath.Rows[rowIndex].Tag = clash.MoveTest[i].ID;
             }
         }
@@ -420,9 +508,9 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         }
 
         /// <summary>
-        /// 선택된 경로에 알맞는 결과 그리드 뷰 갱신
+        /// 선택된 경로에 알맞은 결과 그리드 뷰 갱신
         /// </summary>
-        /// <param name="pathId"></param>
+        /// <param name="id">이동 경로 ID</param>
         private void UpdateResultGridView(object id)
         {
             // 결과 데이터 그리드 뷰 설정
@@ -431,14 +519,14 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
 
             int filterID = (int)id;
 
-            // 선택된 패스에 맞는 결과데이터를 찾아서 item 변수에 넣어줍니다.
+            // 선택된 경로에 맞는 결과 데이터를 찾아서 item 변수에 넣어줍니다.
             var item = clash.MoveTest.Find(x => x.ID == filterID);
 
             // 찾는 ID가 없으면 함수 종료
             if (item == null) return;
 
             // 선택된 이동 경로 항목의 위치로 Group B를 이동
-            clash.GroupB[0].Transform(item.Matrix);
+            clash.GroupB[0].Transform(item.Matrix, true);   // true : 모델 초기 상태 기준 (경로를 바꿔도 이동 / 회전이 누적되지 않음)
 
             // 간섭검사 결과 명칭을 치환
             foreach (var result in item.MoveTestResult)
@@ -458,7 +546,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                         break;
 
                     case ClashResultKind.CONTACT:
-                        if (!ckProximity.Checked) continue;
+                        if (!ckContact.Checked) continue;
                         state = "접촉";
                         break;
 
@@ -491,11 +579,11 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                     direction
                 };
 
-                // 알맞는 결과값들을 데이터 그리드에 삽입
+                // 알맞은 결과값들을 데이터 그리드에 삽입
                 datagridviewInterferenceResult.Rows.Add(row);
             }
 
-            // 선택된 이동경로에 저장된 결과 심볼을 보여줌
+            // 선택된 이동 경로에 저장된 결과 심볼을 보여줌
             foreach (var result in item.MoveTestResult)
             {
                 vizcore3dx.Clash.ShowResultSymbol(clash.ID, result, true, true);
@@ -529,6 +617,8 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
                 new Vector3D((float)numDistanceX.Value, (float)numDistanceY.Value, (float)numDistanceZ.Value),
                 (float)numDegreeX.Value, (float)numDegreeY.Value, (float)numDegreeZ.Value);
 
+            UpdateTestPathList(clash);
+
             MessageBox.Show("이동 Path 추가 완료했습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -537,7 +627,19 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             // 이동 검사 경로를 Clear 합니다.
             vizcore3dx.Clash.ClearTestPath(clash);
 
+            UpdateTestPathList(clash);
+
             MessageBox.Show("이동 Path 전체 삭제 완료했습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// 이동 그룹(Group B)의 이동 / 회전을 원래 상태로 초기화
+        /// </summary>
+        private void RestoreGroupBTransform()
+        {
+            if (clash == null || clash.GroupB == null || clash.GroupB.Count == 0) return;
+
+            vizcore3dx.Object3D.Transform.RestoreTransform(new List<Node>(clash.GroupB));
         }
 
         private void btnViewAllResult_Click(object sender, EventArgs e)
@@ -545,9 +647,161 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             if (clash == null) return;
 
             // Group B의 위치를 초기화
-            clash.GroupB[0].ResetTransform();
+            RestoreGroupBTransform();
             // 선택한 ID에 해당하는 간섭검사 결과를 보여줍니다.
             vizcore3dx.Clash.ShowResultSymbol(clash.ID, true, true);
+        }
+
+        // ================================================================
+        // 이동 경로 워크플로 : GetTestPaths / ExportTestPaths / ImportTestPaths / PlayTestPathsAsync / StopTestPathPlayback
+        // ================================================================
+
+        /// <summary>
+        /// 이동 경로 대상 Clash Test 반환 (ClashTest ID 콤보 박스 선택 항목, 없으면 마지막 추가 항목)
+        /// </summary>
+        /// <returns>Clash Test (없으면 null)</returns>
+        private VIZCore3DX.NET.Data.ClashTest GetPathTarget()
+        {
+            VIZCore3DX.NET.Data.ClashTest item = clash;
+            if (cbClashTestId.SelectedItem != null) item = vizcore3dx.Clash.GetClashTest(Convert.ToInt32(cbClashTestId.SelectedItem));
+
+            if (item == null)
+            {
+                MessageBox.Show("간섭검사를 먼저 추가해 주세요.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// 실패 사유(LastOperationStatus) 표시
+        /// </summary>
+        /// <param name="message">메시지</param>
+        private void ShowOperationFailed(string message)
+        {
+            VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Clash.LastOperationStatus;
+            string reason = status == null ? "알 수 없음" : status.ToString();
+
+            MessageBox.Show(string.Format("{0}\n\n사유 : {1}", message, reason), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        /// <summary>
+        /// 이동 경로 목록 갱신 (GetTestPaths)
+        /// </summary>
+        /// <param name="item">Clash Test</param>
+        private void UpdateTestPathList(VIZCore3DX.NET.Data.ClashTest item)
+        {
+            lstTestPaths.BeginUpdate();
+            lstTestPaths.Items.Clear();
+
+            List<ClashMoveTestItem> paths = item == null ? null : vizcore3dx.Clash.GetTestPaths(item);
+            if (paths != null)
+            {
+                foreach (ClashMoveTestItem path in paths)
+                    lstTestPaths.Items.Add(string.Format("[{0}] 이동 : {1} / 회전 : {2}", path.ID, path.Distance, path.Angle));
+            }
+
+            lstTestPaths.EndUpdate();
+        }
+
+        /// <summary>
+        /// 재생 중 UI 상태 변경
+        /// </summary>
+        /// <param name="playing">재생 중 여부</param>
+        private void SetPathPlaying(bool playing)
+        {
+            btnPlayTestPaths.Enabled = !playing;
+            btnStopPlayback.Enabled = playing;
+            btnGetTestPaths.Enabled = !playing;
+            btnExportTestPaths.Enabled = !playing;
+            btnImportTestPaths.Enabled = !playing;
+            numPlayInterval.Enabled = !playing;
+        }
+
+        private void btnGetTestPaths_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.ClashTest item = GetPathTarget();
+            if (item == null) return;
+
+            UpdateTestPathList(item);
+        }
+
+        private void btnExportTestPaths_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.ClashTest item = GetPathTarget();
+            if (item == null) return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "이동 경로 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+            dlg.FileName = string.Format("ClashTestPath_{0}.json", item.ID);
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            // 이동 경로를 파일로 저장
+            bool result = vizcore3dx.Clash.ExportTestPaths(item, dlg.FileName);
+            if (result == false)
+            {
+                ShowOperationFailed("이동 경로 저장에 실패하였습니다.");
+                return;
+            }
+
+            MessageBox.Show(string.Format("이동 경로 저장 완료\n\n{0}", dlg.FileName), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnImportTestPaths_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.ClashTest item = GetPathTarget();
+            if (item == null) return;
+
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "이동 경로 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            // replaceExisting : true 이면 기존 경로를 지우고 파일의 경로로 대체, false 이면 뒤에 추가
+            bool result = vizcore3dx.Clash.ImportTestPaths(item, dlg.FileName, chkReplaceExisting.Checked);
+            UpdateTestPathList(item);
+
+            if (result == false)
+            {
+                ShowOperationFailed("이동 경로 불러오기에 실패하였습니다.");
+                return;
+            }
+
+            MessageBox.Show(string.Format("이동 경로 불러오기 완료 : {0}건", lstTestPaths.Items.Count), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async void btnPlayTestPaths_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.ClashTest item = GetPathTarget();
+            if (item == null) return;
+
+            List<ClashMoveTestItem> paths = vizcore3dx.Clash.GetTestPaths(item);
+            if (paths == null || paths.Count == 0)
+            {
+                MessageBox.Show("재생할 이동 경로가 없습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            SetPathPlaying(true);
+
+            bool result = false;
+            try
+            {
+                // 이동 경로를 스텝 단위로 재생 (intervalMs : 스텝 간 대기 시간)
+                result = await vizcore3dx.Clash.PlayTestPathsAsync(item, (int)numPlayInterval.Value);
+            }
+            finally
+            {
+                SetPathPlaying(false);
+            }
+
+            if (result == false) ShowOperationFailed("이동 경로 재생이 중지되었거나 실패하였습니다.");
+        }
+
+        private void btnStopPlayback_Click(object sender, EventArgs e)
+        {
+            // 이동 경로 재생 중지
+            vizcore3dx.Clash.StopTestPathPlayback();
         }
     }
 }

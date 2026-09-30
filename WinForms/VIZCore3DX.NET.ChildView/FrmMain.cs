@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Event;
 
@@ -10,7 +9,8 @@ namespace VIZCore3DX.NET.ChildView
     {
         // VIZCore3DX.NET 선언
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
-        private ShowModelDialog ModelDialog;
+        // 열려 있는 팝업(Child View) 목록 : Show Child View 를 누를 때마다 새 팝업 생성
+        private readonly List<ShowModelDialog> ModelDialogs = new List<ShowModelDialog>();
         private List<Tuple<int, int>> SelectedNodeKeys;
 
         public FrmMain()
@@ -26,8 +26,6 @@ namespace VIZCore3DX.NET.ChildView
 
             // license 인증
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
-
-            ModelDialog = null;
 
             SelectedNodeKeys = new List<Tuple<int, int>>();
 
@@ -55,6 +53,45 @@ namespace VIZCore3DX.NET.ChildView
             }
 
             InitializeVIZCore3DX();
+
+            InitializeSubViewOption();
+        }
+
+        private void InitializeSubViewOption()
+        {
+            // SetSubView(count) : 주 화면 외에 추가할 서브뷰 구성 (0 ~ 4)
+            cmbSubViewLayout.Items.Clear();
+            cmbSubViewLayout.Items.Add("0 : 단일 화면 (서브뷰 없음)");
+            cmbSubViewLayout.Items.Add("1 : 좌우 2분할");
+            cmbSubViewLayout.Items.Add("2 : 1+2 분할 (우측 서브뷰 2개)");
+            cmbSubViewLayout.Items.Add("3 : 2x2 4분할");
+            cmbSubViewLayout.Items.Add("4 : 1+3 분할 (우측 서브뷰 3개)");
+            cmbSubViewLayout.SelectedIndex = 4;
+
+            // 서브뷰 생성 시 화면 설정 초기화 방식
+            cmbSubViewInitMode.Items.Clear();
+            foreach (VIZCore3DX.NET.Data.SubViewInitMode mode in Enum.GetValues(typeof(VIZCore3DX.NET.Data.SubViewInitMode))) cmbSubViewInitMode.Items.Add(mode);
+            cmbSubViewInitMode.SelectedItem = vizcore3dx.View.SubViewInitMode;
+
+            UpdateSubViewCount();
+        }
+
+        private void UpdateSubViewCount()
+        {
+            lblSubViewCount.Text = string.Format("현재 서브뷰 수 : {0}", vizcore3dx.View.GetSubViewCount());
+        }
+
+        private void btnApplySubView_Click(object sender, EventArgs e)
+        {
+            if (cmbSubViewLayout.SelectedIndex < 0) return;
+
+            if (cmbSubViewInitMode.SelectedItem != null)
+                vizcore3dx.View.SubViewInitMode = (VIZCore3DX.NET.Data.SubViewInitMode)cmbSubViewInitMode.SelectedItem;
+
+            // 콤보박스 인덱스 = SetSubView 인자 (4 : 주 화면 + 우측 서브뷰 3개)
+            vizcore3dx.View.SetSubView(cmbSubViewLayout.SelectedIndex);
+
+            UpdateSubViewCount();
         }
 
         private void InitializeVIZCore3DX()
@@ -106,58 +143,53 @@ namespace VIZCore3DX.NET.ChildView
 
         private void btnOpenChildView_Click(object sender, EventArgs e)
         {
-            // 모델 오픈 여부 체크
-            if (vizcore3dx.Model.IsOpen() == false) return;
-
-            if (SelectedNodeKeys == null) SelectedNodeKeys = new List<Tuple<int, int>>();
-
             // 선택된 노드 가져오기
-            List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.SELECTED_PART);
-            if (nodes == null || nodes.Count == 0) return;
+            // 선택한 파트가 있으면 그 파트만, 없으면 모델 전체를 새 팝업에 표시
+            List<Tuple<int, int>> nodeKeys = new List<Tuple<int, int>>();
+            List<string> modelFiles = new List<string>();
 
-            foreach (VIZCore3DX.NET.Data.Node node in nodes)
+            if (vizcore3dx.Model.IsOpen() == true)
             {
-                if (node == null) continue;
-                bool exists = SelectedNodeKeys.Any(x => x.Item1 == node.EntityID && x.Item2 == node.Index);
+                List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.SELECTED_PART);
+                if (nodes != null)
+                {
+                    foreach (VIZCore3DX.NET.Data.Node node in nodes)
+                    {
+                        if (node == null) continue;
+                        nodeKeys.Add(new Tuple<int, int>(node.EntityID, node.Index));
+                    }
+                }
 
-                if (exists == false)
-                    SelectedNodeKeys.Add(new Tuple<int, int>(node.EntityID, node.Index));
+                if (vizcore3dx.Model.Files != null) modelFiles.AddRange(vizcore3dx.Model.Files);
             }
 
-            if (SelectedNodeKeys.Count == 0) return;
-
-            List<string> modelFiles = vizcore3dx.Model.Files;
-            if (modelFiles == null || modelFiles.Count == 0) return;
-
-
-            if (ModelDialog == null || ModelDialog.IsDisposed)
-            {
-                ModelDialog = new ShowModelDialog(modelFiles, SelectedNodeKeys);
-                ModelDialog.FormClosed += ModelDialog_FormClosed;
-                ModelDialog.Show();
-            }
-            else
-            {
-                ModelDialog.UpdateSelection(SelectedNodeKeys);
-                ModelDialog.Activate();
-            }
-
+            ShowModelDialog dialog = new ShowModelDialog(modelFiles, nodeKeys);
+            dialog.Text = string.Format("Child View #{0} ({1})", ModelDialogs.Count + 1, nodeKeys.Count == 0 ? "전체" : nodeKeys.Count + " Parts");
+            dialog.FormClosed += ModelDialog_FormClosed;
+            ModelDialogs.Add(dialog);
+            dialog.Show();
         }
 
         private void ModelDialog_FormClosed(object sender, FormClosedEventArgs e)
         {
-            ModelDialog = null;
+            ModelDialogs.Remove(sender as ShowModelDialog);
         }
 
         private void btnClearItems_Click(object sender, EventArgs e)
         {
-            SelectedNodeKeys.Clear();
-
-            if (ModelDialog != null && ModelDialog.IsDisposed == false)
+            if (ModelDialogs.Count == 0)
             {
-                ModelDialog.Close();
-                ModelDialog = null;
+                MessageBox.Show("열려 있는 팝업이 없습니다.", "VIZCore3DX.NET.ChildView", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
+
+            // 열려 있는 팝업 모두 닫기
+            foreach (ShowModelDialog dialog in ModelDialogs.ToArray())
+            {
+                if (dialog.IsDisposed == false) dialog.Close();
+            }
+
+            ModelDialogs.Clear();
         }
     }
 }

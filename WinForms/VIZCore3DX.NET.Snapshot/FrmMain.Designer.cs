@@ -35,29 +35,35 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tlpExportImport = new System.Windows.Forms.TableLayoutPanel();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.lblJsonStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tlpExportImport.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.lblJsonStatus);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1160, 675);
-            this.splitContainer1.SplitterDistance = 386;
+            this.splitContainer1.Panel1MinSize = 300;
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
+            this.splitContainer1.SplitterDistance = 380;
             this.splitContainer1.TabIndex = 0;
             // 
             // listView1
@@ -66,10 +72,11 @@
             this.columnHeader1,
             this.columnHeader2});
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
             this.listView1.HideSelection = false;
             this.listView1.Location = new System.Drawing.Point(3, 17);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(365, 515);
+            this.listView1.Size = new System.Drawing.Size(350, 430);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -77,10 +84,12 @@
             // 
             // btnAddSnapshot
             // 
-            this.btnAddSnapshot.Location = new System.Drawing.Point(6, 20);
+            this.btnAddSnapshot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddSnapshot.Location = new System.Drawing.Point(12, 24);
             this.btnAddSnapshot.Name = "btnAddSnapshot";
-            this.btnAddSnapshot.Size = new System.Drawing.Size(75, 23);
-            this.btnAddSnapshot.TabIndex = 1;
+            this.btnAddSnapshot.Size = new System.Drawing.Size(332, 30);
+            this.btnAddSnapshot.TabIndex = 0;
             this.btnAddSnapshot.Text = "Add";
             this.btnAddSnapshot.UseVisualStyleBackColor = true;
             this.btnAddSnapshot.Click += new System.EventHandler(this.btnAddSnapshot_Click);
@@ -89,15 +98,14 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.tlpExportImport);
             this.groupBox1.Controls.Add(this.textBox1);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.btnAddSnapshot);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(371, 119);
-            this.groupBox1.TabIndex = 2;
+            this.groupBox1.Size = new System.Drawing.Size(356, 140);
+            this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Snapshot";
             // 
@@ -109,7 +117,7 @@
             // columnHeader2
             // 
             this.columnHeader2.Text = "Name";
-            this.columnHeader2.Width = 200;
+            this.columnHeader2.Width = 270;
             // 
             // groupBox2
             // 
@@ -117,29 +125,47 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.listView1);
-            this.groupBox2.Location = new System.Drawing.Point(12, 137);
+            this.groupBox2.Location = new System.Drawing.Point(12, 188);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(371, 535);
-            this.groupBox2.TabIndex = 3;
+            this.groupBox2.Size = new System.Drawing.Size(356, 560);
+            this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Snapshot List";
             // 
+            // tlpExportImport
+            // 
+            this.tlpExportImport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpExportImport.ColumnCount = 2;
+            this.tlpExportImport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpExportImport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpExportImport.Controls.Add(this.button1, 0, 0);
+            this.tlpExportImport.Controls.Add(this.button2, 1, 0);
+            this.tlpExportImport.Location = new System.Drawing.Point(9, 94);
+            this.tlpExportImport.Name = "tlpExportImport";
+            this.tlpExportImport.RowCount = 1;
+            this.tlpExportImport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpExportImport.Size = new System.Drawing.Size(338, 36);
+            this.tlpExportImport.TabIndex = 3;
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(0, 90);
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(130, 23);
-            this.button1.TabIndex = 2;
+            this.button1.Size = new System.Drawing.Size(163, 30);
+            this.button1.TabIndex = 0;
             this.button1.Text = "Export Snapshot";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(136, 90);
+            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button2.Location = new System.Drawing.Point(172, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(130, 23);
-            this.button2.TabIndex = 3;
+            this.button2.Size = new System.Drawing.Size(163, 30);
+            this.button2.TabIndex = 1;
             this.button2.Text = "Import Snapshot";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -147,25 +173,39 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 63);
+            this.label1.Location = new System.Drawing.Point(12, 68);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(110, 12);
-            this.label1.TabIndex = 4;
+            this.label1.TabIndex = 1;
             this.label1.Text = "Export JSON Path:";
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(122, 60);
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Location = new System.Drawing.Point(128, 64);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(243, 21);
-            this.textBox1.TabIndex = 5;
+            this.textBox1.Size = new System.Drawing.Size(216, 21);
+            this.textBox1.TabIndex = 2;
             this.textBox1.Text = "D:\\\\Temp\\Export.json";
-            // 
+            //
+            // lblJsonStatus
+            //
+            this.lblJsonStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblJsonStatus.AutoEllipsis = true;
+            this.lblJsonStatus.Location = new System.Drawing.Point(12, 160);
+            this.lblJsonStatus.Name = "lblJsonStatus";
+            this.lblJsonStatus.Size = new System.Drawing.Size(356, 20);
+            this.lblJsonStatus.TabIndex = 1;
+            this.lblJsonStatus.Text = "-";
+            this.lblJsonStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1160, 675);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.Text = "Snapshot";
@@ -174,6 +214,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.tlpExportImport.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -188,10 +229,12 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TableLayoutPanel tlpExportImport;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblJsonStatus;
     }
 }
 

@@ -49,6 +49,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnHasFrame = new System.Windows.Forms.Button();
             this.btnImportFrame = new System.Windows.Forms.Button();
@@ -67,11 +68,13 @@
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -83,16 +86,19 @@
             this.splitContainer1.Panel1.Controls.Add(this.richTextBox1);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.btnOpenModel);
-            this.splitContainer1.Size = new System.Drawing.Size(1231, 836);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 836);
             this.splitContainer1.SplitterDistance = 340;
             this.splitContainer1.TabIndex = 0;
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox4.Controls.Add(this.lvFrameLine);
-            this.groupBox4.Location = new System.Drawing.Point(15, 541);
+            this.groupBox4.Location = new System.Drawing.Point(12, 499);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(318, 148);
+            this.groupBox4.Size = new System.Drawing.Size(318, 204);
             this.groupBox4.TabIndex = 5;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Frame Line List";
@@ -107,7 +113,7 @@
             this.lvFrameLine.HideSelection = false;
             this.lvFrameLine.Location = new System.Drawing.Point(3, 17);
             this.lvFrameLine.Name = "lvFrameLine";
-            this.lvFrameLine.Size = new System.Drawing.Size(312, 128);
+            this.lvFrameLine.Size = new System.Drawing.Size(312, 184);
             this.lvFrameLine.TabIndex = 0;
             this.lvFrameLine.UseCompatibleStateImageBehavior = false;
             this.lvFrameLine.View = System.Windows.Forms.View.Details;
@@ -129,14 +135,16 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.btnClearFrameLines);
             this.groupBox3.Controls.Add(this.btnToggleFrameLineEnabled);
             this.groupBox3.Controls.Add(this.rbZAxis);
             this.groupBox3.Controls.Add(this.rbYAxis);
             this.groupBox3.Controls.Add(this.rbXAxis);
-            this.groupBox3.Location = new System.Drawing.Point(15, 420);
+            this.groupBox3.Location = new System.Drawing.Point(12, 390);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(315, 103);
+            this.groupBox3.Size = new System.Drawing.Size(318, 103);
             this.groupBox3.TabIndex = 4;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Frame Axis List";
@@ -198,14 +206,16 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.btnToggleZXPlaneEnabled);
             this.groupBox2.Controls.Add(this.btnToggleYZPlaneEnabled);
             this.groupBox2.Controls.Add(this.btnToggleXYPlaneEnabled);
             this.groupBox2.Controls.Add(this.btnToggleFrameIsVisible);
             this.groupBox2.Controls.Add(this.lvFrame);
-            this.groupBox2.Location = new System.Drawing.Point(15, 260);
+            this.groupBox2.Location = new System.Drawing.Point(12, 242);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(315, 142);
+            this.groupBox2.Size = new System.Drawing.Size(318, 142);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Frame List";
@@ -216,7 +226,7 @@
             this.btnToggleZXPlaneEnabled.Name = "btnToggleZXPlaneEnabled";
             this.btnToggleZXPlaneEnabled.Size = new System.Drawing.Size(176, 23);
             this.btnToggleZXPlaneEnabled.TabIndex = 4;
-            this.btnToggleZXPlaneEnabled.Text = "Toggle XYPlaneEnabled";
+            this.btnToggleZXPlaneEnabled.Text = "Toggle ZXPlaneEnabled";
             this.btnToggleZXPlaneEnabled.UseVisualStyleBackColor = true;
             this.btnToggleZXPlaneEnabled.Click += new System.EventHandler(this.btnToggleZXPlaneEnabled_Click);
             // 
@@ -226,7 +236,7 @@
             this.btnToggleYZPlaneEnabled.Name = "btnToggleYZPlaneEnabled";
             this.btnToggleYZPlaneEnabled.Size = new System.Drawing.Size(176, 23);
             this.btnToggleYZPlaneEnabled.TabIndex = 3;
-            this.btnToggleYZPlaneEnabled.Text = "Toggle XYPlaneEnabled";
+            this.btnToggleYZPlaneEnabled.Text = "Toggle YZPlaneEnabled";
             this.btnToggleYZPlaneEnabled.UseVisualStyleBackColor = true;
             this.btnToggleYZPlaneEnabled.Click += new System.EventHandler(this.btnToggleYZPlaneEnabled_Click);
             // 
@@ -273,35 +283,56 @@
             // 
             this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.richTextBox1.Location = new System.Drawing.Point(3, 709);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 709);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(334, 121);
+            this.richTextBox1.Size = new System.Drawing.Size(318, 121);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.btnFrameLineColor);
-            this.groupBox1.Controls.Add(this.btnHideAllFrames);
-            this.groupBox1.Controls.Add(this.btnShowAllFrames);
-            this.groupBox1.Controls.Add(this.btnClear);
-            this.groupBox1.Controls.Add(this.btnHasFrame);
-            this.groupBox1.Controls.Add(this.btnImportFrame);
-            this.groupBox1.Controls.Add(this.btnExportFrame);
-            this.groupBox1.Controls.Add(this.btnCreateFrame);
-            this.groupBox1.Controls.Add(this.btnOpenTribonFrame);
-            this.groupBox1.Controls.Add(this.btnOpenAMFrame);
-            this.groupBox1.Location = new System.Drawing.Point(12, 41);
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.tableLayoutPanel1);
+            this.groupBox1.Location = new System.Drawing.Point(12, 46);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(318, 198);
+            this.groupBox1.Size = new System.Drawing.Size(318, 190);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.btnOpenAMFrame, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnOpenTribonFrame, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnCreateFrame, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnFrameLineColor, 1, 1);
+            this.tableLayoutPanel1.Controls.Add(this.btnExportFrame, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnImportFrame, 1, 2);
+            this.tableLayoutPanel1.Controls.Add(this.btnHasFrame, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.btnClear, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.btnShowAllFrames, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.btnHideAllFrames, 1, 4);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(312, 170);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(165, 107);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClear.Location = new System.Drawing.Point(159, 105);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(126, 23);
+            this.btnClear.Size = new System.Drawing.Size(150, 28);
             this.btnClear.TabIndex = 6;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -309,9 +340,10 @@
             // 
             // btnHasFrame
             // 
-            this.btnHasFrame.Location = new System.Drawing.Point(7, 108);
+            this.btnHasFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHasFrame.Location = new System.Drawing.Point(3, 105);
             this.btnHasFrame.Name = "btnHasFrame";
-            this.btnHasFrame.Size = new System.Drawing.Size(129, 23);
+            this.btnHasFrame.Size = new System.Drawing.Size(150, 28);
             this.btnHasFrame.TabIndex = 5;
             this.btnHasFrame.Text = "HasFrame";
             this.btnHasFrame.UseVisualStyleBackColor = true;
@@ -319,9 +351,10 @@
             // 
             // btnImportFrame
             // 
-            this.btnImportFrame.Location = new System.Drawing.Point(165, 78);
+            this.btnImportFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnImportFrame.Location = new System.Drawing.Point(159, 71);
             this.btnImportFrame.Name = "btnImportFrame";
-            this.btnImportFrame.Size = new System.Drawing.Size(129, 23);
+            this.btnImportFrame.Size = new System.Drawing.Size(150, 28);
             this.btnImportFrame.TabIndex = 4;
             this.btnImportFrame.Text = "Import Frame";
             this.btnImportFrame.UseVisualStyleBackColor = true;
@@ -329,9 +362,10 @@
             // 
             // btnExportFrame
             // 
-            this.btnExportFrame.Location = new System.Drawing.Point(7, 79);
+            this.btnExportFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExportFrame.Location = new System.Drawing.Point(3, 71);
             this.btnExportFrame.Name = "btnExportFrame";
-            this.btnExportFrame.Size = new System.Drawing.Size(129, 23);
+            this.btnExportFrame.Size = new System.Drawing.Size(150, 28);
             this.btnExportFrame.TabIndex = 3;
             this.btnExportFrame.Text = "Export Frame";
             this.btnExportFrame.UseVisualStyleBackColor = true;
@@ -339,9 +373,10 @@
             // 
             // btnCreateFrame
             // 
-            this.btnCreateFrame.Location = new System.Drawing.Point(7, 50);
+            this.btnCreateFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCreateFrame.Location = new System.Drawing.Point(3, 37);
             this.btnCreateFrame.Name = "btnCreateFrame";
-            this.btnCreateFrame.Size = new System.Drawing.Size(129, 23);
+            this.btnCreateFrame.Size = new System.Drawing.Size(150, 28);
             this.btnCreateFrame.TabIndex = 2;
             this.btnCreateFrame.Text = "Create Frame";
             this.btnCreateFrame.UseVisualStyleBackColor = true;
@@ -349,9 +384,10 @@
             // 
             // btnOpenTribonFrame
             // 
-            this.btnOpenTribonFrame.Location = new System.Drawing.Point(165, 20);
+            this.btnOpenTribonFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnOpenTribonFrame.Location = new System.Drawing.Point(159, 3);
             this.btnOpenTribonFrame.Name = "btnOpenTribonFrame";
-            this.btnOpenTribonFrame.Size = new System.Drawing.Size(129, 23);
+            this.btnOpenTribonFrame.Size = new System.Drawing.Size(150, 28);
             this.btnOpenTribonFrame.TabIndex = 1;
             this.btnOpenTribonFrame.Text = "Open Tribon Frame";
             this.btnOpenTribonFrame.UseVisualStyleBackColor = true;
@@ -359,9 +395,10 @@
             // 
             // btnOpenAMFrame
             // 
-            this.btnOpenAMFrame.Location = new System.Drawing.Point(7, 21);
+            this.btnOpenAMFrame.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnOpenAMFrame.Location = new System.Drawing.Point(3, 3);
             this.btnOpenAMFrame.Name = "btnOpenAMFrame";
-            this.btnOpenAMFrame.Size = new System.Drawing.Size(129, 23);
+            this.btnOpenAMFrame.Size = new System.Drawing.Size(150, 28);
             this.btnOpenAMFrame.TabIndex = 0;
             this.btnOpenAMFrame.Text = "Open AM Frame";
             this.btnOpenAMFrame.UseVisualStyleBackColor = true;
@@ -369,9 +406,11 @@
             // 
             // btnOpenModel
             // 
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenModel.Location = new System.Drawing.Point(12, 12);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(127, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(318, 28);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Open Model";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -379,9 +418,10 @@
             // 
             // btnShowAllFrames
             // 
-            this.btnShowAllFrames.Location = new System.Drawing.Point(7, 134);
+            this.btnShowAllFrames.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShowAllFrames.Location = new System.Drawing.Point(3, 139);
             this.btnShowAllFrames.Name = "btnShowAllFrames";
-            this.btnShowAllFrames.Size = new System.Drawing.Size(126, 23);
+            this.btnShowAllFrames.Size = new System.Drawing.Size(150, 28);
             this.btnShowAllFrames.TabIndex = 7;
             this.btnShowAllFrames.Text = "Show All Frames";
             this.btnShowAllFrames.UseVisualStyleBackColor = true;
@@ -389,9 +429,10 @@
             // 
             // btnHideAllFrames
             // 
-            this.btnHideAllFrames.Location = new System.Drawing.Point(165, 134);
+            this.btnHideAllFrames.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHideAllFrames.Location = new System.Drawing.Point(159, 139);
             this.btnHideAllFrames.Name = "btnHideAllFrames";
-            this.btnHideAllFrames.Size = new System.Drawing.Size(126, 23);
+            this.btnHideAllFrames.Size = new System.Drawing.Size(150, 28);
             this.btnHideAllFrames.TabIndex = 8;
             this.btnHideAllFrames.Text = "Hide All Frames";
             this.btnHideAllFrames.UseVisualStyleBackColor = true;
@@ -399,9 +440,10 @@
             // 
             // btnFrameLineColor
             // 
-            this.btnFrameLineColor.Location = new System.Drawing.Point(10, 164);
+            this.btnFrameLineColor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnFrameLineColor.Location = new System.Drawing.Point(159, 37);
             this.btnFrameLineColor.Name = "btnFrameLineColor";
-            this.btnFrameLineColor.Size = new System.Drawing.Size(123, 23);
+            this.btnFrameLineColor.Size = new System.Drawing.Size(150, 28);
             this.btnFrameLineColor.TabIndex = 9;
             this.btnFrameLineColor.Text = "FrameLineColor";
             this.btnFrameLineColor.UseVisualStyleBackColor = true;
@@ -411,10 +453,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1231, 836);
+            this.ClientSize = new System.Drawing.Size(1280, 836);
             this.Controls.Add(this.splitContainer1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "VIZCore3DX.NET.Frame";
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
@@ -423,6 +465,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -461,6 +504,7 @@
         private System.Windows.Forms.Button btnHideAllFrames;
         private System.Windows.Forms.Button btnShowAllFrames;
         private System.Windows.Forms.Button btnFrameLineColor;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

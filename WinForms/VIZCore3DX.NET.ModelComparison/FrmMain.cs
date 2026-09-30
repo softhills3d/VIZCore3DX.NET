@@ -19,6 +19,7 @@ namespace VIZCore3DX.NET.ModelComparison
             // 모델1 뷰어 생성 및 분할 패널 왼쪽에 배치
             vizcore1 = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore1.Dock = DockStyle.Fill;
+            vizcore1.LoadSavedSettingOnStartup = false;
             splitContainer2.Panel1.Controls.Add(vizcore1);
 
             vizcore1.OnInitializedVIZCore3DX += VIZCore3DX1_OnInitializedVIZCore3DX;
@@ -26,12 +27,13 @@ namespace VIZCore3DX.NET.ModelComparison
             // 모델2 뷰어 생성 및 분할 패널 오른쪽에 배치
             vizcore2 = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore2.Dock = DockStyle.Fill;
+            vizcore2.LoadSavedSettingOnStartup = false;
             splitContainer2.Panel2.Controls.Add(vizcore2);
 
             vizcore2.OnInitializedVIZCore3DX += VIZCore3DX2_OnInitializedVIZCore3DX;
 
             // 분할 패널을 좌우 동일한 크기로 설정
-            splitContainer2.SplitterDistance = this.Width / 2;
+            splitContainer2.SplitterDistance = splitContainer2.Width / 2;
         }
 
         #region Event - OnInitializedVIZCore3DX
@@ -90,13 +92,19 @@ namespace VIZCore3DX.NET.ModelComparison
             vizcore.BeginUpdate();
 
             // ================================================================
-            // 설정 - 툴바
+            // 설정 - 리본 / 툴바 모두 숨김
             // ================================================================
-            vizcore.ToolbarMain.Visible = true;
+            vizcore.RibbonMode = false;
+            vizcore.View.Toolbar.Enable = false;
+            vizcore.ModelingControlVisible = false;
+            vizcore.ToolbarMain.Visible = false;
             vizcore.ToolbarNote.Visible = false;
             vizcore.ToolbarMeasure.Visible = false;
             vizcore.ToolbarSection.Visible = false;
             vizcore.ToolbarSnapshot.Visible = false;
+            vizcore.ToolbarDecal.Visible = false;
+            vizcore.ToolbarPrimitive.Visible = false;
+            vizcore.Statusbar.Visible = false;
 
             vizcore.EndUpdate();
         }
@@ -108,8 +116,6 @@ namespace VIZCore3DX.NET.ModelComparison
 
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            txtModel1.Text = dlg.FileName;
-
             bool result = vizcore1.Model.Open(dlg.FileName);
 
             if (result == false)
@@ -117,6 +123,8 @@ namespace VIZCore3DX.NET.ModelComparison
                 MessageBox.Show("모델 1 열기 실패", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            txtModel1.Text = dlg.FileName;
         }
 
         private void btnOpen2_Click(object sender, EventArgs e)
@@ -126,8 +134,6 @@ namespace VIZCore3DX.NET.ModelComparison
 
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            txtModel2.Text = dlg.FileName;
-
             bool result = vizcore2.Model.Open(dlg.FileName);
 
             if (result == false)
@@ -135,6 +141,8 @@ namespace VIZCore3DX.NET.ModelComparison
                 MessageBox.Show("모델 2 열기 실패", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            txtModel2.Text = dlg.FileName;
         }
 
         /// <summary>
@@ -163,6 +171,13 @@ namespace VIZCore3DX.NET.ModelComparison
 
         private void btnCompare_Click(object sender, EventArgs e)
         {
+            // 두 모델이 모두 열려 있어야 비교 가능
+            if (vizcore1.Model.IsOpen() == false || vizcore2.Model.IsOpen() == false)
+            {
+                MessageBox.Show("모델 1과 모델 2를 먼저 열어 주시기 바랍니다.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             // 두 모델 중 하나라도 Body를 포함하면 Body 노드까지 비교 대상에 포함
             bool includeBody = vizcore1.Model.EnableBody == true || vizcore2.Model.EnableBody == true;
 

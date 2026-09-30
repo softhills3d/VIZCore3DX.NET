@@ -120,12 +120,87 @@ namespace VIZCore3DX.NET.ClashTest
             vizcore3dx.EndUpdate();
 
             cbClashTestKind.SelectedIndex = 0;
+
+            // 결과 리포트 그룹 단위 (PART / ASSEMBLY)
+            cmbReportGrouping.DataSource = Enum.GetValues(typeof(VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions));
+            cmbReportGrouping.SelectedItem = VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions.PART;
         }
 
         private void InitializeVIZCore3DXEvent()
         {
             // Clash Test 완료 이벤트
             vizcore3dx.Clash.OnClashTestFinishedEvent += Clash_OnClashTestFinishedEvent;
+
+            // 모델 열기 / 닫기 : 테스트 시나리오 버튼 활성화 갱신
+            vizcore3dx.Model.OnModelOpenedEvent += Model_OnModelChanged;
+            vizcore3dx.Model.OnModelClosedEvent += Model_OnModelChanged;
+
+            // 시나리오 버튼 안내 (primitiveCrane.vizx 를 열었을 때만 활성화)
+            new ToolTip().SetToolTip(btnLoadScenario, "primitiveCrane.vizx 모델(Animation 예제의 크레인 모델)을 열면 활성화됩니다.");
+        }
+
+        // ================================================================
+        // 테스트 시나리오 (primitiveCrane.vizx 전용)
+        // ================================================================
+        private const string ScenarioModelName = "primitiveCrane.vizx";
+
+        private void Model_OnModelChanged(object sender, EventArgs e)
+        {
+            if (InvokeRequired == true)
+            {
+                BeginInvoke(new Action(UpdateScenarioButton));
+                return;
+            }
+
+            UpdateScenarioButton();
+        }
+
+        private void UpdateScenarioButton()
+        {
+            bool enable = false;
+
+            if (vizcore3dx.Model.IsOpen() == true && vizcore3dx.Model.Files != null)
+            {
+                foreach (string file in vizcore3dx.Model.Files)
+                {
+                    if (string.Equals(System.IO.Path.GetFileName(file), ScenarioModelName, StringComparison.OrdinalIgnoreCase)) enable = true;
+                }
+            }
+
+            btnLoadScenario.Enabled = enable;
+        }
+
+        /// <summary>
+        /// 테스트 시나리오 불러오기 : 장비 검사, 그룹 A = Boom Section 3 (Boom Head / Boom Section 2 / Boom Section 1 과 간섭)
+        /// </summary>
+        private void btnLoadScenario_Click(object sender, EventArgs e)
+        {
+            List<Node> groupA = new List<Node>();
+
+            foreach (Node node in vizcore3dx.Object3D.FromFilter(Object3dFilter.PART))
+            {
+                if (node.NodeName == "Boom Section 3") groupA.Add(node);
+            }
+
+            if (groupA.Count == 0)
+            {
+                MessageBox.Show("시나리오 대상 노드(Boom Section 3)를 찾을 수 없습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 이전 검사가 남아 있으면 종료 (검사 진행 상태 초기화)
+            if (_isClashTestMode) btnExit_Click(sender, e);
+
+            // 장비 검사 : 그룹 A 와 나머지 전체 모델 간 간섭
+            cbClashTestKind.SelectedIndex = 1;
+            nodesA = groupA;
+            nodesB = new List<Node>();
+
+            // 간섭 검사 추가 후 바로 실행
+            btnAdd_Click(sender, e);
+            if (clash == null || cbClashTestId.Items.Contains(clash.ID) == false) return;
+
+            btnStart_Click(sender, e);
         }
 
         /// <summary>
@@ -140,7 +215,7 @@ namespace VIZCore3DX.NET.ClashTest
         }
 
         /// <summary>
-        /// Cash Test 그룹 A 설정
+        /// Clash Test 그룹 A 설정
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event Args</param>
@@ -156,7 +231,7 @@ namespace VIZCore3DX.NET.ClashTest
 
             nodesA = nodes;
 
-            MessageBox.Show("선택된 모델을 그룹에 설정 하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("선택된 모델을 그룹에 설정하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             vizcore3dx.Object3D.Select(Data.Object3dSelectionModes.DESELECT_ALL);
         }
@@ -178,7 +253,7 @@ namespace VIZCore3DX.NET.ClashTest
 
             nodesB = nodes;
 
-            MessageBox.Show("선택된 모델을 그룹에 설정 하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("선택된 모델을 그룹에 설정하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             vizcore3dx.Object3D.Select(Data.Object3dSelectionModes.DESELECT_ALL);
         }
@@ -208,7 +283,7 @@ namespace VIZCore3DX.NET.ClashTest
             clash.ClearanceValue = (float)numClearanceValue.Value;
             clash.UseRangeValue = ckUseRangeValue.Checked;
             clash.RangeValue = (float)numRangeValue.Value;
-            clash.PenetrationTolerance = (float)numPenetrationTolerance.Value;
+            clash.PenetrationTolerance = (float)numPenetration.Value;
 
             vizcore3dx.Clash.IsAssembly = true; // True : Assembly, False : Part
 
@@ -375,14 +450,6 @@ namespace VIZCore3DX.NET.ClashTest
         {
             _nodeNameCache.Clear();
 
-            MessageBox.Show(
-                string.Format("Clash Test Completed. : {0} / {1}"
-                , e.ID
-                , clash.ElapsedTimeString)
-                , "VIZCore3DX.NET.ClashTest"
-                , MessageBoxButtons.OK, MessageBoxIcon.Information
-                );
-
             bool resultDataKind = false; // True : Assembly, False : Part
 
             {
@@ -402,6 +469,13 @@ namespace VIZCore3DX.NET.ClashTest
             }
 
             UpdateResultList(resultItems);
+
+            // 결과 건수 표시 (0건이면 그룹 설정을 확인하도록 안내)
+            string message = resultItems.Count == 0
+                ? string.Format("Clash Test Completed. (ID : {0} / {1})\n\n간섭 결과가 없습니다. 그룹 설정을 확인하세요.", e.ID, clash.ElapsedTimeString)
+                : string.Format("Clash Test Completed. (ID : {0} / {1})\n\n결과 : {2:N0}건", e.ID, clash.ElapsedTimeString, resultItems.Count);
+
+            MessageBox.Show(message, "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -412,8 +486,8 @@ namespace VIZCore3DX.NET.ClashTest
         {
             _isResultUpdating = true;
 
-            datagridviewInterferenceResult.SuspendLayout();
-            datagridviewInterferenceResult.Rows.Clear();
+            dgvResult.SuspendLayout();
+            dgvResult.Rows.Clear();
 
             _filteredResultItems.Clear();
 
@@ -450,11 +524,11 @@ namespace VIZCore3DX.NET.ClashTest
                 _filteredResultItems.Add(item);
             }
 
-            datagridviewInterferenceResult.RowCount = _filteredResultItems.Count;
+            dgvResult.RowCount = _filteredResultItems.Count;
 
-            datagridviewInterferenceResult.ClearSelection();
-            datagridviewInterferenceResult.CurrentCell = null;
-            datagridviewInterferenceResult.ResumeLayout();
+            dgvResult.ClearSelection();
+            dgvResult.CurrentCell = null;
+            dgvResult.ResumeLayout();
 
             _isResultUpdating = false;
         }
@@ -464,7 +538,7 @@ namespace VIZCore3DX.NET.ClashTest
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event Args</param>
-        private void datagridviewInterferenceResult_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+        private void dgvResult_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
         {
             if (_filteredResultItems.Count == 0)
                 return;
@@ -476,14 +550,22 @@ namespace VIZCore3DX.NET.ClashTest
             switch (e.ColumnIndex)
             {
                 case 0:
-                    e.Value = GetNodeName(resultItem.NodeA);
+                    e.Value = resultItem.NodeIndexA;
                     break;
 
                 case 1:
-                    e.Value = GetNodeName(resultItem.NodeB);
+                    e.Value = GetNodeName(resultItem.NodeA);
                     break;
 
                 case 2:
+                    e.Value = resultItem.NodeIndexB;
+                    break;
+
+                case 3:
+                    e.Value = GetNodeName(resultItem.NodeB);
+                    break;
+
+                case 4:
                     switch (resultItem.ResultKind)
                     {
                         case ClashResultKind.CLEARANCE:
@@ -508,15 +590,15 @@ namespace VIZCore3DX.NET.ClashTest
                     }
                     break;
 
-                case 3:
+                case 5:
                     e.Value = resultItem.Distance.ToString("0.#######");
                     break;
 
-                case 4:
+                case 6:
                     e.Value = resultItem.Position1.ToString();
                     break;
 
-                case 5:
+                case 7:
                     e.Value = resultItem.Direction.ToString();
                     break;
             }
@@ -545,7 +627,7 @@ namespace VIZCore3DX.NET.ClashTest
         /// </summary>
         /// <param name="sender">Sender</param>
         /// <param name="e">Event Args</param>
-        private void checkInterferenceStatus_CheckedChanged(object sender, EventArgs e)
+        private void ckResultKind_CheckedChanged(object sender, EventArgs e)
         {
             foreach (var dic in dicResult)
             {
@@ -558,14 +640,14 @@ namespace VIZCore3DX.NET.ClashTest
 
         }
 
-        private void datagridviewInterferenceResult_SelectionChanged(object sender, EventArgs e)
+        private void dgvResult_SelectionChanged(object sender, EventArgs e)
         {
-            if (datagridviewInterferenceResult.SelectedRows.Count == 0) return;
+            if (dgvResult.SelectedRows.Count == 0) return;
 
             if (_isResultUpdating)
                 return;
 
-            int rowIndex = datagridviewInterferenceResult.SelectedRows[0].Index;
+            int rowIndex = dgvResult.SelectedRows[0].Index;
 
             if (rowIndex >= 0 && rowIndex < _filteredResultItems.Count)
             {
@@ -579,6 +661,145 @@ namespace VIZCore3DX.NET.ClashTest
                     vizcore3dx.View.FlyToBoundingBox(item.Position1, item.Position2);
                 }
             }
+        }
+
+        // ================================================================
+        // 결과 리포트 : ExportResultCsv / ExportReportHtmlAsync / StopReportExport
+        // ================================================================
+
+        /// <summary>
+        /// 결과 리포트 대상 Clash Test 반환 (ClashTest ID 콤보 박스 선택 항목)
+        /// </summary>
+        /// <returns>Clash Test (없으면 null)</returns>
+        private VIZCore3DX.NET.Data.ClashTest GetReportTarget()
+        {
+            if (cbClashTestId.SelectedItem == null)
+            {
+                MessageBox.Show("ClashTest ID를 선택해 주세요.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            VIZCore3DX.NET.Data.ClashTest item = vizcore3dx.Clash.GetClashTest(Convert.ToInt32(cbClashTestId.SelectedItem));
+            if (item == null)
+            {
+                MessageBox.Show("선택한 간섭검사를 찾을 수 없습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            if (dicResult.ContainsKey(item.ID) == false)
+            {
+                MessageBox.Show("간섭검사를 먼저 수행해 주세요.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+
+            return item;
+        }
+
+        /// <summary>
+        /// 실패 사유(LastOperationStatus) 표시
+        /// </summary>
+        /// <param name="message">메시지</param>
+        private void ShowOperationFailed(string message)
+        {
+            VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Clash.LastOperationStatus;
+            string reason = status == null ? "알 수 없음" : status.ToString();
+
+            MessageBox.Show(string.Format("{0}\n\n사유 : {1}", message, reason), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        /// <summary>
+        /// 리포트 내보내기 진행 중 UI 상태 변경
+        /// </summary>
+        /// <param name="exporting">진행 중 여부</param>
+        private void SetReportExporting(bool exporting)
+        {
+            btnExportCsv.Enabled = !exporting;
+            btnExportHtml.Enabled = !exporting;
+            cmbReportGrouping.Enabled = !exporting;
+            chkCaptureImages.Enabled = !exporting;
+            btnStopReport.Enabled = exporting;
+        }
+
+        /// <summary>
+        /// 결과 표 CSV 내보내기
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event Args</param>
+        private void btnExportCsv_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.ClashTest item = GetReportTarget();
+            if (item == null) return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "CSV (*.csv)|*.csv";
+            dlg.FileName = string.Format("ClashResult_{0}.csv", item.ID);
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions option = (VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions)cmbReportGrouping.SelectedItem;
+
+            bool result = vizcore3dx.Clash.ExportResultCsv(item, dlg.FileName, option);
+            if (result == false)
+            {
+                lblReportStatus.Text = "상태 : CSV 내보내기 실패";
+                ShowOperationFailed("결과 CSV 내보내기에 실패하였습니다.");
+                return;
+            }
+
+            lblReportStatus.Text = "상태 : CSV 내보내기 완료";
+            MessageBox.Show(string.Format("결과 CSV 내보내기 완료\n\n{0}", dlg.FileName), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// 간섭 위치 캡처 이미지를 내장한 HTML 리포트 내보내기 (비동기)
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event Args</param>
+        private async void btnExportHtml_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.ClashTest item = GetReportTarget();
+            if (item == null) return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "HTML (*.html)|*.html";
+            dlg.FileName = string.Format("ClashReport_{0}.html", item.ID);
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions option = (VIZCore3DX.NET.Manager.ClashManager.ResultGroupingOptions)cmbReportGrouping.SelectedItem;
+
+            SetReportExporting(true);
+            lblReportStatus.Text = "상태 : HTML 리포트 내보내는 중...";
+
+            bool result = false;
+            try
+            {
+                // captureImages : true 이면 각 간섭 위치를 캡처하여 HTML에 내장
+                result = await vizcore3dx.Clash.ExportReportHtmlAsync(item, dlg.FileName, option, chkCaptureImages.Checked);
+            }
+            finally
+            {
+                SetReportExporting(false);
+            }
+
+            if (result == false)
+            {
+                lblReportStatus.Text = "상태 : HTML 리포트 중지 또는 실패";
+                ShowOperationFailed("HTML 리포트 내보내기가 중지되었거나 실패하였습니다.");
+                return;
+            }
+
+            lblReportStatus.Text = "상태 : HTML 리포트 완료";
+            MessageBox.Show(string.Format("HTML 리포트 내보내기 완료\n\n{0}", dlg.FileName), "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// HTML 리포트 내보내기 중지
+        /// </summary>
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event Args</param>
+        private void btnStopReport_Click(object sender, EventArgs e)
+        {
+            vizcore3dx.Clash.StopReportExport();
+            lblReportStatus.Text = "상태 : 중지 요청";
         }
     }
 }

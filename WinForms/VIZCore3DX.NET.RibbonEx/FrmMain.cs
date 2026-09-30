@@ -25,6 +25,10 @@ namespace VIZCore3DX.NET.RibbonEx
             // Init.
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
+
+            // 저장된 사용자 설정(UserSetting.ini)을 무시하고 항상 기본 설정으로 시작 (컨트롤 Load 전에 설정)
+            vizcore3dx.LoadSavedSettingOnStartup = false;
+
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
             this.panelView.Controls.Add(vizcore3dx);
         }
@@ -50,6 +54,9 @@ namespace VIZCore3DX.NET.RibbonEx
                 return;
             }
 
+            // 리본은 이 예제의 DevExpress 리본만 사용 (컨트롤 자체 리본 끄기)
+            vizcore3dx.RibbonMode = false;
+
             vizcore3dx.ToolbarMain.Visible = false;
             vizcore3dx.ToolbarAnimation.Visible = false;
             vizcore3dx.ToolbarMeasure.Visible = false;
@@ -58,8 +65,11 @@ namespace VIZCore3DX.NET.RibbonEx
             vizcore3dx.ToolbarSnapshot.Visible = false;
             vizcore3dx.ToolbarDecal.Visible = false;
             vizcore3dx.ToolbarPrimitive.Visible = false;
-            vizcore3dx.ToolbarClash.Visible = false;
             vizcore3dx.ToolbarSimulation.Visible = false;
+            vizcore3dx.ToolbarObserver.Visible = false;
+            vizcore3dx.ToolbarSelectionBox.Visible = false;
+            vizcore3dx.ToolbarZone.Visible = false;
+            vizcore3dx.ToolbarEffect.Visible = false;
 
             vizcore3dx.Statusbar.Visible = false;
 
@@ -67,6 +77,9 @@ namespace VIZCore3DX.NET.RibbonEx
             chkModelTree.Checked = vizcore3dx.ModelTreeVisible;
             chkViewCube.Checked = vizcore3dx.ViewCube.Enable;
             chkViewToolbar.Checked = vizcore3dx.View.Toolbar.Enable;
+            chkPhongShading.Checked = vizcore3dx.View.ShadingEffect;
+            chkObserverToolbar.Checked = vizcore3dx.ToolbarObserver.Visible;
+            chkObserverTab.Checked = vizcore3dx.TabObserverEnabled;
         }
 
         /// <summary>
@@ -456,9 +469,9 @@ namespace VIZCore3DX.NET.RibbonEx
 
         private void chkPhongShading_ItemClick(object sender, ItemClickEventArgs e)
         {
-            // Phong 음영
+            // 음영 효과 (View.PhongShading 삭제 → View.ShadingEffect 사용)
             if (!IsModelOpened()) return;
-            vizcore3dx.View.PhongShading = chkPhongShading.Checked;
+            vizcore3dx.View.ShadingEffect = chkPhongShading.Checked;
         }
 
         private void chkSsao_ItemClick(object sender, ItemClickEventArgs e)
@@ -770,6 +783,8 @@ namespace VIZCore3DX.NET.RibbonEx
                 vizcore3dx.Decal.AddDecalDialog(VIZCore3DX.NET.Data.DecalType.Text);
             else if (e.Item == btnDecalImage)
                 vizcore3dx.Decal.AddDecalDialog(VIZCore3DX.NET.Data.DecalType.Image);
+            else if (e.Item == btnDecalArrow)
+                vizcore3dx.Decal.AddDecalArrowDialog();
             else if (e.Item == btnDecalClear)
                 vizcore3dx.Decal.Clear();
         }
@@ -819,6 +834,23 @@ namespace VIZCore3DX.NET.RibbonEx
                 // 간섭 검사 초기화
                 vizcore3dx.Clash.Clear();
             }
+        }
+        #endregion
+
+        // ================================================
+        // 도구 - 옵저버
+        // ================================================
+        #region Ribbon - 도구 : 옵저버
+        private void chkObserverToolbar_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // 옵저버 툴바 보이기/숨기기
+            vizcore3dx.ToolbarObserver.Visible = chkObserverToolbar.Checked;
+        }
+
+        private void chkObserverTab_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // 창 패널의 옵저버 탭 사용 여부
+            vizcore3dx.TabObserverEnabled = chkObserverTab.Checked;
         }
         #endregion
 

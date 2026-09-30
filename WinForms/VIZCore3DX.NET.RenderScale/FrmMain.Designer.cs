@@ -33,6 +33,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnOpenModel = new System.Windows.Forms.Button();
             this.btnAddModels = new System.Windows.Forms.Button();
             this.btnCloseModel = new System.Windows.Forms.Button();
@@ -43,6 +44,7 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -56,12 +58,14 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
-            this.splitContainer1.Size = new System.Drawing.Size(1130, 687);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 0;
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.trackBar1);
             this.groupBox1.Location = new System.Drawing.Point(12, 129);
@@ -74,6 +78,8 @@
             // trackBar1
             // 
             this.trackBar1.LargeChange = 100;
+            this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.trackBar1.Location = new System.Drawing.Point(6, 20);
             this.trackBar1.Maximum = 400;
             this.trackBar1.Minimum = 100;
@@ -87,9 +93,9 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.btnOpenModel);
-            this.groupBox3.Controls.Add(this.btnAddModels);
-            this.groupBox3.Controls.Add(this.btnCloseModel);
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox3.Controls.Add(this.tableLayoutPanel1);
             this.groupBox3.Location = new System.Drawing.Point(12, 12);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(355, 95);
@@ -97,11 +103,30 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Model";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel1.Controls.Add(this.btnOpenModel, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnAddModels, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnCloseModel, 2, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 33);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(331, 34);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
             // btnOpenModel
             // 
-            this.btnOpenModel.Location = new System.Drawing.Point(15, 38);
+            this.btnOpenModel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnOpenModel.Location = new System.Drawing.Point(3, 3);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(101, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(104, 28);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Open";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -109,9 +134,10 @@
             // 
             // btnAddModels
             // 
-            this.btnAddModels.Location = new System.Drawing.Point(126, 38);
+            this.btnAddModels.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAddModels.Location = new System.Drawing.Point(113, 3);
             this.btnAddModels.Name = "btnAddModels";
-            this.btnAddModels.Size = new System.Drawing.Size(101, 23);
+            this.btnAddModels.Size = new System.Drawing.Size(105, 28);
             this.btnAddModels.TabIndex = 1;
             this.btnAddModels.Text = "Add";
             this.btnAddModels.UseVisualStyleBackColor = true;
@@ -119,9 +145,10 @@
             // 
             // btnCloseModel
             // 
-            this.btnCloseModel.Location = new System.Drawing.Point(239, 38);
+            this.btnCloseModel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnCloseModel.Location = new System.Drawing.Point(224, 3);
             this.btnCloseModel.Name = "btnCloseModel";
-            this.btnCloseModel.Size = new System.Drawing.Size(101, 23);
+            this.btnCloseModel.Size = new System.Drawing.Size(104, 28);
             this.btnCloseModel.TabIndex = 2;
             this.btnCloseModel.Text = "Close";
             this.btnCloseModel.UseVisualStyleBackColor = true;
@@ -130,6 +157,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.Location = new System.Drawing.Point(255, 68);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 12);
@@ -140,7 +168,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1130, 687);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -153,6 +181,7 @@
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -167,6 +196,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TrackBar trackBar1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

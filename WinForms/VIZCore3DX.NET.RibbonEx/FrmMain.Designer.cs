@@ -99,6 +99,9 @@ namespace VIZCore3DX.NET.RibbonEx
             this.btnDecalText = new DevExpress.XtraBars.BarButtonItem();
             this.btnDecalImage = new DevExpress.XtraBars.BarButtonItem();
             this.btnDecalClear = new DevExpress.XtraBars.BarButtonItem();
+            this.btnDecalArrow = new DevExpress.XtraBars.BarButtonItem();
+            this.chkObserverToolbar = new DevExpress.XtraBars.BarCheckItem();
+            this.chkObserverTab = new DevExpress.XtraBars.BarCheckItem();
             this.btnAnimationPlay = new DevExpress.XtraBars.BarButtonItem();
             this.btnAnimationPause = new DevExpress.XtraBars.BarButtonItem();
             this.btnAnimationStop = new DevExpress.XtraBars.BarButtonItem();
@@ -194,6 +197,7 @@ namespace VIZCore3DX.NET.RibbonEx
             this.rpgAnimation = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.rpgClash = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.rpgExport = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
+            this.rpgObserver = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.ribbonStatusBar = new DevExpress.XtraBars.Ribbon.RibbonStatusBar();
             this.panelView = new DevExpress.XtraEditors.PanelControl();
             ((System.ComponentModel.ISupportInitialize)(this.ribbon)).BeginInit();
@@ -331,9 +335,12 @@ namespace VIZCore3DX.NET.RibbonEx
             this.btnSectionInvert,
             this.btnExportModel,
             this.btnExportStructure,
-            this.btnPreview});
+            this.btnPreview,
+            this.btnDecalArrow,
+            this.chkObserverToolbar,
+            this.chkObserverTab});
             this.ribbon.Location = new System.Drawing.Point(0, 0);
-            this.ribbon.MaxItemId = 128;
+            this.ribbon.MaxItemId = 131;
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.rPageHome,
@@ -983,6 +990,33 @@ namespace VIZCore3DX.NET.RibbonEx
             this.btnDecalClear.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
             this.btnDecalClear.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDecal_ItemClick);
             //
+            // btnDecalArrow
+            //
+            this.btnDecalArrow.Caption = "화살표 데칼";
+            this.btnDecalArrow.Id = 128;
+            this.btnDecalArrow.ImageOptions.SvgImage = global::VIZCore3DX.NET.RibbonEx.Properties.Resources.화살표_32px;
+            this.btnDecalArrow.Name = "btnDecalArrow";
+            this.btnDecalArrow.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.btnDecalArrow.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.btnDecal_ItemClick);
+            //
+            // chkObserverToolbar
+            //
+            this.chkObserverToolbar.Caption = "옵저버 툴바";
+            this.chkObserverToolbar.Id = 129;
+            this.chkObserverToolbar.ImageOptions.SvgImage = global::VIZCore3DX.NET.RibbonEx.Properties.Resources.뷰툴바_32px;
+            this.chkObserverToolbar.Name = "chkObserverToolbar";
+            this.chkObserverToolbar.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.chkObserverToolbar.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.chkObserverToolbar_ItemClick);
+            //
+            // chkObserverTab
+            //
+            this.chkObserverTab.Caption = "옵저버 창 탭";
+            this.chkObserverTab.Id = 130;
+            this.chkObserverTab.ImageOptions.SvgImage = global::VIZCore3DX.NET.RibbonEx.Properties.Resources.모델트리_32px;
+            this.chkObserverTab.Name = "chkObserverTab";
+            this.chkObserverTab.RibbonStyle = DevExpress.XtraBars.Ribbon.RibbonItemStyles.Large;
+            this.chkObserverTab.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.chkObserverTab_ItemClick);
+            //
             // btnAnimationPlay
             //
             this.btnAnimationPlay.Caption = "재생";
@@ -1255,7 +1289,7 @@ namespace VIZCore3DX.NET.RibbonEx
             //
             // chkPhongShading
             //
-            this.chkPhongShading.Caption = "Phong 음영";
+            this.chkPhongShading.Caption = "음영 효과";
             this.chkPhongShading.Id = 101;
             this.chkPhongShading.ImageOptions.SvgImage = global::VIZCore3DX.NET.RibbonEx.Properties.Resources.음영_32px;
             this.chkPhongShading.Name = "chkPhongShading";
@@ -1807,6 +1841,7 @@ namespace VIZCore3DX.NET.RibbonEx
             this.rpgDecal,
             this.rpgAnimation,
             this.rpgClash,
+            this.rpgObserver,
             this.rpgExport});
             this.rPageTools.Name = "rPageTools";
             this.rPageTools.Text = "도구";
@@ -1823,6 +1858,7 @@ namespace VIZCore3DX.NET.RibbonEx
             //
             this.rpgDecal.ItemLinks.Add(this.btnDecalText);
             this.rpgDecal.ItemLinks.Add(this.btnDecalImage);
+            this.rpgDecal.ItemLinks.Add(this.btnDecalArrow);
             this.rpgDecal.ItemLinks.Add(this.btnDecalClear);
             this.rpgDecal.Name = "rpgDecal";
             this.rpgDecal.Text = "데칼";
@@ -1842,6 +1878,13 @@ namespace VIZCore3DX.NET.RibbonEx
             this.rpgClash.ItemLinks.Add(this.btnClashClear);
             this.rpgClash.Name = "rpgClash";
             this.rpgClash.Text = "간섭 검사";
+            //
+            // rpgObserver
+            //
+            this.rpgObserver.ItemLinks.Add(this.chkObserverToolbar);
+            this.rpgObserver.ItemLinks.Add(this.chkObserverTab);
+            this.rpgObserver.Name = "rpgObserver";
+            this.rpgObserver.Text = "옵저버";
             //
             // rpgExport
             //
@@ -1930,6 +1973,7 @@ namespace VIZCore3DX.NET.RibbonEx
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup rpgAnimation;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup rpgClash;
         private DevExpress.XtraBars.Ribbon.RibbonPageGroup rpgExport;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup rpgObserver;
 
         private DevExpress.XtraBars.BarButtonItem btnModelOpen;
         private DevExpress.XtraBars.BarButtonItem btnModelAdd;
@@ -2001,6 +2045,9 @@ namespace VIZCore3DX.NET.RibbonEx
         private DevExpress.XtraBars.BarButtonItem btnDecalText;
         private DevExpress.XtraBars.BarButtonItem btnDecalImage;
         private DevExpress.XtraBars.BarButtonItem btnDecalClear;
+        private DevExpress.XtraBars.BarButtonItem btnDecalArrow;
+        private DevExpress.XtraBars.BarCheckItem chkObserverToolbar;
+        private DevExpress.XtraBars.BarCheckItem chkObserverTab;
         private DevExpress.XtraBars.BarButtonItem btnAnimationPlay;
         private DevExpress.XtraBars.BarButtonItem btnAnimationPause;
         private DevExpress.XtraBars.BarButtonItem btnAnimationStop;

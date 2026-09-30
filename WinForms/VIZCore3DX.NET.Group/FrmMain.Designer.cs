@@ -35,6 +35,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tlpGroupButton = new System.Windows.Forms.TableLayoutPanel();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -54,6 +55,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.tlpGroupButton.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -75,7 +77,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1046, 654);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 348;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -85,11 +87,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.lvGroup);
-            this.groupBox2.Controls.Add(this.btnClear);
-            this.groupBox2.Controls.Add(this.btnDelete);
+            this.groupBox2.Controls.Add(this.tlpGroupButton);
             this.groupBox2.Location = new System.Drawing.Point(12, 248);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(322, 394);
+            this.groupBox2.Size = new System.Drawing.Size(322, 500);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Groups";
@@ -108,7 +109,7 @@
             this.lvGroup.HideSelection = false;
             this.lvGroup.Location = new System.Drawing.Point(6, 57);
             this.lvGroup.Name = "lvGroup";
-            this.lvGroup.Size = new System.Drawing.Size(310, 322);
+            this.lvGroup.Size = new System.Drawing.Size(310, 428);
             this.lvGroup.TabIndex = 4;
             this.lvGroup.UseCompatibleStateImageBehavior = false;
             this.lvGroup.View = System.Windows.Forms.View.Details;
@@ -130,11 +131,28 @@
             this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.columnHeader3.Width = 78;
             // 
+            // tlpGroupButton
+            // 
+            this.tlpGroupButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpGroupButton.ColumnCount = 2;
+            this.tlpGroupButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpGroupButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpGroupButton.Controls.Add(this.btnDelete, 0, 0);
+            this.tlpGroupButton.Controls.Add(this.btnClear, 1, 0);
+            this.tlpGroupButton.Location = new System.Drawing.Point(6, 20);
+            this.tlpGroupButton.Name = "tlpGroupButton";
+            this.tlpGroupButton.RowCount = 1;
+            this.tlpGroupButton.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpGroupButton.Size = new System.Drawing.Size(310, 32);
+            this.tlpGroupButton.TabIndex = 2;
+            // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(179, 24);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClear.Location = new System.Drawing.Point(158, 3);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(125, 23);
+            this.btnClear.Size = new System.Drawing.Size(149, 26);
             this.btnClear.TabIndex = 3;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -142,9 +160,10 @@
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(20, 24);
+            this.btnDelete.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnDelete.Location = new System.Drawing.Point(3, 3);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(153, 23);
+            this.btnDelete.Size = new System.Drawing.Size(149, 26);
             this.btnDelete.TabIndex = 2;
             this.btnDelete.Text = "Delete (Selected)";
             this.btnDelete.UseVisualStyleBackColor = true;
@@ -272,8 +291,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.dataGridNode);
-            this.splitContainer2.Size = new System.Drawing.Size(694, 654);
-            this.splitContainer2.SplitterDistance = 464;
+            this.splitContainer2.Size = new System.Drawing.Size(928, 760);
+            this.splitContainer2.SplitterDistance = 570;
             this.splitContainer2.TabIndex = 0;
             // 
             // dataGridNode
@@ -287,14 +306,14 @@
             this.dataGridNode.Name = "dataGridNode";
             this.dataGridNode.ReadOnly = true;
             this.dataGridNode.RowTemplate.Height = 34;
-            this.dataGridNode.Size = new System.Drawing.Size(694, 186);
+            this.dataGridNode.Size = new System.Drawing.Size(928, 186);
             this.dataGridNode.TabIndex = 1;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1046, 654);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -305,6 +324,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.tlpGroupButton.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.splitContainer2.Panel2.ResumeLayout(false);
@@ -323,6 +343,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.TableLayoutPanel tlpGroupButton;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.GroupBox groupBox1;

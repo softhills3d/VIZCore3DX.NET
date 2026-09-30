@@ -31,10 +31,12 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grpAllMessages = new System.Windows.Forms.GroupBox();
+            this.tlpAllMessageButton = new System.Windows.Forms.TableLayoutPanel();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnHideAll = new System.Windows.Forms.Button();
             this.btnShowAll = new System.Windows.Forms.Button();
             this.grpMessageList = new System.Windows.Forms.GroupBox();
+            this.tlpMessageButton = new System.Windows.Forms.TableLayoutPanel();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnHide = new System.Windows.Forms.Button();
             this.btnShow = new System.Windows.Forms.Button();
@@ -65,7 +67,9 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.grpAllMessages.SuspendLayout();
+            this.tlpAllMessageButton.SuspendLayout();
             this.grpMessageList.SuspendLayout();
+            this.tlpMessageButton.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).BeginInit();
             this.grpMessage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPositionY)).BeginInit();
@@ -81,33 +85,49 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.grpAllMessages);
             this.splitContainer1.Panel1.Controls.Add(this.grpMessageList);
+            this.splitContainer1.Panel1.Controls.Add(this.grpAllMessages);
             this.splitContainer1.Panel1.Controls.Add(this.grpMessage);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(8);
-            this.splitContainer1.Size = new System.Drawing.Size(1184, 661);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 394;
             this.splitContainer1.TabIndex = 0;
             // 
             // grpAllMessages
             // 
-            this.grpAllMessages.Controls.Add(this.btnClear);
-            this.grpAllMessages.Controls.Add(this.btnHideAll);
-            this.grpAllMessages.Controls.Add(this.btnShowAll);
-            this.grpAllMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpAllMessages.Location = new System.Drawing.Point(8, 578);
+            this.grpAllMessages.Controls.Add(this.tlpAllMessageButton);
+            this.grpAllMessages.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.grpAllMessages.Location = new System.Drawing.Point(8, 677);
             this.grpAllMessages.Name = "grpAllMessages";
             this.grpAllMessages.Size = new System.Drawing.Size(378, 75);
             this.grpAllMessages.TabIndex = 2;
             this.grpAllMessages.TabStop = false;
             this.grpAllMessages.Text = "All Messages";
             // 
+            // tlpAllMessageButton
+            // 
+            this.tlpAllMessageButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpAllMessageButton.ColumnCount = 3;
+            this.tlpAllMessageButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpAllMessageButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpAllMessageButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpAllMessageButton.Controls.Add(this.btnShowAll, 0, 0);
+            this.tlpAllMessageButton.Controls.Add(this.btnHideAll, 1, 0);
+            this.tlpAllMessageButton.Controls.Add(this.btnClear, 2, 0);
+            this.tlpAllMessageButton.Location = new System.Drawing.Point(16, 26);
+            this.tlpAllMessageButton.Name = "tlpAllMessageButton";
+            this.tlpAllMessageButton.RowCount = 1;
+            this.tlpAllMessageButton.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpAllMessageButton.Size = new System.Drawing.Size(346, 32);
+            this.tlpAllMessageButton.TabIndex = 0;
+            // 
             // btnClear
             // 
-            this.btnClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClear.Location = new System.Drawing.Point(257, 29);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClear.Location = new System.Drawing.Point(233, 3);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(102, 23);
+            this.btnClear.Size = new System.Drawing.Size(109, 26);
             this.btnClear.TabIndex = 2;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -115,9 +135,10 @@
             // 
             // btnHideAll
             // 
-            this.btnHideAll.Location = new System.Drawing.Point(138, 29);
+            this.btnHideAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHideAll.Location = new System.Drawing.Point(118, 3);
             this.btnHideAll.Name = "btnHideAll";
-            this.btnHideAll.Size = new System.Drawing.Size(102, 23);
+            this.btnHideAll.Size = new System.Drawing.Size(109, 26);
             this.btnHideAll.TabIndex = 1;
             this.btnHideAll.Text = "Hide All";
             this.btnHideAll.UseVisualStyleBackColor = true;
@@ -125,9 +146,10 @@
             // 
             // btnShowAll
             // 
-            this.btnShowAll.Location = new System.Drawing.Point(19, 29);
+            this.btnShowAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShowAll.Location = new System.Drawing.Point(3, 3);
             this.btnShowAll.Name = "btnShowAll";
-            this.btnShowAll.Size = new System.Drawing.Size(102, 23);
+            this.btnShowAll.Size = new System.Drawing.Size(109, 26);
             this.btnShowAll.TabIndex = 0;
             this.btnShowAll.Text = "Show All";
             this.btnShowAll.UseVisualStyleBackColor = true;
@@ -135,24 +157,40 @@
             // 
             // grpMessageList
             // 
-            this.grpMessageList.Controls.Add(this.btnDelete);
-            this.grpMessageList.Controls.Add(this.btnHide);
-            this.grpMessageList.Controls.Add(this.btnShow);
+            this.grpMessageList.Controls.Add(this.tlpMessageButton);
             this.grpMessageList.Controls.Add(this.dgvMessage);
-            this.grpMessageList.Dock = System.Windows.Forms.DockStyle.Top;
+            this.grpMessageList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpMessageList.Location = new System.Drawing.Point(8, 260);
             this.grpMessageList.Name = "grpMessageList";
-            this.grpMessageList.Size = new System.Drawing.Size(378, 318);
+            this.grpMessageList.Size = new System.Drawing.Size(378, 417);
             this.grpMessageList.TabIndex = 1;
             this.grpMessageList.TabStop = false;
             this.grpMessageList.Text = "Message List";
             // 
+            // tlpMessageButton
+            // 
+            this.tlpMessageButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpMessageButton.ColumnCount = 3;
+            this.tlpMessageButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpMessageButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tlpMessageButton.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33334F));
+            this.tlpMessageButton.Controls.Add(this.btnShow, 0, 0);
+            this.tlpMessageButton.Controls.Add(this.btnHide, 1, 0);
+            this.tlpMessageButton.Controls.Add(this.btnDelete, 2, 0);
+            this.tlpMessageButton.Location = new System.Drawing.Point(16, 376);
+            this.tlpMessageButton.Name = "tlpMessageButton";
+            this.tlpMessageButton.RowCount = 1;
+            this.tlpMessageButton.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpMessageButton.Size = new System.Drawing.Size(346, 32);
+            this.tlpMessageButton.TabIndex = 1;
+            // 
             // btnDelete
             // 
-            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDelete.Location = new System.Drawing.Point(257, 280);
+            this.btnDelete.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnDelete.Location = new System.Drawing.Point(233, 3);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(102, 23);
+            this.btnDelete.Size = new System.Drawing.Size(109, 26);
             this.btnDelete.TabIndex = 3;
             this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
@@ -160,9 +198,10 @@
             // 
             // btnHide
             // 
-            this.btnHide.Location = new System.Drawing.Point(138, 280);
+            this.btnHide.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHide.Location = new System.Drawing.Point(118, 3);
             this.btnHide.Name = "btnHide";
-            this.btnHide.Size = new System.Drawing.Size(102, 23);
+            this.btnHide.Size = new System.Drawing.Size(109, 26);
             this.btnHide.TabIndex = 2;
             this.btnHide.Text = "Hide";
             this.btnHide.UseVisualStyleBackColor = true;
@@ -170,9 +209,10 @@
             // 
             // btnShow
             // 
-            this.btnShow.Location = new System.Drawing.Point(19, 280);
+            this.btnShow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShow.Location = new System.Drawing.Point(3, 3);
             this.btnShow.Name = "btnShow";
-            this.btnShow.Size = new System.Drawing.Size(102, 23);
+            this.btnShow.Size = new System.Drawing.Size(109, 26);
             this.btnShow.TabIndex = 1;
             this.btnShow.Text = "Show";
             this.btnShow.UseVisualStyleBackColor = true;
@@ -183,7 +223,9 @@
             this.dgvMessage.AllowUserToAddRows = false;
             this.dgvMessage.AllowUserToDeleteRows = false;
             this.dgvMessage.AllowUserToResizeRows = false;
-            this.dgvMessage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvMessage.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvMessage.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMessage.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -198,7 +240,7 @@
             this.dgvMessage.RowHeadersVisible = false;
             this.dgvMessage.RowTemplate.Height = 23;
             this.dgvMessage.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvMessage.Size = new System.Drawing.Size(340, 243);
+            this.dgvMessage.Size = new System.Drawing.Size(340, 342);
             this.dgvMessage.TabIndex = 0;
             this.dgvMessage.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvMessage_CellClick);
             // 
@@ -444,7 +486,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -453,7 +495,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.grpAllMessages.ResumeLayout(false);
+            this.tlpAllMessageButton.ResumeLayout(false);
             this.grpMessageList.ResumeLayout(false);
+            this.tlpMessageButton.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvMessage)).EndInit();
             this.grpMessage.ResumeLayout(false);
             this.grpMessage.PerformLayout();
@@ -483,10 +527,12 @@
         private System.Windows.Forms.Button btnCreate;
         private System.Windows.Forms.GroupBox grpMessageList;
         private System.Windows.Forms.DataGridView dgvMessage;
+        private System.Windows.Forms.TableLayoutPanel tlpMessageButton;
         private System.Windows.Forms.Button btnShow;
         private System.Windows.Forms.Button btnHide;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.GroupBox grpAllMessages;
+        private System.Windows.Forms.TableLayoutPanel tlpAllMessageButton;
         private System.Windows.Forms.Button btnShowAll;
         private System.Windows.Forms.Button btnHideAll;
         private System.Windows.Forms.Button btnClear;

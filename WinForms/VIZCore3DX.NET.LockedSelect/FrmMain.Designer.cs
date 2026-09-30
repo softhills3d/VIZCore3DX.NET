@@ -31,6 +31,7 @@
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.grpLockedList = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.btnHideAll = new System.Windows.Forms.Button();
             this.btnShowAll = new System.Windows.Forms.Button();
             this.btnHide = new System.Windows.Forms.Button();
@@ -42,6 +43,7 @@
             this.grpLockedSelect = new System.Windows.Forms.GroupBox();
             this.lblCount = new System.Windows.Forms.Label();
             this.lblCountTitle = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnClearLock = new System.Windows.Forms.Button();
             this.btnUnlockSelected = new System.Windows.Forms.Button();
             this.btnAddSelected = new System.Windows.Forms.Button();
@@ -52,8 +54,10 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.grpLockedList.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLockedSelect)).BeginInit();
             this.grpLockedSelect.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.grpModel.SuspendLayout();
             this.SuspendLayout();
 
@@ -72,33 +76,49 @@
             this.splitContainer1.Panel1.Controls.Add(this.grpLockedSelect);
             this.splitContainer1.Panel1.Controls.Add(this.grpModel);
             this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(8);
-            this.splitContainer1.Size = new System.Drawing.Size(1184, 661);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 394;
             this.splitContainer1.TabIndex = 0;
 
             // 
             // grpLockedList
             // 
-            this.grpLockedList.Controls.Add(this.btnHideAll);
-            this.grpLockedList.Controls.Add(this.btnShowAll);
-            this.grpLockedList.Controls.Add(this.btnHide);
-            this.grpLockedList.Controls.Add(this.btnShow);
+            this.grpLockedList.Controls.Add(this.tableLayoutPanel2);
             this.grpLockedList.Controls.Add(this.dgvLockedSelect);
             this.grpLockedList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpLockedList.Location = new System.Drawing.Point(8, 234);
             this.grpLockedList.Name = "grpLockedList";
-            this.grpLockedList.Size = new System.Drawing.Size(378, 419);
+            this.grpLockedList.Size = new System.Drawing.Size(378, 518);
             this.grpLockedList.TabIndex = 2;
             this.grpLockedList.TabStop = false;
             this.grpLockedList.Text = "Locked Object List";
 
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.btnShow, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnHide, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.btnShowAll, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.btnHideAll, 1, 1);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(15, 442);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(347, 58);
+            this.tableLayoutPanel2.TabIndex = 1;
+
+            // 
             // btnHideAll
             // 
-            this.btnHideAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHideAll.Location = new System.Drawing.Point(194, 378);
+            this.btnHideAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHideAll.Location = new System.Drawing.Point(176, 32);
             this.btnHideAll.Name = "btnHideAll";
-            this.btnHideAll.Size = new System.Drawing.Size(165, 23);
+            this.btnHideAll.Size = new System.Drawing.Size(168, 23);
             this.btnHideAll.TabIndex = 4;
             this.btnHideAll.Text = "Hide All";
             this.btnHideAll.UseVisualStyleBackColor = true;
@@ -107,10 +127,10 @@
             // 
             // btnShowAll
             // 
-            this.btnShowAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnShowAll.Location = new System.Drawing.Point(18, 378);
+            this.btnShowAll.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShowAll.Location = new System.Drawing.Point(3, 32);
             this.btnShowAll.Name = "btnShowAll";
-            this.btnShowAll.Size = new System.Drawing.Size(165, 23);
+            this.btnShowAll.Size = new System.Drawing.Size(167, 23);
             this.btnShowAll.TabIndex = 3;
             this.btnShowAll.Text = "Show All";
             this.btnShowAll.UseVisualStyleBackColor = true;
@@ -119,10 +139,10 @@
             // 
             // btnHide
             // 
-            this.btnHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHide.Location = new System.Drawing.Point(194, 346);
+            this.btnHide.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnHide.Location = new System.Drawing.Point(176, 3);
             this.btnHide.Name = "btnHide";
-            this.btnHide.Size = new System.Drawing.Size(165, 23);
+            this.btnHide.Size = new System.Drawing.Size(168, 23);
             this.btnHide.TabIndex = 2;
             this.btnHide.Text = "Hide Selected";
             this.btnHide.UseVisualStyleBackColor = true;
@@ -131,10 +151,10 @@
             // 
             // btnShow
             // 
-            this.btnShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnShow.Location = new System.Drawing.Point(18, 346);
+            this.btnShow.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShow.Location = new System.Drawing.Point(3, 3);
             this.btnShow.Name = "btnShow";
-            this.btnShow.Size = new System.Drawing.Size(165, 23);
+            this.btnShow.Size = new System.Drawing.Size(167, 23);
             this.btnShow.TabIndex = 1;
             this.btnShow.Text = "Show Selected";
             this.btnShow.UseVisualStyleBackColor = true;
@@ -155,7 +175,7 @@
             this.dgvLockedSelect.RowHeadersVisible = false;
             this.dgvLockedSelect.RowTemplate.Height = 23;
             this.dgvLockedSelect.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvLockedSelect.Size = new System.Drawing.Size(341, 302);
+            this.dgvLockedSelect.Size = new System.Drawing.Size(341, 401);
             this.dgvLockedSelect.TabIndex = 0;
             this.dgvLockedSelect.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvLockedSelect_CellValueChanged);
             this.dgvLockedSelect.CurrentCellDirtyStateChanged += new System.EventHandler(this.DgvLockedSelect_CurrentCellDirtyStateChanged);
@@ -188,8 +208,7 @@
             // 
             this.grpLockedSelect.Controls.Add(this.lblCount);
             this.grpLockedSelect.Controls.Add(this.lblCountTitle);
-            this.grpLockedSelect.Controls.Add(this.btnClearLock);
-            this.grpLockedSelect.Controls.Add(this.btnUnlockSelected);
+            this.grpLockedSelect.Controls.Add(this.tableLayoutPanel1);
             this.grpLockedSelect.Controls.Add(this.btnAddSelected);
             this.grpLockedSelect.Controls.Add(this.lblDescription);
             this.grpLockedSelect.Dock = System.Windows.Forms.DockStyle.Top;
@@ -221,11 +240,28 @@
             this.lblCountTitle.Text = "Count :";
 
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.btnUnlockSelected, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnClearLock, 1, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 92);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(347, 29);
+            this.tableLayoutPanel1.TabIndex = 2;
+
+            // 
             // btnClearLock
             // 
-            this.btnClearLock.Location = new System.Drawing.Point(194, 95);
+            this.btnClearLock.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearLock.Location = new System.Drawing.Point(176, 3);
             this.btnClearLock.Name = "btnClearLock";
-            this.btnClearLock.Size = new System.Drawing.Size(165, 23);
+            this.btnClearLock.Size = new System.Drawing.Size(168, 23);
             this.btnClearLock.TabIndex = 3;
             this.btnClearLock.Text = "Clear All";
             this.btnClearLock.UseVisualStyleBackColor = true;
@@ -234,9 +270,10 @@
             // 
             // btnUnlockSelected
             // 
-            this.btnUnlockSelected.Location = new System.Drawing.Point(18, 95);
+            this.btnUnlockSelected.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnUnlockSelected.Location = new System.Drawing.Point(3, 3);
             this.btnUnlockSelected.Name = "btnUnlockSelected";
-            this.btnUnlockSelected.Size = new System.Drawing.Size(165, 23);
+            this.btnUnlockSelected.Size = new System.Drawing.Size(167, 23);
             this.btnUnlockSelected.TabIndex = 2;
             this.btnUnlockSelected.Text = "Unlock Selected";
             this.btnUnlockSelected.UseVisualStyleBackColor = true;
@@ -245,6 +282,7 @@
             // 
             // btnAddSelected
             // 
+            this.btnAddSelected.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAddSelected.Location = new System.Drawing.Point(18, 53);
             this.btnAddSelected.Name = "btnAddSelected";
             this.btnAddSelected.Size = new System.Drawing.Size(341, 32);
@@ -278,9 +316,10 @@
             // 
             // btnOpenModel
             // 
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenModel.Location = new System.Drawing.Point(18, 24);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(120, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(341, 23);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Open Model";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -291,7 +330,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1184, 661);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -300,7 +339,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.grpLockedList.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvLockedSelect)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.grpLockedSelect.ResumeLayout(false);
             this.grpLockedSelect.PerformLayout();
             this.grpModel.ResumeLayout(false);
@@ -328,5 +369,7 @@
         private System.Windows.Forms.Button btnHide;
         private System.Windows.Forms.Button btnShowAll;
         private System.Windows.Forms.Button btnHideAll;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     }
 }

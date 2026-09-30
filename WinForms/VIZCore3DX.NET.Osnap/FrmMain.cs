@@ -74,7 +74,10 @@ namespace VIZCore3DX.NET.Osnap
 
         private async void btnShowOsnap_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
             OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
+            if (osnap == null) return;
 
             // 스냅 옵션 설정
             osnap.PlaneSnap = ckSurface.Checked;
@@ -88,8 +91,17 @@ namespace VIZCore3DX.NET.Osnap
 
             vizcore3dx.Focus();
 
-            // 사용자가 화면에서 선택할 때까지 대기
-            OsnapResult result = await osnap.GetResultAsync();
+            // 사용자가 화면에서 선택할 때까지 대기 (대기 중 중복 실행 방지)
+            OsnapResult result;
+            btnShowOsnap.Enabled = false;
+            try
+            {
+                result = await osnap.GetResultAsync();
+            }
+            finally
+            {
+                btnShowOsnap.Enabled = true;
+            }
             if (result == null || result.Position == null) return;
 
             Vector3D point = result.Position;

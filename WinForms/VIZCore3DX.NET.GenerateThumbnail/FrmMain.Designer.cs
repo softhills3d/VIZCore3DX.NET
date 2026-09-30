@@ -52,7 +52,7 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1185, 595);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 395;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -65,7 +65,7 @@
             this.groupBox2.Controls.Add(this.lvThumbnail);
             this.groupBox2.Location = new System.Drawing.Point(12, 87);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(370, 496);
+            this.groupBox2.Size = new System.Drawing.Size(370, 661);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Thumbnail";
@@ -87,7 +87,7 @@
             this.lvThumbnail.HideSelection = false;
             this.lvThumbnail.Location = new System.Drawing.Point(6, 42);
             this.lvThumbnail.Name = "lvThumbnail";
-            this.lvThumbnail.Size = new System.Drawing.Size(358, 448);
+            this.lvThumbnail.Size = new System.Drawing.Size(358, 613);
             this.lvThumbnail.TabIndex = 0;
             this.lvThumbnail.UseCompatibleStateImageBehavior = false;
             this.lvThumbnail.DoubleClick += new System.EventHandler(this.lvThumbnail_DoubleClick);
@@ -118,7 +118,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1185, 595);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

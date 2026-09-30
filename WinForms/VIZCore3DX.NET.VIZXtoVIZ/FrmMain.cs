@@ -66,73 +66,12 @@ namespace VIZCore3DX.NET.VIZXtoVIZ
             // 모델 열기 시, 3D 화면 Rendering 재시작
             // ================================================================
             vizcore3dx.EndUpdate();
-        }
 
-        /// <summary>
-        /// VIZX to VIZ 변환
-        /// </summary>
-        /// <param name="inputFilePath">변환 전 vizx 파일</param>
-        /// <param name="outputFilePath">변환 후 저장할 viz 파일</param>
-        /// <param name="exeFileName">VIZX to VIZ 변환기 프로그램</param>
-        /// <param name="argument">스냅샷 분할 여부를 체크하는 argument</param>
-        private void convertVizxToViz(string inputFilePath, string outputFilePath, string exeFileName, string argument)
-        {
-            if (!System.IO.File.Exists(inputFilePath))
-            {
-                MessageBox.Show($"File not found : \n{inputFilePath}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            string currentPath = Application.StartupPath;
-            string convertFilePath = Path.Combine(currentPath, exeFileName);
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-
-            /*
-             * VIZX to VIZ 사용법
-             * 중요!!! : 같은 디렉토리 내에 VIZXMigration.exe 파일과 ShdCore.dll 파일이 존재해야함.
-             *
-             * 1. 일반적인 사용 방법
-             * VIZXMigration.exe -mode VIZX2VIZ -i "변환 전 vizx 파일경로" -o "변환 후 viz 파일 경로"
-             *
-             * 2. 스냅샷 별로 파일 분할이 필요한 경우
-             * VIZXMigration.exe -mode VIZX2VIZ -i "변환 전 vizx 파일경로" -o "변환 후 viz 파일 경로" -export_snapshot_to_viz t
-            */
-
-
-            // CMD 창을 띄우지 않고 백그라운드에서 실행
-            if (!cbViewCmd.Checked)
-            {
-                startInfo.FileName = exeFileName;
-                startInfo.Arguments = $"-mode VIZX2VIZ -i \"{inputFilePath}\" -o \"{outputFilePath}\" {argument}";
-                startInfo.CreateNoWindow = true;
-                startInfo.UseShellExecute = false;
-            }
-            else
-            {
-                startInfo.FileName = "cmd.exe";
-                startInfo.Arguments = $"/k {exeFileName} -mode VIZX2VIZ -i \"{inputFilePath}\" -o \"{outputFilePath}\" {argument}";
-            }
-
-            try
-            {
-                bool status = vizcore3dx.EnableWaitForm;
-                Process p = Process.Start(startInfo);
-
-                vizcore3dx.EnableWaitForm = false;
-                vizcore3dx.ShowWaitForm();
-                vizcore3dx.UpdateWaitForm("Please Wait...", "Processing...");
-
-                // VIZX to VIZ 변환기가 종료될 때 까지 Wait
-                p.WaitForExit();
-
-                vizcore3dx.CloseWaitForm();
-                vizcore3dx.EnableWaitForm = status;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error : {ex.Message}");
-            }
+            // ================================================================
+            // 설정 - 내보내기 범위
+            // ================================================================
+            cbExportOption.DataSource = Enum.GetValues(typeof(VIZCore3DX.NET.Data.ExportOption));
+            cbExportOption.SelectedItem = VIZCore3DX.NET.Data.ExportOption.ALL;
         }
 
         private void btnOpenModel_Click(object sender, EventArgs e)
@@ -161,52 +100,152 @@ namespace VIZCore3DX.NET.VIZXtoVIZ
             vizcore3dx.Model.Close();
         }
 
+        #region Export Current Model
         /// <summary>
-        ///  viz 변환된 파일이 저장 될 경로 지정
+        /// 현재 모델을 저장할 VIZ 파일 경로 지정
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnSetConvertPath_Click(object sender, EventArgs e)
+        private void btnBrowseExportOutput_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
-            folderDlg.Description = "Please Set Convert Path.";
+            string defaultName = "Export.viz";
+            if (vizcore3dx.Model.IsOpen() == true && vizcore3dx.Model.Files.Count > 0)
+                defaultName = Path.GetFileNameWithoutExtension(vizcore3dx.Model.Files[0]) + ".viz";
 
-            if (folderDlg.ShowDialog() == DialogResult.OK)
-            {
-                convertPath.Text = folderDlg.SelectedPath;
-            }
+            string path = ShowSaveVizDialog(defaultName);
+            if (path == null) return;
+
+            txtExportOutput.Text = path;
         }
 
         /// <summary>
-        /// VIZX to VIZ 변환기 실행
+        /// 현재 조회 중인 모델을 VIZ 파일로 내보내기
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void btnConvert_Click(object sender, EventArgs e)
+        private void btnExportModel_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            if (convertPath.Text == "") return;
 
-            DialogResult result = MessageBox.Show("The current file is saved.", "Caution", MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
-            if (result == DialogResult.Cancel) return;
+            if (string.IsNullOrEmpty(txtExportOutput.Text) == true)
+                btnBrowseExportOutput_Click(sender, e);
+            if (string.IsNullOrEmpty(txtExportOutput.Text) == true) return;
 
-            string outputFileName = "output.viz";
-            string inputFilePath;
-            string outputFilePath = Path.Combine(convertPath.Text, outputFileName);
-            string convertExe = "VIZXMigration.exe";
-            string argument = "";
+            VIZCore3DX.NET.Data.ExportOption option = (VIZCore3DX.NET.Data.ExportOption)cbExportOption.SelectedItem;
+            string output = txtExportOutput.Text;
 
-            vizcore3dx.Model.SaveFileDialog();
-            inputFilePath = vizcore3dx.Model.Files[0];
-
-            // 스냅샷 별로 분할하여 viz 파일들을 저장하는 args : -export_snapshot_to_viz t
-            if (cbSnapshotCheck.Checked)
+            // ALL : 전체 모델 / VISIBLE : 보이는 개체 / RENDERED : 화면에 그려진 개체 / SELECTED : 선택된 개체
+            // ALL 외의 범위는 단일 VIZX 모델을 조회 중일 때만 지원하며, 결과 파일에 마크업(노트/치수/단면/스냅샷 등)과 PMI 는 포함되지 않음
+            bool result = false;
+            try
             {
-                argument = "-export_snapshot_to_viz t";
+                Cursor = Cursors.WaitCursor;
+                result = vizcore3dx.Model.ExportVIZ(output, option);
+            }
+            catch (ArgumentException)
+            {
+                // 대상 범위에 해당하는 개체가 없으면 예외가 발생
+                MessageBox.Show(string.Format("내보낼 개체가 없습니다. ({0})", option), "VIZX to VIZ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
 
-            convertVizxToViz(inputFilePath, outputFilePath, convertExe, argument);
+            ShowResult(string.Format("Export ({0})", option), output, result);
+        }
+        #endregion
+
+        #region Convert VIZX File
+        /// <summary>
+        /// 변환할 VIZX 파일 선택
+        /// </summary>
+        private void btnBrowseConvertInput_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "VIZX File (*.vizx)|*.vizx";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            txtConvertInput.Text = dlg.FileName;
+
+            // 출력 파일 기본값 : 같은 폴더, 같은 이름의 .viz
+            txtConvertOutput.Text = Path.ChangeExtension(dlg.FileName, ".viz");
         }
 
+        /// <summary>
+        /// 변환된 VIZ 파일이 저장될 경로 지정
+        /// </summary>
+        private void btnBrowseConvertOutput_Click(object sender, EventArgs e)
+        {
+            string defaultName = "Export.viz";
+            if (string.IsNullOrEmpty(txtConvertInput.Text) == false)
+                defaultName = Path.GetFileNameWithoutExtension(txtConvertInput.Text) + ".viz";
+
+            string path = ShowSaveVizDialog(defaultName);
+            if (path == null) return;
+
+            txtConvertOutput.Text = path;
+        }
+
+        /// <summary>
+        /// VIZX 파일을 열지 않고 VIZ 파일로 변환
+        /// </summary>
+        private void btnConvertFile_Click(object sender, EventArgs e)
+        {
+            string input = txtConvertInput.Text;
+            string output = txtConvertOutput.Text;
+
+            if (File.Exists(input) == false)
+            {
+                MessageBox.Show(string.Format("File not found : \n{0}", input), "VIZX to VIZ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (string.IsNullOrEmpty(output) == true) return;
+
+            bool result = false;
+            try
+            {
+                Cursor = Cursors.WaitCursor;
+                result = vizcore3dx.Model.ExportVIZ(input, output);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
+
+            ShowResult("Convert", output, result);
+        }
+        #endregion
+
+        #region Result
+        private string ShowSaveVizDialog(string defaultName)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "VIZ File (*.viz)|*.viz";
+            dlg.FileName = defaultName;
+            if (dlg.ShowDialog() != DialogResult.OK) return null;
+
+            return dlg.FileName;
+        }
+
+        private void ShowResult(string title, string output, bool result)
+        {
+            string message;
+
+            if (result == true && File.Exists(output) == true)
+                message = string.Format("[{0:HH:mm:ss}] {1} : OK - {2} ({3:N0} KB)", DateTime.Now, title, output, new FileInfo(output).Length / 1024);
+            else
+                message = string.Format("[{0:HH:mm:ss}] {1} : FAIL - {2}", DateTime.Now, title, output);
+
+            txtResult.AppendText(message + Environment.NewLine);
+
+            if (result == false)
+            {
+                MessageBox.Show("VIZ 파일로 내보내지 못했습니다.", "VIZX to VIZ", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // 결과 파일을 탐색기에서 선택된 상태로 표시
+            if (chkShowInExplorer.Checked == true)
+                Process.Start("explorer.exe", string.Format("/select,\"{0}\"", output));
+        }
+        #endregion
     }
 }

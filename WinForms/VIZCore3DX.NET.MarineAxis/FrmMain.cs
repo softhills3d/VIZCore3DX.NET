@@ -49,12 +49,13 @@ namespace VIZCore3DX.NET.MarineAxis
 
         private void BtnOpenModel_Click(object sender, EventArgs e)
         {
-            vizcore3dx.Model.OpenFileDialog();
+            if (vizcore3dx.Model.OpenFileDialog() == false) return;
             chkMarineAxisVisible.Checked = vizcore3dx.View.MarineAxis.Visible;
         }
 
         private void ChkMarineAxisVisible_CheckedChanged(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
             vizcore3dx.View.MarineAxis.Visible = chkMarineAxisVisible.Checked;
         }
     }

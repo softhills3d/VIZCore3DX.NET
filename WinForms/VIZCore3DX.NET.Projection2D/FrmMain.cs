@@ -56,12 +56,6 @@ namespace VIZCore3DX.NET.Projection2D
                 return;
             }
 
-            if (licenseResult != LicenseResults.SUCCESS)
-            {
-                MessageBox.Show(string.Format("LICENSE CODE : {0}", licenseResult), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             InitializeVIZCore3DX();
         }
 

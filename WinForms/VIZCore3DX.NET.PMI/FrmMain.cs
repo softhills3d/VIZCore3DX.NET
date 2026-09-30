@@ -95,7 +95,9 @@ namespace VIZCore3DX.NET.PMI
             {
                 if (element == null || element.IsValid == false) continue;
 
-                int rowIndex = dgvElements.Rows.Add(element.IsVisible, index, element.ParentPmi == null ? string.Empty : element.ParentPmi.Name, element.Category.ToString(), element.Type.ToString());
+                string ownerNode = element.OwnerNode == null ? "-" : element.OwnerNode.NodeName;
+
+                int rowIndex = dgvElements.Rows.Add(element.IsVisible, index, element.ParentPmi == null ? string.Empty : element.ParentPmi.Name, element.Category.ToString(), element.Type.ToString(), ownerNode);
                 dgvElements.Rows[rowIndex].Tag = element;
                 index++;
             }
@@ -284,6 +286,35 @@ namespace VIZCore3DX.NET.PMI
             ShowElements(vizcore3dx.PMI.FindElements(element => element.Category == category && element.Type == type));
         }
 
+        private void btnSelectedNodeElements_Click(object sender, EventArgs e)
+        {
+            if (!CheckPmi()) return;
+
+            // 하위 노드 포함 : 선택 노드와 모든 하위 노드 / 미포함 : 선택한 최상위 노드만
+            Object3dFilter filter = chkIncludeChildNodes.Checked ? Object3dFilter.SELECTED_ALL : Object3dFilter.SELECTED_TOP;
+            List<Node> nodes = vizcore3dx.Object3D.FromFilter(filter);
+
+            if (nodes == null || nodes.Count == 0)
+            {
+                MessageBox.Show("PMI를 조회할 노드를 모델에서 선택해주세요.", "VIZCore3DX.NET.PMI", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 지정 노드가 소유한 PMI 요소 조회 (단건 / 다건)
+            IReadOnlyList<PmiElement> elements = nodes.Count == 1
+                ? vizcore3dx.PMI.FromNode(nodes[0])
+                : vizcore3dx.PMI.FromNode(nodes);
+
+            lblSelectedNodeInfo.Text = nodes.Count == 1
+                ? string.Format("조회 노드 : {0}", nodes[0].NodeName)
+                : string.Format("조회 노드 : {0}개", nodes.Count);
+
+            ShowElements(elements);
+
+            if (elements.Count == 0 && vizcore3dx.PMI.LastOperationStatus != null && vizcore3dx.PMI.LastOperationStatus.IsFailure)
+                MessageBox.Show(string.Format("선택 노드의 PMI를 조회하지 못했습니다.\n\n사유 : {0}", vizcore3dx.PMI.LastOperationStatus.Result), "VIZCore3DX.NET.PMI", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
         private void btnCurrentListShow_Click(object sender, EventArgs e)
         {
             if (!CheckPmi()) return;
@@ -348,6 +379,16 @@ namespace VIZCore3DX.NET.PMI
         }
 
         private void btnActivateView_Click(object sender, EventArgs e)
+        {
+            ActivateSelectedView();
+        }
+
+        private void lvViews_DoubleClick(object sender, EventArgs e)
+        {
+            ActivateSelectedView();
+        }
+
+        private void ActivateSelectedView()
         {
             if (!CheckPmi()) return;
 

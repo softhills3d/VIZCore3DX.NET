@@ -119,11 +119,15 @@ namespace VIZCore3DX.NET.FramePrefix
             }
             else
             {
-                // 자동 경로에 파일이 없으면 사용자가 직접 선택
-                result = vizcore3dx.Frame.OpenAMFileDialog();
+                // 자동 경로에 파일이 없으면 사용자가 직접 선택 (취소 시 종료, 선택한 파일로 AM → Tribon 순차 시도)
+                OpenFileDialog dlg = new OpenFileDialog();
+                dlg.Filter = vizcore3dx.Frame.Filter;
+                if (dlg.ShowDialog() != DialogResult.OK) return;
+
+                result = vizcore3dx.Frame.OpenAM(dlg.FileName);
 
                 if (result == false)
-                    result = vizcore3dx.Frame.OpenTribonFileDialog();
+                    result = vizcore3dx.Frame.OpenTribon(dlg.FileName);
             }
 
             if (result == false)

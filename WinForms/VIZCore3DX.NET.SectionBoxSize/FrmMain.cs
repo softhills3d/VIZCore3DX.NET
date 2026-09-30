@@ -186,7 +186,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
                     {
                         tbMaxZ.Value = tbMaxZ.Minimum;
                     }
-                    else if (MaxZ > tbMinZ.Maximum)
+                    else if (MaxZ > tbMaxZ.Maximum)
                     {
                         tbMaxZ.Value = tbMaxZ.Maximum;
                     }
@@ -222,10 +222,28 @@ namespace VIZCore3DX.NET.SectionBoxSize
             vizcore3dx.Model.OpenFileDialog();
         }
 
+        private void btnLoadFrame_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Frame.OpenTribonFileDialog() == false) return;
+
+            vizcore3dx.Frame.Visible = true;
+
+            // Section Box가 이미 있으면 새로 불러온 Frame 기준으로 콤보 목록 갱신
+            if (Section == null) return;
+
+            VIZCore3DX.NET.Data.BoundBox3D box = Section.BoundBox;
+
+            FillFrameList(VIZCore3DX.NET.Data.Axis.X, box.MinX, box.MaxX, cbMinX, cbMaxX);
+            FillFrameList(VIZCore3DX.NET.Data.Axis.Y, box.MinY, box.MaxY, cbMinY, cbMaxY);
+            FillFrameList(VIZCore3DX.NET.Data.Axis.Z, box.MinZ, box.MaxZ, cbMinZ, cbMaxZ);
+        }
+
         private void btnAddSectionBox_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
 
             Section = vizcore3dx.Section.AddBox(false);
+            if (Section == null) return;
             VIZCore3DX.NET.Data.BoundBox3D box = Section.BoundBox;
 
             cbMinX.SelectedIndexChanged -= new System.EventHandler(cbMinX_SelectedIndexChanged);
@@ -259,6 +277,11 @@ namespace VIZCore3DX.NET.SectionBoxSize
             tbMinZ.Maximum = tbMaxZ.Maximum = Convert.ToInt32(box.MaxZ);
             tbMinZ.Value = tbMinZ.Minimum;
             tbMaxZ.Value = tbMaxZ.Maximum;
+
+            // 단면상자 범위 내의 프레임 좌표 목록 구성
+            FillFrameList(VIZCore3DX.NET.Data.Axis.X, box.MinX, box.MaxX, cbMinX, cbMaxX);
+            FillFrameList(VIZCore3DX.NET.Data.Axis.Y, box.MinY, box.MaxY, cbMinY, cbMaxY);
+            FillFrameList(VIZCore3DX.NET.Data.Axis.Z, box.MinZ, box.MaxZ, cbMinZ, cbMaxZ);
 
             cbMinX.SelectedIndexChanged += new System.EventHandler(cbMinX_SelectedIndexChanged);
             cbMinY.SelectedIndexChanged += new System.EventHandler(cbMinY_SelectedIndexChanged);
@@ -312,11 +335,54 @@ namespace VIZCore3DX.NET.SectionBoxSize
             }
         }
 
-        private int GetFramePosition(VIZCore3DX.NET.Data.Axis axis, string frame)
+        private int GetFramePosition(VIZCore3DX.NET.Data.Axis axis, string frame, TrackBar trackBar)
         {
+            // 프레임 좌표가 유효하지 않으면 현재 값 유지
             VIZCore3DX.NET.Data.FramePosition fp = vizcore3dx.Frame.GetPosition(axis, frame);
-            if (fp.ValidData == false) return 0;
-            else return Convert.ToInt32(fp.Position);
+            if (fp == null || fp.ValidData == false) return trackBar.Value;
+
+            // TrackBar 범위 내로 제한 (범위를 벗어난 값 지정 시 예외 발생)
+            int position = Convert.ToInt32(fp.Position);
+            if (position < trackBar.Minimum) return trackBar.Minimum;
+            if (position > trackBar.Maximum) return trackBar.Maximum;
+            return position;
+        }
+
+        private void FillFrameList(VIZCore3DX.NET.Data.Axis axis, float min, float max, ComboBox cbMin, ComboBox cbMax)
+        {
+            cbMin.Items.Clear();
+            cbMax.Items.Clear();
+
+            // 첫번째 프레임의 프레임 라인 중, 단면상자 범위 내의 항목만 추가
+            System.Collections.Generic.List<VIZCore3DX.NET.Data.FrameLine> lines = vizcore3dx.Frame.HasFrame ? vizcore3dx.Frame.GetFrameLines(axis) : null;
+
+            if (lines != null)
+            {
+                foreach (VIZCore3DX.NET.Data.FrameLine line in lines)
+                {
+                    if (line.Offset < min || line.Offset > max) continue;
+
+                    string frame = vizcore3dx.Frame.GetSnapString(axis, line.Offset);
+                    if (string.IsNullOrEmpty(frame)) continue;
+
+                    cbMin.Items.Add(frame);
+                    cbMax.Items.Add(frame);
+                }
+            }
+
+            // Frame 데이터가 없거나 범위 내 라인이 없으면 빈 콤보 대신 안내 문구 표시
+            bool hasFrameItems = cbMin.Items.Count > 0;
+
+            if (hasFrameItems == false)
+            {
+                cbMin.Items.Add("(Frame 없음)");
+                cbMax.Items.Add("(Frame 없음)");
+                cbMin.SelectedIndex = 0;
+                cbMax.SelectedIndex = 0;
+            }
+
+            cbMin.Enabled = hasFrameItems;
+            cbMax.Enabled = hasFrameItems;
         }
 
         private void tbMinX_Scroll(object sender, EventArgs e)
@@ -377,72 +443,78 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             isScroll = true;
             tbMinX.Scroll -= new System.EventHandler(tbMinX_Scroll);
-            tbMinX.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.X, cbMinX.Text);
+            tbMinX.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.X, cbMinX.Text, tbMinX);
             tbMinX.Scroll += new System.EventHandler(tbMinX_Scroll);
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMin);
 
             vizcore3dx.Update();
+            isScroll = false;
         }
 
         private void cbMaxX_SelectedIndexChanged(object sender, EventArgs e)
         {
             isScroll = true;
             tbMaxX.Scroll -= new System.EventHandler(tbMaxX_Scroll);
-            tbMaxX.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.X, cbMaxX.Text);
+            tbMaxX.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.X, cbMaxX.Text, tbMaxX);
             tbMaxX.Scroll += new System.EventHandler(tbMaxX_Scroll);
 
             UpdateSectionBoxSize(SectionPlanePositionType.XMax);
 
             vizcore3dx.Update();
+            isScroll = false;
         }
 
         private void cbMinY_SelectedIndexChanged(object sender, EventArgs e)
         {
             isScroll = true;
             tbMinY.Scroll -= new System.EventHandler(tbMinY_Scroll);
-            tbMinY.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Y, cbMinY.Text);
+            tbMinY.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Y, cbMinY.Text, tbMinY);
             tbMinY.Scroll += new System.EventHandler(tbMinY_Scroll);
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMin);
 
             vizcore3dx.Update();
+            isScroll = false;
         }
 
         private void cbMaxY_SelectedIndexChanged(object sender, EventArgs e)
         {
             isScroll = true;
             tbMaxY.Scroll -= new System.EventHandler(tbMaxY_Scroll);
-            tbMaxY.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Y, cbMaxY.Text);
+            tbMaxY.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Y, cbMaxY.Text, tbMaxY);
             tbMaxY.Scroll += new System.EventHandler(tbMaxY_Scroll);
 
             UpdateSectionBoxSize(SectionPlanePositionType.YMax);
 
             vizcore3dx.Update();
+            isScroll = false;
         }
 
         private void cbMinZ_SelectedIndexChanged(object sender, EventArgs e)
         {
             isScroll = true;
             tbMinZ.Scroll -= new System.EventHandler(tbMinZ_Scroll);
-            tbMinZ.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Z, cbMinZ.Text);
+            tbMinZ.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Z, cbMinZ.Text, tbMinZ);
             tbMinZ.Scroll += new System.EventHandler(tbMinZ_Scroll);
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMin);
 
             vizcore3dx.Update();
+            isScroll = false;
         }
 
         private void cbMaxZ_SelectedIndexChanged(object sender, EventArgs e)
         {
             isScroll = true;
             tbMaxZ.Scroll -= new System.EventHandler(tbMaxZ_Scroll);
-            tbMaxZ.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Z, cbMaxZ.Text);
+            tbMaxZ.Value = GetFramePosition(VIZCore3DX.NET.Data.Axis.Z, cbMaxZ.Text, tbMaxZ);
             tbMaxZ.Scroll += new System.EventHandler(tbMaxZ_Scroll);
 
             UpdateSectionBoxSize(SectionPlanePositionType.ZMax);
 
             vizcore3dx.Update();
+            isScroll = false;
         }
 
         private void tbMinX_MouseUp(object sender, MouseEventArgs e)

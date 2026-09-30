@@ -26,7 +26,7 @@
             this.colY = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colZ = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lblPointCount = new System.Windows.Forms.Label();
-            this.panelButtons = new System.Windows.Forms.Panel();
+            this.panelButtons = new System.Windows.Forms.TableLayoutPanel();
             this.btnFitToView = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.groupDisplay = new System.Windows.Forms.GroupBox();
@@ -92,7 +92,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.panelControl);
-            this.splitContainer1.Size = new System.Drawing.Size(1200, 720);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 370;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -107,7 +107,7 @@
             this.panelControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelControl.Location = new System.Drawing.Point(0, 0);
             this.panelControl.Name = "panelControl";
-            this.panelControl.Size = new System.Drawing.Size(370, 720);
+            this.panelControl.Size = new System.Drawing.Size(370, 760);
             this.panelControl.TabIndex = 0;
             // 
             // dgvPoints
@@ -132,7 +132,7 @@
             this.dgvPoints.RowHeadersVisible = false;
             this.dgvPoints.RowTemplate.Height = 23;
             this.dgvPoints.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvPoints.Size = new System.Drawing.Size(350, 124);
+            this.dgvPoints.Size = new System.Drawing.Size(350, 164);
             this.dgvPoints.TabIndex = 4;
             // 
             // colIndex
@@ -171,18 +171,26 @@
             // 
             // panelButtons
             // 
-            this.panelButtons.Controls.Add(this.btnFitToView);
-            this.panelButtons.Controls.Add(this.btnClear);
+            this.panelButtons.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelButtons.ColumnCount = 2;
+            this.panelButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.panelButtons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.panelButtons.Controls.Add(this.btnFitToView, 1, 0);
+            this.panelButtons.Controls.Add(this.btnClear, 0, 0);
             this.panelButtons.Location = new System.Drawing.Point(10, 526);
             this.panelButtons.Name = "panelButtons";
+            this.panelButtons.RowCount = 1;
+            this.panelButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.panelButtons.Size = new System.Drawing.Size(350, 36);
             this.panelButtons.TabIndex = 2;
             // 
             // btnFitToView
             // 
-            this.btnFitToView.Location = new System.Drawing.Point(180, 2);
+            this.btnFitToView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnFitToView.Location = new System.Drawing.Point(178, 3);
             this.btnFitToView.Name = "btnFitToView";
-            this.btnFitToView.Size = new System.Drawing.Size(170, 30);
+            this.btnFitToView.Size = new System.Drawing.Size(169, 30);
             this.btnFitToView.TabIndex = 1;
             this.btnFitToView.Text = "화면 맞춤";
             this.btnFitToView.UseVisualStyleBackColor = true;
@@ -190,9 +198,10 @@
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(0, 2);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClear.Location = new System.Drawing.Point(3, 3);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(170, 30);
+            this.btnClear.Size = new System.Drawing.Size(169, 30);
             this.btnClear.TabIndex = 0;
             this.btnClear.Text = "Shape 전체 삭제";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -209,6 +218,8 @@
             this.groupDisplay.Controls.Add(this.lblTubeRadius);
             this.groupDisplay.Controls.Add(this.numLineThickness);
             this.groupDisplay.Controls.Add(this.lblLineThickness);
+            this.groupDisplay.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupDisplay.Location = new System.Drawing.Point(10, 359);
             this.groupDisplay.Name = "groupDisplay";
             this.groupDisplay.Size = new System.Drawing.Size(350, 161);
@@ -231,6 +242,7 @@
             // 
             // btnCreateTube
             // 
+            this.btnCreateTube.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCreateTube.Location = new System.Drawing.Point(185, 107);
             this.btnCreateTube.Name = "btnCreateTube";
             this.btnCreateTube.Size = new System.Drawing.Size(145, 28);
@@ -252,6 +264,7 @@
             // btnShapeColor
             // 
             this.btnShapeColor.BackColor = System.Drawing.Color.Orange;
+            this.btnShapeColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnShapeColor.Location = new System.Drawing.Point(184, 78);
             this.btnShapeColor.Name = "btnShapeColor";
             this.btnShapeColor.Size = new System.Drawing.Size(146, 24);
@@ -272,6 +285,7 @@
             // numTubeRadius
             // 
             this.numTubeRadius.DecimalPlaces = 1;
+            this.numTubeRadius.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numTubeRadius.Location = new System.Drawing.Point(184, 51);
             this.numTubeRadius.Maximum = new decimal(new int[] {
             1000000,
@@ -299,6 +313,7 @@
             // numLineThickness
             // 
             this.numLineThickness.DecimalPlaces = 1;
+            this.numLineThickness.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numLineThickness.Location = new System.Drawing.Point(184, 23);
             this.numLineThickness.Maximum = new decimal(new int[] {
             10,
@@ -352,6 +367,8 @@
             this.groupCondition.Controls.Add(this.lblP2);
             this.groupCondition.Controls.Add(this.lblP1);
             this.groupCondition.Controls.Add(this.btnOpenModel);
+            this.groupCondition.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupCondition.Location = new System.Drawing.Point(10, 8);
             this.groupCondition.Name = "groupCondition";
             this.groupCondition.Size = new System.Drawing.Size(350, 350);
@@ -361,6 +378,8 @@
             // 
             // btnCalculate
             // 
+            this.btnCalculate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCalculate.Location = new System.Drawing.Point(20, 312);
             this.btnCalculate.Name = "btnCalculate";
             this.btnCalculate.Size = new System.Drawing.Size(310, 28);
@@ -371,6 +390,7 @@
             // 
             // numSamples
             // 
+            this.numSamples.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numSamples.Location = new System.Drawing.Point(184, 282);
             this.numSamples.Maximum = new decimal(new int[] {
             500,
@@ -408,6 +428,7 @@
             0,
             0,
             131072});
+            this.numLengthFactor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numLengthFactor.Location = new System.Drawing.Point(184, 254);
             this.numLengthFactor.Maximum = new decimal(new int[] {
             10,
@@ -439,6 +460,8 @@
             // 
             // btnPickP1P2
             // 
+            this.btnPickP1P2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPickP1P2.Location = new System.Drawing.Point(20, 216);
             this.btnPickP1P2.Name = "btnPickP1P2";
             this.btnPickP1P2.Size = new System.Drawing.Size(310, 28);
@@ -449,6 +472,7 @@
             // 
             // lblP2Status
             // 
+            this.lblP2Status.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblP2Status.Location = new System.Drawing.Point(184, 195);
             this.lblP2Status.Name = "lblP2Status";
             this.lblP2Status.Size = new System.Drawing.Size(146, 15);
@@ -467,6 +491,7 @@
             // 
             // btnPickP2
             // 
+            this.btnPickP2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnPickP2.Location = new System.Drawing.Point(184, 164);
             this.btnPickP2.Name = "btnPickP2";
             this.btnPickP2.Size = new System.Drawing.Size(146, 27);
@@ -488,6 +513,7 @@
             // numP2Z
             // 
             this.numP2Z.DecimalPlaces = 2;
+            this.numP2Z.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numP2Z.Location = new System.Drawing.Point(184, 134);
             this.numP2Z.Maximum = new decimal(new int[] {
             1000000000,
@@ -511,6 +537,7 @@
             // numP2Y
             // 
             this.numP2Y.DecimalPlaces = 2;
+            this.numP2Y.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numP2Y.Location = new System.Drawing.Point(184, 106);
             this.numP2Y.Maximum = new decimal(new int[] {
             1000000000,
@@ -529,6 +556,7 @@
             // numP2X
             // 
             this.numP2X.DecimalPlaces = 2;
+            this.numP2X.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.numP2X.Location = new System.Drawing.Point(184, 78);
             this.numP2X.Maximum = new decimal(new int[] {
             1000000000,
@@ -637,6 +665,7 @@
             // 
             // lblP2
             // 
+            this.lblP2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblP2.Location = new System.Drawing.Point(184, 59);
             this.lblP2.Name = "lblP2";
             this.lblP2.Size = new System.Drawing.Size(146, 16);
@@ -655,6 +684,8 @@
             // 
             // btnOpenModel
             // 
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenModel.Location = new System.Drawing.Point(20, 22);
             this.btnOpenModel.Name = "btnOpenModel";
             this.btnOpenModel.Size = new System.Drawing.Size(310, 28);
@@ -667,7 +698,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 720);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.MinimumSize = new System.Drawing.Size(1000, 700);
             this.Name = "FrmMain";
@@ -735,7 +766,7 @@
         private System.Windows.Forms.Button btnCreateLine;
         private System.Windows.Forms.Button btnCreateTube;
         private System.Windows.Forms.CheckBox chkClearBeforeCreate;
-        private System.Windows.Forms.Panel panelButtons;
+        private System.Windows.Forms.TableLayoutPanel panelButtons;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnFitToView;
         private System.Windows.Forms.Label lblPointCount;

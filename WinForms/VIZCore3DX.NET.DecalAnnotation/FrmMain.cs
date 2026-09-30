@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,7 +20,11 @@ namespace VIZCore3DX.NET.DecalAnnotation
         {
             InitializeComponent();
 
-            cmbArrowSizeType.SelectedIndex = 0;
+            foreach (VIZCore3DX.NET.Data.ArrowDecalHeadKind headKind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ArrowDecalHeadKind)))
+            {
+                cmbArrowHeadKind.Items.Add(headKind);
+            }
+            cmbArrowHeadKind.SelectedItem = VIZCore3DX.NET.Data.ArrowDecalHeadKind.Triangle;
 
             VIZCore3DX.NET.ModuleInitializer.Run();
 
@@ -60,6 +66,8 @@ namespace VIZCore3DX.NET.DecalAnnotation
             vizcore3dx.Decal.OnDecalRotated += Decal_OnDecalChanged;
             vizcore3dx.Decal.OnDecalTextChanged += Decal_OnDecalChanged;
             vizcore3dx.Decal.OnDecalImageChanged += Decal_OnDecalChanged;
+            vizcore3dx.Decal.OnDecalImported += Decal_OnDecalChanged;
+            vizcore3dx.Decal.OnDecalLoaded += Decal_OnDecalChanged;
 
             vizcore3dx.Decal.SetHighlightable(true);
 
@@ -314,64 +322,124 @@ namespace VIZCore3DX.NET.DecalAnnotation
             decal.IsMovable = chkMovable.Checked;
         }
 
-        private void cmbArrowSizeType_SelectedIndexChanged(object sender, EventArgs e)
+        private VIZCore3DX.NET.Data.ArrowDecalStyle GetArrowStyle()
         {
-            if (cmbArrowSizeType.SelectedIndex == 0)
-            {
-                numArrowSize.DecimalPlaces = 2;
-                numArrowSize.Minimum = 0.01M;
-                numArrowSize.Maximum = 0.50M;
-                numArrowSize.Increment = 0.05M;
+            VIZCore3DX.NET.Data.ArrowDecalStyle defaultStyle = vizcore3dx.Decal.DefaultArrowDecalStyle;
+            VIZCore3DX.NET.Data.ArrowDecalStyle style = defaultStyle != null ? defaultStyle.Clone() : new VIZCore3DX.NET.Data.ArrowDecalStyle();
 
-                if (numArrowSize.Value > 0.50M) numArrowSize.Value = 0.15M;
-            }
-            else
-            {
-                numArrowSize.DecimalPlaces = 1;
-                numArrowSize.Minimum = 0.1M;
-                numArrowSize.Maximum = 1000000.0M;
-                numArrowSize.Increment = 10.0M;
+            style.HeadKind = (VIZCore3DX.NET.Data.ArrowDecalHeadKind)cmbArrowHeadKind.SelectedItem;
+            style.ArrowHeadSize = (float)numArrowHeadSize.Value;
+            style.LineStrokeThickness = (float)numArrowThickness.Value;
+            style.LineStrokeColor = btnArrowColor.BackColor;
+            style.ArrowColor = btnArrowColor.BackColor;
+            style.IsDoubleHeaded = chkArrowDoubleHeaded.Checked;
 
-                if (numArrowSize.Value <= 0.50M) numArrowSize.Value = 100.0M;
-            }
+            return style;
         }
 
-        private void btnAddArrow_Click(object sender, EventArgs e)
+        private void LoadArrowStyle(VIZCore3DX.NET.Data.DecalItem decal)
         {
-            VIZCore3DX.NET.Data.DecalItem decal = GetSelectedDecal();
-            if (decal == null) return;
+            if (decal == null || vizcore3dx.Decal.IsArrowDecal(decal) == false) return;
 
-            VIZCore3DX.NET.Data.DecalArrowHeadSizeType arrowHeadSizeType = cmbArrowSizeType.SelectedIndex == 0 ? VIZCore3DX.NET.Data.DecalArrowHeadSizeType.Ratio : VIZCore3DX.NET.Data.DecalArrowHeadSizeType.Fixed;
+            VIZCore3DX.NET.Data.ArrowDecalStyle style = vizcore3dx.Decal.GetArrowDecalStyle(decal);
+            if (style == null) return;
 
-            if (vizcore3dx.Decal.AddArrow(decal, btnArrowColor.BackColor, (float)numArrowSize.Value, arrowHeadSizeType) == false)
-            {
-                MessageBox.Show("화살표를 생성할 수 없습니다. 이미 연결되어 있거나 현재 실행할 수 없는 상태입니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            cmbArrowHeadKind.SelectedItem = style.HeadKind;
+            numArrowHeadSize.Value = Math.Max(numArrowHeadSize.Minimum, Math.Min(numArrowHeadSize.Maximum, (decimal)style.ArrowHeadSize));
+            numArrowThickness.Value = Math.Max(numArrowThickness.Minimum, Math.Min(numArrowThickness.Maximum, (decimal)style.LineStrokeThickness));
+            btnArrowColor.BackColor = style.ArrowColor;
+            chkArrowDoubleHeaded.Checked = style.IsDoubleHeaded;
         }
 
-        private void btnSetArrow_Click(object sender, EventArgs e)
+        private async void btnAddArrow_Click(object sender, EventArgs e)
         {
-            VIZCore3DX.NET.Data.DecalItem decal = GetSelectedDecal();
-            if (decal == null) return;
+            VIZCore3DX.NET.Data.OsnapResult result = await PickSurface("화살표 Decal을 배치할 모델 표면을 선택하세요.");
+            if (result == null) return;
 
-            if (vizcore3dx.Decal.SetArrow(decal) == false)
-            {
-                MessageBox.Show("화살표를 다시 설정할 수 없습니다. 연결된 화살표가 없거나 현재 실행할 수 없는 상태입니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
+            VIZCore3DX.NET.Data.Vector3D normal = result.Facet.Normal;
+            VIZCore3DX.NET.Data.Vector3D upDirection = GetUpDirection(normal);
+
+            vizcore3dx.Decal.AddDecalArrow(GetArrowStyle(), (float)numArrowLength.Value, result.Position, normal, upDirection);
+            CheckLastOperation("화살표 Decal을 생성할 수 없습니다.");
         }
 
-        private void btnDeleteArrow_Click(object sender, EventArgs e)
+        private async void btnAddArrowTwoPoint_Click(object sender, EventArgs e)
         {
-            VIZCore3DX.NET.Data.DecalItem decal = GetSelectedDecal();
+            VIZCore3DX.NET.Data.OsnapResult start = await PickSurface("화살표의 시작점을 선택하세요.");
+            if (start == null) return;
+
+            VIZCore3DX.NET.Data.OsnapResult end = await PickSurface("화살표의 끝점(촉 위치)을 선택하세요.");
+            if (end == null) return;
+
+            if (start.Position.X == end.Position.X && start.Position.Y == end.Position.Y && start.Position.Z == end.Position.Z)
+            {
+                MessageBox.Show("화살표의 시작점과 끝점은 같을 수 없습니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            vizcore3dx.Decal.AddDecalArrow(GetArrowStyle(), start.Position, end.Position, start.Facet.Normal);
+            CheckLastOperation("화살표 Decal을 생성할 수 없습니다.");
+        }
+
+        private void btnAddArrowDialog_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false)
+            {
+                MessageBox.Show("모델을 먼저 열어주세요.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            vizcore3dx.Decal.AddDecalArrowDialog();
+        }
+
+        private void btnApplyArrowStyle_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.DecalItem decal = GetSelectedArrowDecal();
             if (decal == null) return;
 
-            if (vizcore3dx.Decal.DeleteArrow(decal) == false)
+            if (vizcore3dx.Decal.SetArrowDecalStyle(decal, GetArrowStyle()) == false)
             {
-                MessageBox.Show("선택한 Decal에 연결된 화살표가 없습니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                CheckLastOperation("화살표 스타일을 적용할 수 없습니다.");
                 return;
             }
 
             RefreshUI();
+        }
+
+        private void btnApplyArrowLength_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.DecalItem decal = GetSelectedArrowDecal();
+            if (decal == null) return;
+
+            if (vizcore3dx.Decal.SetArrowDecalLength(decal, (float)numArrowLength.Value) == false)
+            {
+                CheckLastOperation("화살표 길이를 적용할 수 없습니다.");
+                return;
+            }
+
+            RefreshUI();
+        }
+
+        private VIZCore3DX.NET.Data.DecalItem GetSelectedArrowDecal()
+        {
+            VIZCore3DX.NET.Data.DecalItem decal = GetSelectedDecal();
+            if (decal == null) return null;
+
+            if (vizcore3dx.Decal.IsArrowDecal(decal) == false)
+            {
+                MessageBox.Show("선택한 Decal은 화살표 Decal이 아닙니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+            }
+
+            return decal;
+        }
+
+        private void CheckLastOperation(string message)
+        {
+            VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Decal.LastOperationStatus;
+            if (status == null || status.IsSuccess) return;
+
+            MessageBox.Show(string.Format("{0}\n\n사유 : {1}", message, status.Result), "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void btnDeleteSelected_Click(object sender, EventArgs e)
@@ -412,6 +480,55 @@ namespace VIZCore3DX.NET.DecalAnnotation
             RefreshUI();
         }
 
+        private void btnExportJson_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Decal.Decals.Count == 0)
+            {
+                MessageBox.Show("저장할 Decal이 없습니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Filter = "Decal JSON (*.json)|*.json";
+                dlg.FileName = "Decal.json";
+                if (dlg.ShowDialog() != DialogResult.OK) return;
+
+                string json = vizcore3dx.Decal.ToJson();
+                if (string.IsNullOrEmpty(json))
+                {
+                    CheckLastOperation("Decal 목록을 JSON으로 변환할 수 없습니다.");
+                    return;
+                }
+
+                File.WriteAllText(dlg.FileName, json, Encoding.UTF8);
+            }
+        }
+
+        private void btnImportJson_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false)
+            {
+                MessageBox.Show("모델을 먼저 열어주세요.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Filter = "Decal JSON (*.json)|*.json";
+                if (dlg.ShowDialog() != DialogResult.OK) return;
+
+                if (vizcore3dx.Decal.FromJson(File.ReadAllText(dlg.FileName, Encoding.UTF8)) == false)
+                {
+                    CheckLastOperation("JSON에서 Decal 목록을 복원할 수 없습니다.");
+                    return;
+                }
+            }
+
+            selectedDecal = null;
+            RefreshUI();
+        }
+
         private void dgvDecals_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -421,7 +538,22 @@ namespace VIZCore3DX.NET.DecalAnnotation
 
             selectedDecal = decal;
             SetDecalHighlight(selectedDecal);
+            LoadArrowStyle(selectedDecal);
             RefreshSelectedDecal();
+        }
+
+        // 표시 체크박스 : 행마다 개별적으로 표시 / 숨김
+        private void dgvDecals_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.ColumnIndex != colVisible.Index) return;
+
+            VIZCore3DX.NET.Data.DecalItem decal = dgvDecals.Rows[e.RowIndex].Tag as VIZCore3DX.NET.Data.DecalItem;
+            if (decal == null || decal.IsDeleted || decal.IsValid == false) return;
+
+            bool visible = !decal.IsVisible;
+            vizcore3dx.Decal.SetVisible(new List<VIZCore3DX.NET.Data.DecalItem>() { decal }, visible);
+
+            dgvDecals.Rows[e.RowIndex].Cells[colVisible.Index].Value = decal.IsVisible;
         }
 
         private void SetDecalHighlight(VIZCore3DX.NET.Data.DecalItem target)
@@ -452,8 +584,20 @@ namespace VIZCore3DX.NET.DecalAnnotation
             return null;
         }
 
+        private string GetDecalTypeText(VIZCore3DX.NET.Data.DecalItem decal)
+        {
+            return vizcore3dx.Decal.IsArrowDecal(decal) ? "Arrow" : decal.Type.ToString();
+        }
+
         private string GetDecalContent(VIZCore3DX.NET.Data.DecalItem decal)
         {
+            if (vizcore3dx.Decal.IsArrowDecal(decal))
+            {
+                VIZCore3DX.NET.Data.ArrowDecalStyle style = vizcore3dx.Decal.GetArrowDecalStyle(decal);
+                if (style == null) return "(Arrow)";
+                return string.Format("({0}{1})", style.HeadKind, style.IsDoubleHeaded ? ", 양쪽 촉" : "");
+            }
+
             if (decal.Type == VIZCore3DX.NET.Data.DecalType.Text) return string.IsNullOrEmpty(decal.DecalText) ? "(빈 문자열)" : decal.DecalText;
             return "(Image)";
         }
@@ -479,7 +623,7 @@ namespace VIZCore3DX.NET.DecalAnnotation
 
                 if (decal == null || decal.IsDeleted) continue;
 
-                int rowIndex = dgvDecals.Rows.Add(dgvDecals.Rows.Count + 1, decal.Type.ToString(), GetDecalContent(decal), decal.IsVisible ? "표시" : "숨김", vizcore3dx.Decal.HasArrow(decal) ? "있음" : "없음", string.Format("{0:0.##}°", GetRotationAngle(decal)));
+                int rowIndex = dgvDecals.Rows.Add(dgvDecals.Rows.Count + 1, GetDecalTypeText(decal), GetDecalContent(decal), decal.IsVisible, string.Format("{0:0.##}°", GetRotationAngle(decal)));
 
                 DataGridViewRow row = dgvDecals.Rows[rowIndex];
                 row.Tag = decal;
@@ -525,8 +669,11 @@ namespace VIZCore3DX.NET.DecalAnnotation
             btnRotateCounterClockwise.Enabled = hasDecal;
             chkSelectable.Enabled = hasDecal;
             chkMovable.Enabled = hasDecal;
-            groupArrow.Enabled = hasDecal;
             btnDeleteSelected.Enabled = hasDecal;
+
+            bool isArrowDecal = hasDecal && vizcore3dx.Decal.IsArrowDecal(selectedDecal);
+            btnApplyArrowStyle.Enabled = isArrowDecal;
+            btnApplyArrowLength.Enabled = isArrowDecal;
 
             if (hasDecal == false)
             {
@@ -538,9 +685,9 @@ namespace VIZCore3DX.NET.DecalAnnotation
                 return;
             }
 
-            lblSelectedInfo.Text = string.Format("선택된 Decal : {0} / {1}", selectedDecal.Type, GetDecalContent(selectedDecal));
+            lblSelectedInfo.Text = string.Format("선택된 Decal : {0} / {1}", GetDecalTypeText(selectedDecal), GetDecalContent(selectedDecal));
             lblSelectedPosition.Text = string.Format("Position : X {0:0.##}, Y {1:0.##}, Z {2:0.##}", selectedDecal.Position.X, selectedDecal.Position.Y, selectedDecal.Position.Z);
-            lblSelectedRotation.Text = string.Format("Rotation : {0:0.##}° / Step : {1:0.##}° / Arrow : {2}", GetRotationAngle(selectedDecal), vizcore3dx.Decal.RotationAngleStep, vizcore3dx.Decal.HasArrow(selectedDecal) ? "있음" : "없음");
+            lblSelectedRotation.Text = string.Format("Rotation : {0:0.##}° / Step : {1:0.##}°", GetRotationAngle(selectedDecal), vizcore3dx.Decal.RotationAngleStep);
             chkSelectable.Checked = selectedDecal.IsSelectable;
             chkMovable.Checked = selectedDecal.IsMovable;
         }
@@ -550,6 +697,7 @@ namespace VIZCore3DX.NET.DecalAnnotation
             if (e.Decals != null && e.Decals.Count > 0)
             {
                 selectedDecal = e.Decals[e.Decals.Count - 1];
+                LoadArrowStyle(selectedDecal);
             }
 
             RefreshUI();

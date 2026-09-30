@@ -214,12 +214,15 @@ namespace VIZCore3DX.NET.Note
 
             // 다시 가져오기
             note = vizcore3dx.Note.GetItem(note.ID);
+            if (note == null) return;
 
             // api 제공값
             SizeF sdkSize = note.ScreenDisplaySize;
 
             // api 값이 0이면 텍스트 기준으로 직접 계산
-            Size textSize = TextRenderer.MeasureText(note.Title, new Font("Arial", 18.0f, FontStyle.Bold));
+            Size textSize;
+            using (Font font = new Font("Arial", 18.0f, FontStyle.Bold))
+                textSize = TextRenderer.MeasureText(note.Title, font);
 
             txtWidth.Text = sdkSize.Width > 0 ? sdkSize.Width.ToString("F2") : textSize.Width.ToString();
             txtHeight.Text = sdkSize.Height > 0 ? sdkSize.Height.ToString("F2") : textSize.Height.ToString();

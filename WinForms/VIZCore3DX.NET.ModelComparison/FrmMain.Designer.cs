@@ -75,7 +75,7 @@ namespace VIZCore3DX.NET.ModelComparison
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1265, 785);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 785);
             this.splitContainer1.SplitterDistance = 311;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -88,7 +88,7 @@ namespace VIZCore3DX.NET.ModelComparison
             this.groupBox2.Controls.Add(this.lvResult);
             this.groupBox2.Location = new System.Drawing.Point(12, 123);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1241, 185);
+            this.groupBox2.Size = new System.Drawing.Size(1256, 185);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "비교 결과";
@@ -125,7 +125,7 @@ namespace VIZCore3DX.NET.ModelComparison
             this.lvResult.HideSelection = false;
             this.lvResult.Location = new System.Drawing.Point(17, 60);
             this.lvResult.Name = "lvResult";
-            this.lvResult.Size = new System.Drawing.Size(1218, 119);
+            this.lvResult.Size = new System.Drawing.Size(1233, 119);
             this.lvResult.TabIndex = 0;
             this.lvResult.UseCompatibleStateImageBehavior = false;
             this.lvResult.View = System.Windows.Forms.View.Details;
@@ -192,7 +192,7 @@ namespace VIZCore3DX.NET.ModelComparison
             this.groupBox1.Controls.Add(this.txtModel1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1241, 100);
+            this.groupBox1.Size = new System.Drawing.Size(1256, 100);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "모델";
@@ -200,7 +200,7 @@ namespace VIZCore3DX.NET.ModelComparison
             // btnCompare
             // 
             this.btnCompare.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCompare.Location = new System.Drawing.Point(1131, 31);
+            this.btnCompare.Location = new System.Drawing.Point(1146, 31);
             this.btnCompare.Name = "btnCompare";
             this.btnCompare.Size = new System.Drawing.Size(104, 48);
             this.btnCompare.TabIndex = 4;
@@ -211,7 +211,7 @@ namespace VIZCore3DX.NET.ModelComparison
             // btnOpen2
             // 
             this.btnOpen2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpen2.Location = new System.Drawing.Point(1049, 58);
+            this.btnOpen2.Location = new System.Drawing.Point(1064, 58);
             this.btnOpen2.Name = "btnOpen2";
             this.btnOpen2.Size = new System.Drawing.Size(75, 23);
             this.btnOpen2.TabIndex = 3;
@@ -225,13 +225,13 @@ namespace VIZCore3DX.NET.ModelComparison
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtModel2.Location = new System.Drawing.Point(39, 58);
             this.txtModel2.Name = "txtModel2";
-            this.txtModel2.Size = new System.Drawing.Size(1004, 21);
+            this.txtModel2.Size = new System.Drawing.Size(1019, 21);
             this.txtModel2.TabIndex = 2;
             // 
             // btnOpen1
             // 
             this.btnOpen1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpen1.Location = new System.Drawing.Point(1049, 31);
+            this.btnOpen1.Location = new System.Drawing.Point(1064, 31);
             this.btnOpen1.Name = "btnOpen1";
             this.btnOpen1.Size = new System.Drawing.Size(75, 23);
             this.btnOpen1.TabIndex = 1;
@@ -245,7 +245,7 @@ namespace VIZCore3DX.NET.ModelComparison
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtModel1.Location = new System.Drawing.Point(39, 31);
             this.txtModel1.Name = "txtModel1";
-            this.txtModel1.Size = new System.Drawing.Size(1004, 21);
+            this.txtModel1.Size = new System.Drawing.Size(1019, 21);
             this.txtModel1.TabIndex = 0;
             // 
             // splitContainer2
@@ -253,15 +253,15 @@ namespace VIZCore3DX.NET.ModelComparison
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Size = new System.Drawing.Size(1265, 470);
-            this.splitContainer2.SplitterDistance = 421;
+            this.splitContainer2.Size = new System.Drawing.Size(1280, 470);
+            this.splitContainer2.SplitterDistance = 638;
             this.splitContainer2.TabIndex = 0;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1265, 785);
+            this.ClientSize = new System.Drawing.Size(1280, 785);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

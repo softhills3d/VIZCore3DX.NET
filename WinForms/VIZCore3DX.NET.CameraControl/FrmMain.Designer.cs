@@ -60,7 +60,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(1265, 643);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 331;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -71,16 +71,18 @@
             this.groupBox1.Controls.Add(this.btnBackupCamera);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(306, 100);
+            this.groupBox1.Size = new System.Drawing.Size(306, 60);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Camera";
             // 
             // btnBackupCamera
             // 
-            this.btnBackupCamera.Location = new System.Drawing.Point(23, 34);
+            this.btnBackupCamera.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnBackupCamera.Location = new System.Drawing.Point(6, 20);
             this.btnBackupCamera.Name = "btnBackupCamera";
-            this.btnBackupCamera.Size = new System.Drawing.Size(75, 23);
+            this.btnBackupCamera.Size = new System.Drawing.Size(294, 28);
             this.btnBackupCamera.TabIndex = 0;
             this.btnBackupCamera.Text = "Backup";
             this.btnBackupCamera.UseVisualStyleBackColor = true;
@@ -93,9 +95,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.ckFitToView);
             this.groupBox2.Controls.Add(this.lvCamera);
-            this.groupBox2.Location = new System.Drawing.Point(12, 118);
+            this.groupBox2.Location = new System.Drawing.Point(12, 78);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(306, 328);
+            this.groupBox2.Size = new System.Drawing.Size(306, 485);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Items";
@@ -125,7 +127,7 @@
             this.lvCamera.HideSelection = false;
             this.lvCamera.Location = new System.Drawing.Point(6, 52);
             this.lvCamera.Name = "lvCamera";
-            this.lvCamera.Size = new System.Drawing.Size(294, 270);
+            this.lvCamera.Size = new System.Drawing.Size(294, 427);
             this.lvCamera.TabIndex = 0;
             this.lvCamera.UseCompatibleStateImageBehavior = false;
             this.lvCamera.View = System.Windows.Forms.View.Details;
@@ -146,7 +148,7 @@
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.pbSnapshot);
-            this.groupBox3.Location = new System.Drawing.Point(12, 452);
+            this.groupBox3.Location = new System.Drawing.Point(12, 569);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(306, 179);
             this.groupBox3.TabIndex = 2;
@@ -168,7 +170,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1265, 643);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

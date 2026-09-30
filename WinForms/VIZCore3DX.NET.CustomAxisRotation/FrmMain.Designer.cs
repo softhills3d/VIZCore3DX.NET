@@ -41,6 +41,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.btnClear = new System.Windows.Forms.Button();
+            this.tlpAxis = new System.Windows.Forms.TableLayoutPanel();
             this.btnShowOsnap = new System.Windows.Forms.Button();
             this.txtV2 = new System.Windows.Forms.TextBox();
             this.txtV1 = new System.Windows.Forms.TextBox();
@@ -52,6 +53,7 @@
             this.splitContainer1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.tlpAxis.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -67,7 +69,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.groupBox3);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(937, 515);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 312;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -137,8 +139,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.btnClear);
-            this.groupBox2.Controls.Add(this.btnShowOsnap);
+            this.groupBox2.Controls.Add(this.tlpAxis);
             this.groupBox2.Controls.Add(this.txtV2);
             this.groupBox2.Controls.Add(this.txtV1);
             this.groupBox2.Location = new System.Drawing.Point(12, 100);
@@ -166,22 +167,40 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "V1";
             // 
+            // tlpAxis
+            // 
+            this.tlpAxis.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpAxis.ColumnCount = 2;
+            this.tlpAxis.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpAxis.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpAxis.Controls.Add(this.btnShowOsnap, 0, 0);
+            this.tlpAxis.Controls.Add(this.btnClear, 1, 0);
+            this.tlpAxis.Location = new System.Drawing.Point(20, 27);
+            this.tlpAxis.Name = "tlpAxis";
+            this.tlpAxis.RowCount = 1;
+            this.tlpAxis.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpAxis.Size = new System.Drawing.Size(250, 29);
+            this.tlpAxis.TabIndex = 2;
+            // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(104, 33);
+            this.btnClear.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClear.Location = new System.Drawing.Point(128, 3);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 23);
-            this.btnClear.TabIndex = 3;
+            this.btnClear.Size = new System.Drawing.Size(119, 23);
+            this.btnClear.TabIndex = 1;
             this.btnClear.Text = "Clear Point";
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // btnShowOsnap
             // 
-            this.btnShowOsnap.Location = new System.Drawing.Point(23, 33);
+            this.btnShowOsnap.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnShowOsnap.Location = new System.Drawing.Point(3, 3);
             this.btnShowOsnap.Name = "btnShowOsnap";
-            this.btnShowOsnap.Size = new System.Drawing.Size(75, 23);
-            this.btnShowOsnap.TabIndex = 2;
+            this.btnShowOsnap.Size = new System.Drawing.Size(119, 23);
+            this.btnShowOsnap.TabIndex = 0;
             this.btnShowOsnap.Text = "Show Osnap";
             this.btnShowOsnap.UseVisualStyleBackColor = true;
             this.btnShowOsnap.Click += new System.EventHandler(this.btnShowOsnap_Click);
@@ -224,7 +243,7 @@
             this.btnAddModel.Name = "btnAddModel";
             this.btnAddModel.Size = new System.Drawing.Size(75, 23);
             this.btnAddModel.TabIndex = 0;
-            this.btnAddModel.Text = "Generate";
+            this.btnAddModel.Text = "Open";
             this.btnAddModel.UseVisualStyleBackColor = true;
             this.btnAddModel.Click += new System.EventHandler(this.btnAddModel_Click);
             // 
@@ -236,7 +255,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(937, 515);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -249,6 +268,7 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.tlpAxis.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -266,6 +286,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TableLayoutPanel tlpAxis;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnShowOsnap;
         private System.Windows.Forms.TextBox txtV2;

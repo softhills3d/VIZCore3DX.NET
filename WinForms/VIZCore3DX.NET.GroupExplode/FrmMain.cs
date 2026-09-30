@@ -67,8 +67,10 @@ namespace VIZCore3DX.NET.GroupExplode
         {
             RestoreExplode();
 
+            // 파일 선택을 취소하면 기존 그룹을 유지
+            if (vizcore3dx.Model.OpenFileDialog() == false) return;
+
             vizcore3dx.Object3D.Group.ClearGroup();
-            vizcore3dx.Model.OpenFileDialog();
 
             txtGroupName.Text = "Group 1";
 
@@ -179,7 +181,13 @@ namespace VIZCore3DX.NET.GroupExplode
                 addNodes.Add(node);
             }
 
-            if (addNodes.Count > 0) vizcore3dx.Object3D.Group.AddNodes(targetGroup, addNodes);
+            if (addNodes.Count == 0)
+            {
+                MessageBox.Show("선택한 Node가 이미 다른 그룹에 포함되어 있습니다.\r\n그룹 간 이동은 '선택 Node 그룹으로 이동'을 사용하세요.", "Group Explode", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            vizcore3dx.Object3D.Group.AddNodes(targetGroup, addNodes);
 
             vizcore3dx.Object3D.Select(VIZCore3DX.NET.Data.Object3dSelectionModes.DESELECT_ALL);
 
@@ -750,6 +758,7 @@ namespace VIZCore3DX.NET.GroupExplode
             btnFocusExplode.Enabled = enabled;
             btnRestore.Enabled = enabled;
             grpGroup.Enabled = enabled;
+            btnOpenModel.Enabled = enabled;
         }
 
         #endregion

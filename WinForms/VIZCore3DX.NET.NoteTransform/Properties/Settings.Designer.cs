@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace VIZCore3D.NET.NoteTransform.Properties
+namespace VIZCore3DX.NET.NoteTransform.Properties
 {
 
 

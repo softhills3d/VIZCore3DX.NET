@@ -287,6 +287,94 @@ namespace VIZCore3DX.NET.SelectionBox
             SetStatus(string.Format("Selection Box {0}개에서 중복을 제외한 Object {1}개를 조회했습니다.", ids.Count, nodes.Count));
         }
 
+        private void btnExportJson_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.SelectionBox.Items.Count == 0)
+            {
+                MessageBox.Show("내보낼 Selection Box가 없습니다.", "Selection Box", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using (SaveFileDialog dialog = new SaveFileDialog())
+            {
+                dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+                dialog.FileName = "SelectionBox.json";
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                // Selection Box 목록을 JSON 파일로 저장
+                if (!vizcore3dx.SelectionBox.ExportToJson(dialog.FileName))
+                {
+                    ShowOperationFailure("Selection Box JSON 내보내기에 실패했습니다.");
+                    return;
+                }
+
+                SetStatus(string.Format("Selection Box {0}개를 JSON으로 내보냈습니다. 파일: {1}", vizcore3dx.SelectionBox.Items.Count, dialog.FileName));
+            }
+        }
+
+        private void btnImportJson_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                // replaceExisting = true : 기존 Selection Box를 모두 지우고 파일 내용으로 대체
+                // replaceExisting = false : 기존 Selection Box에 파일 내용을 추가
+                if (!vizcore3dx.SelectionBox.ImportFromJson(dialog.FileName, chkReplaceExisting.Checked))
+                {
+                    ShowOperationFailure("Selection Box JSON 가져오기에 실패했습니다.");
+                    return;
+                }
+
+                RefreshSelectionBoxList(new List<int>());
+                lstObjects.Items.Clear();
+                SetStatus(string.Format("Selection Box JSON을 가져왔습니다. ({0}) 현재 {1}개", chkReplaceExisting.Checked ? "기존 대체" : "기존에 추가", vizcore3dx.SelectionBox.Items.Count));
+            }
+        }
+
+        private void btnEnterFocusMode_Click(object sender, EventArgs e)
+        {
+            List<int> ids = vizcore3dx.SelectionBox.GetSelectedItems();
+
+            if (ids.Count != 1)
+            {
+                MessageBox.Show("집중 모드로 볼 Selection Box 하나를 선택하세요.", "Selection Box", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 지정한 Box만 남기고 다른 Box를 숨긴 뒤, Box 밖의 모델을 잘라 내부만 표시
+            if (!vizcore3dx.SelectionBox.EnterFocusMode(ids[0]))
+            {
+                ShowOperationFailure("집중 모드 진입에 실패했습니다.");
+                return;
+            }
+
+            SetStatus(string.Format("Selection Box 집중 모드를 시작했습니다. ID: {0}", ids[0]));
+        }
+
+        private void btnExitFocusMode_Click(object sender, EventArgs e)
+        {
+            // 숨긴 Box와 잘라낸 모델을 원래 상태로 복원
+            if (!vizcore3dx.SelectionBox.ExitFocusMode())
+            {
+                ShowOperationFailure("집중 모드 해제에 실패했습니다.");
+                return;
+            }
+
+            RefreshSelectionBoxList(null);
+            SetStatus("Selection Box 집중 모드를 해제했습니다.");
+        }
+
+        private void ShowOperationFailure(string message)
+        {
+            OperationStatus status = vizcore3dx.SelectionBox.LastOperationStatus;
+            string detail = status == null ? string.Empty : string.Format("\n원인 : {0}", status.Result);
+
+            SetStatus(message);
+            MessageBox.Show(message + detail, "Selection Box", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
         private void chkManipulator_CheckedChanged(object sender, EventArgs e)
         {
             vizcore3dx.SelectionBox.IsManipulatorEnabled = chkManipulator.Checked;

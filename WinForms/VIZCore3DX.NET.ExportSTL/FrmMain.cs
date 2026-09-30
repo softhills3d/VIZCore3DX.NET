@@ -47,6 +47,11 @@ namespace VIZCore3DX.NET.ExportSTL
                 MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            // ================================================================
+            // 설정 - Body 사용 (STL 내보내기의 전제 조건, 모델 열기 전에 설정)
+            // ================================================================
+            vizcore3dx.Model.EnableBody = true;
         }
 
         private void btnExportStlAscii_Click(object sender, EventArgs e)
@@ -57,7 +62,14 @@ namespace VIZCore3DX.NET.ExportSTL
             dlg.Filter = "STL File (*.stl)|*.stl";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            vizcore3dx.Model.ExportStl(dlg.FileName, true);
+            try
+            {
+                vizcore3dx.Model.ExportStl(dlg.FileName, true);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnExportStlBinary_Click(object sender, EventArgs e)
@@ -68,7 +80,14 @@ namespace VIZCore3DX.NET.ExportSTL
             dlg.Filter = "STL File (*.stl)|*.stl";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            vizcore3dx.Model.ExportStl(dlg.FileName, false);
+            try
+            {
+                vizcore3dx.Model.ExportStl(dlg.FileName, false);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

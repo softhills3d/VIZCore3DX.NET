@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 using VIZCore3DX.NET.Event;
@@ -16,6 +19,11 @@ namespace VIZCore3DX.NET.SectionBoxControl
         /// Section 정보
         /// </summary>
         public VIZCore3DX.NET.Data.SectionItem Section { get; set; }
+
+        /// <summary>
+        /// 단면 경계선 색상 (숨김 시에도 표시 색상 보관)
+        /// </summary>
+        private Color boundaryColor = Color.Red;
 
         public FrmMain()
         {
@@ -53,6 +61,26 @@ namespace VIZCore3DX.NET.SectionBoxControl
             }
 
             InitializeVIZCore3DXEvent();
+            InitializeBoundaryStyle();
+        }
+
+        /// <summary>
+        /// 현재 단면 기본 스타일의 경계선 색상을 UI에 반영
+        /// </summary>
+        private void InitializeBoundaryStyle()
+        {
+            SectionStyle style = vizcore3dx.Section.GetStyle();
+            if (style == null) return;
+
+            Color color = style.BoundaryStrokeColor;
+
+            // 알파 0 = 경계선 숨김 상태
+            chkBoundaryVisible.CheckedChanged -= chkBoundaryVisible_CheckedChanged;
+            chkBoundaryVisible.Checked = color.A != 0;
+            chkBoundaryVisible.CheckedChanged += chkBoundaryVisible_CheckedChanged;
+
+            if (color.A != 0) boundaryColor = color;
+            pnlBoundaryColor.BackColor = boundaryColor;
         }
 
         /// <summary>
@@ -66,7 +94,7 @@ namespace VIZCore3DX.NET.SectionBoxControl
 
         /// <summary>
         /// Section Box Control 이벤트
-        /// 링크 참고 https://softhills.net/SHDC/VIZCore3DX.NET/Help/html/E_VIZCore3DX_NET_Manager_SectionManager_OnSectionEvent.htm
+        /// 링크 참고 https://docs.softhills.net/VIZCore3DX.NET/api/VIZCore3DX.NET/VIZCore3DX.NET.Manager/SectionManager/Events/OnSectionEvent
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -373,6 +401,149 @@ namespace VIZCore3DX.NET.SectionBoxControl
 
             // View 업데이트
             vizcore3dx.Update();
+        }
+
+        /// <summary>
+        /// Section 목록 JSON 파일 저장 버튼 클릭 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSectionSaveJson_Click(object sender, EventArgs e)
+        {
+            // 모델 오픈 검증
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            if (vizcore3dx.Section.Sections.Count == 0)
+            {
+                MessageBox.Show("저장할 단면이 없습니다.", "SectionBoxControl", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Section 목록을 JSON 문자열로 변환
+            string json = vizcore3dx.Section.ToJson();
+
+            if (string.IsNullOrEmpty(json))
+            {
+                ShowOperationFailure("단면 JSON 문자열 생성에 실패했습니다.");
+                return;
+            }
+
+            using (SaveFileDialog dialog = new SaveFileDialog())
+            {
+                dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+                dialog.FileName = "Section.json";
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                File.WriteAllText(dialog.FileName, json, Encoding.UTF8);
+            }
+        }
+
+        /// <summary>
+        /// Section 목록 JSON 파일 불러오기 버튼 클릭 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSectionLoadJson_Click(object sender, EventArgs e)
+        {
+            // 모델 오픈 검증
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                string json = File.ReadAllText(dialog.FileName, Encoding.UTF8);
+
+                // JSON 문자열로 Section 목록 복원
+                if (!vizcore3dx.Section.FromJson(json))
+                {
+                    ShowOperationFailure("단면 JSON 불러오기에 실패했습니다.");
+                    return;
+                }
+            }
+
+            // 복원된 Section Box를 현재 제어 대상으로 지정
+            Section = null;
+            foreach (SectionItem item in vizcore3dx.Section.Sections)
+            {
+                if (item != null && item.IsValid && item.SectionType == Manager.SectionManager.SectionTypes.SECTION_BOX) Section = item;
+            }
+
+            if (Section != null) UpdateBoxText(Section.BoundBox);
+            vizcore3dx.Update();
+        }
+
+        /// <summary>
+        /// 단면 경계선 표시 여부 변경 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void chkBoundaryVisible_CheckedChanged(object sender, EventArgs e)
+        {
+            ApplyBoundaryColor();
+        }
+
+        /// <summary>
+        /// 단면 경계선 색상 선택 버튼 클릭 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnBoundaryColor_Click(object sender, EventArgs e)
+        {
+            using (ColorDialog dialog = new ColorDialog())
+            {
+                dialog.Color = boundaryColor;
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                boundaryColor = dialog.Color;
+                pnlBoundaryColor.BackColor = boundaryColor;
+            }
+
+            ApplyBoundaryColor();
+        }
+
+        /// <summary>
+        /// 단면 기본 스타일에 경계선 색상 적용 (숨김 = 알파 0)
+        /// ※ 기존 ShowSectionLine 속성은 삭제되어 SectionStyle.BoundaryStrokeColor로 대체
+        /// </summary>
+        private void ApplyBoundaryColor()
+        {
+            SectionStyle style = vizcore3dx.Section.GetStyle();
+            if (style == null) return;
+
+            style.BoundaryStrokeColor = chkBoundaryVisible.Checked ? boundaryColor : Color.FromArgb(0, boundaryColor);
+            vizcore3dx.Section.SetStyle(style);
+            vizcore3dx.Update();
+        }
+
+        /// <summary>
+        /// Section Box 바운드 박스 값을 Min/Max TextBox에 표시
+        /// </summary>
+        /// <param name="bbox">바운드 박스</param>
+        private void UpdateBoxText(VIZCore3DX.NET.Data.BoundBox3D bbox)
+        {
+            // Min 값
+            txtMinX.Text = bbox.MinX.ToString();
+            txtMinY.Text = bbox.MinY.ToString();
+            txtMinZ.Text = bbox.MinZ.ToString();
+
+            // Max 값
+            txtMaxX.Text = bbox.MaxX.ToString();
+            txtMaxY.Text = bbox.MaxY.ToString();
+            txtMaxZ.Text = bbox.MaxZ.ToString();
+        }
+
+        /// <summary>
+        /// 실패 메시지와 LastOperationStatus 원인 표시
+        /// </summary>
+        /// <param name="message">실패 메시지</param>
+        private void ShowOperationFailure(string message)
+        {
+            OperationStatus status = vizcore3dx.Section.LastOperationStatus;
+            string detail = status == null ? string.Empty : string.Format("\n원인 : {0}", status.Result);
+
+            MessageBox.Show(message + detail, "SectionBoxControl", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
     }

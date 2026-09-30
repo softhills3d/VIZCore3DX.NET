@@ -115,20 +115,44 @@ namespace VIZCore3DX.NET.Frame
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             vizcore3dx.Model.Open(dlg.FileName);
+
+            // 새 모델에는 이전 모델의 Frame이 없으므로 목록 갱신
+            UpdateFrameListView();
+            UpdateFrameLineListView();
         }
 
         private void btnOpenAMFrame_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (CheckModelOpened() == false) return;
 
-            vizcore3dx.Frame.OpenAMFileDialog();
+            bool result = vizcore3dx.Frame.OpenAMFileDialog();
+            AfterOpenFrame("Open AM Frame", result);
         }
 
         private void btnOpenTribonFrame_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Model.IsOpen() == false) return;
+            if (CheckModelOpened() == false) return;
 
-            vizcore3dx.Frame.OpenTribonFileDialog();
+            bool result = vizcore3dx.Frame.OpenTribonFileDialog();
+            AfterOpenFrame("Open Tribon Frame", result);
+        }
+
+        private bool CheckModelOpened()
+        {
+            if (vizcore3dx.Model.IsOpen() == true) return true;
+
+            MessageBox.Show("먼저 [Open Model]로 모델을 열어 주세요.", "VIZCore3DX.NET.Frame", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
+        }
+
+        private void AfterOpenFrame(string title, bool result)
+        {
+            Log($"{title} : {(result ? "Success" : "Fail / Cancel")}, HasFrame: {vizcore3dx.Frame.HasFrame}");
+
+            // 열린 Frame 을 목록과 화면에 반영
+            UpdateFrameListView();
+            UpdateFrameLineListView();
+            if (result == true && vizcore3dx.Frame.HasFrame == true) vizcore3dx.Frame.Visible = true;
         }
 
         private void btnCreateFrame_Click(object sender, EventArgs e)
@@ -138,6 +162,13 @@ namespace VIZCore3DX.NET.Frame
             vizcore3dx.BeginUpdate();
 
             FrameItem frame = vizcore3dx.Frame.CreateFrame();
+
+            if (frame == null)
+            {
+                vizcore3dx.EndUpdate();
+                Log("CreateFrame failed");
+                return;
+            }
 
             frame.XMargin = 5000.0f;
             frame.YMargin = 5000.0f;

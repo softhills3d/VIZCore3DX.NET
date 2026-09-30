@@ -57,7 +57,6 @@ namespace VIZCore3DX.NET.SearchSpace
 
             // 라이선스 서버를 통한 인증
             VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
-            //VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("192.168.100.252", 8901);
 
             // ================================================================
             // License
@@ -131,6 +130,14 @@ namespace VIZCore3DX.NET.SearchSpace
         /// <param name="e"></param>
         private void btnSearch_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            if (BoundingBox == null || !BoundingBox.IsValid())
+            {
+                MessageBox.Show("바운드 박스를 먼저 설정하세요.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             _isResultUpdating = true;
 
             vizcore3dx.ShowWaitForm();
@@ -138,6 +145,9 @@ namespace VIZCore3DX.NET.SearchSpace
             gvResult.SuspendLayout();
             gvResult.Rows.Clear();
             vizcore3dx.Object3D.Select(Object3dSelectionModes.DESELECT_ALL);
+
+            // 검색 옵션 미선택 시 이전 결과 초기화
+            searchResult = new List<Node>();
 
             // 검색 옵션에 따른 검색
             if (ckFullyContained.Checked)
@@ -179,10 +189,7 @@ namespace VIZCore3DX.NET.SearchSpace
             if (boundingBox == null) return;
             if (vizcore3dx.SelectionBox.Items.Count > 0) return;
 
-            // 바운드 박스 설정
-            BoundingBox = boundingBox;
-
-            if (!BoundingBox.IsValid()) return;
+            if (!boundingBox.IsValid()) return;
 
             numMinX.Value = (decimal)boundingBox.MinX;
             numMinY.Value = (decimal)boundingBox.MinY;
@@ -192,7 +199,40 @@ namespace VIZCore3DX.NET.SearchSpace
             numMaxY.Value = (decimal)boundingBox.MaxY;
             numMaxZ.Value = (decimal)boundingBox.MaxZ;
 
-            // Selection Box 추가
+            ApplyBoundingBox(boundingBox);
+        }
+
+        /// <summary>
+        /// Min/Max 입력 필드에서 Enter : 값을 직접 입력해 바운드 박스 설정
+        /// </summary>
+        private void NumBoundingBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter) return;
+
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+
+            Data.BoundBox3D boundingBox = new Data.BoundBox3D(
+                (float)numMinX.Value, (float)numMinY.Value, (float)numMinZ.Value,
+                (float)numMaxX.Value, (float)numMaxY.Value, (float)numMaxZ.Value);
+
+            if (!boundingBox.IsValid())
+            {
+                MessageBox.Show("Max 값은 Min 값보다 커야 합니다.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            ApplyBoundingBox(boundingBox);
+        }
+
+        /// <summary>
+        /// 바운드 박스를 검색 대상으로 확정하고 Selection Box를 갱신
+        /// </summary>
+        private void ApplyBoundingBox(Data.BoundBox3D boundingBox)
+        {
+            BoundingBox = boundingBox;
+
+            vizcore3dx.SelectionBox.Clear();
             vizcore3dx.SelectionBox.Add(BoundingBox, System.Drawing.Color.FromArgb(100, 192, 192, 192), System.Drawing.Color.Black, "");
         }
 
@@ -216,7 +256,7 @@ namespace VIZCore3DX.NET.SearchSpace
 
         private void gvResult_CellValueChanged(object sender, DataGridViewCellValueEventArgs e)
         {
-            if (searchResult.Count == 0) return;
+            if (e.RowIndex < 0 || e.RowIndex >= searchResult.Count) return;
 
             // 현재 그리드 행(Row)에 해당하는 원본 데이터 아이템 추출
             var resultItem = searchResult[e.RowIndex];
@@ -300,8 +340,28 @@ namespace VIZCore3DX.NET.SearchSpace
         /// <param name="e"></param>
         private void btnExport_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            // 검색 결과가 없으면 전체 개체가 삭제되므로 중단
+            if (searchResult.Count == 0)
+            {
+                MessageBox.Show("검색 결과가 없습니다.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 저장 경로 선택
+            string path = string.Empty;
+            using (SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Filter = "VIZX (*.vizx)|*.vizx";
+                dlg.FileName = "SearchSpace.vizx";
+                if (dlg.ShowDialog() != DialogResult.OK) return;
+                path = dlg.FileName;
+            }
+
             // 바운드 박스 외부 개체 삭제
             vizcore3dx.BeginUpdate();
+            vizcore3dx.Object3D.Select(Object3dSelectionModes.DESELECT_ALL);
             vizcore3dx.Object3D.Select(searchResult, true);
             vizcore3dx.Object3D.Select(Object3dSelectionModes.INVERT_SELECTION);
             List<Node> nodes = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_ALL);
@@ -309,15 +369,19 @@ namespace VIZCore3DX.NET.SearchSpace
             vizcore3dx.EndUpdate();
 
             // VIZX 형식으로 저장
-            bool result = vizcore3dx.Model.SaveAsVIZX("C:\\Temp\\SearchSpace.vizx");
+            bool result = vizcore3dx.Model.SaveAsVIZX(path);
             if (result == false) return;
 
             // 모델 닫기
             vizcore3dx.Model.Close();
 
+            // 이전 검색 결과 초기화 (닫힌 모델의 노드)
+            searchResult = new List<Node>();
+            gvResult.RowCount = 0;
+
             // 저장한 파일 다시 열기
             vizcore3dx.View.XRay.Enable = false;
-            vizcore3dx.Model.Open("C:\\Temp\\SearchSpace.vizx");
+            vizcore3dx.Model.Open(path);
         }
     }
 }

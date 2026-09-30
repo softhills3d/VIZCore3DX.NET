@@ -129,7 +129,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lvAttribute);
-            this.splitContainer1.Size = new System.Drawing.Size(1356, 707);
+            this.splitContainer1.Size = new System.Drawing.Size(1356, 735);
             this.splitContainer1.SplitterDistance = 1038;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -144,7 +144,7 @@
             this.lvAttribute.HideSelection = false;
             this.lvAttribute.Location = new System.Drawing.Point(0, 0);
             this.lvAttribute.Name = "lvAttribute";
-            this.lvAttribute.Size = new System.Drawing.Size(314, 707);
+            this.lvAttribute.Size = new System.Drawing.Size(314, 735);
             this.lvAttribute.TabIndex = 1;
             this.lvAttribute.UseCompatibleStateImageBehavior = false;
             this.lvAttribute.View = System.Windows.Forms.View.Details;
@@ -163,7 +163,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1356, 732);
+            this.ClientSize = new System.Drawing.Size(1356, 760);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.toolBar);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

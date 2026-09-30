@@ -44,23 +44,26 @@ namespace VIZCore3DX.NET.GridThreeD
             VIZCore3DX.NET.ModuleInitializer.Run();
 
             // Main Viewer
-            vizcore3dx = CreateViewer(splitContainer3.Panel1, true, null);
+            // Main Viewer(2사분면, 좌상단)만 리본 / 툴바 표시, 나머지 Viewer는 3D 화면만 표시
+            vizcore3dx = CreateViewer(splitContainer3.Panel1, false, null);
 
             // Export 후 분할 파일들을 합쳐서 분해도 형태로 보여주는 Viewer
             vizcore3dxExplode = CreateViewer(splitContainer3.Panel2, true, null);
 
             // Grid Box만 보여주는 Viewer
-            vizcore3dxGrid = CreateViewer(splitContainer4.Panel1, false, InitializeGridViewer);
+            vizcore3dxGrid = CreateViewer(splitContainer4.Panel1, true, InitializeGridViewer);
 
             // 선택한 Grid 영역 하나만 보여주는 상세 Viewer
-            vizcore3dxView = CreateViewer(splitContainer4.Panel2, false, null);
+            vizcore3dxView = CreateViewer(splitContainer4.Panel2, true, null);
         }
 
         // Viewer를 생성하고 초기화 이벤트에서 라이선스 인증과 기본 설정 적용
-        private VIZCore3DX.NET.VIZCore3DXControl CreateViewer(Control parent, bool showToolbar, Action<VIZCore3DX.NET.VIZCore3DXControl> init)
+        private VIZCore3DX.NET.VIZCore3DXControl CreateViewer(Control parent, bool viewOnly, Action<VIZCore3DX.NET.VIZCore3DXControl> init)
         {
             VIZCore3DX.NET.VIZCore3DXControl viewer = new VIZCore3DX.NET.VIZCore3DXControl();
             viewer.Dock = DockStyle.Fill;
+            // 저장된 사용자 설정(UserSetting.ini)의 리본 모드 등이 적용되지 않도록 기본 설정으로 시작 (컨트롤 Load 전에 설정)
+            if (viewOnly == true) viewer.LoadSavedSettingOnStartup = false;
 
             viewer.OnInitializedVIZCore3DX += (sender, e) =>
             {
@@ -70,8 +73,8 @@ namespace VIZCore3DX.NET.GridThreeD
                 bool result = VIZCore3DXHelper.OnInitializedVIZCore3DX(ctrl);
                 if (result == false) return;
 
-                // false일 때만 숨기지 말고, true/false 모두 명확하게 적용
-                ctrl.ToolbarMain.Visible = showToolbar;
+                if (viewOnly == true) HideViewerUI(ctrl);
+                else ctrl.ToolbarMain.Visible = true;
 
                 if (init != null) init(ctrl);
             };
@@ -79,6 +82,22 @@ namespace VIZCore3DX.NET.GridThreeD
             parent.Controls.Add(viewer);
 
             return viewer;
+        }
+
+        // 3D 화면만 남기고 리본 / 툴바 / 뷰 툴바 / 모델링 컨트롤 / 상태바 숨김
+        private static void HideViewerUI(VIZCore3DX.NET.VIZCore3DXControl ctrl)
+        {
+            ctrl.RibbonMode = false;
+            ctrl.View.Toolbar.Enable = false;           // 화면 안 세로 뷰 툴바 (홈 / 확대 / 이동 / 회전 / 설정)
+            ctrl.ModelingControlVisible = false;        // 모델링 컨트롤 패널 (우측 하단 X 로고)
+            ctrl.ToolbarMain.Visible = false;
+            ctrl.ToolbarNote.Visible = false;
+            ctrl.ToolbarMeasure.Visible = false;
+            ctrl.ToolbarSection.Visible = false;
+            ctrl.ToolbarSnapshot.Visible = false;
+            ctrl.ToolbarDecal.Visible = false;
+            ctrl.ToolbarPrimitive.Visible = false;
+            ctrl.Statusbar.Visible = false;
         }
 
         // ================================================
@@ -89,10 +108,15 @@ namespace VIZCore3DX.NET.GridThreeD
         {
             string path = string.Format("{0}\\Models\\VIZCore3DX.NET.GridThreeD\\H0000.vizx", vizcore3dx.GetEntryAssemblyPath());
 
+            bool result;
+
             if (File.Exists(path))
-                vizcore3dx.Model.Open(path);
+                result = vizcore3dx.Model.Open(path);
             else
-                vizcore3dx.Model.OpenFileDialog();
+                result = vizcore3dx.Model.OpenFileDialog();
+
+            // 새 모델에는 이전 모델 기준 Grid Box / 분할 결과가 맞지 않으므로 초기화
+            if (result == true) btnBoxClear_Click(sender, e);
         }
 
         // 현재 Viewer에 열린 원본 모델 파일 목록 반환
@@ -409,6 +433,18 @@ namespace VIZCore3DX.NET.GridThreeD
                 return;
             }
 
+            // 분해 애니메이션 실행 중에는 다시 실행하지 않음
+            if (vizcore3dxExplode.Object3D.Explode.IsAnimating == true) return;
+
+            // 이미 분해된 상태면 원래 위치로 복원한 뒤 다시 분해
+            if (vizcore3dxExplode.Object3D.Explode.IsActive == true)
+            {
+                vizcore3dxExplode.Object3D.Explode.Restore();
+                vizcore3dxExplode.Object3D.Explode.Deactivate();
+            }
+
+            // 클릭할 때마다 그룹이 중복 생성되지 않도록 기존 그룹 삭제 후 생성
+            vizcore3dxExplode.Object3D.Group.ClearGroup();
             vizcore3dxExplode.Object3D.Group.CreateHierarchicalGroups(3);
             vizcore3dxExplode.Object3D.Explode.AnimateExplodeRadial(0.0f, 0.3f, 1.0f, null, false);
         }
@@ -416,6 +452,7 @@ namespace VIZCore3DX.NET.GridThreeD
         private void btnRestore_Click(object sender, EventArgs e)
         {
             if (vizcore3dxExplode.Model.IsOpen() == false) return;
+            if (vizcore3dxExplode.Object3D.Explode.IsAnimating == true) return;
 
             // 분해 이전 상태로 복원 후 분해 모드 비활성화
             vizcore3dxExplode.Object3D.Explode.Restore();

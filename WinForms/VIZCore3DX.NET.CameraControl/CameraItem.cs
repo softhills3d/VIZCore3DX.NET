@@ -8,6 +8,7 @@
         public VIZCore3DX.NET.Data.Vertex3D CameraDirection { get; set; }
         public VIZCore3DX.NET.Data.Vertex3D UpDirection { get; set; }
         public float Zoom { get; set; }
+        public float Fov { get; set; }
         public VIZCore3DX.NET.Data.Projections ProjectionType { get; set; }
         public System.Drawing.Image Snapshot { get; set; }
 

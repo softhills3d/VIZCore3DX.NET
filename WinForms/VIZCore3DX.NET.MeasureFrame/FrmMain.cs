@@ -50,6 +50,20 @@ namespace VIZCore3DX.NET.MeasureFrame
 
             // 모델 로드
             InitializeVIZCore3DX();
+
+            // 측정 생성 / 삭제 시 측정 개수 갱신
+            vizcore3dx.Measure.OnMeasureCreated += Measure_OnMeasureChanged;
+            vizcore3dx.Measure.OnMeasureDeleted += Measure_OnMeasureChanged;
+        }
+
+        private void Measure_OnMeasureChanged(object sender, VIZCore3DX.NET.Event.EventManager.MeasureEventArgs e)
+        {
+            UpdateMeasureCount();
+        }
+
+        private void UpdateMeasureCount()
+        {
+            lblMeasureCount.Text = string.Format("측정 개수 : {0}", vizcore3dx.Measure.GetCount());
         }
 
         private void InitializeVIZCore3DX()
@@ -81,33 +95,24 @@ namespace VIZCore3DX.NET.MeasureFrame
 
         private void btnOpenModel_Click(object sender, EventArgs e)
         {
-            string path = @"C:\project\VIZCore3DX.NET-main\bin\Debug\H1195_V303.vizx";
-
-            if (System.IO.File.Exists(path) == true)
-                vizcore3dx.Model.Open(path);
-            else
-                vizcore3dx.Model.OpenFileDialog();
+            vizcore3dx.Model.OpenFileDialog();
         }
 
         private void btnOpenFrame_Click(object sender, EventArgs e)
         {
-            // DMP 파일 경로를 지정 열기 미존재
-            string path = @"C:\project\VIZCore3DX.NET-main\bin\Debug\H1195.DMP";
-            bool result;
-
-            if (System.IO.File.Exists(path) == true)
-                result = vizcore3dx.Frame.OpenTribon(path);
-            else
-                result = vizcore3dx.Frame.OpenTribonFileDialog();
-
-            if (result == false) return;
+            if (vizcore3dx.Frame.OpenTribonFileDialog() == false) return;
 
             vizcore3dx.Frame.Visible = true;
         }
 
         private async void btnShowOsnap_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
             var osnap = vizcore3dx.GeometryUtility.Osnap();
+
+            if (osnap == null) return;
+
             osnap.CircleCenterSnap = true;   // 원 중심점 스냅 - "점"
             osnap.CircleSnap = false;        // 원 스냅
             osnap.CylinderSnap = false;      // 원통 스냅
@@ -120,6 +125,8 @@ namespace VIZCore3DX.NET.MeasureFrame
 
             // 여기서 사용자가 화면에서 Osnap 선택할 때까지 기다림
             OsnapResult result = await osnap.GetResultAsync();
+
+            if (result == null) return;
 
             txtX.Text = result.Position.X.ToString();
             txtY.Text = result.Position.Y.ToString();
@@ -136,6 +143,9 @@ namespace VIZCore3DX.NET.MeasureFrame
             {
                 // 현재 Frame 정보
                 FrameItem baseFrame = vizcore3dx.Frame.GetFrame(-1);
+
+                if (baseFrame == null) return;
+
                 Vertex3D v = new Vertex3D(txtX.Text, txtY.Text, txtZ.Text);
                 NoteCustomStyle textOnlyStyle = CreateTextOnlyNoteStyle();
 
@@ -303,6 +313,110 @@ namespace VIZCore3DX.NET.MeasureFrame
             style.ArrowHeadSize = 0.0f;
 
             return style;
+        }
+
+        // ================================================================
+        // 측정 목록 내보내기 / 문자열 저장·복원
+        // ================================================================
+        private void btnAddDistance_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false || vizcore3dx.Frame.HasFrame == false) return;
+
+            // 입력한 위치에서 축별로 가장 가까운 프레임 라인까지의 거리 측정을 생성
+            FrameItem baseFrame = vizcore3dx.Frame.GetFrame(-1);
+
+            if (baseFrame == null) return;
+
+            Vertex3D v = new Vertex3D(txtX.Text, txtY.Text, txtZ.Text);
+            Vector3D position = new Vector3D(v.X, v.Y, v.Z);
+
+            FrameSnapResult xSnap = vizcore3dx.Frame.GetSnap(Axis.X, (float)v.X);
+            FrameSnapResult ySnap = vizcore3dx.Frame.GetSnap(Axis.Y, (float)v.Y);
+            FrameSnapResult zSnap = vizcore3dx.Frame.GetSnap(Axis.Z, (float)v.Z);
+
+            float xFramePos = baseFrame.XAxis.GetFrameLines().First(x => x.ID == xSnap.LineID).Offset;
+            float yFramePos = baseFrame.YAxis.GetFrameLines().First(x => x.ID == ySnap.LineID).Offset;
+            float zFramePos = baseFrame.ZAxis.GetFrameLines().First(x => x.ID == zSnap.LineID).Offset;
+
+            // 프레임 라인 위에 있는 축(거리 0)은 생성하지 않음
+            if (xFramePos != (float)v.X)
+                vizcore3dx.Measure.AddDistanceAxialDirectionX(position, new Vector3D(xFramePos, v.Y, v.Z), 500.0f);
+
+            if (yFramePos != (float)v.Y)
+                vizcore3dx.Measure.AddDistanceAxialDirectionY(position, new Vector3D(v.X, yFramePos, v.Z), 500.0f);
+
+            if (zFramePos != (float)v.Z)
+                vizcore3dx.Measure.AddDistanceAxialDirectionZ(position, new Vector3D(v.X, v.Y, zFramePos), 500.0f);
+        }
+
+        private void btnClearMeasure_Click(object sender, EventArgs e)
+        {
+            vizcore3dx.Measure.Clear();
+            UpdateMeasureCount();
+        }
+
+        private void btnExportMeasureCsv_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Measure.GetCount() == 0)
+            {
+                MessageBox.Show("내보낼 측정이 없습니다.", "VIZCore3DX.NET.MeasureFrame", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "CSV (*.csv)|*.csv";
+            dlg.FileName = "Measures.csv";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            // 측정 목록을 CSV 파일로 내보내기
+            if (vizcore3dx.Measure.ExportCsv(dlg.FileName) == false)
+            {
+                ShowLastOperationStatus("측정 목록을 CSV로 내보내지 못했습니다.");
+                return;
+            }
+
+            MessageBox.Show("측정 목록을 CSV로 내보냈습니다.\n\n" + dlg.FileName, "VIZCore3DX.NET.MeasureFrame", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnMeasureToJson_Click(object sender, EventArgs e)
+        {
+            // 측정 목록을 JSON 문자열로 변환
+            string json = vizcore3dx.Measure.ToJson();
+            if (string.IsNullOrEmpty(json))
+            {
+                ShowLastOperationStatus("측정 목록을 JSON 문자열로 변환하지 못했습니다.");
+                return;
+            }
+
+            txtMeasureJson.Text = json;
+        }
+
+        private void btnMeasureFromJson_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtMeasureJson.Text)) return;
+
+            bool result;
+
+            using (vizcore3dx.BeginUpdateScope())
+            {
+                // 기존 측정 삭제 후 JSON 문자열로부터 측정 목록 복원
+                if (chkClearBeforeFromJson.Checked == true) vizcore3dx.Measure.Clear();
+
+                result = vizcore3dx.Measure.FromJson(txtMeasureJson.Text);
+            }
+
+            UpdateMeasureCount();
+
+            if (result == false) ShowLastOperationStatus("JSON 문자열로부터 측정을 복원하지 못했습니다.");
+        }
+
+        private void ShowLastOperationStatus(string message)
+        {
+            OperationStatus status = vizcore3dx.Measure.LastOperationStatus;
+            if (status != null && status.Result == OperationResult.OperationCancelled) return;
+
+            string reason = status == null ? "-" : status.Result.ToString();
+            MessageBox.Show(string.Format("{0}\n\n사유 : {1}", message, reason), "VIZCore3DX.NET.MeasureFrame", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

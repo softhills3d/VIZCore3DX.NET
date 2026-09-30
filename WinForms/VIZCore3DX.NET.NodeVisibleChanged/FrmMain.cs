@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 using VIZCore3DX.NET.Event;
@@ -11,8 +10,6 @@ namespace VIZCore3DX.NET.NodeVisibleChanged
 
         // VIZCore3DX.NET 선언
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
-
-        public int ModelTree_OnObject3DVisibleChangedEvent { get; private set; }
 
         public FrmMain()
         {

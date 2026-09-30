@@ -77,37 +77,63 @@ namespace VIZCore3DX.NET.Explode
             if (vizcore3dx.Model.IsOpen() == false) return;
 
             int groupLevel = cbGroupLevel.SelectedIndex;
+            if (groupLevel < 0) return;
 
-            if (groupLevel == 0) vizcore3dx.Object3D.Group.CreateHierarchicalGroups(-1);
-            else if (groupLevel > 0 && groupLevel < 5) vizcore3dx.Object3D.Group.CreateFlatGroups((uint)groupLevel);
-            else if (groupLevel >= 5) vizcore3dx.Object3D.Group.CreateHierarchicalGroups((uint)(groupLevel - 5));
+            // 분해도가 활성화된 상태에서는 기존 그룹 구성이 유지되므로, 조립 상태로 복원 후 비활성화하고 그룹을 다시 생성
+            DeactivateExplode();
+            vizcore3dx.Object3D.Group.ClearGroup();
+
+            if (groupLevel >= 0 && groupLevel < 5) vizcore3dx.Object3D.Group.CreateFlatGroups((uint)groupLevel);
+            else if (groupLevel >= 5 && groupLevel < 9) vizcore3dx.Object3D.Group.CreateHierarchicalGroups((uint)(groupLevel - 5));
+            // 전체 계층 : leaf assembly 기준으로 모든 상위 계층을 그룹으로 생성 (maxGroupDepth = -1)
+            else if (groupLevel == 9) vizcore3dx.Object3D.Group.CreateHierarchicalGroups(-1);
         }
 
         private void btnClearGroup_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
+            DeactivateExplode();
             vizcore3dx.Object3D.Group.ClearGroup();
         }
 
         private void btnRestoreAll_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
+            DeactivateExplode();
+        }
+
+        /// <summary>
+        /// 분해 이전 상태로 복원하고 분해도 비활성화 (다음 Explode 시 현재 그룹 구성으로 다시 Activate)
+        /// </summary>
+        private void DeactivateExplode()
+        {
+            if (vizcore3dx.Object3D.Explode.IsAnimating == true) return;
+            if (vizcore3dx.Object3D.Explode.IsActive == false) return;
+
             vizcore3dx.Object3D.Explode.Restore();
+            vizcore3dx.Object3D.Explode.Deactivate(true);
         }
 
         private void btnExplode_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
-            float explodeProgress = float.Parse(txtExplodeProgress.Text);  // 0.0 ~ 1.0 사이 값. 0.0은 분해 전 상태, 1.0은 완전 분해 상태.
-            float distanceRatio = float.Parse(txtDistanceRatio.Text);      // 0.0 ~ 4.0 사이 값.  값이 클수록 여러 계층의 노드 그룹이 비슷한 거리만큼 분해됨.
-            float leveldistanceDecay = float.Parse(txtLevelDistanceDecay.Text);  // 0.0 ~ 1.0 사이 값. 값이 작을수록 하위 계층의 분해 거리가 빠르게 감쇠.
+            if (vizcore3dx.Object3D.Explode.IsAnimating == true) return;   // 애니메이션 진행 중 중복 실행 방지
+
+            float explodeProgress, distanceRatio, leveldistanceDecay;
+            if (float.TryParse(txtExplodeProgress.Text, out explodeProgress) == false          // 0.0 ~ 1.0 사이 값. 0.0은 분해 전 상태, 1.0은 완전 분해 상태.
+                || float.TryParse(txtDistanceRatio.Text, out distanceRatio) == false           // 0.0 ~ 4.0 사이 값.  값이 클수록 여러 계층의 노드 그룹이 비슷한 거리만큼 분해됨.
+                || float.TryParse(txtLevelDistanceDecay.Text, out leveldistanceDecay) == false) // 0.0 ~ 1.0 사이 값. 값이 작을수록 하위 계층의 분해 거리가 빠르게 감쇠.
+            {
+                MessageBox.Show("숫자 값을 입력하세요.");
+                return;
+            }
 
             if (explodeProgress < 0.0f || explodeProgress > 1.0f)
             {
                 MessageBox.Show("0.0 ~ 1.0 사이 값을 입력하세요.");
                 return;
             }
-            if (distanceRatio < 0.0f || distanceRatio > 1.0f)
+            if (distanceRatio < 0.0f || distanceRatio > 4.0f)
             {
                 MessageBox.Show("0.0 ~ 4.0 사이 값을 입력하세요.");
                 return;
@@ -164,7 +190,8 @@ namespace VIZCore3DX.NET.Explode
                 Mode = Data.ExplodeMode.Directional
             };
 
-            vizcore3dx.Object3D.Explode.AnimateExplodeDirectional(0f, 1f, 1.5f, vector, explodeSetting, false);
+            // ExplodeProgress 값에서 완전 분해(1.0) 상태까지 애니메이션
+            vizcore3dx.Object3D.Explode.AnimateExplodeDirectional(explodeProgress, 1f, 1.5f, vector, explodeSetting, false);
         }
     }
 }

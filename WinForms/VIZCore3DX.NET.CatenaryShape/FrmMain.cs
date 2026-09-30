@@ -142,7 +142,7 @@ namespace VIZCore3DX.NET.CatenaryShape
 
             VIZCore3DX.NET.Data.OsnapResult result = await osnap.GetResultAsync();
 
-            if (result == null)
+            if (result == null || result.Position == null)
             {
                 return;
             }
@@ -168,7 +168,7 @@ namespace VIZCore3DX.NET.CatenaryShape
 
             VIZCore3DX.NET.Data.OsnapResult result = await osnap.GetResultAsync();
 
-            if (result == null)
+            if (result == null || result.Position == null)
             {
                 return;
             }
@@ -200,7 +200,7 @@ namespace VIZCore3DX.NET.CatenaryShape
 
                 VIZCore3DX.NET.Data.OsnapResult p1Result = await p1Osnap.GetResultAsync();
 
-                if (p1Result == null)
+                if (p1Result == null || p1Result.Position == null)
                 {
                     return;
                 }
@@ -217,7 +217,7 @@ namespace VIZCore3DX.NET.CatenaryShape
 
                 VIZCore3DX.NET.Data.OsnapResult p2Result = await p2Osnap.GetResultAsync();
 
-                if (p2Result == null)
+                if (p2Result == null || p2Result.Position == null)
                 {
                     return;
                 }

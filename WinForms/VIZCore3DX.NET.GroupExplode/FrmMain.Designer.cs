@@ -89,17 +89,18 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.AutoScroll = true;
             this.splitContainer1.Panel1.Controls.Add(this.grpExplode);
             this.splitContainer1.Panel1.Controls.Add(this.grpGroup);
             this.splitContainer1.Panel1.Controls.Add(this.btnOpenModel);
             this.splitContainer1.Panel1MinSize = 360;
-            this.splitContainer1.Size = new System.Drawing.Size(1200, 700);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 850);
             this.splitContainer1.SplitterDistance = 390;
             this.splitContainer1.TabIndex = 0;
             // 
             // grpExplode
             // 
+            this.grpExplode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpExplode.Controls.Add(this.lblExplodeStatus);
             this.grpExplode.Controls.Add(this.btnRestore);
             this.grpExplode.Controls.Add(this.btnFocusExplode);
@@ -452,6 +453,9 @@
             // 
             // grpGroup
             // 
+            this.grpGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.grpGroup.Controls.Add(this.btnClearGroups);
             this.grpGroup.Controls.Add(this.btnDeleteGroup);
             this.grpGroup.Controls.Add(this.lblGroupCount);
@@ -479,6 +483,7 @@
             // 
             // btnClearGroups
             // 
+            this.btnClearGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClearGroups.Location = new System.Drawing.Point(180, 435);
             this.btnClearGroups.Name = "btnClearGroups";
             this.btnClearGroups.Size = new System.Drawing.Size(156, 28);
@@ -489,6 +494,7 @@
             // 
             // btnDeleteGroup
             // 
+            this.btnDeleteGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnDeleteGroup.Location = new System.Drawing.Point(12, 435);
             this.btnDeleteGroup.Name = "btnDeleteGroup";
             this.btnDeleteGroup.Size = new System.Drawing.Size(156, 28);
@@ -499,6 +505,7 @@
             // 
             // lblGroupCount
             // 
+            this.lblGroupCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblGroupCount.AutoSize = true;
             this.lblGroupCount.Location = new System.Drawing.Point(10, 415);
             this.lblGroupCount.Name = "lblGroupCount";
@@ -508,6 +515,9 @@
             // 
             // tvGroups
             // 
+            this.tvGroups.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tvGroups.HideSelection = false;
             this.tvGroups.Location = new System.Drawing.Point(12, 248);
             this.tvGroups.Name = "tvGroups";
@@ -664,6 +674,8 @@
             // 
             // btnOpenModel
             // 
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenModel.Location = new System.Drawing.Point(12, 12);
             this.btnOpenModel.Name = "btnOpenModel";
             this.btnOpenModel.Size = new System.Drawing.Size(348, 28);
@@ -676,9 +688,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1200, 700);
+            this.ClientSize = new System.Drawing.Size(1280, 850);
             this.Controls.Add(this.splitContainer1);
-            this.MinimumSize = new System.Drawing.Size(1000, 650);
+            this.MinimumSize = new System.Drawing.Size(1000, 830);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "VIZCore3DX.NET - Group Explode";

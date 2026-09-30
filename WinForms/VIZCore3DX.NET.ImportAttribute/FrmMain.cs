@@ -361,6 +361,12 @@ namespace VIZCore3DX.NET.ImportAttribute
 
         private void btnExport_Click(object sender, EventArgs e)
         {
+            if (vizcore3dx.Model.IsOpen() == false)
+            {
+                MessageBox.Show("모델 파일을 먼저 [열기] 하여 주시기 바랍니다.");
+                return;
+            }
+
             vizcore3dx.Model.ExportFileDialog(true);
         }
 

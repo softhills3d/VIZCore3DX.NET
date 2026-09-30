@@ -49,7 +49,7 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.chkMarineAxisVisible);
             this.splitContainer1.Panel1.Controls.Add(this.btnOpenModel);
-            this.splitContainer1.Size = new System.Drawing.Size(1000, 480);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 200;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -67,6 +67,8 @@
             // 
             // btnOpenModel
             // 
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOpenModel.Location = new System.Drawing.Point(12, 10);
             this.btnOpenModel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnOpenModel.Name = "btnOpenModel";
@@ -80,7 +82,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1000, 480);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "FrmMain";

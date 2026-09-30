@@ -18,10 +18,13 @@ namespace VIZCore3DX.NET.Capture3D
             // Construction
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
+            // 저장된 사용자 설정(UserSetting.ini)을 무시하고 항상 기본 설정으로 시작 (컨트롤 Load 전에 설정)
+            vizcore3dx.LoadSavedSettingOnStartup = false;
             splitContainer1.Panel2.Controls.Add(vizcore3dx);
             // MiniView
             vizcore3dx_MiniView = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx_MiniView.Dock = DockStyle.Fill;
+            vizcore3dx_MiniView.LoadSavedSettingOnStartup = false;
             groupBox2.Controls.Add(vizcore3dx_MiniView);
 
             //License
@@ -75,6 +78,10 @@ namespace VIZCore3DX.NET.Capture3D
                 return;
             }
 
+            // 미니 뷰는 화면만 표시 (리본 / 툴바 / 상태바 숨김)
+            vizcore3dx_MiniView.RibbonMode = false;
+            vizcore3dx_MiniView.View.Toolbar.Enable = false;           // 화면 안 세로 뷰 툴바 (홈 / 확대 / 이동 / 회전 / 설정)
+            vizcore3dx_MiniView.ModelingControlVisible = false;        // 모델링 컨트롤 패널 (우측 하단 X 로고)
             vizcore3dx_MiniView.ToolbarMain.Visible = false;
             vizcore3dx_MiniView.ToolbarNote.Visible = false;
             vizcore3dx_MiniView.ToolbarMeasure.Visible = false;
@@ -84,6 +91,7 @@ namespace VIZCore3DX.NET.Capture3D
             vizcore3dx_MiniView.View.PreSelect.Enable = false;
             vizcore3dx_MiniView.EnableProgressForm = false;
             vizcore3dx_MiniView.EnableWaitForm = false;
+
         }
 
         private void InitializeVIZCore3DX()
@@ -96,6 +104,7 @@ namespace VIZCore3DX.NET.Capture3D
             // ================================================================
             // 설정 - 툴바
             // ================================================================
+            vizcore3dx.RibbonMode = false;
             vizcore3dx.ToolbarMain.Visible = true;
             vizcore3dx.ToolbarNote.Visible = false;
             vizcore3dx.ToolbarMeasure.Visible = false;

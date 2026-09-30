@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tlpSearch = new System.Windows.Forms.TableLayoutPanel();
             this.btnExport = new System.Windows.Forms.Button();
             this.btnSearch = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -65,6 +66,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.tlpSearch.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxZ)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxY)).BeginInit();
@@ -97,14 +99,15 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1130, 687);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 376;
             this.splitContainer1.TabIndex = 0;
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.btnExport);
-            this.groupBox4.Controls.Add(this.btnSearch);
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Controls.Add(this.tlpSearch);
             this.groupBox4.Location = new System.Drawing.Point(12, 490);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(355, 74);
@@ -112,11 +115,28 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Search / Export";
             // 
+            // tlpSearch
+            // 
+            this.tlpSearch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tlpSearch.ColumnCount = 2;
+            this.tlpSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpSearch.Controls.Add(this.btnSearch, 0, 0);
+            this.tlpSearch.Controls.Add(this.btnExport, 1, 0);
+            this.tlpSearch.Location = new System.Drawing.Point(14, 22);
+            this.tlpSearch.Name = "tlpSearch";
+            this.tlpSearch.RowCount = 1;
+            this.tlpSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpSearch.Size = new System.Drawing.Size(320, 36);
+            this.tlpSearch.TabIndex = 0;
+            // 
             // btnExport
             // 
-            this.btnExport.Location = new System.Drawing.Point(202, 29);
+            this.btnExport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExport.Location = new System.Drawing.Point(163, 3);
             this.btnExport.Name = "btnExport";
-            this.btnExport.Size = new System.Drawing.Size(129, 23);
+            this.btnExport.Size = new System.Drawing.Size(154, 30);
             this.btnExport.TabIndex = 32;
             this.btnExport.Text = "Export";
             this.btnExport.UseVisualStyleBackColor = true;
@@ -124,9 +144,10 @@
             // 
             // btnSearch
             // 
-            this.btnSearch.Location = new System.Drawing.Point(17, 29);
+            this.btnSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSearch.Location = new System.Drawing.Point(3, 3);
             this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(129, 23);
+            this.btnSearch.Size = new System.Drawing.Size(154, 30);
             this.btnSearch.TabIndex = 1;
             this.btnSearch.Text = "Search";
             this.btnSearch.UseVisualStyleBackColor = true;
@@ -134,6 +155,8 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.btnSetBoundbox);
             this.groupBox3.Controls.Add(this.numMaxZ);
             this.groupBox3.Controls.Add(this.numMaxY);
@@ -158,6 +181,8 @@
             // 
             // btnSetBoundbox
             // 
+            this.btnSetBoundbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSetBoundbox.Location = new System.Drawing.Point(17, 258);
             this.btnSetBoundbox.Name = "btnSetBoundbox";
             this.btnSetBoundbox.Size = new System.Drawing.Size(314, 23);
@@ -168,6 +193,8 @@
             // 
             // numMaxZ
             // 
+            this.numMaxZ.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numMaxZ.DecimalPlaces = 2;
             this.numMaxZ.Location = new System.Drawing.Point(60, 215);
             this.numMaxZ.Maximum = new decimal(new int[] {
@@ -183,9 +210,12 @@
             this.numMaxZ.Name = "numMaxZ";
             this.numMaxZ.Size = new System.Drawing.Size(271, 21);
             this.numMaxZ.TabIndex = 30;
+            this.numMaxZ.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NumBoundingBox_KeyDown);
             // 
             // numMaxY
             // 
+            this.numMaxY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numMaxY.DecimalPlaces = 2;
             this.numMaxY.Location = new System.Drawing.Point(60, 190);
             this.numMaxY.Maximum = new decimal(new int[] {
@@ -201,9 +231,12 @@
             this.numMaxY.Name = "numMaxY";
             this.numMaxY.Size = new System.Drawing.Size(271, 21);
             this.numMaxY.TabIndex = 29;
+            this.numMaxY.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NumBoundingBox_KeyDown);
             // 
             // numMaxX
             // 
+            this.numMaxX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numMaxX.DecimalPlaces = 2;
             this.numMaxX.Location = new System.Drawing.Point(60, 165);
             this.numMaxX.Maximum = new decimal(new int[] {
@@ -219,9 +252,12 @@
             this.numMaxX.Name = "numMaxX";
             this.numMaxX.Size = new System.Drawing.Size(271, 21);
             this.numMaxX.TabIndex = 28;
+            this.numMaxX.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NumBoundingBox_KeyDown);
             // 
             // numMinZ
             // 
+            this.numMinZ.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numMinZ.DecimalPlaces = 2;
             this.numMinZ.Location = new System.Drawing.Point(60, 102);
             this.numMinZ.Maximum = new decimal(new int[] {
@@ -237,9 +273,12 @@
             this.numMinZ.Name = "numMinZ";
             this.numMinZ.Size = new System.Drawing.Size(271, 21);
             this.numMinZ.TabIndex = 27;
+            this.numMinZ.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NumBoundingBox_KeyDown);
             // 
             // numMinY
             // 
+            this.numMinY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numMinY.DecimalPlaces = 2;
             this.numMinY.Location = new System.Drawing.Point(60, 77);
             this.numMinY.Maximum = new decimal(new int[] {
@@ -255,6 +294,7 @@
             this.numMinY.Name = "numMinY";
             this.numMinY.Size = new System.Drawing.Size(271, 21);
             this.numMinY.TabIndex = 26;
+            this.numMinY.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NumBoundingBox_KeyDown);
             // 
             // label6
             // 
@@ -330,6 +370,8 @@
             // 
             // numMinX
             // 
+            this.numMinX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.numMinX.DecimalPlaces = 2;
             this.numMinX.Location = new System.Drawing.Point(60, 52);
             this.numMinX.Maximum = new decimal(new int[] {
@@ -345,6 +387,7 @@
             this.numMinX.Name = "numMinX";
             this.numMinX.Size = new System.Drawing.Size(271, 21);
             this.numMinX.TabIndex = 4;
+            this.numMinX.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NumBoundingBox_KeyDown);
             // 
             // groupBox2
             // 
@@ -409,9 +452,11 @@
             // 
             // btnOpenModel
             // 
-            this.btnOpenModel.Location = new System.Drawing.Point(33, 20);
+            this.btnOpenModel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenModel.Location = new System.Drawing.Point(17, 20);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(75, 23);
+            this.btnOpenModel.Size = new System.Drawing.Size(314, 23);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "Model";
             this.btnOpenModel.UseVisualStyleBackColor = true;
@@ -427,7 +472,7 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.gvResult);
-            this.splitContainer2.Size = new System.Drawing.Size(750, 687);
+            this.splitContainer2.Size = new System.Drawing.Size(900, 760);
             this.splitContainer2.SplitterDistance = 461;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -447,7 +492,7 @@
             this.gvResult.Name = "gvResult";
             this.gvResult.RowTemplate.Height = 23;
             this.gvResult.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gvResult.Size = new System.Drawing.Size(750, 222);
+            this.gvResult.Size = new System.Drawing.Size(900, 295);
             this.gvResult.TabIndex = 0;
             this.gvResult.VirtualMode = true;
             this.gvResult.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.gvResult_CellValueChanged);
@@ -475,7 +520,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1130, 687);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -486,6 +531,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.tlpSearch.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMaxZ)).EndInit();
@@ -533,6 +579,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnSetBoundbox;
+        private System.Windows.Forms.TableLayoutPanel tlpSearch;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.DataGridViewTextBoxColumn group1NodeType;

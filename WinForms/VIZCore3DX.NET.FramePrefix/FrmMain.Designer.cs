@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBoxOpen = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanelOpen = new System.Windows.Forms.TableLayoutPanel();
             this.buttonFrameOpen = new System.Windows.Forms.Button();
             this.buttonModelOpen = new System.Windows.Forms.Button();
             this.groupBoxOption = new System.Windows.Forms.GroupBox();
@@ -46,12 +47,14 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBoxOpen.SuspendLayout();
+            this.tableLayoutPanelOpen.SuspendLayout();
             this.groupBoxOption.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -59,7 +62,7 @@
             // 
             this.splitContainer1.Panel1.Controls.Add(this.groupBoxOption);
             this.splitContainer1.Panel1.Controls.Add(this.groupBoxOpen);
-            this.splitContainer1.Size = new System.Drawing.Size(984, 661);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 282;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -67,20 +70,35 @@
             // 
             this.groupBoxOpen.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBoxOpen.Controls.Add(this.buttonFrameOpen);
-            this.groupBoxOpen.Controls.Add(this.buttonModelOpen);
+            this.groupBoxOpen.Controls.Add(this.tableLayoutPanelOpen);
             this.groupBoxOpen.Location = new System.Drawing.Point(12, 12);
             this.groupBoxOpen.Name = "groupBoxOpen";
-            this.groupBoxOpen.Size = new System.Drawing.Size(260, 62);
+            this.groupBoxOpen.Size = new System.Drawing.Size(260, 56);
             this.groupBoxOpen.TabIndex = 0;
             this.groupBoxOpen.TabStop = false;
             this.groupBoxOpen.Text = "Open";
             // 
+            // tableLayoutPanelOpen
+            // 
+            this.tableLayoutPanelOpen.ColumnCount = 2;
+            this.tableLayoutPanelOpen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelOpen.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelOpen.Controls.Add(this.buttonModelOpen, 0, 0);
+            this.tableLayoutPanelOpen.Controls.Add(this.buttonFrameOpen, 1, 0);
+            this.tableLayoutPanelOpen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanelOpen.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanelOpen.Name = "tableLayoutPanelOpen";
+            this.tableLayoutPanelOpen.RowCount = 1;
+            this.tableLayoutPanelOpen.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanelOpen.Size = new System.Drawing.Size(254, 36);
+            this.tableLayoutPanelOpen.TabIndex = 0;
+            // 
             // buttonFrameOpen
             // 
-            this.buttonFrameOpen.Location = new System.Drawing.Point(139, 28);
+            this.buttonFrameOpen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonFrameOpen.Location = new System.Drawing.Point(130, 3);
             this.buttonFrameOpen.Name = "buttonFrameOpen";
-            this.buttonFrameOpen.Size = new System.Drawing.Size(100, 23);
+            this.buttonFrameOpen.Size = new System.Drawing.Size(121, 30);
             this.buttonFrameOpen.TabIndex = 1;
             this.buttonFrameOpen.Text = "Frame Open";
             this.buttonFrameOpen.UseVisualStyleBackColor = true;
@@ -88,9 +106,10 @@
             // 
             // buttonModelOpen
             // 
-            this.buttonModelOpen.Location = new System.Drawing.Point(18, 28);
+            this.buttonModelOpen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonModelOpen.Location = new System.Drawing.Point(3, 3);
             this.buttonModelOpen.Name = "buttonModelOpen";
-            this.buttonModelOpen.Size = new System.Drawing.Size(100, 23);
+            this.buttonModelOpen.Size = new System.Drawing.Size(121, 30);
             this.buttonModelOpen.TabIndex = 0;
             this.buttonModelOpen.Text = "Model Open";
             this.buttonModelOpen.UseVisualStyleBackColor = true;
@@ -108,7 +127,7 @@
             this.groupBoxOption.Controls.Add(this.checkBoxSetPrefix);
             this.groupBoxOption.Controls.Add(this.radioButtonPosition);
             this.groupBoxOption.Controls.Add(this.radioButtonID);
-            this.groupBoxOption.Location = new System.Drawing.Point(12, 80);
+            this.groupBoxOption.Location = new System.Drawing.Point(12, 74);
             this.groupBoxOption.Name = "groupBoxOption";
             this.groupBoxOption.Size = new System.Drawing.Size(260, 160);
             this.groupBoxOption.TabIndex = 1;
@@ -153,6 +172,7 @@
             // 
             // buttonApply
             // 
+            this.buttonApply.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonApply.Location = new System.Drawing.Point(165, 123);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(75, 23);
@@ -163,6 +183,8 @@
             // 
             // textBoxPrefix
             // 
+            this.textBoxPrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxPrefix.Location = new System.Drawing.Point(140, 96);
             this.textBoxPrefix.Name = "textBoxPrefix";
             this.textBoxPrefix.Size = new System.Drawing.Size(100, 21);
@@ -204,7 +226,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(984, 661);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -213,6 +235,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.groupBoxOpen.ResumeLayout(false);
+            this.tableLayoutPanelOpen.ResumeLayout(false);
             this.groupBoxOption.ResumeLayout(false);
             this.groupBoxOption.PerformLayout();
             this.ResumeLayout(false);
@@ -234,6 +257,7 @@
         private System.Windows.Forms.CheckBox checkBoxSetPrefix;
         private System.Windows.Forms.RadioButton radioButtonPosition;
         private System.Windows.Forms.RadioButton radioButtonID;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelOpen;
     }
 }
 

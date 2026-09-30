@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnLoadGrid = new System.Windows.Forms.Button();
             this.btnExportGrid = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -59,6 +60,7 @@
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -91,7 +93,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(1178, 557);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 230;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -99,8 +101,7 @@
             // 
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.btnLoadGrid);
-            this.groupBox3.Controls.Add(this.btnExportGrid);
+            this.groupBox3.Controls.Add(this.tableLayoutPanel1);
             this.groupBox3.Location = new System.Drawing.Point(12, 170);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(209, 51);
@@ -108,13 +109,29 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Grid";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.btnExportGrid, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btnLoadGrid, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(203, 31);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
             // btnLoadGrid
             // 
             this.btnLoadGrid.Image = ((System.Drawing.Image)(resources.GetObject("btnLoadGrid.Image")));
             this.btnLoadGrid.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLoadGrid.Location = new System.Drawing.Point(110, 18);
+            this.btnLoadGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnLoadGrid.Location = new System.Drawing.Point(104, 3);
             this.btnLoadGrid.Name = "btnLoadGrid";
-            this.btnLoadGrid.Size = new System.Drawing.Size(85, 23);
+            this.btnLoadGrid.Size = new System.Drawing.Size(96, 25);
             this.btnLoadGrid.TabIndex = 1;
             this.btnLoadGrid.Text = "Load";
             this.btnLoadGrid.UseVisualStyleBackColor = true;
@@ -123,9 +140,10 @@
             // 
             this.btnExportGrid.Image = ((System.Drawing.Image)(resources.GetObject("btnExportGrid.Image")));
             this.btnExportGrid.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnExportGrid.Location = new System.Drawing.Point(19, 18);
+            this.btnExportGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExportGrid.Location = new System.Drawing.Point(3, 3);
             this.btnExportGrid.Name = "btnExportGrid";
-            this.btnExportGrid.Size = new System.Drawing.Size(85, 23);
+            this.btnExportGrid.Size = new System.Drawing.Size(95, 25);
             this.btnExportGrid.TabIndex = 0;
             this.btnExportGrid.Text = "Export";
             this.btnExportGrid.UseVisualStyleBackColor = true;
@@ -261,8 +279,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer4);
-            this.splitContainer2.Size = new System.Drawing.Size(944, 557);
-            this.splitContainer2.SplitterDistance = 303;
+            this.splitContainer2.Size = new System.Drawing.Size(1046, 760);
+            this.splitContainer2.SplitterDistance = 413;
             this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer3
@@ -274,8 +292,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.toolbarExplode);
-            this.splitContainer3.Size = new System.Drawing.Size(944, 303);
-            this.splitContainer3.SplitterDistance = 439;
+            this.splitContainer3.Size = new System.Drawing.Size(1046, 413);
+            this.splitContainer3.SplitterDistance = 486;
             this.splitContainer3.TabIndex = 0;
             // 
             // toolbarExplode
@@ -285,7 +303,7 @@
             this.btnRestore});
             this.toolbarExplode.Location = new System.Drawing.Point(0, 0);
             this.toolbarExplode.Name = "toolbarExplode";
-            this.toolbarExplode.Size = new System.Drawing.Size(501, 25);
+            this.toolbarExplode.Size = new System.Drawing.Size(556, 25);
             this.toolbarExplode.TabIndex = 0;
             this.toolbarExplode.Text = "toolStrip1";
             // 
@@ -316,8 +334,8 @@
             // splitContainer4.Panel1
             // 
             this.splitContainer4.Panel1.Controls.Add(this.toolbarGrid);
-            this.splitContainer4.Size = new System.Drawing.Size(944, 250);
-            this.splitContainer4.SplitterDistance = 438;
+            this.splitContainer4.Size = new System.Drawing.Size(1046, 343);
+            this.splitContainer4.SplitterDistance = 485;
             this.splitContainer4.TabIndex = 0;
             // 
             // toolbarGrid
@@ -328,7 +346,7 @@
             this.toolStripSeparator1});
             this.toolbarGrid.Location = new System.Drawing.Point(0, 0);
             this.toolbarGrid.Name = "toolbarGrid";
-            this.toolbarGrid.Size = new System.Drawing.Size(438, 25);
+            this.toolbarGrid.Size = new System.Drawing.Size(485, 25);
             this.toolbarGrid.TabIndex = 0;
             this.toolbarGrid.Text = "toolStrip2";
             // 
@@ -359,7 +377,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1178, 557);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
@@ -371,6 +389,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -421,6 +440,7 @@
         private System.Windows.Forms.ToolStripButton btnGrid3D;
         private System.Windows.Forms.ToolStripButton btnGrid2D;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

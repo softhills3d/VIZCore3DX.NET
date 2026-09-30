@@ -48,7 +48,7 @@
             // splitContainer1.Panel1
             // 
             this.splitContainer1.Panel1.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(810, 453);
+            this.splitContainer1.Size = new System.Drawing.Size(1280, 760);
             this.splitContainer1.SplitterDistance = 269;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
@@ -69,7 +69,7 @@
             // 
             this.btnShowOsnap.Location = new System.Drawing.Point(15, 19);
             this.btnShowOsnap.Name = "btnShowOsnap";
-            this.btnShowOsnap.Size = new System.Drawing.Size(83, 20);
+            this.btnShowOsnap.Size = new System.Drawing.Size(83, 23);
             this.btnShowOsnap.TabIndex = 0;
             this.btnShowOsnap.Text = "Show";
             this.btnShowOsnap.UseVisualStyleBackColor = true;
@@ -79,7 +79,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(810, 453);
+            this.ClientSize = new System.Drawing.Size(1280, 760);
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";

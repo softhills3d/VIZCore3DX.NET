@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace VIZCore3DX.NET.Snapshot
@@ -74,6 +75,14 @@ namespace VIZCore3DX.NET.Snapshot
             vizcore3dx.Model.OnModelOpenedEvent += Model_OnModelOpenedEvent;
             vizcore3dx.Model.OnModelClosedEvent += Model_OnModelClosedEvent;
             vizcore3dx.Snapshot.OnSnapshotCreated += Snapshot_OnSnapshotCreated;
+            vizcore3dx.Snapshot.OnSnapshotRestored += Snapshot_OnSnapshotRestored;
+        }
+
+        private void Snapshot_OnSnapshotRestored(object sender, Event.EventManager.SnapshotEventArgs e)
+        {
+            // Snapshot Restored
+            VIZCore3DX.NET.Data.SnapshotItem item = vizcore3dx.Snapshot.GetItem(e.ID);
+            lblJsonStatus.Text = string.Format("스냅샷을 복원했습니다. ID: {0}, 이름: {1}", e.ID, item == null ? string.Empty : item.Text);
         }
 
         private void Model_OnModelClosedEvent(object sender, EventArgs e)
@@ -143,30 +152,57 @@ namespace VIZCore3DX.NET.Snapshot
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Export Snapshot to JSON File
+            // Export Snapshot(마크업) to JSON File
             if (vizcore3dx.Model.IsOpen() == false) return;
 
             if (listView1.Items.Count == 0) return;
 
-            //if (vizcore3dx.Snapshot.ExportJson(textBox1.Text)
-            if (vizcore3dx.Model.ExportMarkupJson(textBox1.Text, true, true, true, true, true, true))
+            using (SaveFileDialog dialog = new SaveFileDialog())
             {
-                MessageBox.Show("Export Success", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+                dialog.FileName = Path.GetFileName(textBox1.Text);
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                textBox1.Text = dialog.FileName;
             }
-            else
+
+            if (vizcore3dx.Model.ExportMarkupJson(textBox1.Text, true, true, true, true, true, true) == false)
             {
-                MessageBox.Show("Export Failed", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowOperationFailure("내보내기에 실패했습니다.", vizcore3dx.Model.LastOperationStatus);
+                return;
             }
+
+            lblJsonStatus.Text = "내보내기가 완료됐습니다.";
+            MessageBox.Show(lblJsonStatus.Text, "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Import Snapshot from JSON File
+            // Import Snapshot(마크업) from JSON File
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            //vizcore3dx.Snapshot.ImportJson(textBox1.Text);
-            vizcore3dx.Model.ImportMarkupJson(textBox1.Text, true, true, true, true, true, true);
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
+                textBox1.Text = dialog.FileName;
+            }
+
+            if (vizcore3dx.Model.ImportMarkupJson(textBox1.Text, true, true, true, true, true, true) == false)
+            {
+                ShowOperationFailure("불러오기에 실패했습니다.", vizcore3dx.Model.LastOperationStatus);
+                return;
+            }
+
+            RefreshSnapshotList();
+
+            lblJsonStatus.Text = "불러오기가 완료됐습니다.";
+            MessageBox.Show(lblJsonStatus.Text, "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void RefreshSnapshotList()
+        {
             tempSnapshot = null;
             listView1.Items.Clear();
 
@@ -178,6 +214,14 @@ namespace VIZCore3DX.NET.Snapshot
 
                 listView1.Items.Add(listView);
             }
+        }
+
+        private void ShowOperationFailure(string message, VIZCore3DX.NET.Data.OperationStatus status)
+        {
+            string detail = status == null ? string.Empty : string.Format("\n원인 : {0}", status.Result);
+
+            lblJsonStatus.Text = message;
+            MessageBox.Show(message + detail, "Snapshot", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
 }

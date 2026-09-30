@@ -85,6 +85,9 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
+            // 진행 중인 회전 애니메이션 중지
+            timerAnimation.Enabled = false;
+
             // 기존 모델 닫기
             if (vizcore3dx.Model.IsOpen() == true) vizcore3dx.Model.Close();
 
@@ -110,7 +113,7 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
             osnap1.CommandText = "회전축 첫 번째 점 선택";
             OsnapResult r1 = await osnap1.GetResultAsync();
-            if (r1 == null) return;
+            if (r1 == null || r1.Position == null) return;
 
             v1 = new Vertex3D(r1.Position.X, r1.Position.Y, r1.Position.Z);
             txtV1.Text = $"{v1.X}, {v1.Y}, {v1.Z}";
@@ -120,7 +123,7 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
             osnap2.CommandText = "회전축 두 번째 점 선택";
             OsnapResult r2 = await osnap2.GetResultAsync();
-            if (r2 == null) return;
+            if (r2 == null || r2.Position == null) return;
 
             v2 = new Vertex3D(r2.Position.X, r2.Position.Y, r2.Position.Z);
             txtV2.Text = $"{v2.X}, {v2.Y}, {v2.Z}";
@@ -146,16 +149,44 @@ namespace VIZCore3DX.NET.CustomAxisRotation
         private void btnStart_Click(object sender, EventArgs e)
         {
             if (vizcore3dx == null || vizcore3dx.Model.IsOpen() == false) return;
-            if (v1 == null || v2 == null) return;
 
-            int start = Convert.ToInt32(txtStart.Text);
-            int end = Convert.ToInt32(txtEnd.Text);
+            // 회전축 좌표 (Osnap 선택 또는 직접 입력한 값)
+            v1 = ParseVertex(txtV1.Text);
+            v2 = ParseVertex(txtV2.Text);
+            if (v1 == null || v2 == null)
+            {
+                MessageBox.Show("회전축 좌표(V1, V2)를 \"X, Y, Z\" 형식으로 입력하세요.");
+                return;
+            }
+
+            int start, end;
+            if (int.TryParse(txtStart.Text, out start) == false || int.TryParse(txtEnd.Text, out end) == false)
+            {
+                MessageBox.Show("Start / End 각도를 정수로 입력하세요.");
+                return;
+            }
+
+            timerAnimation.Enabled = false;
 
             angle = start;
             totalAngle = end;
 
             timerAnimation.Enabled = true;
         }
+
+        private Vertex3D ParseVertex(string text)
+        {
+            string[] values = text.Split(',');
+            if (values.Length != 3) return null;
+
+            float x, y, z;
+            if (float.TryParse(values[0], out x) == false) return null;
+            if (float.TryParse(values[1], out y) == false) return null;
+            if (float.TryParse(values[2], out z) == false) return null;
+
+            return new Vertex3D(x, y, z);
+        }
+
         private void timerAnimation_Tick(object sender, EventArgs e)
         {
             timerAnimation.Enabled = false;
@@ -171,7 +202,8 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
             try
             {
-                vizcore3dx.Object3D.Transform.Rotate(nodes, v1, v2, angle % 360.0f, false);
+                // 초기 상태 기준(zeroBase = true)으로 누적 각도만큼 회전 (현재 상태 기준이면 회전량이 매 Tick 누적됨)
+                vizcore3dx.Object3D.Transform.Rotate(nodes, v1, v2, angle % 360.0f, true);
             }
             finally
             {

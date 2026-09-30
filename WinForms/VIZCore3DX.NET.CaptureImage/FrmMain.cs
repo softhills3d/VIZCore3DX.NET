@@ -70,6 +70,42 @@ namespace VIZCore3DX.NET.CaptureImage
             // 모델 열기 시, 3D 화면 Rendering 재시작
             // ================================================================
             vizcore3dx.EndUpdate();
+
+            // 모델을 닫거나 새 모델로 바꾸면 캡처 목록 비우기
+            vizcore3dx.Model.OnModelClosedEvent += Model_OnModelClosedEvent;
+        }
+
+        private void Model_OnModelClosedEvent(object sender, EventArgs e)
+        {
+            if (InvokeRequired == true)
+            {
+                BeginInvoke(new Action(ClearImages));
+                return;
+            }
+
+            ClearImages();
+        }
+
+        private void ClearImages()
+        {
+            lvImage.Items.Clear();
+            imgThumb.Images.Clear();
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (lvImage.SelectedItems.Count == 0) return;
+
+            foreach (ListViewItem lvi in lvImage.SelectedItems)
+                lvImage.Items.Remove(lvi);
+
+            // 썸네일 번호가 어긋나지 않도록 남은 항목으로 이미지 목록을 다시 구성
+            imgThumb.Images.Clear();
+            foreach (ListViewItem lvi in lvImage.Items)
+            {
+                imgThumb.Images.Add((System.Drawing.Image)lvi.Tag);
+                lvi.ImageIndex = imgThumb.Images.Count - 1;
+            }
         }
         private void InitExample()
         {
@@ -147,7 +183,54 @@ namespace VIZCore3DX.NET.CaptureImage
 
         }
 
+        private void btnCaptureRender_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            // 렌더 요청 : 창이 다른 창에 가려져 있어도 렌더 버퍼를 최신 상태로 갱신
+            vizcore3dx.View.RequestRender();
+
+            // 렌더 버퍼에서 직접 캡처 (오버레이 포함 여부 지정)
+            System.Drawing.Image img = vizcore3dx.View.CaptureRenderImage(chkIncludeOverlay.Checked);
+            if (img == null)
+            {
+                MessageBox.Show("렌더 버퍼 캡처에 실패했습니다.", "VIZCore3DX.NET.CaptureImage", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            AddCaptureImage(img);
+        }
+
+        private void AddCaptureImage(System.Drawing.Image img)
+        {
+            imgThumb.Images.Add(img);
+
+            ListViewItem lvi = new ListViewItem("", imgThumb.Images.Count - 1);
+            lvi.Tag = img;
+
+            lvImage.Items.Add(lvi);
+            lvImage.EnsureVisible(lvImage.Items.Count - 1);
+        }
+
         private void btnCaptureAuto_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            // 카메라 이동 애니메이션(기본 0.5초)이 끝나기 전에 캡처되어 이전 방향이 찍히지 않도록 애니메이션 끄기
+            bool animation = vizcore3dx.View.EnableAnimation;
+            vizcore3dx.View.EnableAnimation = false;
+
+            try
+            {
+                CaptureAutoDirections();
+            }
+            finally
+            {
+                vizcore3dx.View.EnableAnimation = animation;
+            }
+        }
+
+        private void CaptureAutoDirections()
         {
             CaptureAuto(Data.CameraDirection.ISO_PLUS);
             CaptureAuto(Data.CameraDirection.ISO_MINUS);
@@ -164,15 +247,16 @@ namespace VIZCore3DX.NET.CaptureImage
             // 작업 시작 전 마우스 커서를 모래시계로 변경
             this.Cursor = Cursors.WaitCursor;
 
-            // 3D 뷰어 화면 갱신을 차단, 리스트뷰 갱신 최적화
-            vizcore3dx.BeginUpdate();
+            // 리스트뷰 갱신 최적화 (3D 화면은 캡처해야 하므로 갱신을 막지 않음)
             lvImage.BeginUpdate();
 
             try
             {
                 // 카메라 방향 이동
                 vizcore3dx.View.MoveCamera(camera);
-                Application.DoEvents();
+
+                // 이동한 카메라로 즉시 다시 그린 뒤 캡처
+                vizcore3dx.View.RequestRender();
                 // 전체 화면 캡쳐
                 System.Drawing.Image img = vizcore3dx.View.CaptureImage();
                 if (img != null)
@@ -194,9 +278,8 @@ namespace VIZCore3DX.NET.CaptureImage
             }
             finally
             {
-                // 차단했던 3D 화면 및 리스트뷰 갱신 재시작
+                // 리스트뷰 갱신 재시작
                 lvImage.EndUpdate();
-                vizcore3dx.EndUpdate();
 
                 // 마우스 커서를 원래대로
                 this.Cursor = Cursors.Default;

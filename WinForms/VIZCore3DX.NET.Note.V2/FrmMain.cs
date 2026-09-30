@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
@@ -12,6 +13,7 @@ namespace VIZCore3DX.NET.Note.V2
         private VIZCore3DXControl vizcore3dx;
         private bool _symbolMode = false;
         private MessageItem msg;
+        private bool _suppressNoteListRefresh = false;
 
         public FrmMain()
         {
@@ -93,6 +95,225 @@ namespace VIZCore3DX.NET.Note.V2
 
             // 노트 생성 이벤트
             vizcore3dx.Note.OnNoteCreated += Note_OnNoteCreated;
+
+            // 노트 목록 갱신 이벤트 (생성 / 삭제 / 이동)
+            vizcore3dx.Note.OnNoteCreated += Note_OnNoteListChanged;
+            vizcore3dx.Note.OnNoteDeleted += Note_OnNoteListChanged;
+            vizcore3dx.Note.OnNoteMoved += Note_OnNoteListChanged;
+        }
+
+        // 노트 생성 / 삭제 / 이동 시 목록 갱신
+        private void Note_OnNoteListChanged(object sender, EventManager.NoteEventArgs e)
+        {
+            if (_suppressNoteListRefresh == true) return;
+
+            RefreshNoteList(GetSelectedNoteId());
+        }
+
+        // ================================================
+        // 노트 목록
+        // ================================================
+        private void RefreshNoteList(uint selectId)
+        {
+            dgvNotes.SelectionChanged -= dgvNotes_SelectionChanged;
+            dgvNotes.Rows.Clear();
+
+            List<NoteItem> notes = vizcore3dx.Note.Notes ?? new List<NoteItem>();
+
+            foreach (NoteItem note in notes)
+            {
+                if (note == null || note.IsDeleted == true) continue;
+
+                string target = note.Type == NoteType.Surface ? FormatPosition(note.TargetPosition) : "-";
+                int index = dgvNotes.Rows.Add(note.ID, note.Type, GetFirstLine(note.Title), target);
+                dgvNotes.Rows[index].Tag = note.ID;
+            }
+
+            dgvNotes.ClearSelection();
+            foreach (DataGridViewRow row in dgvNotes.Rows)
+            {
+                if ((uint)row.Tag != selectId) continue;
+
+                row.Selected = true;
+                break;
+            }
+
+            dgvNotes.SelectionChanged += dgvNotes_SelectionChanged;
+            UpdateTargetPositionLabel();
+        }
+
+        private uint GetSelectedNoteId()
+        {
+            if (dgvNotes.SelectedRows.Count == 0 || dgvNotes.SelectedRows[0].Tag == null) return 0;
+
+            return (uint)dgvNotes.SelectedRows[0].Tag;
+        }
+
+        private NoteItem GetSelectedNote()
+        {
+            uint id = GetSelectedNoteId();
+            if (id == 0) return null;
+
+            return vizcore3dx.Note.GetItem(id);
+        }
+
+        private void UpdateTargetPositionLabel()
+        {
+            NoteItem note = GetSelectedNote();
+
+            if (note == null)
+                lblTargetPosition.Text = "대상점 : -";
+            else if (note.Type != NoteType.Surface)
+                lblTargetPosition.Text = "대상점 : - (표면 노트가 아닙니다)";
+            else
+                lblTargetPosition.Text = "대상점 : " + FormatPosition(note.TargetPosition);
+        }
+
+        private string FormatPosition(Vector3D position)
+        {
+            if (position == null) return "-";
+
+            return string.Format("{0:F1}, {1:F1}, {2:F1}", position.X, position.Y, position.Z);
+        }
+
+        private string GetFirstLine(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return string.Empty;
+
+            int index = text.IndexOfAny(new char[] { '\r', '\n' });
+            return index < 0 ? text : text.Substring(0, index);
+        }
+
+        private void dgvNotes_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateTargetPositionLabel();
+        }
+
+        private void btnRefreshNotes_Click(object sender, EventArgs e)
+        {
+            RefreshNoteList(GetSelectedNoteId());
+        }
+
+        private void btnArrangeText_Click(object sender, EventArgs e)
+        {
+            List<NoteItem> notes = vizcore3dx.Note.GetVisibleItems();
+            if (notes == null || notes.Count == 0) return;
+
+            // 자동 배치 : 각 노트의 TargetPosition(대상점)을 기준점으로 텍스트를 화면에 맞춰 배치
+            vizcore3dx.View.FitAndArrangeText(notes);
+        }
+
+        // ================================================
+        // 표면 노트 대상점 이동
+        // ================================================
+        private async void btnSetTargetOsnap_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            NoteItem note = GetSelectedNote();
+            if (note == null)
+            {
+                MessageBox.Show("노트 목록에서 대상점을 이동할 노트를 선택해주세요.", "VIZCore3DX.NET.Note.V2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (note.Type != NoteType.Surface)
+            {
+                MessageBox.Show("표면 노트만 대상점을 이동할 수 있습니다.", "VIZCore3DX.NET.Note.V2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 대상점 선택 중 노트가 추가되지 않도록 노트 생성 모드 해제
+            ckEnable.Checked = false;
+
+            OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
+            osnap.CommandText = "노트가 가리킬 새 대상점을 선택하세요.";
+            OsnapResult result = await osnap.GetResultAsync();
+            if (result == null) return;
+
+            // 노트가 가리키는 지점 이동 (OnNoteMoved 발생, Undo 가능)
+            Vertex3D target = new Vertex3D(result.Position.X, result.Position.Y, result.Position.Z);
+            if (vizcore3dx.Note.SetTargetPosition(note.ID, target) == false)
+            {
+                ShowLastOperationStatus("대상점을 이동하지 못했습니다.");
+                return;
+            }
+
+            RefreshNoteList(note.ID);
+        }
+
+        // ================================================
+        // 내보내기 / 문자열 저장·복원
+        // ================================================
+        private void btnExportCsv_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Note.GetCount() == 0)
+            {
+                MessageBox.Show("내보낼 노트가 없습니다.", "VIZCore3DX.NET.Note.V2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "CSV (*.csv)|*.csv";
+            dlg.FileName = "Notes.csv";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            if (vizcore3dx.Note.ExportCsv(dlg.FileName) == false)
+            {
+                ShowLastOperationStatus("노트 목록을 CSV로 내보내지 못했습니다.");
+                return;
+            }
+
+            MessageBox.Show("노트 목록을 CSV로 내보냈습니다.\n\n" + dlg.FileName, "VIZCore3DX.NET.Note.V2", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnToJson_Click(object sender, EventArgs e)
+        {
+            // 노트 목록을 JSON 문자열로 변환
+            string json = vizcore3dx.Note.ToJson();
+            if (string.IsNullOrEmpty(json))
+            {
+                ShowLastOperationStatus("노트 목록을 JSON 문자열로 변환하지 못했습니다.");
+                return;
+            }
+
+            txtJson.Text = json;
+        }
+
+        private void btnFromJson_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtJson.Text)) return;
+
+            bool result;
+            _suppressNoteListRefresh = true;
+
+            try
+            {
+                using (vizcore3dx.BeginUpdateScope())
+                {
+                    // 기존 노트 삭제 후 JSON 문자열로부터 노트 목록 복원
+                    if (chkClearBeforeFromJson.Checked == true) vizcore3dx.Note.Clear();
+
+                    result = vizcore3dx.Note.FromJson(txtJson.Text);
+                }
+            }
+            finally
+            {
+                _suppressNoteListRefresh = false;
+            }
+
+            RefreshNoteList(0);
+
+            if (result == false) ShowLastOperationStatus("JSON 문자열로부터 노트를 복원하지 못했습니다.");
+        }
+
+        private void ShowLastOperationStatus(string message)
+        {
+            OperationStatus status = vizcore3dx.Note.LastOperationStatus;
+            if (status != null && status.Result == OperationResult.OperationCancelled) return;
+
+            string reason = status == null ? "-" : status.Result.ToString();
+            MessageBox.Show(string.Format("{0}\n\n사유 : {1}", message, reason), "VIZCore3DX.NET.Note.V2", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         // ESC 키 눌렀을 때
