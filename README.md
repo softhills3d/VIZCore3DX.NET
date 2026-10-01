@@ -4,7 +4,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 
 ## 요구 사항
 - .NET Framework 4.8
-- VIZCore3DX.NET 라이브러리
+- VIZCore3DX.NET 라이브러리 — **기준 버전 1.5.26.928** (각 예제 표의 `API version` 열이 그 예제를 마지막으로 빌드·확인한 라이브러리 버전입니다. 그보다 낮은 버전에서는 일부 API 가 없어 빌드되지 않을 수 있으니, 예제 버전 이상의 라이브러리를 사용하세요.)
 
 ## WinForms 예제 프로젝트
 ### 기본 / 뷰어
