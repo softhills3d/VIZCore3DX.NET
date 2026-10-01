@@ -1,12 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
-using VIZCore3DX.NET.Data;
 
 namespace VIZCore3DX.NET.Effect
 {
     public partial class FrmMain : Form
     {
+        // 만들 효과 종류입니다. 선 무리·점 무리는 좌표·색 데이터(DataSet) 효과로 만들어집니다.
+        private enum EffectKind { DimensionLine, GasCloud, GroundRing, LineSet, Marker, ParticleEmitter, PathLine, PointCloud, PulseOutline, PulseSphere, Spinner, TextLabel, Vapor, WeldingSpark }
+
+        // 선 무리의 점 연결 방식 (연속 폴리라인 / 점 2개씩 선분)
+        private enum LineSetMode { Polyline, Segments }
+
+        // 펄스 외곽선의 영역 지정 방식 (선택 노드의 경계 영역 / 오스냅으로 고른 모서리 목록)
+        private enum OutlineSource { SelectedNodes, OsnapEdges }
+
+        // 효과 목록 조회 방식 (전체 / 종류별)
+        private enum QueryMode { All, ByType }
+
         // VIZCore3DX.NET 선언
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
 
@@ -14,18 +27,25 @@ namespace VIZCore3DX.NET.Effect
         {
             InitializeComponent();
 
+            // 뷰어와 무관한 콤보 항목은 생성자에서 채웁니다.
+            cmbEffectType.DataSource = Enum.GetValues(typeof(EffectKind));
+            cmbQueryMode.DataSource = Enum.GetValues(typeof(QueryMode));
+            cmbQueryType.DataSource = Enum.GetValues(typeof(VIZCore3DX.NET.Data.EffectType));
+            cmbClearType.DataSource = Enum.GetValues(typeof(VIZCore3DX.NET.Data.EffectType));
+
             // Initialize VIZCore3DX.NET
             VIZCore3DX.NET.ModuleInitializer.Run();
 
             // Construction
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
-            splitContainer1.Panel1.Controls.Add(vizcore3dx);
+            splitContainer2.Panel1.Controls.Add(vizcore3dx);
 
             // Event
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
         }
 
+        #region Initialize
         private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
         {
             // ================================================================
@@ -44,444 +64,378 @@ namespace VIZCore3DX.NET.Effect
 
             if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
             {
-                MessageBox.Show(string.Format("라이선스 인증에 실패했습니다.\r\n라이선스 코드 : {0}", result), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            vizcore3dx.BeginUpdate();
+            InitializeVIZCore3DX();
+            InitializeVIZCore3DXEvent();
+        }
 
+        private void InitializeVIZCore3DX()
+        {
             // 리본 UI 를 기본으로 켜고, 이 예제가 다루는 리본·패널 탭만 남깁니다.
             vizcore3dx.RibbonMode = true;
             ShowRibbonTabs(VIZCore3DX.NET.Data.ToolbarKind.Effect);
             ShowAttributeTabs();
 
-            vizcore3dx.EndUpdate();
+            // 고른 종류의 기본 옵션을 채우고, 현재 효과 목록과 개수를 보여줍니다.
+            ConfigureOptions(SelectedKind());
+            RefreshEffectList();
+            RefreshEffectStatus();
 
+            SetStatus("모델을 열어 주세요.");
+        }
+
+        // 효과 목록은 뷰어가 소유하므로, 추가·제거 이벤트를 받아 목록과 개수를 다시 그립니다.
+        private void InitializeVIZCore3DXEvent()
+        {
+            vizcore3dx.View.Effect.OnEffectAddedEvent -= Effect_OnEffectAddedEvent;
             vizcore3dx.View.Effect.OnEffectAddedEvent += Effect_OnEffectAddedEvent;
+            vizcore3dx.View.Effect.OnEffectRemovedEvent -= Effect_OnEffectRemovedEvent;
             vizcore3dx.View.Effect.OnEffectRemovedEvent += Effect_OnEffectRemovedEvent;
+        }
+
+        // 종료 시 이벤트 구독을 먼저 끊습니다. 자식 컨트롤이 정리된 뒤에 이벤트가 오면 안 됩니다.
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            if (vizcore3dx.View != null && vizcore3dx.View.Effect != null)
+            {
+                vizcore3dx.View.Effect.OnEffectAddedEvent -= Effect_OnEffectAddedEvent;
+                vizcore3dx.View.Effect.OnEffectRemovedEvent -= Effect_OnEffectRemovedEvent;
+            }
+
+            base.OnFormClosing(e);
+        }
+
+        private void Effect_OnEffectAddedEvent(object sender, VIZCore3DX.NET.Event.EventManager.EffectAddedEventArgs e)
+        {
+            RunOnUi(() => { LogEvents(e.Items, "추가"); RefreshEffectList(); RefreshEffectStatus(); });
+        }
+
+        private void Effect_OnEffectRemovedEvent(object sender, VIZCore3DX.NET.Event.EventManager.EffectRemovedEventArgs e)
+        {
+            RunOnUi(() => { LogEvents(e.Items, "제거"); RefreshEffectList(); RefreshEffectStatus(); });
+        }
+        #endregion
+
+        #region 1. 모델
+        // 효과를 배치할 모델을 엽니다.
+        private void btnOpenModel_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.OpenFileDialog() == false) return;
 
             RefreshEffectList();
             RefreshEffectStatus();
+            SetStatus("모델을 열었습니다.");
         }
+        #endregion
 
-        private bool CheckModel()
-        {
-            if (vizcore3dx.Model.IsOpen()) return true;
-
-            MessageBox.Show("먼저 모델을 열어주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return false;
-        }
-
-        private void SetNumber(NumericUpDown control, decimal minimum, decimal maximum, decimal value, int decimalPlaces)
-        {
-            control.Minimum = minimum;
-            control.Maximum = maximum;
-            control.DecimalPlaces = decimalPlaces;
-            control.Increment = decimalPlaces == 0 ? 1.0M : 0.1M;
-
-            if (value < minimum) value = minimum;
-            if (value > maximum) value = maximum;
-
-            control.Value = value;
-        }
-
+        #region 2. 종류·옵션
+        // 종류를 바꾸면 그 종류의 옵션 칸만 보이고, 기본값은 옵션 객체의 기본값으로 채웁니다.
         private void cmbEffectType_SelectedIndexChanged(object sender, EventArgs e)
         {
-            lvPoints.Items.Clear();
-            lblCreateResult.Text = "생성 결과 : -";
+            if (!(cmbEffectType.SelectedItem is EffectKind)) return;
 
-            foreach (Control control in groupBoxOptions.Controls) control.Visible = false;
-
-            cmbSpecial.Items.Clear();
-            lblColor.Text = "색상";
-
-            switch (cmbEffectType.SelectedIndex)
-            {
-                case 0:
-                    DimensionLineOptions dimensionOptions = new DimensionLineOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = dimensionOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "선 두께";
-                    SetNumber(numOption1, 0.1M, 20.0M, (decimal)dimensionOptions.LineWidth, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "소수점 자릿수";
-                    SetNumber(numOption2, 0, 6, dimensionOptions.Decimals, 0);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "거리 문자열 표시";
-                    chkOption1.Checked = dimensionOptions.ShowText;
-
-                    chkOption2.Visible = true;
-                    chkOption2.Text = "항상 위에 표시";
-                    chkOption2.Checked = dimensionOptions.AlwaysOnTop;
-                    break;
-
-                case 1:
-                    GasCloudOptions gasOptions = new GasCloudOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = gasOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "시작 반경(mm)";
-                    SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)gasOptions.MinRadius, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "최대 반경(mm)";
-                    SetNumber(numOption2, 1.0M, 1000000.0M, (decimal)gasOptions.MaxRadius, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "불투명도";
-                    SetNumber(numOption3, 0.0M, 1.0M, (decimal)gasOptions.Opacity, 2);
-                    break;
-
-                case 2:
-                    GroundRingOptions groundRingOptions = new GroundRingOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = groundRingOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "반지름(mm)";
-                    SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)groundRingOptions.RadiusMm, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "선 굵기(px)";
-                    SetNumber(numOption2, 0.1M, 20.0M, (decimal)groundRingOptions.LineWidth, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "물결 개수";
-                    SetNumber(numOption3, 0, 20, groundRingOptions.RippleCount, 0);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "바닥까지 수직선 표시";
-                    chkOption1.Checked = groundRingOptions.ShowStem;
-
-                    chkOption2.Visible = true;
-                    chkOption2.Text = "항상 위에 표시";
-                    chkOption2.Checked = groundRingOptions.AlwaysOnTop;
-                    break;
-
-                case 3:
-                    DataSetOptions lineSetOptions = new DataSetOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = lineSetOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "선 굵기(px)";
-                    SetNumber(numOption1, 0.1M, 20.0M, (decimal)lineSetOptions.LineWidth, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "불투명도";
-                    SetNumber(numOption2, 0.0M, 1.0M, (decimal)lineSetOptions.Opacity, 2);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "항상 위에 표시";
-                    chkOption1.Checked = lineSetOptions.AlwaysOnTop;
-
-                    lblSpecial.Visible = cmbSpecial.Visible = true;
-                    lblSpecial.Text = "연결 방식";
-                    cmbSpecial.Items.AddRange(new object[] { "연속 폴리라인", "점 2개씩 선분" });
-                    cmbSpecial.SelectedIndex = 0;
-                    break;
-
-                case 4:
-                    MarkerOptions markerOptions = new MarkerOptions();
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "아이콘 크기(px)";
-                    SetNumber(numOption1, 1, 512, markerOptions.SizePx, 0);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "페이드 시작 거리(mm)";
-                    SetNumber(numOption2, 0.0M, 10000000.0M, (decimal)markerOptions.FadeStartMm, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "페이드 종료 거리(mm)";
-                    SetNumber(numOption3, 0.0M, 10000000.0M, (decimal)markerOptions.FadeEndMm, 1);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "항상 위에 표시";
-                    chkOption1.Checked = markerOptions.AlwaysOnTop;
-
-                    chkOption2.Visible = true;
-                    chkOption2.Text = "화면 밖 방향 표시";
-                    chkOption2.Checked = markerOptions.ShowOffscreenIndicator;
-
-                    lblSpecial.Visible = cmbSpecial.Visible = true;
-                    lblSpecial.Text = "마커 아이콘";
-                    cmbSpecial.Items.AddRange(new object[] { "경고", "금지", "정보", "화기", "가스/유증기", "확인" });
-                    cmbSpecial.SelectedIndex = 0;
-
-                    lblOptionText.Visible = txtOptionText.Visible = true;
-                    lblOptionText.Text = "라벨";
-                    txtOptionText.Text = string.Empty;
-                    break;
-
-                case 5:
-                    ParticleOptions particleOptions = new ParticleOptions(ParticlePreset.Smoke);
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    lblColor.Text = "시작 색상";
-                    btnEffectColor.BackColor = particleOptions.StartColor;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "파티클 크기(mm)";
-                    SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)particleOptions.ParticleSizeMm, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "원뿔 반각(도)";
-                    SetNumber(numOption2, 0.0M, 180.0M, (decimal)particleOptions.ConeAngleDeg, 1);
-
-                    lblSpecial.Visible = cmbSpecial.Visible = true;
-                    lblSpecial.Text = "프리셋";
-                    cmbSpecial.Items.AddRange(new object[] { "불똥", "연기", "증기", "물방울" });
-                    cmbSpecial.SelectedIndex = 1;
-                    break;
-
-                case 6:
-                    PathLineOptions pathLineOptions = new PathLineOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = pathLineOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "선 두께(px)";
-                    SetNumber(numOption1, 0.1M, 20.0M, (decimal)pathLineOptions.LineWidth, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "패턴 길이(mm)";
-                    SetNumber(numOption2, 1.0M, 1000000.0M, (decimal)pathLineOptions.PatternLengthMm, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "빈 구간 비율";
-                    SetNumber(numOption3, 0.0M, 1.0M, (decimal)pathLineOptions.GapRatio, 2);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "화살촉 표시";
-                    chkOption1.Checked = pathLineOptions.ShowArrow;
-
-                    chkOption2.Visible = true;
-                    chkOption2.Text = "항상 위에 표시";
-                    chkOption2.Checked = pathLineOptions.AlwaysOnTop;
-                    break;
-
-                case 7:
-                    DataSetOptions pointCloudOptions = new DataSetOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = pointCloudOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "점 지름(mm)";
-                    SetNumber(numOption1, 0.1M, 1000000.0M, (decimal)pointCloudOptions.PointSizeMm, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "불투명도";
-                    SetNumber(numOption2, 0.0M, 1.0M, (decimal)pointCloudOptions.Opacity, 2);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "항상 위에 표시";
-                    chkOption1.Checked = pointCloudOptions.AlwaysOnTop;
-                    break;
-
-                case 8:
-                    PulseOutlineOptions pulseOutlineOptions = new PulseOutlineOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = pulseOutlineOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "외곽선 두께(px)";
-                    SetNumber(numOption1, 0.1M, 20.0M, (decimal)pulseOutlineOptions.LineWidth, 1);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "항상 위에 표시";
-                    chkOption1.Checked = pulseOutlineOptions.AlwaysOnTop;
-
-                    lblSpecial.Visible = cmbSpecial.Visible = true;
-                    lblSpecial.Text = "영역 지정";
-                    cmbSpecial.Items.AddRange(new object[] { "선택 객체의 경계 영역", "오스냅 모서리 목록" });
-                    cmbSpecial.SelectedIndex = 0;
-                    break;
-
-                case 9:
-                    PulseSphereOptions pulseSphereOptions = new PulseSphereOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = pulseSphereOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "시작 반경(mm)";
-                    SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)pulseSphereOptions.MinRadius, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "최대 반경(mm)";
-                    SetNumber(numOption2, 1.0M, 1000000.0M, (decimal)pulseSphereOptions.MaxRadius, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "불투명도";
-                    SetNumber(numOption3, 0.0M, 1.0M, (decimal)pulseSphereOptions.Opacity, 2);
-                    break;
-
-                case 10:
-                    SpinnerOptions spinnerOptions = new SpinnerOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = spinnerOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "바깥 지름(px)";
-                    SetNumber(numOption1, 1, 512, spinnerOptions.SizePx, 0);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "고리 두께(px)";
-                    SetNumber(numOption2, 1, 100, spinnerOptions.ThicknessPx, 0);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "진행률(-1 ~ 1)";
-                    SetNumber(numOption3, -1.0M, 1.0M, (decimal)spinnerOptions.Progress, 2);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "바탕 고리 표시";
-                    chkOption1.Checked = spinnerOptions.ShowTrack;
-
-                    chkOption2.Visible = true;
-                    chkOption2.Text = "항상 위에 표시";
-                    chkOption2.Checked = spinnerOptions.AlwaysOnTop;
-                    break;
-
-                case 11:
-                    TextLabelOptions textLabelOptions = new TextLabelOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    lblColor.Text = "글자 색";
-                    btnEffectColor.BackColor = textLabelOptions.TextColor;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "글자 높이(px)";
-                    SetNumber(numOption1, 1, 512, textLabelOptions.SizePx, 0);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "페이드 시작 거리(mm)";
-                    SetNumber(numOption2, 0.0M, 10000000.0M, (decimal)textLabelOptions.FadeStartMm, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "페이드 종료 거리(mm)";
-                    SetNumber(numOption3, 0.0M, 10000000.0M, (decimal)textLabelOptions.FadeEndMm, 1);
-
-                    chkOption1.Visible = true;
-                    chkOption1.Text = "항상 위에 표시";
-                    chkOption1.Checked = textLabelOptions.AlwaysOnTop;
-
-                    chkOption2.Visible = true;
-                    chkOption2.Text = "화면 밖 방향 표시";
-                    chkOption2.Checked = textLabelOptions.ShowOffscreenIndicator;
-
-                    lblOptionText.Visible = txtOptionText.Visible = true;
-                    lblOptionText.Text = "표시 문자열";
-                    txtOptionText.Text = "VIZCore3DX.NET Effect";
-                    break;
-
-                case 12:
-                    VaporOptions vaporOptions = new VaporOptions();
-
-                    lblColor.Visible = btnEffectColor.Visible = true;
-                    btnEffectColor.BackColor = vaporOptions.Color;
-
-                    lblOption1.Visible = numOption1.Visible = true;
-                    lblOption1.Text = "시작 반경(mm)";
-                    SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)vaporOptions.StartRadius, 1);
-
-                    lblOption2.Visible = numOption2.Visible = true;
-                    lblOption2.Text = "끝 반경(mm)";
-                    SetNumber(numOption2, 1.0M, 1000000.0M, (decimal)vaporOptions.EndRadius, 1);
-
-                    lblOption3.Visible = numOption3.Visible = true;
-                    lblOption3.Text = "상승 높이(mm)";
-                    SetNumber(numOption3, 1.0M, 1000000.0M, (decimal)vaporOptions.Height, 1);
-                    break;
-
-                case 13:
-                    lblNoOptions.Visible = true;
-                    lblNoOptions.Text = "개별 옵션이 없습니다. 용접 불꽃 효과 설정은 조회 / 관리 탭에서 변경합니다.";
-                    break;
-            }
-
-
-            UpdatePointGuide();
+            ConfigureOptions((EffectKind)cmbEffectType.SelectedItem);
         }
 
+        // 파티클 프리셋을 바꾸면 그 프리셋의 기본 색·크기·각도로 다시 채우고, 펄스 외곽선 영역 방식을 바꾸면 위치 목록을 비웁니다.
         private void cmbSpecial_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbEffectType.SelectedIndex == 5 && cmbSpecial.SelectedIndex >= 0)
-            {
-                ParticleOptions options = new ParticleOptions((ParticlePreset)cmbSpecial.SelectedIndex);
-                btnEffectColor.BackColor = options.StartColor;
-                SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)options.ParticleSizeMm, 1);
-                SetNumber(numOption2, 0.0M, 180.0M, (decimal)options.ConeAngleDeg, 1);
-            }
+            EffectKind kind = SelectedKind();
 
-            if (cmbEffectType.SelectedIndex == 8 && cmbSpecial.SelectedIndex >= 0)
+            if (kind == EffectKind.ParticleEmitter && cmbSpecial.SelectedItem is VIZCore3DX.NET.Data.ParticlePreset)
+                ApplyParticlePreset((VIZCore3DX.NET.Data.ParticlePreset)cmbSpecial.SelectedItem);
+
+            if (kind == EffectKind.PulseOutline && cmbSpecial.SelectedItem is OutlineSource)
             {
                 lvPoints.Items.Clear();
-                lblCreateResult.Text = "생성 결과 : -";
-                UpdatePointGuide();
+                UpdatePointControls();
             }
         }
 
+        // 효과 색을 고릅니다. 버튼 바탕색이 지금 고른 색입니다.
         private void btnEffectColor_Click(object sender, EventArgs e)
         {
             using (ColorDialog dialog = new ColorDialog())
             {
                 dialog.Color = btnEffectColor.BackColor;
-
-                if (dialog.ShowDialog() != DialogResult.OK) return;
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
                 btnEffectColor.BackColor = dialog.Color;
             }
         }
 
-        private int GetPointLimit()
+        private void ConfigureOptions(EffectKind kind)
         {
-            int index = cmbEffectType.SelectedIndex;
+            lvPoints.Items.Clear();
+            foreach (Control control in grpSetup.Controls) control.Visible = control == lblEffectType || control == cmbEffectType;
 
-            if (index == 0) return 2;
-            if (index < 0 || index == 3 || index == 6 || index == 7 || index == 8) return 0;
+            switch (kind)
+            {
+                case EffectKind.DimensionLine: ConfigureDimensionLine(); break;
+                case EffectKind.GasCloud: ConfigureGasCloud(); break;
+                case EffectKind.GroundRing: ConfigureGroundRing(); break;
+                case EffectKind.LineSet: ConfigureLineSet(); break;
+                case EffectKind.Marker: ConfigureMarker(); break;
+                case EffectKind.ParticleEmitter: ConfigureParticleEmitter(); break;
+                case EffectKind.PathLine: ConfigurePathLine(); break;
+                case EffectKind.PointCloud: ConfigurePointCloud(); break;
+                case EffectKind.PulseOutline: ConfigurePulseOutline(); break;
+                case EffectKind.PulseSphere: ConfigurePulseSphere(); break;
+                case EffectKind.Spinner: ConfigureSpinner(); break;
+                case EffectKind.TextLabel: ConfigureTextLabel(); break;
+                case EffectKind.Vapor: ConfigureVapor(); break;
+                case EffectKind.WeldingSpark: ConfigureWeldingSpark(); break;
+            }
 
-            return 1;
+            UpdatePointControls();
         }
 
-        private void UpdatePointGuide()
+        private void ConfigureDimensionLine()
         {
-            string[] guides = new string[]
+            VIZCore3DX.NET.Data.DimensionLineOptions options = new VIZCore3DX.NET.Data.DimensionLineOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "선 두께", 0.1M, 20.0M, (decimal)options.LineWidth, 1);
+            ShowNumber(lblOption2, numOption2, "소수점 자릿수", 0, 6, options.Decimals, 0);
+            ShowCheck(chkOption1, "거리 문자열 표시", options.ShowText);
+            ShowCheck(chkOption2, "항상 위에 표시", options.AlwaysOnTop);
+        }
+
+        private void ConfigureGasCloud()
+        {
+            VIZCore3DX.NET.Data.GasCloudOptions options = new VIZCore3DX.NET.Data.GasCloudOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "시작 반경(mm)", 1.0M, 1000000.0M, (decimal)options.MinRadius, 1);
+            ShowNumber(lblOption2, numOption2, "최대 반경(mm)", 1.0M, 1000000.0M, (decimal)options.MaxRadius, 1);
+            ShowNumber(lblOption3, numOption3, "불투명도", 0.0M, 1.0M, (decimal)options.Opacity, 2);
+        }
+
+        private void ConfigureGroundRing()
+        {
+            VIZCore3DX.NET.Data.GroundRingOptions options = new VIZCore3DX.NET.Data.GroundRingOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "반지름(mm)", 1.0M, 1000000.0M, (decimal)options.RadiusMm, 1);
+            ShowNumber(lblOption2, numOption2, "선 굵기(px)", 0.1M, 20.0M, (decimal)options.LineWidth, 1);
+            ShowNumber(lblOption3, numOption3, "물결 개수", 0, 20, options.RippleCount, 0);
+            ShowCheck(chkOption1, "바닥까지 수직선 표시", options.ShowStem);
+            ShowCheck(chkOption2, "항상 위에 표시", options.AlwaysOnTop);
+        }
+
+        private void ConfigureLineSet()
+        {
+            VIZCore3DX.NET.Data.DataSetOptions options = new VIZCore3DX.NET.Data.DataSetOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "선 굵기(px)", 0.1M, 20.0M, (decimal)options.LineWidth, 1);
+            ShowNumber(lblOption2, numOption2, "불투명도", 0.0M, 1.0M, (decimal)options.Opacity, 2);
+            ShowCheck(chkOption1, "항상 위에 표시", options.AlwaysOnTop);
+            ShowSpecial("연결 방식", typeof(LineSetMode), LineSetMode.Polyline);
+        }
+
+        private void ConfigureMarker()
+        {
+            VIZCore3DX.NET.Data.MarkerOptions options = new VIZCore3DX.NET.Data.MarkerOptions();
+            ShowNumber(lblOption1, numOption1, "아이콘 크기(px)", 1, 512, options.SizePx, 0);
+            ShowNumber(lblOption2, numOption2, "페이드 시작 거리(mm)", 0.0M, 10000000.0M, (decimal)options.FadeStartMm, 1);
+            ShowNumber(lblOption3, numOption3, "페이드 종료 거리(mm)", 0.0M, 10000000.0M, (decimal)options.FadeEndMm, 1);
+            ShowCheck(chkOption1, "항상 위에 표시", options.AlwaysOnTop);
+            ShowCheck(chkOption2, "화면 밖 방향 표시", options.ShowOffscreenIndicator);
+            ShowSpecial("마커 아이콘", typeof(VIZCore3DX.NET.Data.MarkerIcon), VIZCore3DX.NET.Data.MarkerIcon.Warning);
+            ShowText("라벨", string.Empty);
+        }
+
+        private void ConfigureParticleEmitter()
+        {
+            VIZCore3DX.NET.Data.ParticleOptions options = new VIZCore3DX.NET.Data.ParticleOptions(VIZCore3DX.NET.Data.ParticlePreset.Smoke);
+            ShowColor("시작 색상", options.StartColor);
+            ShowNumber(lblOption1, numOption1, "파티클 크기(mm)", 1.0M, 1000000.0M, (decimal)options.ParticleSizeMm, 1);
+            ShowNumber(lblOption2, numOption2, "원뿔 반각(도)", 0.0M, 180.0M, (decimal)options.ConeAngleDeg, 1);
+            ShowSpecial("프리셋", typeof(VIZCore3DX.NET.Data.ParticlePreset), VIZCore3DX.NET.Data.ParticlePreset.Smoke);
+        }
+
+        private void ConfigurePathLine()
+        {
+            VIZCore3DX.NET.Data.PathLineOptions options = new VIZCore3DX.NET.Data.PathLineOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "선 두께(px)", 0.1M, 20.0M, (decimal)options.LineWidth, 1);
+            ShowNumber(lblOption2, numOption2, "패턴 길이(mm)", 1.0M, 1000000.0M, (decimal)options.PatternLengthMm, 1);
+            ShowNumber(lblOption3, numOption3, "빈 구간 비율", 0.0M, 1.0M, (decimal)options.GapRatio, 2);
+            ShowCheck(chkOption1, "화살촉 표시", options.ShowArrow);
+            ShowCheck(chkOption2, "항상 위에 표시", options.AlwaysOnTop);
+        }
+
+        private void ConfigurePointCloud()
+        {
+            VIZCore3DX.NET.Data.DataSetOptions options = new VIZCore3DX.NET.Data.DataSetOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "점 지름(mm)", 0.1M, 1000000.0M, (decimal)options.PointSizeMm, 1);
+            ShowNumber(lblOption2, numOption2, "불투명도", 0.0M, 1.0M, (decimal)options.Opacity, 2);
+            ShowCheck(chkOption1, "항상 위에 표시", options.AlwaysOnTop);
+        }
+
+        private void ConfigurePulseOutline()
+        {
+            VIZCore3DX.NET.Data.PulseOutlineOptions options = new VIZCore3DX.NET.Data.PulseOutlineOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "외곽선 두께(px)", 0.1M, 20.0M, (decimal)options.LineWidth, 1);
+            ShowCheck(chkOption1, "항상 위에 표시", options.AlwaysOnTop);
+            ShowSpecial("영역 지정", typeof(OutlineSource), OutlineSource.SelectedNodes);
+        }
+
+        private void ConfigurePulseSphere()
+        {
+            VIZCore3DX.NET.Data.PulseSphereOptions options = new VIZCore3DX.NET.Data.PulseSphereOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "시작 반경(mm)", 1.0M, 1000000.0M, (decimal)options.MinRadius, 1);
+            ShowNumber(lblOption2, numOption2, "최대 반경(mm)", 1.0M, 1000000.0M, (decimal)options.MaxRadius, 1);
+            ShowNumber(lblOption3, numOption3, "불투명도", 0.0M, 1.0M, (decimal)options.Opacity, 2);
+        }
+
+        private void ConfigureSpinner()
+        {
+            VIZCore3DX.NET.Data.SpinnerOptions options = new VIZCore3DX.NET.Data.SpinnerOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "바깥 지름(px)", 1, 512, options.SizePx, 0);
+            ShowNumber(lblOption2, numOption2, "고리 두께(px)", 1, 100, options.ThicknessPx, 0);
+            ShowNumber(lblOption3, numOption3, "진행률(-1 ~ 1)", -1.0M, 1.0M, (decimal)options.Progress, 2);
+            ShowCheck(chkOption1, "바탕 고리 표시", options.ShowTrack);
+            ShowCheck(chkOption2, "항상 위에 표시", options.AlwaysOnTop);
+        }
+
+        private void ConfigureTextLabel()
+        {
+            VIZCore3DX.NET.Data.TextLabelOptions options = new VIZCore3DX.NET.Data.TextLabelOptions();
+            ShowColor("글자 색", options.TextColor);
+            ShowNumber(lblOption1, numOption1, "글자 높이(px)", 1, 512, options.SizePx, 0);
+            ShowNumber(lblOption2, numOption2, "페이드 시작 거리(mm)", 0.0M, 10000000.0M, (decimal)options.FadeStartMm, 1);
+            ShowNumber(lblOption3, numOption3, "페이드 종료 거리(mm)", 0.0M, 10000000.0M, (decimal)options.FadeEndMm, 1);
+            ShowCheck(chkOption1, "항상 위에 표시", options.AlwaysOnTop);
+            ShowCheck(chkOption2, "화면 밖 방향 표시", options.ShowOffscreenIndicator);
+            ShowText("표시 문자열", "VIZCore3DX.NET Effect");
+        }
+
+        private void ConfigureVapor()
+        {
+            VIZCore3DX.NET.Data.VaporOptions options = new VIZCore3DX.NET.Data.VaporOptions();
+            ShowColor("색상", options.Color);
+            ShowNumber(lblOption1, numOption1, "시작 반경(mm)", 1.0M, 1000000.0M, (decimal)options.StartRadius, 1);
+            ShowNumber(lblOption2, numOption2, "끝 반경(mm)", 1.0M, 1000000.0M, (decimal)options.EndRadius, 1);
+            ShowNumber(lblOption3, numOption3, "상승 높이(mm)", 1.0M, 1000000.0M, (decimal)options.Height, 1);
+        }
+
+        private void ConfigureWeldingSpark()
+        {
+            lblNoOptions.Visible = true;
+            lblNoOptions.Text = "개별 옵션이 없습니다. 용접 불꽃 설정은 오른쪽 효과 목록 아래에서 바꿉니다.";
+        }
+
+        private void ApplyParticlePreset(VIZCore3DX.NET.Data.ParticlePreset preset)
+        {
+            VIZCore3DX.NET.Data.ParticleOptions options = new VIZCore3DX.NET.Data.ParticleOptions(preset);
+            btnEffectColor.BackColor = options.StartColor;
+            SetNumber(numOption1, 1.0M, 1000000.0M, (decimal)options.ParticleSizeMm, 1);
+            SetNumber(numOption2, 0.0M, 180.0M, (decimal)options.ConeAngleDeg, 1);
+        }
+        #endregion
+
+        #region 3. 위치
+        // 뷰에서 오스냅으로 위치를 하나 집어 목록에 더합니다. 종류마다 필요한 개수를 넘으면 오래된 점부터 버립니다.
+        private async void btnPickPoint_Click(object sender, EventArgs e)
+        {
+            if (!IsModelOpened()) return;
+
+            if (!chkSnapSurface.Checked && !chkSnapVertex.Checked && !chkSnapLine.Checked && !chkSnapCircle.Checked)
             {
-                "치수선의 시작점과 끝점을 선택해주세요. 최근 두 점만 유지됩니다.",
-                "가스 확산 구름을 표시할 위치를 선택해주세요.",
-                "지면 투영 링의 기준 지점을 선택해주세요.",
-                "선 무리에 사용할 점을 순서대로 선택해주세요.",
-                "마커를 표시할 위치를 선택해주세요.",
-                "파티클 이미터를 표시할 위치를 선택해주세요.",
-                "흐르는 경로선을 구성할 점을 순서대로 선택해주세요.",
-                "점 무리에 사용할 점을 선택해주세요.",
-                "펄스 외곽선의 시작점과 끝점을 한 쌍씩 선택해주세요.",
-                "확산 구를 표시할 위치를 선택해주세요.",
-                "회전 스피너를 표시할 위치를 선택해주세요.",
-                "텍스트 라벨을 표시할 위치를 선택해주세요.",
-                "유증기를 표시할 위치를 선택해주세요.",
-                "용접 불꽃 효과를 표시할 위치를 선택해주세요."
-            };
+                SetStatus("사용할 오스냅 항목을 하나 이상 선택하세요.");
+                return;
+            }
 
-            int index = cmbEffectType.SelectedIndex;
-            bool useOsnap = index != 8 || cmbSpecial.SelectedIndex != 0;
+            VIZCore3DX.NET.Data.OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
+            if (osnap == null) return;
 
-            if (index >= 0 && index < guides.Length) lblPointGuide.Text = index == 8 && !useOsnap ? "3D 화면에서 객체를 선택해주세요. 선택 객체의 경계 영역을 사용합니다." : guides[index];
+            ConfigureOsnap(osnap);
+            vizcore3dx.Focus();
 
+            VIZCore3DX.NET.Data.OsnapResult result = await osnap.GetResultAsync();
+            if (result == null || result.Position == null) return;
+
+            AddPoint(result);
+            SetStatus(string.Format("위치 {0}개를 골랐습니다.", lvPoints.Items.Count));
+        }
+
+        // 목록에서 고른 점을 지웁니다. 고른 점이 없으면 마지막 점을 지웁니다.
+        private void btnRemovePoint_Click(object sender, EventArgs e)
+        {
+            if (lvPoints.Items.Count == 0) return;
+
+            if (lvPoints.SelectedItems.Count > 0) lvPoints.Items.Remove(lvPoints.SelectedItems[0]);
+            else lvPoints.Items.RemoveAt(lvPoints.Items.Count - 1);
+
+            RenumberPoints();
+        }
+
+        // 고른 위치를 모두 비웁니다.
+        private void btnClearPoints_Click(object sender, EventArgs e)
+        {
+            lvPoints.Items.Clear();
+        }
+
+        private void ConfigureOsnap(VIZCore3DX.NET.Data.OsnapController osnap)
+        {
+            osnap.PlaneSnap = chkSnapSurface.Checked;
+            osnap.EdgeEndpointSnap = chkSnapVertex.Checked;
+            osnap.EdgeMidpointSnap = chkSnapVertex.Checked;
+            osnap.LineSnap = chkSnapLine.Checked;
+            osnap.CircleSnap = chkSnapCircle.Checked;
+            osnap.CircleCenterSnap = chkSnapCircle.Checked;
+            osnap.CylinderSnap = chkSnapCircle.Checked;
+            osnap.CommandText = "이펙트를 표시할 위치를 선택해주세요.";
+        }
+
+        private void AddPoint(VIZCore3DX.NET.Data.OsnapResult result)
+        {
+            VIZCore3DX.NET.Data.Vector3D position = result.Position;
+            string positionText = string.Format("X:{0:0.###}, Y:{1:0.###}, Z:{2:0.###}", position.X, position.Y, position.Z);
+            ListViewItem item = new ListViewItem(new string[] { (lvPoints.Items.Count + 1).ToString(), positionText, result.Type.ToString() });
+            item.Tag = position;
+            lvPoints.Items.Add(item);
+
+            int pointLimit = GetPointLimit();
+            while (pointLimit > 0 && lvPoints.Items.Count > pointLimit) lvPoints.Items.RemoveAt(0);
+            RenumberPoints();
+        }
+
+        private void RenumberPoints()
+        {
+            for (int i = 0; i < lvPoints.Items.Count; i++) lvPoints.Items[i].Text = (i + 1).ToString();
+        }
+
+        private List<VIZCore3DX.NET.Data.Vector3D> PickedPoints()
+        {
+            return lvPoints.Items.Cast<ListViewItem>().Select(item => item.Tag as VIZCore3DX.NET.Data.Vector3D).Where(position => position != null).ToList();
+        }
+
+        // 종류마다 필요한 위치 개수입니다. 0 이면 개수 제한이 없습니다.
+        private int GetPointLimit()
+        {
+            switch (SelectedKind())
+            {
+                case EffectKind.DimensionLine: return 2;
+                case EffectKind.LineSet: return 0;
+                case EffectKind.PathLine: return 0;
+                case EffectKind.PointCloud: return 0;
+                case EffectKind.PulseOutline: return 0;
+                default: return 1;
+            }
+        }
+
+        // 펄스 외곽선을 선택 노드로 만들 때는 오스냅 위치를 쓰지 않으므로 위치 칸을 끕니다.
+        private void UpdatePointControls()
+        {
+            bool useOsnap = !IsOutlineFromNodes();
+
+            lblPointGuide.Text = useOsnap ? PointGuide(SelectedKind()) : "뷰에서 노드를 선택하세요. 선택 노드의 경계 영역을 사용합니다.";
             chkSnapSurface.Enabled = useOsnap;
             chkSnapVertex.Enabled = useOsnap;
             chkSnapLine.Enabled = useOsnap;
@@ -492,424 +446,343 @@ namespace VIZCore3DX.NET.Effect
             lvPoints.Enabled = useOsnap;
         }
 
-        private async void btnPickPoint_Click(object sender, EventArgs e)
+        private string PointGuide(EffectKind kind)
         {
-            if (!CheckModel()) return;
-
-            if (!chkSnapSurface.Checked && !chkSnapVertex.Checked && !chkSnapLine.Checked && !chkSnapCircle.Checked)
+            switch (kind)
             {
-                MessageBox.Show("사용할 오스냅 항목을 하나 이상 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                case EffectKind.DimensionLine: return "치수선의 시작점과 끝점을 고르세요. 최근 두 점만 유지됩니다.";
+                case EffectKind.GasCloud: return "가스 확산 구름을 표시할 위치를 고르세요.";
+                case EffectKind.GroundRing: return "지면 투영 링의 기준 지점을 고르세요.";
+                case EffectKind.LineSet: return "선 무리에 사용할 점을 순서대로 고르세요.";
+                case EffectKind.Marker: return "마커를 표시할 위치를 고르세요.";
+                case EffectKind.ParticleEmitter: return "파티클 이미터를 표시할 위치를 고르세요.";
+                case EffectKind.PathLine: return "흐르는 경로선을 구성할 점을 순서대로 고르세요.";
+                case EffectKind.PointCloud: return "점 무리에 사용할 점을 고르세요.";
+                case EffectKind.PulseOutline: return "펄스 외곽선의 시작점과 끝점을 한 쌍씩 고르세요.";
+                case EffectKind.PulseSphere: return "확산 구를 표시할 위치를 고르세요.";
+                case EffectKind.Spinner: return "회전 스피너를 표시할 위치를 고르세요.";
+                case EffectKind.TextLabel: return "텍스트 라벨을 표시할 위치를 고르세요.";
+                case EffectKind.Vapor: return "유증기를 표시할 위치를 고르세요.";
+                default: return "용접 불꽃 효과를 표시할 위치를 고르세요.";
             }
+        }
+        #endregion
 
-            OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
-            if (osnap == null) return;
+        #region 4. 생성
+        // 고른 종류·옵션·위치로 효과를 만듭니다. 입력이 맞지 않으면 상태줄에 사유를 남깁니다.
+        private void btnCreate_Click(object sender, EventArgs e)
+        {
+            if (!IsModelOpened()) return;
 
-            osnap.PlaneSnap = chkSnapSurface.Checked;
-            osnap.EdgeEndpointSnap = chkSnapVertex.Checked;
-            osnap.EdgeMidpointSnap = chkSnapVertex.Checked;
-            osnap.LineSnap = chkSnapLine.Checked;
-            osnap.CircleSnap = chkSnapCircle.Checked;
-            osnap.CircleCenterSnap = chkSnapCircle.Checked;
-            osnap.CylinderSnap = chkSnapCircle.Checked;
-            osnap.CommandText = "이펙트를 표시할 위치를 선택해주세요.";
-
-            vizcore3dx.Focus();
-
-            OsnapResult result = await osnap.GetResultAsync();
-            if (result == null || result.Position == null) return;
-
-            Vector3D position = result.Position;
-            string positionText = string.Format("X:{0:0.###}, Y:{1:0.###}, Z:{2:0.###}", position.X, position.Y, position.Z);
-            ListViewItem item = new ListViewItem(new string[] { (lvPoints.Items.Count + 1).ToString(), result.Type.ToString(), positionText });
-            item.Tag = position;
-            lvPoints.Items.Add(item);
-
+            EffectKind kind = SelectedKind();
+            List<VIZCore3DX.NET.Data.Vector3D> points = PickedPoints();
             int pointLimit = GetPointLimit();
-            while (pointLimit > 0 && lvPoints.Items.Count > pointLimit) lvPoints.Items.RemoveAt(0);
-            for (int i = 0; i < lvPoints.Items.Count; i++) lvPoints.Items[i].Text = (i + 1).ToString();
-        }
+            if (pointLimit > 0 && points.Count != pointLimit) { SetStatus(string.Format("효과를 만들려면 위치를 {0}개 고르세요.", pointLimit)); return; }
 
-        private void btnRemovePoint_Click(object sender, EventArgs e)
-        {
-            if (lvPoints.Items.Count == 0) return;
+            // 종류별 입력 검사에 걸리면 그 사유로 상태줄이 바뀌고, 그 밖의 실패는 이 문구가 남습니다.
+            SetStatus("생성 실패 : 입력한 값과 등록 가능한 최대 개수를 확인하세요.");
+            uint id = CreateEffect(kind, points);
+            if (id == 0) return;
 
-            if (lvPoints.SelectedItems.Count > 0) lvPoints.Items.Remove(lvPoints.SelectedItems[0]);
-            else lvPoints.Items.RemoveAt(lvPoints.Items.Count - 1);
-
-            for (int i = 0; i < lvPoints.Items.Count; i++) lvPoints.Items[i].Text = (i + 1).ToString();
-        }
-
-        private void btnClearPoints_Click(object sender, EventArgs e)
-        {
+            SetStatus(string.Format("생성 : {0}-{1}", kind, id));
             lvPoints.Items.Clear();
         }
 
-        private void btnCreateEffect_Click(object sender, EventArgs e)
+        private uint CreateEffect(EffectKind kind, List<VIZCore3DX.NET.Data.Vector3D> points)
         {
-            if (!CheckModel()) return;
-
-            List<Vector3D> points = new List<Vector3D>();
-
-            foreach (ListViewItem item in lvPoints.Items)
+            switch (kind)
             {
-                Vector3D position = item.Tag as Vector3D;
-                if (position != null) points.Add(position);
+                case EffectKind.DimensionLine: return CreateDimensionLine(points);
+                case EffectKind.GasCloud: return CreateGasCloud(points);
+                case EffectKind.GroundRing: return CreateGroundRing(points);
+                case EffectKind.LineSet: return CreateLineSet(points);
+                case EffectKind.Marker: return CreateMarker(points);
+                case EffectKind.ParticleEmitter: return CreateParticleEmitter(points);
+                case EffectKind.PathLine: return CreatePathLine(points);
+                case EffectKind.PointCloud: return CreatePointCloud(points);
+                case EffectKind.PulseOutline: return CreatePulseOutline(points);
+                case EffectKind.PulseSphere: return CreatePulseSphere(points);
+                case EffectKind.Spinner: return CreateSpinner(points);
+                case EffectKind.TextLabel: return CreateTextLabel(points);
+                case EffectKind.Vapor: return CreateVapor(points);
+                case EffectKind.WeldingSpark: return CreateWeldingSpark(points);
+                default: return 0;
             }
-
-            int pointLimit = GetPointLimit();
-
-            if (pointLimit > 0 && points.Count != pointLimit)
-            {
-                MessageBox.Show(string.Format("이펙트 생성에 필요한 위치를 {0}개 선택해주세요.", pointLimit), "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            uint id = 0;
-
-            switch (cmbEffectType.SelectedIndex)
-            {
-                case 0:
-                    DimensionLineOptions dimensionOptions = new DimensionLineOptions();
-                    dimensionOptions.Color = btnEffectColor.BackColor;
-                    dimensionOptions.LineWidth = (float)numOption1.Value;
-                    dimensionOptions.Decimals = (int)numOption2.Value;
-                    dimensionOptions.ShowText = chkOption1.Checked;
-                    dimensionOptions.AlwaysOnTop = chkOption2.Checked;
-
-                    id = vizcore3dx.View.Effect.AddDimensionLine(points[0], points[1], dimensionOptions);
-                    break;
-
-                case 1:
-                    if (numOption1.Value >= numOption2.Value)
-                    {
-                        MessageBox.Show("최대 반경은 시작 반경보다 크게 설정해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    GasCloudOptions gasOptions = new GasCloudOptions();
-                    gasOptions.Color = btnEffectColor.BackColor;
-                    gasOptions.MinRadius = (float)numOption1.Value;
-                    gasOptions.MaxRadius = (float)numOption2.Value;
-                    gasOptions.Opacity = (float)numOption3.Value;
-
-                    id = vizcore3dx.View.Effect.AddGasCloud(points[0], gasOptions);
-                    break;
-
-                case 2:
-                    GroundRingOptions groundRingOptions = new GroundRingOptions();
-                    groundRingOptions.Color = btnEffectColor.BackColor;
-                    groundRingOptions.RadiusMm = (float)numOption1.Value;
-                    groundRingOptions.LineWidth = (float)numOption2.Value;
-                    groundRingOptions.RippleCount = (int)numOption3.Value;
-                    groundRingOptions.ShowStem = chkOption1.Checked;
-                    groundRingOptions.AlwaysOnTop = chkOption2.Checked;
-
-                    id = vizcore3dx.View.Effect.AddGroundRing(points[0], groundRingOptions);
-                    break;
-
-                case 3:
-                    if (points.Count < 2)
-                    {
-                        MessageBox.Show("선 무리에 사용할 점을 두 개 이상 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    if (cmbSpecial.SelectedIndex == 1 && points.Count % 2 != 0)
-                    {
-                        MessageBox.Show("점 2개씩 선분으로 표시하려면 짝수 개의 점을 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    DataSetOptions lineSetOptions = new DataSetOptions();
-                    lineSetOptions.Color = btnEffectColor.BackColor;
-                    lineSetOptions.LineWidth = (float)numOption1.Value;
-                    lineSetOptions.Opacity = (float)numOption2.Value;
-                    lineSetOptions.AlwaysOnTop = chkOption1.Checked;
-
-                    float[] lineXYZ = new float[points.Count * 3];
-
-                    for (int i = 0; i < points.Count; i++)
-                    {
-                        lineXYZ[(i * 3) + 0] = points[i].X;
-                        lineXYZ[(i * 3) + 1] = points[i].Y;
-                        lineXYZ[(i * 3) + 2] = points[i].Z;
-                    }
-
-                    int[] polylineSizes = cmbSpecial.SelectedIndex == 0 ? new int[] { points.Count } : null;
-
-                    id = vizcore3dx.View.Effect.AddLineSet(lineXYZ, polylineSizes, null, lineSetOptions);
-                    break;
-
-                case 4:
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.SizePx = (int)numOption1.Value;
-                    markerOptions.FadeStartMm = (float)numOption2.Value;
-                    markerOptions.FadeEndMm = (float)numOption3.Value;
-                    markerOptions.AlwaysOnTop = chkOption1.Checked;
-                    markerOptions.ShowOffscreenIndicator = chkOption2.Checked;
-                    markerOptions.Label = string.IsNullOrWhiteSpace(txtOptionText.Text) ? null : txtOptionText.Text;
-
-                    id = vizcore3dx.View.Effect.AddMarker(points[0], (MarkerIcon)cmbSpecial.SelectedIndex, markerOptions);
-                    vizcore3dx.View.Effect.SetMarkerVisible(chkMarkerVisible.Checked);
-                    break;
-
-                case 5:
-                    ParticleOptions particleOptions = new ParticleOptions((ParticlePreset)cmbSpecial.SelectedIndex);
-                    particleOptions.StartColor = btnEffectColor.BackColor;
-                    particleOptions.ParticleSizeMm = (float)numOption1.Value;
-                    particleOptions.ConeAngleDeg = (float)numOption2.Value;
-
-                    id = vizcore3dx.View.Effect.AddParticleEmitter(points[0], particleOptions);
-                    break;
-
-                case 6:
-                    if (points.Count < 2)
-                    {
-                        MessageBox.Show("흐르는 경로선을 구성할 점을 두 개 이상 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    PathLineOptions pathLineOptions = new PathLineOptions();
-                    pathLineOptions.Color = btnEffectColor.BackColor;
-                    pathLineOptions.LineWidth = (float)numOption1.Value;
-                    pathLineOptions.PatternLengthMm = (float)numOption2.Value;
-                    pathLineOptions.GapRatio = (float)numOption3.Value;
-                    pathLineOptions.ShowArrow = chkOption1.Checked;
-                    pathLineOptions.AlwaysOnTop = chkOption2.Checked;
-
-                    id = vizcore3dx.View.Effect.AddPathLine(points, pathLineOptions);
-                    break;
-
-                case 7:
-                    if (points.Count < 1)
-                    {
-                        MessageBox.Show("점 무리에 사용할 점을 하나 이상 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    DataSetOptions pointCloudOptions = new DataSetOptions();
-                    pointCloudOptions.Color = btnEffectColor.BackColor;
-                    pointCloudOptions.PointSizeMm = (float)numOption1.Value;
-                    pointCloudOptions.Opacity = (float)numOption2.Value;
-                    pointCloudOptions.AlwaysOnTop = chkOption1.Checked;
-
-                    id = vizcore3dx.View.Effect.AddPointCloud(points, null, pointCloudOptions);
-                    break;
-
-                case 8:
-                    PulseOutlineOptions pulseOutlineOptions = new PulseOutlineOptions();
-                    pulseOutlineOptions.Color = btnEffectColor.BackColor;
-                    pulseOutlineOptions.LineWidth = (float)numOption1.Value;
-                    pulseOutlineOptions.AlwaysOnTop = chkOption1.Checked;
-
-                    if (cmbSpecial.SelectedIndex == 0)
-                    {
-                        List<Node> nodes = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_TOP);
-
-                        if (nodes.Count == 0)
-                        {
-                            MessageBox.Show("펄스 외곽선을 표시할 객체를 3D 화면에서 먼저 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return;
-                        }
-
-                        id = vizcore3dx.View.Effect.AddPulseOutline(nodes[0].GetBoundBox(), pulseOutlineOptions);
-                    }
-                    else
-                    {
-                        if (points.Count < 2)
-                        {
-                            MessageBox.Show("펄스 외곽선의 시작점과 끝점을 두 개 이상 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return;
-                        }
-
-                        if (points.Count % 2 != 0)
-                        {
-                            MessageBox.Show("펄스 외곽선은 시작점과 끝점이 한 쌍이 되도록 짝수 개의 점을 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return;
-                        }
-
-                        id = vizcore3dx.View.Effect.AddPulseOutline(points, pulseOutlineOptions);
-                    }
-
-                    break;
-
-                case 9:
-                    if (numOption1.Value >= numOption2.Value)
-                    {
-                        MessageBox.Show("최대 반경은 시작 반경보다 크게 설정해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    PulseSphereOptions pulseSphereOptions = new PulseSphereOptions();
-                    pulseSphereOptions.Color = btnEffectColor.BackColor;
-                    pulseSphereOptions.MinRadius = (float)numOption1.Value;
-                    pulseSphereOptions.MaxRadius = (float)numOption2.Value;
-                    pulseSphereOptions.Opacity = (float)numOption3.Value;
-
-                    id = vizcore3dx.View.Effect.AddPulseSphere(points[0], pulseSphereOptions);
-                    break;
-
-                case 10:
-                    SpinnerOptions spinnerOptions = new SpinnerOptions();
-                    spinnerOptions.Color = btnEffectColor.BackColor;
-                    spinnerOptions.SizePx = (int)numOption1.Value;
-                    spinnerOptions.ThicknessPx = (int)numOption2.Value;
-                    spinnerOptions.Progress = (float)numOption3.Value;
-                    spinnerOptions.ShowTrack = chkOption1.Checked;
-                    spinnerOptions.AlwaysOnTop = chkOption2.Checked;
-
-                    id = vizcore3dx.View.Effect.AddSpinner(points[0], spinnerOptions);
-                    break;
-
-                case 11:
-                    if (string.IsNullOrWhiteSpace(txtOptionText.Text))
-                    {
-                        MessageBox.Show("텍스트 라벨에 표시할 문자열을 입력해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    TextLabelOptions textLabelOptions = new TextLabelOptions();
-                    textLabelOptions.TextColor = btnEffectColor.BackColor;
-                    textLabelOptions.SizePx = (int)numOption1.Value;
-                    textLabelOptions.FadeStartMm = (float)numOption2.Value;
-                    textLabelOptions.FadeEndMm = (float)numOption3.Value;
-                    textLabelOptions.AlwaysOnTop = chkOption1.Checked;
-                    textLabelOptions.ShowOffscreenIndicator = chkOption2.Checked;
-
-                    id = vizcore3dx.View.Effect.AddTextLabel(points[0], txtOptionText.Text, textLabelOptions);
-                    vizcore3dx.View.Effect.SetTextLabelVisible(chkTextLabelVisible.Checked);
-                    break;
-
-                case 12:
-                    VaporOptions vaporOptions = new VaporOptions();
-                    vaporOptions.Color = btnEffectColor.BackColor;
-                    vaporOptions.StartRadius = (float)numOption1.Value;
-                    vaporOptions.EndRadius = (float)numOption2.Value;
-                    vaporOptions.Height = (float)numOption3.Value;
-
-                    id = vizcore3dx.View.Effect.AddVapor(points[0], vaporOptions);
-                    break;
-
-                case 13:
-                    id = vizcore3dx.View.Effect.AddWeldingSpark(points[0]);
-                    break;
-            }
-
-            if (id == 0)
-            {
-                lblCreateResult.Text = "생성 결과 : 실패";
-                MessageBox.Show("이펙트를 생성하지 못했습니다. 입력한 값과 등록 가능한 최대 개수를 확인해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            lblCreateResult.Text = string.Format("생성 결과 : {0}-{1}", cmbEffectType.Text, id);
-            lvPoints.Items.Clear();
         }
 
+        private uint CreateDimensionLine(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.DimensionLineOptions options = new VIZCore3DX.NET.Data.DimensionLineOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.LineWidth = (float)numOption1.Value;
+            options.Decimals = (int)numOption2.Value;
+            options.ShowText = chkOption1.Checked;
+            options.AlwaysOnTop = chkOption2.Checked;
+
+            return vizcore3dx.View.Effect.AddDimensionLine(points[0], points[1], options);
+        }
+
+        private uint CreateGasCloud(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            if (numOption1.Value >= numOption2.Value) { SetStatus("최대 반경은 시작 반경보다 크게 설정하세요."); return 0; }
+
+            VIZCore3DX.NET.Data.GasCloudOptions options = new VIZCore3DX.NET.Data.GasCloudOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.MinRadius = (float)numOption1.Value;
+            options.MaxRadius = (float)numOption2.Value;
+            options.Opacity = (float)numOption3.Value;
+
+            return vizcore3dx.View.Effect.AddGasCloud(points[0], options);
+        }
+
+        private uint CreateGroundRing(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.GroundRingOptions options = new VIZCore3DX.NET.Data.GroundRingOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.RadiusMm = (float)numOption1.Value;
+            options.LineWidth = (float)numOption2.Value;
+            options.RippleCount = (int)numOption3.Value;
+            options.ShowStem = chkOption1.Checked;
+            options.AlwaysOnTop = chkOption2.Checked;
+
+            return vizcore3dx.View.Effect.AddGroundRing(points[0], options);
+        }
+
+        // 선 무리는 좌표 배열(x, y, z 반복)로 넘깁니다. 폴리라인 크기를 비우면 점 2개씩 선분이 됩니다.
+        private uint CreateLineSet(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            LineSetMode mode = (LineSetMode)cmbSpecial.SelectedItem;
+            if (points.Count < 2) { SetStatus("선 무리에 사용할 점을 두 개 이상 고르세요."); return 0; }
+            if (mode == LineSetMode.Segments && points.Count % 2 != 0) { SetStatus("점 2개씩 선분으로 표시하려면 짝수 개의 점을 고르세요."); return 0; }
+
+            VIZCore3DX.NET.Data.DataSetOptions options = new VIZCore3DX.NET.Data.DataSetOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.LineWidth = (float)numOption1.Value;
+            options.Opacity = (float)numOption2.Value;
+            options.AlwaysOnTop = chkOption1.Checked;
+
+            int[] polylineSizes = mode == LineSetMode.Polyline ? new int[] { points.Count } : null;
+            return vizcore3dx.View.Effect.AddLineSet(ToXyz(points), polylineSizes, null, options);
+        }
+
+        private uint CreateMarker(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.MarkerOptions options = new VIZCore3DX.NET.Data.MarkerOptions();
+            options.SizePx = (int)numOption1.Value;
+            options.FadeStartMm = (float)numOption2.Value;
+            options.FadeEndMm = (float)numOption3.Value;
+            options.AlwaysOnTop = chkOption1.Checked;
+            options.ShowOffscreenIndicator = chkOption2.Checked;
+            options.Label = string.IsNullOrWhiteSpace(txtOptionText.Text) ? null : txtOptionText.Text;
+
+            uint id = vizcore3dx.View.Effect.AddMarker(points[0], (VIZCore3DX.NET.Data.MarkerIcon)cmbSpecial.SelectedItem, options);
+            vizcore3dx.View.Effect.SetMarkerVisible(chkMarkerVisible.Checked);
+            return id;
+        }
+
+        private uint CreateParticleEmitter(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.ParticleOptions options = new VIZCore3DX.NET.Data.ParticleOptions((VIZCore3DX.NET.Data.ParticlePreset)cmbSpecial.SelectedItem);
+            options.StartColor = btnEffectColor.BackColor;
+            options.ParticleSizeMm = (float)numOption1.Value;
+            options.ConeAngleDeg = (float)numOption2.Value;
+
+            return vizcore3dx.View.Effect.AddParticleEmitter(points[0], options);
+        }
+
+        private uint CreatePathLine(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            if (points.Count < 2) { SetStatus("흐르는 경로선을 구성할 점을 두 개 이상 고르세요."); return 0; }
+
+            VIZCore3DX.NET.Data.PathLineOptions options = new VIZCore3DX.NET.Data.PathLineOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.LineWidth = (float)numOption1.Value;
+            options.PatternLengthMm = (float)numOption2.Value;
+            options.GapRatio = (float)numOption3.Value;
+            options.ShowArrow = chkOption1.Checked;
+            options.AlwaysOnTop = chkOption2.Checked;
+
+            return vizcore3dx.View.Effect.AddPathLine(points, options);
+        }
+
+        private uint CreatePointCloud(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            if (points.Count < 1) { SetStatus("점 무리에 사용할 점을 하나 이상 고르세요."); return 0; }
+
+            VIZCore3DX.NET.Data.DataSetOptions options = new VIZCore3DX.NET.Data.DataSetOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.PointSizeMm = (float)numOption1.Value;
+            options.Opacity = (float)numOption2.Value;
+            options.AlwaysOnTop = chkOption1.Checked;
+
+            return vizcore3dx.View.Effect.AddPointCloud(points, null, options);
+        }
+
+        // 펄스 외곽선은 선택 노드의 경계 영역으로 만들거나, 오스냅으로 고른 시작점·끝점 쌍으로 만듭니다.
+        private uint CreatePulseOutline(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.PulseOutlineOptions options = new VIZCore3DX.NET.Data.PulseOutlineOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.LineWidth = (float)numOption1.Value;
+            options.AlwaysOnTop = chkOption1.Checked;
+
+            if (IsOutlineFromNodes())
+            {
+                List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.SELECTED_TOP);
+                if (nodes.Count == 0) { SetStatus("펄스 외곽선을 표시할 노드를 뷰에서 먼저 선택하세요."); return 0; }
+
+                return vizcore3dx.View.Effect.AddPulseOutline(nodes[0].GetBoundBox(), options);
+            }
+
+            if (points.Count < 2) { SetStatus("펄스 외곽선의 시작점과 끝점을 두 개 이상 고르세요."); return 0; }
+            if (points.Count % 2 != 0) { SetStatus("펄스 외곽선은 시작점과 끝점이 한 쌍이 되도록 짝수 개의 점을 고르세요."); return 0; }
+
+            return vizcore3dx.View.Effect.AddPulseOutline(points, options);
+        }
+
+        private uint CreatePulseSphere(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            if (numOption1.Value >= numOption2.Value) { SetStatus("최대 반경은 시작 반경보다 크게 설정하세요."); return 0; }
+
+            VIZCore3DX.NET.Data.PulseSphereOptions options = new VIZCore3DX.NET.Data.PulseSphereOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.MinRadius = (float)numOption1.Value;
+            options.MaxRadius = (float)numOption2.Value;
+            options.Opacity = (float)numOption3.Value;
+
+            return vizcore3dx.View.Effect.AddPulseSphere(points[0], options);
+        }
+
+        private uint CreateSpinner(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.SpinnerOptions options = new VIZCore3DX.NET.Data.SpinnerOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.SizePx = (int)numOption1.Value;
+            options.ThicknessPx = (int)numOption2.Value;
+            options.Progress = (float)numOption3.Value;
+            options.ShowTrack = chkOption1.Checked;
+            options.AlwaysOnTop = chkOption2.Checked;
+
+            return vizcore3dx.View.Effect.AddSpinner(points[0], options);
+        }
+
+        private uint CreateTextLabel(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            if (string.IsNullOrWhiteSpace(txtOptionText.Text)) { SetStatus("텍스트 라벨에 표시할 문자열을 입력하세요."); return 0; }
+
+            VIZCore3DX.NET.Data.TextLabelOptions options = new VIZCore3DX.NET.Data.TextLabelOptions();
+            options.TextColor = btnEffectColor.BackColor;
+            options.SizePx = (int)numOption1.Value;
+            options.FadeStartMm = (float)numOption2.Value;
+            options.FadeEndMm = (float)numOption3.Value;
+            options.AlwaysOnTop = chkOption1.Checked;
+            options.ShowOffscreenIndicator = chkOption2.Checked;
+
+            uint id = vizcore3dx.View.Effect.AddTextLabel(points[0], txtOptionText.Text, options);
+            vizcore3dx.View.Effect.SetTextLabelVisible(chkTextLabelVisible.Checked);
+            return id;
+        }
+
+        private uint CreateVapor(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            VIZCore3DX.NET.Data.VaporOptions options = new VIZCore3DX.NET.Data.VaporOptions();
+            options.Color = btnEffectColor.BackColor;
+            options.StartRadius = (float)numOption1.Value;
+            options.EndRadius = (float)numOption2.Value;
+            options.Height = (float)numOption3.Value;
+
+            return vizcore3dx.View.Effect.AddVapor(points[0], options);
+        }
+
+        private uint CreateWeldingSpark(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            return vizcore3dx.View.Effect.AddWeldingSpark(points[0]);
+        }
+
+        private static float[] ToXyz(List<VIZCore3DX.NET.Data.Vector3D> points)
+        {
+            float[] xyz = new float[points.Count * 3];
+            for (int i = 0; i < points.Count; i++)
+            {
+                xyz[(i * 3) + 0] = points[i].X;
+                xyz[(i * 3) + 1] = points[i].Y;
+                xyz[(i * 3) + 2] = points[i].Z;
+            }
+            return xyz;
+        }
+        #endregion
+
+        #region 5. 정리
+        // 고른 종류의 효과를 모두 지웁니다. 지운 결과는 제거 이벤트로 목록에 반영됩니다.
+        private void btnClearType_Click(object sender, EventArgs e)
+        {
+            VIZCore3DX.NET.Data.EffectType type = (VIZCore3DX.NET.Data.EffectType)cmbClearType.SelectedItem;
+            ClearByType(type);
+            SetStatus(string.Format("정리 : {0} 전부", type));
+        }
+
+        // 모든 종류의 효과를 지웁니다. 뷰 잠금으로 종류마다 다시 그리지 않게 합니다.
+        private void btnClearAll_Click(object sender, EventArgs e)
+        {
+            vizcore3dx.BeginUpdate();
+            try
+            {
+                foreach (VIZCore3DX.NET.Data.EffectType type in Enum.GetValues(typeof(VIZCore3DX.NET.Data.EffectType)))
+                    ClearByType(type);
+            }
+            finally
+            {
+                vizcore3dx.EndUpdate();
+            }
+
+            SetStatus("효과를 모두 지웠습니다.");
+        }
+
+        private void ClearByType(VIZCore3DX.NET.Data.EffectType type)
+        {
+            switch (type)
+            {
+                case VIZCore3DX.NET.Data.EffectType.Marker: vizcore3dx.View.Effect.ClearMarkers(); break;
+                case VIZCore3DX.NET.Data.EffectType.TextLabel: vizcore3dx.View.Effect.ClearTextLabels(); break;
+                case VIZCore3DX.NET.Data.EffectType.WeldingSpark: vizcore3dx.View.Effect.ClearWeldingSparks(); break;
+                case VIZCore3DX.NET.Data.EffectType.GasCloud: vizcore3dx.View.Effect.ClearGasClouds(); break;
+                case VIZCore3DX.NET.Data.EffectType.Vapor: vizcore3dx.View.Effect.ClearVapors(); break;
+                case VIZCore3DX.NET.Data.EffectType.PulseSphere: vizcore3dx.View.Effect.ClearPulseSpheres(); break;
+                case VIZCore3DX.NET.Data.EffectType.PulseOutline: vizcore3dx.View.Effect.ClearPulseOutlines(); break;
+                case VIZCore3DX.NET.Data.EffectType.DimensionLine: vizcore3dx.View.Effect.ClearDimensionLines(); break;
+                case VIZCore3DX.NET.Data.EffectType.PathLine: vizcore3dx.View.Effect.ClearPathLines(); break;
+                case VIZCore3DX.NET.Data.EffectType.ParticleEmitter: vizcore3dx.View.Effect.ClearParticleEmitters(); break;
+                case VIZCore3DX.NET.Data.EffectType.Spinner: vizcore3dx.View.Effect.ClearSpinners(); break;
+                case VIZCore3DX.NET.Data.EffectType.GroundRing: vizcore3dx.View.Effect.ClearGroundRings(); break;
+                case VIZCore3DX.NET.Data.EffectType.DataSet: vizcore3dx.View.Effect.ClearDataSets(); break;
+            }
+        }
+        #endregion
+
+        #region 목록
+        // 종류별 조회일 때만 종류 콤보를 켭니다.
         private void cmbQueryMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cmbQueryType.Enabled = cmbQueryMode.SelectedIndex == 1;
+            cmbQueryType.Enabled = Equals(cmbQueryMode.SelectedItem, QueryMode.ByType);
         }
 
+        // 조회 방식대로 효과 목록을 다시 읽습니다.
         private void btnRefreshEffects_Click(object sender, EventArgs e)
         {
             RefreshEffectList();
         }
 
-        private void RefreshEffectList()
-        {
-            if (vizcore3dx == null || vizcore3dx.View == null || vizcore3dx.View.Effect == null) return;
-
-            List<EffectItem> effects;
-
-            if (cmbQueryMode.SelectedIndex == 1) effects = vizcore3dx.View.Effect.GetEffects((EffectType)cmbQueryType.SelectedIndex);
-            else effects = vizcore3dx.View.Effect.GetEffects();
-
-            lvEffects.BeginUpdate();
-            lvEffects.Items.Clear();
-
-            foreach (EffectItem effect in effects)
-            {
-                string position = effect.Position == null ? string.Empty : effect.Position.ToString();
-                ListViewItem item = new ListViewItem(new string[] { string.Format("{0}-{1}", effect.Type, effect.ID), effect.Type.ToString(), position, effect.Summary ?? string.Empty });
-                item.Tag = effect;
-                lvEffects.Items.Add(item);
-            }
-
-            lvEffects.EndUpdate();
-            lblEffectListCount.Text = string.Format("조회 결과 : {0}개", effects.Count);
-        }
-
-        private EffectItem GetSelectedEffect()
-        {
-            if (lvEffects.SelectedItems.Count == 0) return null;
-
-            return lvEffects.SelectedItems[0].Tag as EffectItem;
-        }
-
+        // 목록에서 고른 효과를 종류에 맞는 제거 함수로 지웁니다.
         private void btnRemoveSelected_Click(object sender, EventArgs e)
         {
-            EffectItem effect = GetSelectedEffect();
+            VIZCore3DX.NET.Data.EffectItem effect = SelectedEffect();
+            if (effect == null) { SetStatus("제거할 효과를 목록에서 고르세요."); return; }
 
-            if (effect == null)
-            {
-                MessageBox.Show("제거할 이펙트를 목록에서 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            bool result = false;
-
-            switch (effect.Type)
-            {
-                case EffectType.Marker: result = vizcore3dx.View.Effect.RemoveMarker(effect.ID); break;
-                case EffectType.TextLabel: result = vizcore3dx.View.Effect.RemoveTextLabel(effect.ID); break;
-                case EffectType.WeldingSpark: result = vizcore3dx.View.Effect.RemoveWeldingSpark(effect.ID); break;
-                case EffectType.GasCloud: result = vizcore3dx.View.Effect.RemoveGasCloud(effect.ID); break;
-                case EffectType.Vapor: result = vizcore3dx.View.Effect.RemoveVapor(effect.ID); break;
-                case EffectType.PulseSphere: result = vizcore3dx.View.Effect.RemovePulseSphere(effect.ID); break;
-                case EffectType.PulseOutline: result = vizcore3dx.View.Effect.RemovePulseOutline(effect.ID); break;
-                case EffectType.DimensionLine: result = vizcore3dx.View.Effect.RemoveDimensionLine(effect.ID); break;
-                case EffectType.PathLine: result = vizcore3dx.View.Effect.RemovePathLine(effect.ID); break;
-                case EffectType.ParticleEmitter: result = vizcore3dx.View.Effect.RemoveParticleEmitter(effect.ID); break;
-                case EffectType.Spinner: result = vizcore3dx.View.Effect.RemoveSpinner(effect.ID); break;
-                case EffectType.GroundRing: result = vizcore3dx.View.Effect.RemoveGroundRing(effect.ID); break;
-                case EffectType.DataSet: result = vizcore3dx.View.Effect.RemoveDataSet(effect.ID); break;
-            }
-
-            if (!result) MessageBox.Show("선택한 이펙트를 제거하지 못했습니다.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            bool removed = RemoveByType(effect);
+            SetStatus(removed ? string.Format("제거 : {0}-{1}", effect.Type, effect.ID) : "선택한 효과를 제거하지 못했습니다.");
         }
 
-        private void btnClearType_Click(object sender, EventArgs e)
-        {
-            ClearEffect((EffectType)cmbClearType.SelectedIndex);
-        }
-
-        private void btnClearAll_Click(object sender, EventArgs e)
-        {
-            foreach (EffectType type in Enum.GetValues(typeof(EffectType))) ClearEffect(type);
-        }
-
-        private void ClearEffect(EffectType type)
-        {
-            switch (type)
-            {
-                case EffectType.Marker: vizcore3dx.View.Effect.ClearMarkers(); break;
-                case EffectType.TextLabel: vizcore3dx.View.Effect.ClearTextLabels(); break;
-                case EffectType.WeldingSpark: vizcore3dx.View.Effect.ClearWeldingSparks(); break;
-                case EffectType.GasCloud: vizcore3dx.View.Effect.ClearGasClouds(); break;
-                case EffectType.Vapor: vizcore3dx.View.Effect.ClearVapors(); break;
-                case EffectType.PulseSphere: vizcore3dx.View.Effect.ClearPulseSpheres(); break;
-                case EffectType.PulseOutline: vizcore3dx.View.Effect.ClearPulseOutlines(); break;
-                case EffectType.DimensionLine: vizcore3dx.View.Effect.ClearDimensionLines(); break;
-                case EffectType.PathLine: vizcore3dx.View.Effect.ClearPathLines(); break;
-                case EffectType.ParticleEmitter: vizcore3dx.View.Effect.ClearParticleEmitters(); break;
-                case EffectType.Spinner: vizcore3dx.View.Effect.ClearSpinners(); break;
-                case EffectType.GroundRing: vizcore3dx.View.Effect.ClearGroundRings(); break;
-                case EffectType.DataSet: vizcore3dx.View.Effect.ClearDataSets(); break;
-            }
-        }
-
+        // 마커 전체의 표시 여부를 바꿉니다.
         private void chkMarkerVisible_CheckedChanged(object sender, EventArgs e)
         {
             if (vizcore3dx == null || vizcore3dx.View == null || vizcore3dx.View.Effect == null) return;
@@ -917,6 +790,7 @@ namespace VIZCore3DX.NET.Effect
             vizcore3dx.View.Effect.SetMarkerVisible(chkMarkerVisible.Checked);
         }
 
+        // 텍스트 라벨 전체의 표시 여부를 바꿉니다.
         private void chkTextLabelVisible_CheckedChanged(object sender, EventArgs e)
         {
             if (vizcore3dx == null || vizcore3dx.View == null || vizcore3dx.View.Effect == null) return;
@@ -924,35 +798,99 @@ namespace VIZCore3DX.NET.Effect
             vizcore3dx.View.Effect.SetTextLabelVisible(chkTextLabelVisible.Checked);
         }
 
+        // 목록에서 고른 회전 스피너의 진행률(%)을 바꿉니다. 계속 회전을 켜면 -1 을 넘깁니다.
         private void btnSetSpinnerProgress_Click(object sender, EventArgs e)
         {
-            EffectItem effect = GetSelectedEffect();
-
-            if (effect == null || effect.Type != EffectType.Spinner)
-            {
-                MessageBox.Show("이펙트 목록에서 회전 스피너를 선택해주세요.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
+            VIZCore3DX.NET.Data.EffectItem effect = SelectedEffect();
+            if (effect == null || effect.Type != VIZCore3DX.NET.Data.EffectType.Spinner) { SetStatus("효과 목록에서 회전 스피너를 고르세요."); return; }
 
             float progress = chkSpinnerContinuous.Checked ? -1.0f : (float)numSpinnerProgress.Value / 100.0f;
             bool result = vizcore3dx.View.Effect.SetSpinnerProgress(effect.ID, progress);
-
-            if (!result) MessageBox.Show("회전 스피너의 진행률을 변경하지 못했습니다.", "VIZCore3DX.NET.Effect", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            SetStatus(result ? string.Format("진행률 : {0}-{1} = {2}", effect.Type, effect.ID, progress) : "회전 스피너의 진행률을 바꾸지 못했습니다.");
         }
 
+        // 용접 불꽃의 바닥 튕김과 등록 가능한 지점 최대 개수를 바꿉니다.
         private void btnApplyWeldingSettings_Click(object sender, EventArgs e)
         {
-            vizcore3dx.View.Effect.WeldingSparkBounce = chkWeldingSparkBounce.Checked;
-            vizcore3dx.View.Effect.WeldingSparkCapacity = (int)numWeldingSparkCapacity.Value;
+            vizcore3dx.View.Effect.WeldingSparkBounce = chkWeldingBounce.Checked;
+            vizcore3dx.View.Effect.WeldingSparkCapacity = (int)numWeldingCapacity.Value;
 
             RefreshEffectStatus();
+            SetStatus("용접 불꽃 설정을 적용했습니다.");
         }
 
+        private bool RemoveByType(VIZCore3DX.NET.Data.EffectItem effect)
+        {
+            switch (effect.Type)
+            {
+                case VIZCore3DX.NET.Data.EffectType.Marker: return vizcore3dx.View.Effect.RemoveMarker(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.TextLabel: return vizcore3dx.View.Effect.RemoveTextLabel(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.WeldingSpark: return vizcore3dx.View.Effect.RemoveWeldingSpark(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.GasCloud: return vizcore3dx.View.Effect.RemoveGasCloud(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.Vapor: return vizcore3dx.View.Effect.RemoveVapor(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.PulseSphere: return vizcore3dx.View.Effect.RemovePulseSphere(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.PulseOutline: return vizcore3dx.View.Effect.RemovePulseOutline(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.DimensionLine: return vizcore3dx.View.Effect.RemoveDimensionLine(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.PathLine: return vizcore3dx.View.Effect.RemovePathLine(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.ParticleEmitter: return vizcore3dx.View.Effect.RemoveParticleEmitter(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.Spinner: return vizcore3dx.View.Effect.RemoveSpinner(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.GroundRing: return vizcore3dx.View.Effect.RemoveGroundRing(effect.ID);
+                case VIZCore3DX.NET.Data.EffectType.DataSet: return vizcore3dx.View.Effect.RemoveDataSet(effect.ID);
+                default: return false;
+            }
+        }
+
+        private VIZCore3DX.NET.Data.EffectItem SelectedEffect()
+        {
+            if (lvEffects.SelectedItems.Count == 0) return null;
+
+            return lvEffects.SelectedItems[0].Tag as VIZCore3DX.NET.Data.EffectItem;
+        }
+
+        // 뷰어의 효과 목록을 조회 방식대로 다시 채웁니다.
+        private void RefreshEffectList()
+        {
+            if (vizcore3dx == null || vizcore3dx.View == null || vizcore3dx.View.Effect == null) return;
+
+            List<VIZCore3DX.NET.Data.EffectItem> effects = Equals(cmbQueryMode.SelectedItem, QueryMode.ByType)
+                ? vizcore3dx.View.Effect.GetEffects((VIZCore3DX.NET.Data.EffectType)cmbQueryType.SelectedItem)
+                : vizcore3dx.View.Effect.GetEffects();
+
+            lvEffects.BeginUpdate();
+            lvEffects.Items.Clear();
+            foreach (VIZCore3DX.NET.Data.EffectItem effect in effects)
+            {
+                string position = effect.Position == null ? string.Empty : effect.Position.ToString();
+                ListViewItem item = new ListViewItem(new string[] { string.Format("{0}-{1}", effect.Type, effect.ID), effect.Type.ToString(), position, effect.Summary ?? string.Empty });
+                item.Tag = effect;
+                lvEffects.Items.Add(item);
+            }
+            lvEffects.EndUpdate();
+
+            grpList.Text = string.Format("효과 목록 ({0}개)", effects.Count);
+        }
+        #endregion
+
+        #region 상태·이벤트
+        // 종류별 개수와 등록 가능한 최대 개수를 보여주고, 용접 불꽃 설정 칸을 현재 값에 맞춥니다.
         private void RefreshEffectStatus()
         {
             if (vizcore3dx == null || vizcore3dx.View == null || vizcore3dx.View.Effect == null) return;
 
-            txtEffectCount.Text = string.Join(Environment.NewLine, new string[]
+            txtEffectCount.Text = "[개수]" + Environment.NewLine + CountText() + Environment.NewLine + Environment.NewLine
+                + "[등록 가능 최대]" + Environment.NewLine + CapacityText();
+
+            chkWeldingBounce.Checked = vizcore3dx.View.Effect.WeldingSparkBounce;
+
+            int weldingCapacity = vizcore3dx.View.Effect.WeldingSparkCapacity;
+            if (weldingCapacity < numWeldingCapacity.Minimum) weldingCapacity = (int)numWeldingCapacity.Minimum;
+            if (weldingCapacity > numWeldingCapacity.Maximum) weldingCapacity = (int)numWeldingCapacity.Maximum;
+            numWeldingCapacity.Value = weldingCapacity;
+        }
+
+        private string CountText()
+        {
+            return string.Join(Environment.NewLine, new string[]
             {
                 string.Format("전체 이펙트 : {0}", vizcore3dx.View.Effect.EffectCount),
                 string.Format("치수선 : {0}", vizcore3dx.View.Effect.DimensionLineCount),
@@ -971,10 +909,13 @@ namespace VIZCore3DX.NET.Effect
                 string.Format("좌표·색 데이터 사용 정점 : {0}", vizcore3dx.View.Effect.DataSetVertexCount),
                 string.Format("좌표·색 데이터 정점 배열 용량 : {0}", vizcore3dx.View.Effect.DataSetVertexCapacity)
             });
+        }
 
-            EffectCapacity capacity = vizcore3dx.View.Effect.Capacity;
+        private string CapacityText()
+        {
+            VIZCore3DX.NET.Data.EffectCapacity capacity = vizcore3dx.View.Effect.Capacity;
 
-            txtEffectCapacity.Text = string.Join(Environment.NewLine, new string[]
+            return string.Join(Environment.NewLine, new string[]
             {
                 string.Format("좌표·색 데이터 : {0}", capacity.DataSetCount),
                 string.Format("점 무리 좌표 / 항목 : {0}", capacity.DataSetPointCount),
@@ -996,45 +937,97 @@ namespace VIZCore3DX.NET.Effect
                 string.Format("유증기 : {0}", capacity.VaporCount),
                 string.Format("용접 불꽃 효과 : {0}", capacity.WeldingSparkCount)
             });
-
-            chkWeldingSparkBounce.Checked = vizcore3dx.View.Effect.WeldingSparkBounce;
-
-            int weldingCapacity = vizcore3dx.View.Effect.WeldingSparkCapacity;
-            if (weldingCapacity < numWeldingSparkCapacity.Minimum) weldingCapacity = (int)numWeldingSparkCapacity.Minimum;
-            if (weldingCapacity > numWeldingSparkCapacity.Maximum) weldingCapacity = (int)numWeldingSparkCapacity.Maximum;
-            numWeldingSparkCapacity.Value = weldingCapacity;
         }
 
-        private void Effect_OnEffectAddedEvent(object sender, VIZCore3DX.NET.Event.EventManager.EffectAddedEventArgs e)
+        // 추가·제거된 효과를 이벤트 목록 맨 위에 쌓습니다. 500줄을 넘으면 오래된 줄부터 버립니다.
+        private void LogEvents(IEnumerable<VIZCore3DX.NET.Data.EffectItem> items, string action)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new Action(() => Effect_OnEffectAddedEvent(sender, e)));
-                return;
-            }
+            foreach (VIZCore3DX.NET.Data.EffectItem item in items) lstEvents.Items.Insert(0, string.Format("{0} : {1}-{2}", action, item.Type, item.ID));
 
-            UpdateEffectEvent(e.Items, "추가");
+            while (lstEvents.Items.Count > 500) lstEvents.Items.RemoveAt(lstEvents.Items.Count - 1);
+        }
+        #endregion
+
+        #region Helpers
+        // 모델이 열려 있지 않으면 상태 문구를 남기고 false 를 돌려줍니다.
+        private bool IsModelOpened()
+        {
+            if (vizcore3dx.Model.IsOpen()) return true;
+
+            SetStatus("먼저 모델을 여세요.");
+            return false;
         }
 
-        private void Effect_OnEffectRemovedEvent(object sender, VIZCore3DX.NET.Event.EventManager.EffectRemovedEventArgs e)
+        private void SetStatus(string message)
         {
-            if (InvokeRequired)
-            {
-                BeginInvoke(new Action(() => Effect_OnEffectRemovedEvent(sender, e)));
-                return;
-            }
-
-            UpdateEffectEvent(e.Items, "제거");
+            lblStatus.Text = message;
         }
 
-        private void UpdateEffectEvent(IEnumerable<EffectItem> items, string action)
+        private void RunOnUi(Action action)
         {
-            foreach (EffectItem item in items) listBoxEvent.Items.Insert(0, string.Format("{0} : {1}-{2}", action, item.Type, item.ID));
+            if (InvokeRequired) BeginInvoke(action);
+            else action();
+        }
 
-            while (listBoxEvent.Items.Count > 500) listBoxEvent.Items.RemoveAt(listBoxEvent.Items.Count - 1);
+        private EffectKind SelectedKind()
+        {
+            return cmbEffectType.SelectedItem is EffectKind ? (EffectKind)cmbEffectType.SelectedItem : EffectKind.DimensionLine;
+        }
 
-            RefreshEffectList();
-            RefreshEffectStatus();
+        private bool IsOutlineFromNodes()
+        {
+            return SelectedKind() == EffectKind.PulseOutline && Equals(cmbSpecial.SelectedItem, OutlineSource.SelectedNodes);
+        }
+
+        private void ShowColor(string text, Color color)
+        {
+            lblColor.Visible = btnEffectColor.Visible = true;
+            lblColor.Text = text;
+            btnEffectColor.BackColor = color;
+        }
+
+        private void ShowNumber(Label label, NumericUpDown control, string text, decimal minimum, decimal maximum, decimal value, int decimalPlaces)
+        {
+            label.Visible = control.Visible = true;
+            label.Text = text;
+            SetNumber(control, minimum, maximum, value, decimalPlaces);
+        }
+
+        private void ShowCheck(CheckBox control, string text, bool value)
+        {
+            control.Visible = true;
+            control.Text = text;
+            control.Checked = value;
+        }
+
+        // 종류마다 다른 추가 설정은 enum 값으로 채웁니다.
+        private void ShowSpecial(string text, Type enumType, object selected)
+        {
+            lblSpecial.Visible = cmbSpecial.Visible = true;
+            lblSpecial.Text = text;
+            cmbSpecial.DataSource = Enum.GetValues(enumType);
+            cmbSpecial.SelectedItem = selected;
+        }
+
+        private void ShowText(string text, string value)
+        {
+            lblText.Visible = txtOptionText.Visible = true;
+            lblText.Text = text;
+            txtOptionText.Text = value;
+        }
+
+        // 범위를 먼저 바꾼 뒤 값을 범위 안으로 맞춰 넣습니다.
+        private void SetNumber(NumericUpDown control, decimal minimum, decimal maximum, decimal value, int decimalPlaces)
+        {
+            control.Minimum = minimum;
+            control.Maximum = maximum;
+            control.DecimalPlaces = decimalPlaces;
+            control.Increment = decimalPlaces == 0 ? 1.0M : 0.1M;
+
+            if (value < minimum) value = minimum;
+            if (value > maximum) value = maximum;
+
+            control.Value = value;
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
@@ -1065,5 +1058,6 @@ namespace VIZCore3DX.NET.Effect
             vizcore3dx.TabGenericDataEnabled = false;
             vizcore3dx.AttributePanelVisible = attributeTree || nodeGroup || projection || pmi;
         }
+        #endregion
     }
 }
