@@ -58,7 +58,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.Search** | 키워드·정규식으로 노드를 검색하고 검색 조건을 Search Set으로 저장·실행하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.ScreenSelection** | 화면 좌표·영역으로 선택 가능한 객체와 노드를 조회하고 선택 순서를 묶음 단위로 확인하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SearchSpace** | 지정한 공간 범위에 포함된 모델 객체를 검색하고 조회하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.SpaceSearch** | 특정 공간 영역에 포함되거나 겹치는 모델 객체를 검색하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectByBox_IncludeAssembly** | 박스 선택으로 Part를 선택하고 상위 Assembly까지 포함하여 선택하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectParentAssembly** | 3D 형상을 선택하여 해당 객체의 상위 Assembly 노드를 조회하고 선택하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.BoxSpaceObjects** | 3D 공간을 특정 구역으로 구분하고 구역에 포함된 객체를 조회하는 예제 | 1.5.26.928 |
