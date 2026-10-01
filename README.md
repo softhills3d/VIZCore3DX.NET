@@ -58,11 +58,17 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.SpaceSearch** | 특정 공간 영역에 포함되거나 겹치는 모델 객체를 검색하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectByBox_IncludeAssembly** | 박스 선택으로 Part를 선택하고 상위 Assembly까지 포함하여 선택하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectParentAssembly** | 3D 형상을 선택하여 해당 객체의 상위 Assembly 노드를 조회하고 선택하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.ZoneObjects** | 3D 공간을 특정 구역으로 구분하고 구역에 포함된 객체를 조회하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.Zone** | 다면체 공간(Zone)을 모델·선택 개체 기준으로 생성하고, 합집합·차집합·교집합 연산과 공간에 포함된 객체 선택·단독 표시를 하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.BoxSpaceObjects** | 3D 공간을 특정 구역으로 구분하고 구역에 포함된 객체를 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectionBox** | Selection Box를 생성, 삭제, 이동, 크기 변경, 분할, 병합, 그룹화, 집중 모드 및 JSON 저장·복원하고 내부 객체를 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.LockedSelect** | 잠긴 객체의 선택 가능 여부와 표시 상태를 확인하고, 뷰 / 모델 트리 변경과 목록을 동기화하여 관리하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.NodeLock** | 노드 잠금 기능을 켜고 모델 Node의 잠금 상태를 설정, 해제하고 잠금 여부를 확인하는 예제 (끄면 모든 잠금 해제) | 1.5.26.928 |
+| **VIZCore3DX.NET.SearchSet** | 이름 검색(빠른 검색·정규식)과 조건을 저장한 검색 세트를 실행, 저장, 내보내기하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.PickAndScreen** | 화면 지점 아래의 개체 조회(순환 선택), 광선 충돌 조회, 화면 영역으로 노드를 조회하는 예제 | 1.5.26.928 |
+
+### 공간 / 생성
+| 프로젝트 | 설명 | API version |
+|---|---|---|
+| **VIZCore3DX.NET.Zone** | 다면체 공간(Zone)을 모델 분할·선택 노드·선택 상자로 생성하고, 합집합·차집합, 색·표시, 겹침 검사, 공간 안 개체 선택·단독 표시, JSON 저장·불러오기를 하는 예제 (뷰 클릭 선택 동기·경계면 끌기 포함) | 1.5.26.928 |
 
 ### 포커스 강조 (Transparent / Plastic / X-Ray)
 | 프로젝트 | 설명 | API version |
@@ -113,6 +119,12 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 |---|---|---|
 | **VIZCore3DX.NET.ModelComparison** | 두 개의 3D 모델을 열어 구조, 위치, 형상 및 차이점을 비교하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Observer** | 옵저버(관측 지점)를 배치하고 시야 분석으로 보이는 객체와 가려진 객체, 커버리지를 확인하는 예제 | 1.5.26.928 |
+
+### 시야 / 분석
+| 프로젝트 | 설명 | API version |
+|---|---|---|
+| **VIZCore3DX.NET.SightAnalysis** | 지정한 위치와 시야 옵션으로 시야를 분석하고 보이는 개체·사각 개체·히트 지점을 확인하는 예제 (합집합·취소 포함) | 1.5.26.928 |
+| **VIZCore3DX.NET.Observer** | 옵저버를 추가·목록 관리·카메라 이동하고 선택한 옵저버로 시야를 분석하며 JSON 으로 저장·불러오는 예제 | 1.5.26.928 |
 
 ### 애니메이션 / 시뮬레이션
 | 프로젝트 | 설명 | API version |
