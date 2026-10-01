@@ -67,11 +67,9 @@ namespace VIZCore3DX.NET.App
             // ================================================================
             // 설정 - 툴바
             // ================================================================
-            vizcore3dx.ToolbarMain.Visible = true;
-            vizcore3dx.ToolbarNote.Visible = true;
-            vizcore3dx.ToolbarMeasure.Visible = true;
-            vizcore3dx.ToolbarSection.Visible = true;
-            vizcore3dx.ToolbarSnapshot.Visible = true;
+
+            // 리본 UI 를 기본으로 켭니다. 기본 앱 예제이므로 모든 탭을 표시합니다.
+            vizcore3dx.RibbonMode = true;
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작

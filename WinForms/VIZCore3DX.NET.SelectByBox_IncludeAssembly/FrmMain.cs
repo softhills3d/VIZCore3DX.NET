@@ -59,11 +59,11 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             // ================================================================
             // 설정 - 툴바
             // ================================================================
-            vizcore3dx.ToolbarMain.Visible = true;
-            vizcore3dx.ToolbarNote.Visible = false;
-            vizcore3dx.ToolbarMeasure.Visible = false;
-            vizcore3dx.ToolbarSection.Visible = false;
-            vizcore3dx.ToolbarSnapshot.Visible = false;
+
+            // 리본 UI 를 기본으로 켜고, 이 예제가 다루는 리본·패널 탭만 남깁니다.
+            vizcore3dx.RibbonMode = true;
+            ShowRibbonTabs();
+            ShowAttributeTabs();
 
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작
@@ -164,6 +164,35 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             resultGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             MessageBox.Show("조회된 노드 수 : " + resultList.Count + "개");
+        }
+
+        // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
+        private void ShowRibbonTabs(params VIZCore3DX.NET.Data.ToolbarKind[] keep)
+        {
+            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
+                vizcore3dx.Toolbar.SetVisible(kind, kind == VIZCore3DX.NET.Data.ToolbarKind.Main || Array.IndexOf(keep, kind) >= 0);
+
+            vizcore3dx.TabSnapshotEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Snapshot) >= 0;
+            vizcore3dx.TabNotetEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Note) >= 0;
+            vizcore3dx.TabMeasureEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Measure) >= 0;
+            vizcore3dx.TabSectionEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Section) >= 0;
+            vizcore3dx.TabDecalEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Decal) >= 0;
+            vizcore3dx.TabSelectionBoxEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.SelectionBox) >= 0;
+            vizcore3dx.TabZoneEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Zone) >= 0;
+            vizcore3dx.TabEffectEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Effect) >= 0;
+            vizcore3dx.TabObserverEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Observer) >= 0;
+        }
+
+        // 속성 패널은 노드 특성·노드 속성만 기본으로 남기고, 예제가 다루는 탭만 켭니다.
+        private void ShowAttributeTabs(bool attributeTree = false, bool nodeGroup = false, bool projection = false, bool pmi = false)
+        {
+            vizcore3dx.TabAttributeTreeEnabled = attributeTree;
+            vizcore3dx.TabNodeGroupEnabled = nodeGroup;
+            vizcore3dx.TabProjectionEnabled = projection;
+            vizcore3dx.TabPmiEnabled = pmi;
+            vizcore3dx.TabEnvironmentEnabled = false;
+            vizcore3dx.TabGenericDataEnabled = false;
+            vizcore3dx.AttributePanelVisible = attributeTree || nodeGroup || projection || pmi;
         }
     }
 }
