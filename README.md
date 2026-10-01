@@ -48,6 +48,9 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.MiniView** | 선택하거나 지정한 객체를 SDK 기본 미니뷰 대화상자 또는 사용자 정의 대화상자에서 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.ChildView** | View에서 선택한 파트를 별도의 팝업 창(Child View)에 표시하고, 화면 분할(Sub View) 구성과 초기화 모드를 설정하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.UserView** | 사용자가 지정한 카메라 뷰를 저장하고 다시 불러오는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.FocusModes** | 선택한 노드를 X-Ray · 플라스틱 · 반투명 모드로 전환해 강조하고, 강조 색·대상 형식·X-Ray 투명도·엣지 표시를 설정하는 예제 (한 번에 한 모드만 켜짐) | 1.5.26.928 |
+| **VIZCore3DX.NET.Environment** | 하늘·지면 프리셋, 바닥 격자·수면·접지 그림자, 사용자 지면 텍스처·하늘 파노라마 이미지로 환경 렌더링을 설정하는 예제 (속성 패널의 환경 탭과 같은 값) | 1.5.26.928 |
+| **VIZCore3DX.NET.PreSelect** | 마우스 오버 시 노드를 미리 강조하는 사전 선택의 외곽선 색·지연 시간·이름 표시를 설정하고, 강조·해제·그룹 변경 이벤트와 잠금·선택 전환을 다루는 예제 | 1.5.26.928 |
 
 ### 검색 / 선택
 | 프로젝트 | 설명 | API version |
@@ -69,13 +72,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 | API version |
 |---|---|---|
 | **VIZCore3DX.NET.Zone** | 다면체 공간(Zone)을 모델 분할·선택 노드·선택 상자로 생성하고, 합집합·차집합, 색·표시, 겹침 검사, 공간 안 개체 선택·단독 표시, JSON 저장·불러오기를 하는 예제 (뷰 클릭 선택 동기·경계면 끌기 포함) | 1.5.26.928 |
-
-### 포커스 강조 (Transparent / Plastic / X-Ray)
-| 프로젝트 | 설명 | API version |
-|---|---|---|
-| **VIZCore3DX.NET.FocusTransparent** | 선택한 노드를 반투명(Transparent) 처리로 강조하고, 색상 방식과 강조 대상 형식을 설정하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.PlasticFocusReview** | 선택한 노드를 Plastic(조소 재질) 색상으로 강조 표시하고, 회전 중심(Pivot) 적용 여부를 관리하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.XRayInspection** | 선택한 노드를 X-Ray(투과) 효과로 강조하고, 투명도, 색상 방식 및 엣지 렌더링을 설정하는 예제 | 1.5.26.928 |
 
 ### 그룹 / 색상
 | 프로젝트 | 설명 | API version |
