@@ -29,23 +29,19 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.groupVideoExport = new System.Windows.Forms.GroupBox();
-            this.lblVideoInfo = new System.Windows.Forms.Label();
-            this.tlpVideoExport = new System.Windows.Forms.TableLayoutPanel();
-            this.btnRecordVideo = new System.Windows.Forms.Button();
-            this.btnStopVideo = new System.Windows.Forms.Button();
-            this.lblVideoStatus = new System.Windows.Forms.Label();
-            this.groupFrameExport = new System.Windows.Forms.GroupBox();
-            this.lblFrameStatus = new System.Windows.Forms.Label();
-            this.tlpFrameExport = new System.Windows.Forms.TableLayoutPanel();
-            this.btnExportFrames = new System.Windows.Forms.Button();
-            this.btnStopFrameExport = new System.Windows.Forms.Button();
+            this.groupExport = new System.Windows.Forms.GroupBox();
+            this.lblExportStatus = new System.Windows.Forms.Label();
+            this.tlpExport = new System.Windows.Forms.TableLayoutPanel();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.btnStopExport = new System.Windows.Forms.Button();
             this.btnOutputFolder = new System.Windows.Forms.Button();
             this.txtOutputFolder = new System.Windows.Forms.TextBox();
             this.lblOutputFolder = new System.Windows.Forms.Label();
             this.txtFilePrefix = new System.Windows.Forms.TextBox();
             this.lblFilePrefix = new System.Windows.Forms.Label();
             this.numFps = new System.Windows.Forms.NumericUpDown();
+            this.cbFormat = new System.Windows.Forms.ComboBox();
+            this.lblFormat = new System.Windows.Forms.Label();
             this.lblFps = new System.Windows.Forms.Label();
             this.tlpPlayback = new System.Windows.Forms.TableLayoutPanel();
             this.btnPlay = new System.Windows.Forms.Button();
@@ -56,10 +52,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.groupVideoExport.SuspendLayout();
-            this.tlpVideoExport.SuspendLayout();
-            this.groupFrameExport.SuspendLayout();
-            this.tlpFrameExport.SuspendLayout();
+            this.groupExport.SuspendLayout();
+            this.tlpExport.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFps)).BeginInit();
             this.tlpPlayback.SuspendLayout();
             this.SuspendLayout();
@@ -73,8 +67,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.groupFrameExport);
-            this.splitContainer1.Panel1.Controls.Add(this.groupVideoExport);
+            this.splitContainer1.Panel1.Controls.Add(this.groupExport);
             this.splitContainer1.Panel1.Controls.Add(this.tlpPlayback);
             this.splitContainer1.Panel1.Controls.Add(this.lblAnimationInfo);
             this.splitContainer1.Panel1.Controls.Add(this.btnOpenModel);
@@ -83,157 +76,83 @@
             this.splitContainer1.SplitterDistance = 320;
             this.splitContainer1.TabIndex = 0;
             // 
-            // groupVideoExport
+            // groupExport
             // 
-            this.groupVideoExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.groupExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupVideoExport.Controls.Add(this.lblVideoStatus);
-            this.groupVideoExport.Controls.Add(this.tlpVideoExport);
-            this.groupVideoExport.Controls.Add(this.lblVideoInfo);
-            this.groupVideoExport.Location = new System.Drawing.Point(12, 136);
-            this.groupVideoExport.Name = "groupVideoExport";
-            this.groupVideoExport.Size = new System.Drawing.Size(296, 132);
-            this.groupVideoExport.TabIndex = 3;
-            this.groupVideoExport.TabStop = false;
-            this.groupVideoExport.Text = "동영상 저장 (MP4)";
+            this.groupExport.Controls.Add(this.lblExportStatus);
+            this.groupExport.Controls.Add(this.tlpExport);
+            this.groupExport.Controls.Add(this.btnOutputFolder);
+            this.groupExport.Controls.Add(this.txtOutputFolder);
+            this.groupExport.Controls.Add(this.lblOutputFolder);
+            this.groupExport.Controls.Add(this.txtFilePrefix);
+            this.groupExport.Controls.Add(this.lblFilePrefix);
+            this.groupExport.Controls.Add(this.numFps);
+            this.groupExport.Controls.Add(this.lblFps);
+            this.groupExport.Controls.Add(this.cbFormat);
+            this.groupExport.Controls.Add(this.lblFormat);
+            this.groupExport.Location = new System.Drawing.Point(12, 136);
+            this.groupExport.Name = "groupExport";
+            this.groupExport.Size = new System.Drawing.Size(296, 255);
+            this.groupExport.TabIndex = 4;
+            this.groupExport.TabStop = false;
+            this.groupExport.Text = "내보내기";
             // 
-            // lblVideoInfo
+            // lblExportStatus
             // 
-            this.lblVideoInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.lblExportStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblVideoInfo.Location = new System.Drawing.Point(12, 22);
-            this.lblVideoInfo.Name = "lblVideoInfo";
-            this.lblVideoInfo.Size = new System.Drawing.Size(272, 30);
-            this.lblVideoInfo.TabIndex = 0;
-            this.lblVideoInfo.Text = "애니메이션을 처음부터 끝까지 재생하며\r\n3D 화면을 MP4 파일로 녹화합니다.";
-            this.lblVideoInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblExportStatus.AutoEllipsis = true;
+            this.lblExportStatus.Location = new System.Drawing.Point(12, 219);
+            this.lblExportStatus.Name = "lblExportStatus";
+            this.lblExportStatus.Size = new System.Drawing.Size(272, 24);
+            this.lblExportStatus.TabIndex = 8;
+            this.lblExportStatus.Text = "상태 : 대기";
+            this.lblExportStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // tlpVideoExport
+            // tlpExport
             // 
-            this.tlpVideoExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tlpExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tlpVideoExport.ColumnCount = 2;
-            this.tlpVideoExport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpVideoExport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpVideoExport.Controls.Add(this.btnRecordVideo, 0, 0);
-            this.tlpVideoExport.Controls.Add(this.btnStopVideo, 1, 0);
-            this.tlpVideoExport.Location = new System.Drawing.Point(9, 58);
-            this.tlpVideoExport.Name = "tlpVideoExport";
-            this.tlpVideoExport.RowCount = 1;
-            this.tlpVideoExport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpVideoExport.Size = new System.Drawing.Size(278, 34);
-            this.tlpVideoExport.TabIndex = 1;
+            this.tlpExport.ColumnCount = 2;
+            this.tlpExport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpExport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpExport.Controls.Add(this.btnExport, 0, 0);
+            this.tlpExport.Controls.Add(this.btnStopExport, 1, 0);
+            this.tlpExport.Location = new System.Drawing.Point(9, 176);
+            this.tlpExport.Name = "tlpExport";
+            this.tlpExport.RowCount = 1;
+            this.tlpExport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpExport.Size = new System.Drawing.Size(278, 34);
+            this.tlpExport.TabIndex = 7;
             // 
-            // btnRecordVideo
+            // btnExport
             // 
-            this.btnRecordVideo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnRecordVideo.Location = new System.Drawing.Point(3, 3);
-            this.btnRecordVideo.Name = "btnRecordVideo";
-            this.btnRecordVideo.Size = new System.Drawing.Size(133, 28);
-            this.btnRecordVideo.TabIndex = 0;
-            this.btnRecordVideo.Text = "MP4 녹화 저장";
-            this.btnRecordVideo.UseVisualStyleBackColor = true;
-            this.btnRecordVideo.Click += new System.EventHandler(this.btnRecordVideo_Click);
+            this.btnExport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnExport.Location = new System.Drawing.Point(3, 3);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(133, 28);
+            this.btnExport.TabIndex = 0;
+            this.btnExport.Text = "내보내기";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
             // 
-            // btnStopVideo
+            // btnStopExport
             // 
-            this.btnStopVideo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStopVideo.Enabled = false;
-            this.btnStopVideo.Location = new System.Drawing.Point(142, 3);
-            this.btnStopVideo.Name = "btnStopVideo";
-            this.btnStopVideo.Size = new System.Drawing.Size(133, 28);
-            this.btnStopVideo.TabIndex = 1;
-            this.btnStopVideo.Text = "녹화 중지";
-            this.btnStopVideo.UseVisualStyleBackColor = true;
-            this.btnStopVideo.Click += new System.EventHandler(this.btnStopVideo_Click);
-            // 
-            // lblVideoStatus
-            // 
-            this.lblVideoStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblVideoStatus.AutoEllipsis = true;
-            this.lblVideoStatus.Location = new System.Drawing.Point(12, 98);
-            this.lblVideoStatus.Name = "lblVideoStatus";
-            this.lblVideoStatus.Size = new System.Drawing.Size(272, 24);
-            this.lblVideoStatus.TabIndex = 2;
-            this.lblVideoStatus.Text = "상태 : 대기";
-            this.lblVideoStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // groupFrameExport
-            // 
-            this.groupFrameExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupFrameExport.Controls.Add(this.lblFrameStatus);
-            this.groupFrameExport.Controls.Add(this.tlpFrameExport);
-            this.groupFrameExport.Controls.Add(this.btnOutputFolder);
-            this.groupFrameExport.Controls.Add(this.txtOutputFolder);
-            this.groupFrameExport.Controls.Add(this.lblOutputFolder);
-            this.groupFrameExport.Controls.Add(this.txtFilePrefix);
-            this.groupFrameExport.Controls.Add(this.lblFilePrefix);
-            this.groupFrameExport.Controls.Add(this.numFps);
-            this.groupFrameExport.Controls.Add(this.lblFps);
-            this.groupFrameExport.Location = new System.Drawing.Point(12, 276);
-            this.groupFrameExport.Name = "groupFrameExport";
-            this.groupFrameExport.Size = new System.Drawing.Size(296, 222);
-            this.groupFrameExport.TabIndex = 4;
-            this.groupFrameExport.TabStop = false;
-            this.groupFrameExport.Text = "프레임 시퀀스 내보내기 (PNG)";
-            // 
-            // lblFrameStatus
-            // 
-            this.lblFrameStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblFrameStatus.AutoEllipsis = true;
-            this.lblFrameStatus.Location = new System.Drawing.Point(12, 186);
-            this.lblFrameStatus.Name = "lblFrameStatus";
-            this.lblFrameStatus.Size = new System.Drawing.Size(272, 24);
-            this.lblFrameStatus.TabIndex = 8;
-            this.lblFrameStatus.Text = "상태 : 대기";
-            this.lblFrameStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tlpFrameExport
-            // 
-            this.tlpFrameExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tlpFrameExport.ColumnCount = 2;
-            this.tlpFrameExport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpFrameExport.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpFrameExport.Controls.Add(this.btnExportFrames, 0, 0);
-            this.tlpFrameExport.Controls.Add(this.btnStopFrameExport, 1, 0);
-            this.tlpFrameExport.Location = new System.Drawing.Point(9, 143);
-            this.tlpFrameExport.Name = "tlpFrameExport";
-            this.tlpFrameExport.RowCount = 1;
-            this.tlpFrameExport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpFrameExport.Size = new System.Drawing.Size(278, 34);
-            this.tlpFrameExport.TabIndex = 7;
-            // 
-            // btnExportFrames
-            // 
-            this.btnExportFrames.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnExportFrames.Location = new System.Drawing.Point(3, 3);
-            this.btnExportFrames.Name = "btnExportFrames";
-            this.btnExportFrames.Size = new System.Drawing.Size(133, 28);
-            this.btnExportFrames.TabIndex = 0;
-            this.btnExportFrames.Text = "내보내기";
-            this.btnExportFrames.UseVisualStyleBackColor = true;
-            this.btnExportFrames.Click += new System.EventHandler(this.btnExportFrames_Click);
-            // 
-            // btnStopFrameExport
-            // 
-            this.btnStopFrameExport.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnStopFrameExport.Enabled = false;
-            this.btnStopFrameExport.Location = new System.Drawing.Point(142, 3);
-            this.btnStopFrameExport.Name = "btnStopFrameExport";
-            this.btnStopFrameExport.Size = new System.Drawing.Size(133, 28);
-            this.btnStopFrameExport.TabIndex = 1;
-            this.btnStopFrameExport.Text = "중지";
-            this.btnStopFrameExport.UseVisualStyleBackColor = true;
-            this.btnStopFrameExport.Click += new System.EventHandler(this.btnStopFrameExport_Click);
+            this.btnStopExport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnStopExport.Enabled = false;
+            this.btnStopExport.Location = new System.Drawing.Point(142, 3);
+            this.btnStopExport.Name = "btnStopExport";
+            this.btnStopExport.Size = new System.Drawing.Size(133, 28);
+            this.btnStopExport.TabIndex = 1;
+            this.btnStopExport.Text = "중지";
+            this.btnStopExport.UseVisualStyleBackColor = true;
+            this.btnStopExport.Click += new System.EventHandler(this.btnStopExport_Click);
             // 
             // btnOutputFolder
             // 
             this.btnOutputFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOutputFolder.Location = new System.Drawing.Point(234, 111);
+            this.btnOutputFolder.Location = new System.Drawing.Point(234, 144);
             this.btnOutputFolder.Name = "btnOutputFolder";
             this.btnOutputFolder.Size = new System.Drawing.Size(50, 23);
             this.btnOutputFolder.TabIndex = 6;
@@ -245,7 +164,7 @@
             // 
             this.txtOutputFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOutputFolder.Location = new System.Drawing.Point(12, 112);
+            this.txtOutputFolder.Location = new System.Drawing.Point(12, 145);
             this.txtOutputFolder.Name = "txtOutputFolder";
             this.txtOutputFolder.ReadOnly = true;
             this.txtOutputFolder.Size = new System.Drawing.Size(216, 21);
@@ -254,7 +173,7 @@
             // lblOutputFolder
             // 
             this.lblOutputFolder.AutoSize = true;
-            this.lblOutputFolder.Location = new System.Drawing.Point(12, 94);
+            this.lblOutputFolder.Location = new System.Drawing.Point(12, 127);
             this.lblOutputFolder.Name = "lblOutputFolder";
             this.lblOutputFolder.Size = new System.Drawing.Size(57, 12);
             this.lblOutputFolder.TabIndex = 4;
@@ -264,7 +183,7 @@
             // 
             this.txtFilePrefix.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFilePrefix.Location = new System.Drawing.Point(95, 59);
+            this.txtFilePrefix.Location = new System.Drawing.Point(95, 92);
             this.txtFilePrefix.Name = "txtFilePrefix";
             this.txtFilePrefix.Size = new System.Drawing.Size(189, 21);
             this.txtFilePrefix.TabIndex = 3;
@@ -273,7 +192,7 @@
             // lblFilePrefix
             // 
             this.lblFilePrefix.AutoSize = true;
-            this.lblFilePrefix.Location = new System.Drawing.Point(12, 63);
+            this.lblFilePrefix.Location = new System.Drawing.Point(12, 96);
             this.lblFilePrefix.Name = "lblFilePrefix";
             this.lblFilePrefix.Size = new System.Drawing.Size(69, 12);
             this.lblFilePrefix.TabIndex = 2;
@@ -281,7 +200,7 @@
             // 
             // numFps
             // 
-            this.numFps.Location = new System.Drawing.Point(95, 26);
+            this.numFps.Location = new System.Drawing.Point(95, 59);
             this.numFps.Maximum = new decimal(new int[] {
             120,
             0,
@@ -301,10 +220,34 @@
             0,
             0});
             // 
+            // cbFormat
+            // 
+            this.cbFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbFormat.FormattingEnabled = true;
+            this.cbFormat.Items.AddRange(new object[] {
+            "PNG (프레임 시퀀스)",
+            "MP4 (동영상)"});
+            this.cbFormat.Location = new System.Drawing.Point(95, 26);
+            this.cbFormat.Name = "cbFormat";
+            this.cbFormat.Size = new System.Drawing.Size(189, 20);
+            this.cbFormat.TabIndex = 9;
+            this.cbFormat.SelectedIndexChanged += new System.EventHandler(this.cbFormat_SelectedIndexChanged);
+            // 
+            // lblFormat
+            // 
+            this.lblFormat.AutoSize = true;
+            this.lblFormat.Location = new System.Drawing.Point(12, 30);
+            this.lblFormat.Name = "lblFormat";
+            this.lblFormat.Size = new System.Drawing.Size(29, 12);
+            this.lblFormat.TabIndex = 10;
+            this.lblFormat.Text = "형식";
+            // 
             // lblFps
             // 
             this.lblFps.AutoSize = true;
-            this.lblFps.Location = new System.Drawing.Point(12, 30);
+            this.lblFps.Location = new System.Drawing.Point(12, 63);
             this.lblFps.Name = "lblFps";
             this.lblFps.Size = new System.Drawing.Size(28, 12);
             this.lblFps.TabIndex = 0;
@@ -396,11 +339,9 @@
             this.splitContainer1.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.groupVideoExport.ResumeLayout(false);
-            this.tlpVideoExport.ResumeLayout(false);
-            this.groupFrameExport.ResumeLayout(false);
-            this.groupFrameExport.PerformLayout();
-            this.tlpFrameExport.ResumeLayout(false);
+            this.groupExport.ResumeLayout(false);
+            this.groupExport.PerformLayout();
+            this.tlpExport.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.numFps)).EndInit();
             this.tlpPlayback.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -416,13 +357,7 @@
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.TableLayoutPanel tlpPlayback;
         private System.Windows.Forms.Label lblAnimationInfo;
-        private System.Windows.Forms.GroupBox groupVideoExport;
-        private System.Windows.Forms.Label lblVideoInfo;
-        private System.Windows.Forms.TableLayoutPanel tlpVideoExport;
-        private System.Windows.Forms.Button btnRecordVideo;
-        private System.Windows.Forms.Button btnStopVideo;
-        private System.Windows.Forms.Label lblVideoStatus;
-        private System.Windows.Forms.GroupBox groupFrameExport;
+        private System.Windows.Forms.GroupBox groupExport;
         private System.Windows.Forms.Label lblFps;
         private System.Windows.Forms.NumericUpDown numFps;
         private System.Windows.Forms.Label lblFilePrefix;
@@ -430,10 +365,12 @@
         private System.Windows.Forms.Label lblOutputFolder;
         private System.Windows.Forms.TextBox txtOutputFolder;
         private System.Windows.Forms.Button btnOutputFolder;
-        private System.Windows.Forms.TableLayoutPanel tlpFrameExport;
-        private System.Windows.Forms.Button btnExportFrames;
-        private System.Windows.Forms.Button btnStopFrameExport;
-        private System.Windows.Forms.Label lblFrameStatus;
+        private System.Windows.Forms.TableLayoutPanel tlpExport;
+        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Button btnStopExport;
+        private System.Windows.Forms.Label lblExportStatus;
+        private System.Windows.Forms.ComboBox cbFormat;
+        private System.Windows.Forms.Label lblFormat;
     }
 }
 

@@ -23,6 +23,8 @@ namespace VIZCore3DX.NET.Animation
         {
             InitializeComponent();
 
+            cbFormat.SelectedIndex = 0;
+
             VIZCore3DX.NET.ModuleInitializer.Run();
 
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
@@ -191,8 +193,36 @@ namespace VIZCore3DX.NET.Animation
         }
 
         // ================================================================
-        // 프레임 시퀀스 내보내기 : ExportFrameSequenceAsync / StopFrameSequenceExport
+        // 내보내기 : PNG 프레임 시퀀스(ExportFrameSequenceAsync / StopFrameSequenceExport) 또는 MP4 동영상(StartRecordingWithWMF / StopRecording)
         // ================================================================
+
+        /// <summary>
+        /// 동영상 녹화 중 여부
+        /// </summary>
+        private bool isRecordingVideo = false;
+
+        private bool IsPngFormat()
+        {
+            return cbFormat.SelectedIndex == 0;
+        }
+
+        private void cbFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateFormatOptions(true);
+        }
+
+        /// <summary>
+        /// 형식에 따라 PNG 전용 옵션(FPS, 파일 접두어, 출력 폴더) 사용 여부 변경
+        /// </summary>
+        /// <param name="enabled">내보내기 중이 아닐 때만 true</param>
+        private void UpdateFormatOptions(bool enabled)
+        {
+            bool png = enabled && IsPngFormat();
+            numFps.Enabled = png;
+            txtFilePrefix.Enabled = png;
+            btnOutputFolder.Enabled = png;
+        }
+
         private void btnOutputFolder_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog dlg = new FolderBrowserDialog();
@@ -203,27 +233,33 @@ namespace VIZCore3DX.NET.Animation
         }
 
         /// <summary>
-        /// 프레임 내보내기 중 UI 상태 변경
+        /// 내보내기 중 UI 상태 변경
         /// </summary>
         /// <param name="exporting">내보내기 중 여부</param>
-        private void SetFrameExporting(bool exporting)
+        private void SetExporting(bool exporting)
         {
-            btnExportFrames.Enabled = !exporting;
-            btnStopFrameExport.Enabled = exporting;
+            btnExport.Enabled = !exporting;
+            btnStopExport.Enabled = exporting;
             btnOpenModel.Enabled = !exporting;
             btnPlay.Enabled = !exporting;
             btnPause.Enabled = !exporting;
             btnStop.Enabled = !exporting;
-            numFps.Enabled = !exporting;
-            txtFilePrefix.Enabled = !exporting;
-            btnOutputFolder.Enabled = !exporting;
-            btnRecordVideo.Enabled = !exporting;
+            cbFormat.Enabled = !exporting;
+            UpdateFormatOptions(!exporting);
         }
 
-        private async void btnExportFrames_Click(object sender, EventArgs e)
+        private async void btnExport_Click(object sender, EventArgs e)
         {
             if (CheckAnimation() == false) return;
 
+            if (IsPngFormat())
+                await ExportFrameSequence();
+            else
+                StartVideoRecording();
+        }
+
+        private async System.Threading.Tasks.Task ExportFrameSequence()
+        {
             if (String.IsNullOrEmpty(txtOutputFolder.Text))
             {
                 MessageBox.Show("출력 폴더를 선택해 주세요.", "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -233,8 +269,12 @@ namespace VIZCore3DX.NET.Animation
             string prefix = String.IsNullOrWhiteSpace(txtFilePrefix.Text) ? "frame" : txtFilePrefix.Text.Trim();
             int fps = (int)numFps.Value;
 
-            SetFrameExporting(true);
-            lblFrameStatus.Text = string.Format("상태 : 내보내는 중... ({0} fps, 예상 {1}프레임)", fps, (int)Math.Ceiling(ani.Duration.TotalSeconds * fps));
+            // 출력 폴더 안에 내보내기 전용 폴더를 만들어 그 안에 PNG 파일 저장
+            string folder = System.IO.Path.Combine(txtOutputFolder.Text, string.Format("{0}_{1:yyyyMMdd_HHmmss}", ani.Name, DateTime.Now));
+            System.IO.Directory.CreateDirectory(folder);
+
+            SetExporting(true);
+            lblExportStatus.Text = string.Format("상태 : 내보내는 중... ({0} fps, 예상 {1}프레임)", fps, (int)Math.Ceiling(ani.Duration.TotalSeconds * fps));
 
             // 기본 진행창(Please Wait)이 3D 화면 위에 표시되면 캡처 이미지에 함께 저장되므로 내보내는 동안 비활성화
             bool enableProgressForm = vizcore3dx.EnableProgressForm;
@@ -244,61 +284,31 @@ namespace VIZCore3DX.NET.Animation
             try
             {
                 // 애니메이션을 지정 fps로 재생하며 각 프레임을 PNG 파일로 저장 (반환값 : 저장된 프레임 수)
-                count = await vizcore3dx.Animation.ExportFrameSequenceAsync(ani, txtOutputFolder.Text, fps, prefix);
+                count = await vizcore3dx.Animation.ExportFrameSequenceAsync(ani, folder, fps, prefix);
             }
             finally
             {
                 vizcore3dx.EnableProgressForm = enableProgressForm;
-                SetFrameExporting(false);
+                SetExporting(false);
             }
 
             VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Animation.LastOperationStatus;
             if (count <= 0 || (status != null && status.IsFailure))
             {
-                lblFrameStatus.Text = string.Format("상태 : 중지 또는 실패 ({0}프레임 저장)", count);
+                // 저장된 파일이 없으면 만든 폴더 삭제
+                if (System.IO.Directory.GetFileSystemEntries(folder).Length == 0) System.IO.Directory.Delete(folder);
+
+                lblExportStatus.Text = string.Format("상태 : 중지 또는 실패 ({0}프레임 저장)", count);
                 MessageBox.Show(string.Format("프레임 시퀀스 내보내기가 중지되었거나 실패하였습니다.\n\n저장된 프레임 : {0}\n사유 : {1}", count, status == null ? "알 수 없음" : status.ToString()), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            lblFrameStatus.Text = string.Format("상태 : 완료 ({0}프레임 저장)", count);
-            MessageBox.Show(string.Format("프레임 시퀀스 내보내기 완료\n\n저장된 프레임 : {0}\n폴더 : {1}", count, txtOutputFolder.Text), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            lblExportStatus.Text = string.Format("상태 : 완료 ({0}프레임 저장)", count);
+            MessageBox.Show(string.Format("프레임 시퀀스 내보내기 완료\n\n저장된 프레임 : {0}\n폴더 : {1}", count, folder), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void btnStopFrameExport_Click(object sender, EventArgs e)
+        private void StartVideoRecording()
         {
-            // 프레임 시퀀스 내보내기 중지
-            vizcore3dx.Animation.StopFrameSequenceExport();
-            lblFrameStatus.Text = "상태 : 중지 요청";
-        }
-
-        // ================================================================
-        // 동영상 저장 (MP4) : StartRecordingWithWMF / StopRecording
-        // ================================================================
-
-        /// <summary>
-        /// 동영상 녹화 중 여부
-        /// </summary>
-        private bool isRecordingVideo = false;
-
-        /// <summary>
-        /// 동영상 녹화 중 UI 상태 변경
-        /// </summary>
-        /// <param name="recording">녹화 중 여부</param>
-        private void SetVideoRecording(bool recording)
-        {
-            btnRecordVideo.Enabled = !recording;
-            btnStopVideo.Enabled = recording;
-            btnOpenModel.Enabled = !recording;
-            btnPlay.Enabled = !recording;
-            btnPause.Enabled = !recording;
-            btnStop.Enabled = !recording;
-            btnExportFrames.Enabled = !recording;
-        }
-
-        private void btnRecordVideo_Click(object sender, EventArgs e)
-        {
-            if (CheckAnimation() == false) return;
-
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Filter = "MP4 (*.mp4)|*.mp4";
             dlg.FileName = string.Format("{0}.mp4", ani.Name);
@@ -311,24 +321,30 @@ namespace VIZCore3DX.NET.Animation
             // 녹화 중 3D 화면 크기가 변경되면 녹화가 자동으로 중지됩니다.
             if (vizcore3dx.StartRecordingWithWMF(false, dlg.FileName) == false)
             {
-                lblVideoStatus.Text = "상태 : 녹화 시작 실패";
+                lblExportStatus.Text = "상태 : 녹화 시작 실패";
                 return;
             }
 
             isRecordingVideo = true;
-            SetVideoRecording(true);
-            lblVideoStatus.Text = string.Format("상태 : 녹화 중... ({0:0.#}초)", ani.Duration.TotalSeconds);
+            SetExporting(true);
+            lblExportStatus.Text = string.Format("상태 : 녹화 중... ({0:0.#}초)", ani.Duration.TotalSeconds);
 
             // 애니메이션 재생 : 끝에 도달하면 OnAnimationPausedEvent 에서 녹화 종료
             ani.Play();
         }
 
-        private void btnStopVideo_Click(object sender, EventArgs e)
+        private void btnStopExport_Click(object sender, EventArgs e)
         {
-            if (isRecordingVideo == false) return;
+            if (isRecordingVideo)
+            {
+                ani.Pause();
+                FinishVideoRecording(false);
+                return;
+            }
 
-            ani.Pause();
-            FinishVideoRecording(false);
+            // 프레임 시퀀스 내보내기 중지
+            vizcore3dx.Animation.StopFrameSequenceExport();
+            lblExportStatus.Text = "상태 : 중지 요청";
         }
 
         /// <summary>
@@ -349,8 +365,8 @@ namespace VIZCore3DX.NET.Animation
             // 녹화 종료 및 MP4 파일 저장
             vizcore3dx.StopRecording();
 
-            SetVideoRecording(false);
-            lblVideoStatus.Text = completed ? "상태 : 저장 완료" : "상태 : 중지 (중지 시점까지 저장)";
+            SetExporting(false);
+            lblExportStatus.Text = completed ? "상태 : 저장 완료" : "상태 : 중지 (중지 시점까지 저장)";
         }
 
         private void CreateAnimation()

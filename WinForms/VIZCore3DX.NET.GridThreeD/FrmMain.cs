@@ -345,6 +345,9 @@ namespace VIZCore3DX.NET.GridThreeD
             // 실제 export 성공 파일 목록을 저장
             List<string> exportedFiles = new List<string>();
 
+            // 모델이 존재하지 않아 건너뛴 Grid 목록
+            List<string> emptyGrids = new List<string>();
+
             vizcore3dx.ShowWaitForm();
 
             try
@@ -357,7 +360,12 @@ namespace VIZCore3DX.NET.GridThreeD
                     if (OpenModelFiles(vizcore3dx, files, true) == false) continue;
 
                     // 현재 Grid 영역만 남겨서 저장
-                    if (KeepGridOnly(vizcore3dx, item.Box) == false) continue;
+                    bool isEmpty;
+                    if (KeepGridOnly(vizcore3dx, item.Box, out isEmpty) == false)
+                    {
+                        if (isEmpty) emptyGrids.Add(item.Key);
+                        continue;
+                    }
 
                     // 삭제 끝난 현재 상태 저장
                     string output = Path.Combine(GridPath, GetSafeFileName(item.Key) + ".vizx");
@@ -383,9 +391,12 @@ namespace VIZCore3DX.NET.GridThreeD
                 vizcore3dx.CloseWaitForm();
             }
 
+            if (emptyGrids.Count > 0)
+                MessageBox.Show("해당 공간에는 모델이 존재하지 않아 Export하지 않았습니다.\n\n" + string.Join(", ", emptyGrids), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             if (exportedFiles.Count == 0)
             {
-                MessageBox.Show("Export된 Grid 파일이 없습니다.");
+                if (emptyGrids.Count == 0) MessageBox.Show("Export된 Grid 파일이 없습니다.");
                 return;
             }
 
@@ -626,8 +637,11 @@ namespace VIZCore3DX.NET.GridThreeD
         // ================================================
 
         // Viewer에 열린 원본 모델에서 지정 Grid Box 영역만 남김
-        private bool KeepGridOnly(VIZCore3DX.NET.VIZCore3DXControl viewer, BoundBox3D box)
+        // isEmpty : Grid 영역에 모델이 없어서 false 를 반환한 경우 true
+        private bool KeepGridOnly(VIZCore3DX.NET.VIZCore3DXControl viewer, BoundBox3D box, out bool isEmpty)
         {
+            isEmpty = false;
+
             if (viewer == null || viewer.Model.IsOpen() == false) return false;
             if (box == null || box.IsValid() == false) return false;
 
@@ -641,7 +655,11 @@ namespace VIZCore3DX.NET.GridThreeD
                 // Grid Box와 겹치는 원본 Part 후보 조회 box 경계에 걸친 Part까지 SplitMesh 대상으로 넣어야 하기 때문에 IncludingPart 사용
                 List<Node> partNodes = viewer.SelectionBox.GetObject3DIndex(boxId, BoundBoxSearchOption.IncludingPart, false, true);
 
-                if (partNodes == null || partNodes.Count == 0) return false;
+                if (partNodes == null || partNodes.Count == 0)
+                {
+                    isEmpty = true;
+                    return false;
+                }
 
                 // 후보 Part만 남기고 나머지 삭제
                 viewer.Object3D.Select(Object3dSelectionModes.DESELECT_ALL);
@@ -664,7 +682,11 @@ namespace VIZCore3DX.NET.GridThreeD
                 List<Node> keepNodes = viewer.SelectionBox.GetObject3DIndex(splitBoxId, BoundBoxSearchOption.FullyContained, false, true);
 
                 // keepNodes가 없는데 INVERT_SELECTION 하면 전체 삭제될 수 있음
-                if (keepNodes == null || keepNodes.Count == 0) return false;
+                if (keepNodes == null || keepNodes.Count == 0)
+                {
+                    isEmpty = true;
+                    return false;
+                }
 
                 // box 안쪽 조각만 남기고 나머지 삭제
                 viewer.Object3D.Select(Object3dSelectionModes.DESELECT_ALL);

@@ -88,8 +88,11 @@ namespace VIZCore3DX.NET.CustomAxisRotation
             // 진행 중인 회전 애니메이션 중지
             timerAnimation.Enabled = false;
 
-            // 기존 모델 닫기
+            // 기존 모델 닫기 (적용된 회전 정보도 초기화)
             if (vizcore3dx.Model.IsOpen() == true) vizcore3dx.Model.Close();
+            appliedAngle = 0.0f;
+            appliedV1 = null;
+            appliedV2 = null;
 
             // 모델 열기
             bool result = vizcore3dx.Model.Open(dlg.FileName);
@@ -134,6 +137,8 @@ namespace VIZCore3DX.NET.CustomAxisRotation
         {
             timerAnimation.Enabled = false;
 
+            ResetRotation();
+
             txtV1.Text = String.Empty;
             txtV2.Text = String.Empty;
 
@@ -168,10 +173,45 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
             timerAnimation.Enabled = false;
 
+            // 이전 회전을 되돌린 뒤 새 축 기준으로 시작 각도까지 회전
+            ResetRotation();
+            RotateTo(start, v1, v2);
+
             angle = start;
             totalAngle = end;
 
             timerAnimation.Enabled = true;
+        }
+
+        // 현재 모델에 적용된 회전 각도와 그때 사용한 회전축
+        private float appliedAngle = 0.0f;
+        private Vertex3D appliedV1 = null;
+        private Vertex3D appliedV2 = null;
+
+        // 현재 상태 기준(zeroBase = false)으로 목표 각도와의 차이만큼 증분 회전
+        // zeroBase = true 는 파일에 들어 있던 원래 배치 행렬까지 초기화해서 파트가 흩어짐
+        private void RotateTo(float target, Vertex3D axis1, Vertex3D axis2)
+        {
+            List<Node> nodes = vizcore3dx.Object3D.GetRootNodes();
+            if (nodes == null || nodes.Count == 0) return;
+
+            float delta = target - appliedAngle;
+            if (delta != 0.0f) vizcore3dx.Object3D.Transform.Rotate(nodes, axis1, axis2, delta, false);
+
+            appliedAngle = target;
+            appliedV1 = axis1;
+            appliedV2 = axis2;
+        }
+
+        // 적용된 회전을 같은 축 기준 역회전으로 원래 상태로 복원
+        private void ResetRotation()
+        {
+            if (appliedV1 != null && appliedV2 != null && appliedAngle != 0.0f && vizcore3dx != null && vizcore3dx.Model.IsOpen())
+                RotateTo(0.0f, appliedV1, appliedV2);
+
+            appliedAngle = 0.0f;
+            appliedV1 = null;
+            appliedV2 = null;
         }
 
         private Vertex3D ParseVertex(string text)
@@ -195,15 +235,11 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
             if (angle >= totalAngle) return;
 
-            List<Node> nodes = vizcore3dx.Object3D.GetRootNodes();
-            if (nodes == null || nodes.Count == 0) return;
-
             vizcore3dx.BeginUpdate();
 
             try
             {
-                // 초기 상태 기준(zeroBase = true)으로 누적 각도만큼 회전 (현재 상태 기준이면 회전량이 매 Tick 누적됨)
-                vizcore3dx.Object3D.Transform.Rotate(nodes, v1, v2, angle % 360.0f, true);
+                RotateTo(angle, v1, v2);
             }
             finally
             {

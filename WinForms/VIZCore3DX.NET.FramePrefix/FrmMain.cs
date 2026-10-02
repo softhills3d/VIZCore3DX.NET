@@ -119,20 +119,21 @@ namespace VIZCore3DX.NET.FramePrefix
             }
             else
             {
-                // 자동 경로에 파일이 없으면 사용자가 직접 선택 (취소 시 종료, 선택한 파일로 AM → Tribon 순차 시도)
+                // 자동 경로에 파일이 없으면 사용자가 직접 선택 (취소 시 종료)
+                // 모든 파일을 선택할 수 있고, 형식을 알 수 없으므로 열릴 때까지 순차 시도 (.dmp 는 AM → Tribon → Import, 그 외는 Import → AM → Tribon)
                 OpenFileDialog dlg = new OpenFileDialog();
-                dlg.Filter = vizcore3dx.Frame.Filter;
+                dlg.Filter = "All Files (*.*)|*.*";
                 if (dlg.ShowDialog() != DialogResult.OK) return;
 
-                result = vizcore3dx.Frame.OpenAM(dlg.FileName);
-
-                if (result == false)
-                    result = vizcore3dx.Frame.OpenTribon(dlg.FileName);
+                if (System.IO.Path.GetExtension(dlg.FileName).Equals(".dmp", StringComparison.OrdinalIgnoreCase) == true)
+                    result = vizcore3dx.Frame.OpenAM(dlg.FileName) || vizcore3dx.Frame.OpenTribon(dlg.FileName) || vizcore3dx.Frame.Import(dlg.FileName);
+                else
+                    result = vizcore3dx.Frame.Import(dlg.FileName) || vizcore3dx.Frame.OpenAM(dlg.FileName) || vizcore3dx.Frame.OpenTribon(dlg.FileName);
             }
 
             if (result == false)
             {
-                MessageBox.Show("Frame 파일을 열 수 없습니다.");
+                MessageBox.Show("Frame 파일을 열 수 없습니다.\n(" + vizcore3dx.Frame.LastOperationResult + ")");
                 return;
             }
 

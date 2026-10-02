@@ -119,10 +119,11 @@ namespace VIZCore3DX.NET.RotateModel
         {
             AddEventHandler(false);
         }
-        private void View_OnViewDefaultMouseMoveEvent(object sender, MouseEventArgs e)
+        // 현재 카메라의 회전 방향만 Matrix로 구성
+        private Matrix3D GetCameraRotationMatrix()
         {
             CameraData cameraData = vizcore3dx.View.GetCameraData();
-            if (cameraData == null) return;
+            if (cameraData == null) return null;
 
             // 현재 카메라의 시선 방향과 위쪽 방향을 기준으로 직교 축 계산
             Vector3D normal = new Vector3D(cameraData.CameraDirection).GetNormalized();
@@ -130,9 +131,27 @@ namespace VIZCore3DX.NET.RotateModel
             Vector3D planeX = Vector3D.Cross(cameraUp, normal).GetNormalized();
             Vector3D planeY = Vector3D.Cross(normal, planeX).GetNormalized();
 
-            // 카메라 회전 방향만 Matrix로 구성
             Matrix3D matrix = new Matrix3D();
             matrix.SetAxisTransform(planeX, planeY, normal, true);
+
+            return matrix;
+        }
+
+        // 회전 값에 따라 Matrix 표시 갱신
+        private void UpdateMatrixText()
+        {
+            Matrix3D matrix = GetCameraRotationMatrix();
+            if (matrix == null) return;
+
+            txtMatrix.Text = matrix.ToString();
+        }
+
+        private void View_OnViewDefaultMouseMoveEvent(object sender, MouseEventArgs e)
+        {
+            Matrix3D matrix = GetCameraRotationMatrix();
+            if (matrix == null) return;
+
+            txtMatrix.Text = matrix.ToString();
 
             // Matrix에서 X/Y/Z 회전각 추출
             Vector3D rotation = matrix.GetRotation();
@@ -171,13 +190,12 @@ namespace VIZCore3DX.NET.RotateModel
 
         private void btnOpen_Click(object sender, EventArgs e)
         {
-            string path = Path.GetFullPath(Path.Combine(Application.StartupPath, @"..\..\SAMPLE.vizx"));
+            string path = Path.Combine(Application.StartupPath, "primitiveCrane.vizx");
 
             if (File.Exists(path) == true)
             {
                 txtPath.Text = path;
-
-                txtMatrix.Text = "0.957904591,-0.000000000,-0.287086738,0.000000000,-0.283075368,0.166583667,-0.944520099,0.000000000,0.047823961,0.986027323,0.159571259,0.000000000,-178018.006091000,-812.822710430,66890.223468829,1.000000000";
+                txtMatrix.Text = "1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1";
             }
             else
             {
@@ -233,7 +251,8 @@ namespace VIZCore3DX.NET.RotateModel
                 {
                     foreach (Node root in roots)
                     {
-                        root.Transform(m, true);
+                        // 현재 상태 기준(zeroBase = false) 적용 : true 는 모델 파일의 원래 배치 행렬까지 초기화함
+                        root.Transform(m, false);
                     }
                 }
                 finally
@@ -286,6 +305,8 @@ namespace VIZCore3DX.NET.RotateModel
             txtZ.Text = tbZ.Value.ToString();
 
             vizcore3dx.View.RotateCameraByAxis(x, y, z);
+
+            UpdateMatrixText();
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.

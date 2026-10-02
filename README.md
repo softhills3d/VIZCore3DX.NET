@@ -12,6 +12,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 |---|---|---|
 | **VIZCore3DX.NET.App** | VIZCore3DX.NET의 기본 뷰어 동작을 확인하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Demo** | VIZCore3DX.NET의 다양한 기능을 데모 형태로 시연하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.DemoLauncher** | 예제 목록을 카테고리별로 보여주고 실행하는 런처 | DLL 미사용 |
 | **VIZCore3DX.NET.ToolbarHide** | VIZCore3DX.NET 뷰어의 툴바 항목을 표시하거나 숨기는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Frame** | Tribon / AM Frame 파일을 열거나 Frame을 생성·가져오기·내보내기하고, 축별 프레임 라인 목록과 XY / YZ / ZX 평면 표시, 프레임 라인 색상을 설정하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Recording** | 3D 뷰 화면을 녹화하여 동영상으로 저장하는 예제 (FFMpeg 필요) | 1.1.25.609 |
@@ -124,7 +125,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 ### 애니메이션 / 시뮬레이션
 | 프로젝트 | 설명 | API version |
 |---|---|---|
-| **VIZCore3DX.NET.Animation** | Animation API를 사용하여 크레인으로 탱크를 이동시키는 예제 (크레인 모델 파일 포함, 프레임 시퀀스 PNG 내보내기) | 1.5.26.928 |
+| **VIZCore3DX.NET.Animation** | Animation API를 사용하여 크레인으로 탱크를 이동시키는 예제 (크레인 모델 파일 포함, PNG 프레임 시퀀스 / MP4 동영상 내보내기) | 1.5.26.928 |
 | **VIZCore3DX.NET.Explode** | 모델의 어셈블리와 부품을 FLAT / HIERARCHICAL / 전체 계층 그룹으로 나누어 단계적으로 분해하여 표시하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.GroupExplode** | 그룹 단위로 모델을 분해하고 Explode 상태를 제어하는 예제 | 1.5.26.928 |
 
@@ -165,6 +166,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 ### 프레임
 | 프로젝트 | 설명 | API version |
 |---|---|---|
+| **VIZCore3DX.NET.FrameEditor** | Frame을 생성(모델 BoundBox 기준 균등 간격 라인)·가져오기·내보내기하고, 공간·여백·평면 색상, 축 옵션(문자·선 색상), 축별 프레임 라인(자동 등분·추가·삭제)을 편집하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.FramePrefix** | 프레임 좌표를 기준으로 객체에 접두어 정보를 설정하는 예제 | 1.5.26.928 |
 
 ### 그리드 / 좌표

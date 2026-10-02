@@ -13,6 +13,14 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
         private bool isScroll = false;
 
+        private readonly System.Collections.Generic.Dictionary<VIZCore3DX.NET.Data.Axis, System.Collections.Generic.Dictionary<string, float>> frameOffsets =
+            new System.Collections.Generic.Dictionary<VIZCore3DX.NET.Data.Axis, System.Collections.Generic.Dictionary<string, float>>
+            {
+                { VIZCore3DX.NET.Data.Axis.X, new System.Collections.Generic.Dictionary<string, float>() },
+                { VIZCore3DX.NET.Data.Axis.Y, new System.Collections.Generic.Dictionary<string, float>() },
+                { VIZCore3DX.NET.Data.Axis.Z, new System.Collections.Generic.Dictionary<string, float>() }
+            };
+
         public FrmMain()
         {
             InitializeComponent();
@@ -224,7 +232,22 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
         private void btnLoadFrame_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Frame.OpenTribonFileDialog() == false) return;
+            // 모든 파일을 선택할 수 있고, 형식을 알 수 없으므로 열릴 때까지 순차 시도 (.dmp 는 AM → Tribon → Import, 그 외는 Import → AM → Tribon)
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "All Files (*.*)|*.*";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            bool result;
+            if (System.IO.Path.GetExtension(dlg.FileName).Equals(".dmp", StringComparison.OrdinalIgnoreCase) == true)
+                result = vizcore3dx.Frame.OpenAM(dlg.FileName) || vizcore3dx.Frame.OpenTribon(dlg.FileName) || vizcore3dx.Frame.Import(dlg.FileName);
+            else
+                result = vizcore3dx.Frame.Import(dlg.FileName) || vizcore3dx.Frame.OpenAM(dlg.FileName) || vizcore3dx.Frame.OpenTribon(dlg.FileName);
+
+            if (result == false)
+            {
+                MessageBox.Show("Frame 파일을 열 수 없습니다.\n(" + vizcore3dx.Frame.LastOperationResult + ")");
+                return;
+            }
 
             vizcore3dx.Frame.Visible = true;
 
@@ -337,12 +360,10 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
         private int GetFramePosition(VIZCore3DX.NET.Data.Axis axis, string frame, TrackBar trackBar)
         {
-            // 프레임 좌표가 유효하지 않으면 현재 값 유지
-            VIZCore3DX.NET.Data.FramePosition fp = vizcore3dx.Frame.GetPosition(axis, frame);
-            if (fp == null || fp.ValidData == false) return trackBar.Value;
+            float offset;
+            if (frameOffsets[axis].TryGetValue(frame, out offset) == false) return trackBar.Value;
 
-            // TrackBar 범위 내로 제한 (범위를 벗어난 값 지정 시 예외 발생)
-            int position = Convert.ToInt32(fp.Position);
+            int position = Convert.ToInt32(offset);
             if (position < trackBar.Minimum) return trackBar.Minimum;
             if (position > trackBar.Maximum) return trackBar.Maximum;
             return position;
@@ -352,6 +373,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
         {
             cbMin.Items.Clear();
             cbMax.Items.Clear();
+            frameOffsets[axis].Clear();
 
             // 첫번째 프레임의 프레임 라인 중, 단면상자 범위 내의 항목만 추가
             System.Collections.Generic.List<VIZCore3DX.NET.Data.FrameLine> lines = vizcore3dx.Frame.HasFrame ? vizcore3dx.Frame.GetFrameLines(axis) : null;
@@ -367,6 +389,7 @@ namespace VIZCore3DX.NET.SectionBoxSize
 
                     cbMin.Items.Add(frame);
                     cbMax.Items.Add(frame);
+                    frameOffsets[axis][frame] = line.Offset;
                 }
             }
 

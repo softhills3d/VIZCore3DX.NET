@@ -80,7 +80,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="SAMPLE.vizx" />
+    <None Include="..\VIZCore3DX.NET.Animation\primitiveCrane.vizx">
+      <Link>primitiveCrane.vizx</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
