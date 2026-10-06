@@ -105,8 +105,6 @@
             // ckFitToView
             // 
             this.ckFitToView.AutoSize = true;
-            this.ckFitToView.Checked = true;
-            this.ckFitToView.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ckFitToView.Location = new System.Drawing.Point(23, 21);
             this.ckFitToView.Name = "ckFitToView";
             this.ckFitToView.Size = new System.Drawing.Size(83, 16);

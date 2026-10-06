@@ -88,11 +88,6 @@ namespace VIZCore3DX.NET.DecalAnnotation
             vizcore3dx.View.FitToView();
         }
 
-        private void btnFitToView_Click(object sender, EventArgs e)
-        {
-            vizcore3dx.View.FitToView();
-        }
-
         private async Task<VIZCore3DX.NET.Data.OsnapResult> PickSurface(string commandText)
         {
             if (vizcore3dx.Model.IsOpen() == false)
@@ -297,18 +292,11 @@ namespace VIZCore3DX.NET.DecalAnnotation
 
         private VIZCore3DX.NET.Data.Vector3D RotateVectorAroundAxis(VIZCore3DX.NET.Data.Vector3D vector, VIZCore3DX.NET.Data.Vector3D axis, float angle)
         {
-            double radian = angle * Math.PI / 180.0;
-            double cos = Math.Cos(radian);
-            double sin = Math.Sin(radian);
-            double dot = vector.Dot(axis);
+            // Matrix3D 축 회전은 양수 각도가 시계 방향이라 부호 반전
+            VIZCore3DX.NET.Data.Matrix3D matrix = new VIZCore3DX.NET.Data.Matrix3D();
+            matrix.SetMatrixRotateAxis(axis, -angle, VIZCore3DX.NET.Data.AngleFormat.DEGREE);
 
-            VIZCore3DX.NET.Data.Vector3D cross = axis.Cross(vector);
-
-            float x = (float)(vector.X * cos + cross.X * sin + axis.X * dot * (1.0 - cos));
-            float y = (float)(vector.Y * cos + cross.Y * sin + axis.Y * dot * (1.0 - cos));
-            float z = (float)(vector.Z * cos + cross.Z * sin + axis.Z * dot * (1.0 - cos));
-
-            return new VIZCore3DX.NET.Data.Vector3D(x, y, z).GetNormalized();
+            return (matrix * vector).GetNormalized();
         }
 
         private void chkSelectable_CheckedChanged(object sender, EventArgs e)

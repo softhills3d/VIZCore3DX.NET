@@ -134,6 +134,7 @@ namespace VIZCore3DX.NET.Snapshot
                 if (ID > 0)
                 {
                     ListViewItem listView = new ListViewItem(new string[] { ID.ToString(), vizcore3dx.Snapshot.GetItem(ID).Text });
+                    listView.Tag = ID;
 
                     listView1.Items.Add(listView);
                 }
@@ -145,9 +146,7 @@ namespace VIZCore3DX.NET.Snapshot
             // Restore Snapshot
             if (vizcore3dx.Model.IsOpen() == false) return;
 
-            var selectedItem = listView1.SelectedItems[0].Text;
-
-            vizcore3dx.Snapshot.GetItem(uint.Parse(selectedItem)).Restore();
+            vizcore3dx.Snapshot.GetItem((uint)listView1.SelectedItems[0].Tag).Restore();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -211,6 +210,7 @@ namespace VIZCore3DX.NET.Snapshot
             foreach (var item in vizcore3dx.Snapshot.Snapshots)
             {
                 ListViewItem listView = new ListViewItem(new string[] { item.ID.ToString(), item.Text });
+                listView.Tag = item.ID;
 
                 listView1.Items.Add(listView);
             }

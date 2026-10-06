@@ -70,11 +70,10 @@ namespace VIZCore3DX.NET.GridThreeD
                 VIZCore3DX.NET.VIZCore3DXControl ctrl = sender as VIZCore3DX.NET.VIZCore3DXControl;
                 if (ctrl == null) return;
 
-                bool result = VIZCore3DXHelper.OnInitializedVIZCore3DX(ctrl);
-                if (result == false) return;
+                if (CheckLicense(ctrl) == false) return;
 
                 if (viewOnly == true) HideViewerUI(ctrl);
-                else ctrl.ToolbarMain.Visible = true;
+                else InitializeVIZCore3DX();
 
                 if (init != null) init(ctrl);
             };
@@ -84,19 +83,65 @@ namespace VIZCore3DX.NET.GridThreeD
             return viewer;
         }
 
+        private static bool CheckLicense(VIZCore3DX.NET.VIZCore3DXControl ctrl)
+        {
+            // ================================================================
+            // Example
+            // ================================================================
+            // 라이선스 파일을 통한 인증
+            //ctrl.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
+
+            // 라이선스 서버를 통한 인증
+            VIZCore3DX.NET.Data.LicenseResults result = ctrl.License.LicenseServer("127.0.0.1", 8901);
+
+            // ================================================================
+            // License
+            // ================================================================
+            // VIZCore3DX.NET.Data.LicenseResults result = ctrl.License.LicenseFile("C:\\License\\VIZCore3DX.NET.lic");
+            if (result != VIZCore3DX.NET.Data.LicenseResults.SUCCESS)
+            {
+                MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void InitializeVIZCore3DX()
+        {
+            // ================================================================
+            // 모델 열기 시, 3D 화면 Rendering 차단
+            // ================================================================
+            vizcore3dx.BeginUpdate();
+
+            try
+            {
+                // ================================================================
+                // 설정 - 툴바
+                // ================================================================
+
+                // 리본 UI 를 기본으로 켜고, 이 예제가 다루는 리본·패널 탭만 남깁니다.
+                vizcore3dx.RibbonMode = true;
+                ShowRibbonTabs();
+                ShowAttributeTabs();
+            }
+            finally
+            {
+                // ================================================================
+                // 모델 열기 시, 3D 화면 Rendering 재시작
+                // ================================================================
+                vizcore3dx.EndUpdate();
+            }
+        }
+
         // 3D 화면만 남기고 리본 / 툴바 / 뷰 툴바 / 모델링 컨트롤 / 상태바 숨김
         private static void HideViewerUI(VIZCore3DX.NET.VIZCore3DXControl ctrl)
         {
             ctrl.RibbonMode = false;
             ctrl.View.Toolbar.Enable = false;           // 화면 안 세로 뷰 툴바 (홈 / 확대 / 이동 / 회전 / 설정)
             ctrl.ModelingControlVisible = false;        // 모델링 컨트롤 패널 (우측 하단 X 로고)
-            ctrl.ToolbarMain.Visible = false;
-            ctrl.ToolbarNote.Visible = false;
-            ctrl.ToolbarMeasure.Visible = false;
-            ctrl.ToolbarSection.Visible = false;
-            ctrl.ToolbarSnapshot.Visible = false;
-            ctrl.ToolbarDecal.Visible = false;
-            ctrl.ToolbarPrimitive.Visible = false;
+            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
+                ctrl.Toolbar.SetVisible(kind, false);
             ctrl.Statusbar.Visible = false;
         }
 
@@ -718,6 +763,35 @@ namespace VIZCore3DX.NET.GridThreeD
             Vertex3D center = box.GetCenter();
 
             return new BoundBox3D(center, box.LengthX * scale, box.LengthY * scale, box.LengthZ * scale);
+        }
+
+        // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
+        private void ShowRibbonTabs(params VIZCore3DX.NET.Data.ToolbarKind[] keep)
+        {
+            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
+                vizcore3dx.Toolbar.SetVisible(kind, kind == VIZCore3DX.NET.Data.ToolbarKind.Main || Array.IndexOf(keep, kind) >= 0);
+
+            vizcore3dx.TabSnapshotEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Snapshot) >= 0;
+            vizcore3dx.TabNotetEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Note) >= 0;
+            vizcore3dx.TabMeasureEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Measure) >= 0;
+            vizcore3dx.TabSectionEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Section) >= 0;
+            vizcore3dx.TabDecalEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Decal) >= 0;
+            vizcore3dx.TabSelectionBoxEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.SelectionBox) >= 0;
+            vizcore3dx.TabZoneEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Zone) >= 0;
+            vizcore3dx.TabEffectEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Effect) >= 0;
+            vizcore3dx.TabObserverEnabled = Array.IndexOf(keep, VIZCore3DX.NET.Data.ToolbarKind.Observer) >= 0;
+        }
+
+        // 속성 패널은 노드 특성·노드 속성만 기본으로 남기고, 예제가 다루는 탭만 켭니다.
+        private void ShowAttributeTabs(bool attributeTree = false, bool nodeGroup = false, bool projection = false, bool pmi = false)
+        {
+            vizcore3dx.TabAttributeTreeEnabled = attributeTree;
+            vizcore3dx.TabNodeGroupEnabled = nodeGroup;
+            vizcore3dx.TabProjectionEnabled = projection;
+            vizcore3dx.TabPmiEnabled = pmi;
+            vizcore3dx.TabEnvironmentEnabled = false;
+            vizcore3dx.TabGenericDataEnabled = false;
+            vizcore3dx.AttributePanelVisible = attributeTree || nodeGroup || projection || pmi;
         }
     }
 }

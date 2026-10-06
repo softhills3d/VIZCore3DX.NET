@@ -216,15 +216,15 @@ namespace VIZCore3DX.NET.CustomAxisRotation
 
         private Vertex3D ParseVertex(string text)
         {
-            string[] values = text.Split(',');
-            if (values.Length != 3) return null;
-
-            float x, y, z;
-            if (float.TryParse(values[0], out x) == false) return null;
-            if (float.TryParse(values[1], out y) == false) return null;
-            if (float.TryParse(values[2], out z) == false) return null;
-
-            return new Vertex3D(x, y, z);
+            try
+            {
+                List<Vertex3D> vertices = Vertex3D.GetVertexList(text);
+                return vertices.Count == 1 ? vertices[0] : null;
+            }
+            catch (FormatException)
+            {
+                return null;
+            }
         }
 
         private void timerAnimation_Tick(object sender, EventArgs e)

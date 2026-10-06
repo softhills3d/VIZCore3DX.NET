@@ -81,13 +81,7 @@ namespace VIZCore3DX.NET.CameraControl
 
             CameraItem item = new CameraItem
             {
-                EyePosition = cam.EyePosition,
-                PivotPosition = cam.PivotPosition,
-                CameraDirection = cam.CameraDirection,
-                UpDirection = cam.UpDirection,
-                Zoom = cam.Zoom,
-                Fov = cam.Fov,
-                ProjectionType = cam.ProjectionType,
+                Camera = cam,
                 Snapshot = vizcore3dx.View.CaptureImage()
             };
 
@@ -98,12 +92,12 @@ namespace VIZCore3DX.NET.CameraControl
         private void AddCameraItem(CameraItem camera)
         {
             ListViewItem lvi = new ListViewItem(new string[] {
-                camera.Zoom.ToString(),
+                camera.Camera.Zoom.ToString(),
                 string.Format(
                     "{0:F4}, {1:F4}, {2:F4}",
-                    camera.CameraDirection.X,
-                    camera.CameraDirection.Y,
-                    camera.CameraDirection.Z
+                    camera.Camera.CameraDirection.X,
+                    camera.Camera.CameraDirection.Y,
+                    camera.Camera.CameraDirection.Z
                     )
             });
 
@@ -118,18 +112,7 @@ namespace VIZCore3DX.NET.CameraControl
             if (lvCamera.SelectedItems.Count == 0) return;
             if ((lvCamera.SelectedItems[0].Tag is CameraItem item) == false) return;
 
-            CameraData cam = vizcore3dx.View.GetCameraData();
-            if (cam == null) return;
-
-            cam.EyePosition = item.EyePosition;
-            cam.PivotPosition = item.PivotPosition;
-            cam.CameraDirection = item.CameraDirection;
-            cam.UpDirection = item.UpDirection;
-            cam.Zoom = item.Zoom;
-            cam.Fov = item.Fov;
-            cam.ProjectionType = item.ProjectionType;
-
-            vizcore3dx.View.SetCameraData(cam);
+            vizcore3dx.View.SetCameraData(item.Camera);
             pbSnapshot.Image = item.Snapshot;
 
             if (ckFitToView.Checked == true)

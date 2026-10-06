@@ -51,7 +51,6 @@
 	  </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="VIZCore3DXHelper.cs" />
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>

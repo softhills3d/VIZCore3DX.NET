@@ -87,7 +87,6 @@
             this.lblText = new System.Windows.Forms.Label();
             this.tlpTop = new System.Windows.Forms.TableLayoutPanel();
             this.btnOpenModel = new System.Windows.Forms.Button();
-            this.btnFitToView = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.openFileDialogImage = new System.Windows.Forms.OpenFileDialog();
             this.colNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -1045,11 +1044,9 @@
             // 
             this.tlpTop.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tlpTop.ColumnCount = 2;
-            this.tlpTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tlpTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tlpTop.ColumnCount = 1;
+            this.tlpTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpTop.Controls.Add(this.btnOpenModel, 0, 0);
-            this.tlpTop.Controls.Add(this.btnFitToView, 1, 0);
             this.tlpTop.Location = new System.Drawing.Point(7, 10);
             this.tlpTop.Name = "tlpTop";
             this.tlpTop.RowCount = 1;
@@ -1062,22 +1059,11 @@
             this.btnOpenModel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btnOpenModel.Location = new System.Drawing.Point(3, 3);
             this.btnOpenModel.Name = "btnOpenModel";
-            this.btnOpenModel.Size = new System.Drawing.Size(292, 30);
+            this.btnOpenModel.Size = new System.Drawing.Size(420, 30);
             this.btnOpenModel.TabIndex = 0;
             this.btnOpenModel.Text = "모델 열기";
             this.btnOpenModel.UseVisualStyleBackColor = true;
             this.btnOpenModel.Click += new System.EventHandler(this.btnOpenModel_Click);
-            // 
-            // btnFitToView
-            // 
-            this.btnFitToView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnFitToView.Location = new System.Drawing.Point(301, 3);
-            this.btnFitToView.Name = "btnFitToView";
-            this.btnFitToView.Size = new System.Drawing.Size(122, 30);
-            this.btnFitToView.TabIndex = 1;
-            this.btnFitToView.Text = "화면 맞춤";
-            this.btnFitToView.UseVisualStyleBackColor = true;
-            this.btnFitToView.Click += new System.EventHandler(this.btnFitToView_Click);
             // 
             // colorDialog1
             // 
@@ -1176,7 +1162,6 @@
         private System.Windows.Forms.Panel panelControl;
         private System.Windows.Forms.TableLayoutPanel tlpTop;
         private System.Windows.Forms.Button btnOpenModel;
-        private System.Windows.Forms.Button btnFitToView;
 
         private System.Windows.Forms.GroupBox groupCreate;
         private System.Windows.Forms.GroupBox groupText;

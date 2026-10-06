@@ -50,7 +50,7 @@
             this.ckShadingEffect = new System.Windows.Forms.CheckBox();
             this.ckRealtimeShadow = new System.Windows.Forms.CheckBox();
             this.ckSilhouetteEdge = new System.Windows.Forms.CheckBox();
-            this.lbFOV = new System.Windows.Forms.Label();
+            this.numFOV = new System.Windows.Forms.NumericUpDown();
             this.tbFOV = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -61,6 +61,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbFOV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numFOV)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -235,7 +236,7 @@
             this.groupBox1.Controls.Add(this.ckShadingEffect);
             this.groupBox1.Controls.Add(this.ckRealtimeShadow);
             this.groupBox1.Controls.Add(this.ckSilhouetteEdge);
-            this.groupBox1.Controls.Add(this.lbFOV);
+            this.groupBox1.Controls.Add(this.numFOV);
             this.groupBox1.Controls.Add(this.tbFOV);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
@@ -289,26 +290,41 @@
             this.ckSilhouetteEdge.UseVisualStyleBackColor = true;
             this.ckSilhouetteEdge.CheckedChanged += new System.EventHandler(this.ckSilhouetteEdge_CheckedChanged);
             // 
-            // lbFOV
+            // numFOV
             // 
-            this.lbFOV.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbFOV.AutoSize = true;
-            this.lbFOV.Location = new System.Drawing.Point(212, 54);
-            this.lbFOV.Name = "lbFOV";
-            this.lbFOV.Size = new System.Drawing.Size(68, 12);
-            this.lbFOV.TabIndex = 2;
-            this.lbFOV.Text = "VALUE : 60";
+            this.numFOV.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numFOV.Location = new System.Drawing.Point(220, 50);
+            this.numFOV.Maximum = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.numFOV.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numFOV.Name = "numFOV";
+            this.numFOV.Size = new System.Drawing.Size(60, 21);
+            this.numFOV.TabIndex = 2;
+            this.numFOV.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.numFOV.ValueChanged += new System.EventHandler(this.numFOV_ValueChanged);
             // 
             // tbFOV
             // 
             this.tbFOV.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbFOV.Location = new System.Drawing.Point(58, 20);
-            this.tbFOV.Maximum = 74;
-            this.tbFOV.Minimum = 45;
+            this.tbFOV.Maximum = 120;
+            this.tbFOV.Minimum = 1;
             this.tbFOV.Name = "tbFOV";
             this.tbFOV.Size = new System.Drawing.Size(230, 45);
             this.tbFOV.TabIndex = 1;
+            this.tbFOV.TickFrequency = 10;
             this.tbFOV.Value = 60;
             this.tbFOV.ValueChanged += new System.EventHandler(this.tbFOV_ValueChanged);
             // 
@@ -341,6 +357,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tbFOV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numFOV)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -353,7 +370,7 @@
         private System.Windows.Forms.CheckBox ckShadingEffect;
         private System.Windows.Forms.CheckBox ckRealtimeShadow;
         private System.Windows.Forms.CheckBox ckSilhouetteEdge;
-        private System.Windows.Forms.Label lbFOV;
+        private System.Windows.Forms.NumericUpDown numFOV;
         private System.Windows.Forms.TrackBar tbFOV;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox groupBox4;

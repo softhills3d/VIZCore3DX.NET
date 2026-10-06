@@ -18,13 +18,6 @@ namespace VIZCore3DX.NET.Group
         // 내부 선택 처리 중 노드 이벤트 재실행 방지
         private bool suppressNodeEvent;
 
-        private enum GroupKind
-        {
-            SELECTION,
-            UDA,
-            SEARCH
-        }
-
         public FrmMain()
         {
             InitializeComponent();
@@ -151,12 +144,12 @@ namespace VIZCore3DX.NET.Group
             string groupName = txtName.Text.Trim();
             if (string.IsNullOrEmpty(groupName)) return;
 
-            GroupKind kind;
+            string kind;
             List<Node> nodes;
 
             if (rbSelection.Checked == true)
             {
-                kind = GroupKind.SELECTION;
+                kind = "SELECTION";
                 nodes = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_ALL);
             }
             else if (rbSearch.Checked == true)
@@ -164,7 +157,7 @@ namespace VIZCore3DX.NET.Group
                 string keyword = txtKeyword.Text.Trim();
                 if (string.IsNullOrEmpty(keyword)) return;
 
-                kind = GroupKind.SEARCH;
+                kind = "SEARCH";
                 nodes = vizcore3dx.Object3D.Find.QuickSearch(new List<string> { keyword }, false, true, false, false, false);
             }
             else if (rbProperty.Checked == true)
@@ -173,7 +166,7 @@ namespace VIZCore3DX.NET.Group
                 string propertyValue = txtPropertyValue.Text.Trim();
                 if (string.IsNullOrEmpty(propertyKey) || string.IsNullOrEmpty(propertyValue)) return;
 
-                kind = GroupKind.UDA;
+                kind = "UDA";
 
                 List<Node> targetNodes = vizcore3dx.Object3D.FromFilter(Object3dFilter.ALL);
                 nodes = vizcore3dx.Object3D.UDA.GetNodes(propertyKey, propertyValue, targetNodes, false);
@@ -200,7 +193,7 @@ namespace VIZCore3DX.NET.Group
 
             vizcore3dx.Object3D.Group.AddNodes(group, nodes);
 
-            ListViewItem item = new ListViewItem(new string[] { group.Name, kind.ToString(), group.Nodes == null ? "0" : group.Nodes.Count.ToString() });
+            ListViewItem item = new ListViewItem(new string[] { group.Name, kind, group.Nodes == null ? "0" : group.Nodes.Count.ToString() });
             item.Tag = group;
 
             lvGroup.Items.Add(item);

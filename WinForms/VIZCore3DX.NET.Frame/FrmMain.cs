@@ -317,6 +317,7 @@ namespace VIZCore3DX.NET.Frame
             foreach (FrameItem frame in vizcore3dx.Frame.Frames)
             {
                 ListViewItem item = new ListViewItem(new string[] { frame.ID.ToString() });
+                item.Tag = frame.ID;
                 lvFrame.Items.Add(item);
             }
         }
@@ -354,7 +355,7 @@ namespace VIZCore3DX.NET.Frame
         {
             if (lvFrame.SelectedItems.Count <= 0) return null;
 
-            int frameID = int.Parse(lvFrame.SelectedItems[0].SubItems[0].Text);
+            int frameID = (int)lvFrame.SelectedItems[0].Tag;
             FrameItem frame = vizcore3dx.Frame.GetFrame(frameID);
 
             if (frame == null) return null;
