@@ -189,117 +189,122 @@ namespace VIZCore3DX.NET.ModelComparison
 
             vizcore1.ShowWaitForm();
 
-
-            // 모델1 기준으로 순회하며 모델2와 비교
-            foreach (KeyValuePair<string, VIZCore3DX.NET.Data.Node> item in map1)
+            try
             {
-                ModelComparisonItem model = new ModelComparisonItem();
-
-                if (map2.ContainsKey(item.Key) == true)
-                {
-                    // 양쪽 모두 존재하는 노드: 위치(BBox) 및 형상(MeshCount) 비교
-                    model.Node1 = item.Value;
-                    model.Node2 = map2[item.Key];
-
-                    model.BBox1 = item.Value.GetBoundBox();
-                    model.BBox2 = model.Node2.GetBoundBox();
-
-                    // PART/BODY 노드만 메시 개수 비교 (형상 변경 판별)
-                    if (item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.PART
-                        || item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.BODY)
-                    {
-                        model.MeshCount1 = item.Value.GetMeshCount();
-                        model.MeshCount2 = model.Node2.GetMeshCount();
-                    }
-
-                    model.RESULT_EXIST_A = true;
-                    model.RESULT_EXIST_B = true;
-                    model.RESULT_EXIST_BOTH = true;
-
-                    // 위치 및 형상 비교 수행
-                    model.Compare();
-                }
-                else
-                {
-                    // 모델1에만 존재하는 노드: 삭제된 항목
-                    model.Node1 = item.Value;
-
-                    model.BBox1 = item.Value.GetBoundBox();
-
-                    if (item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.PART
-                        || item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.BODY)
-                    {
-                        model.MeshCount1 = item.Value.GetMeshCount();
-                    }
-
-                    model.RESULT_EXIST_A = true;
-                    model.RESULT_EXIST_B = false;
-                    model.RESULT_EXIST_BOTH = false;
-                }
-
-                result.Add(model);
-            }
-
-            // 모델2에만 존재하는 노드: 추가된 항목
-            foreach (KeyValuePair<string, VIZCore3DX.NET.Data.Node> item in map2)
-            {
-                if (map1.ContainsKey(item.Key) == false)
+                // 모델1 기준으로 순회하며 모델2와 비교
+                foreach (KeyValuePair<string, VIZCore3DX.NET.Data.Node> item in map1)
                 {
                     ModelComparisonItem model = new ModelComparisonItem();
 
-                    model.Node2 = item.Value;
-
-                    model.BBox2 = item.Value.GetBoundBox();
-
-                    if (item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.PART
-                        || item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.BODY)
+                    if (map2.ContainsKey(item.Key) == true)
                     {
-                        model.MeshCount2 = item.Value.GetMeshCount();
-                    }
+                        // 양쪽 모두 존재하는 노드: 위치(BBox) 및 형상(MeshCount) 비교
+                        model.Node1 = item.Value;
+                        model.Node2 = map2[item.Key];
 
-                    model.RESULT_EXIST_A = false;
-                    model.RESULT_EXIST_B = true;
-                    model.RESULT_EXIST_BOTH = false;
+                        model.BBox1 = item.Value.GetBoundBox();
+                        model.BBox2 = model.Node2.GetBoundBox();
+
+                        // PART/BODY 노드만 메시 개수 비교 (형상 변경 판별)
+                        if (item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.PART
+                            || item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.BODY)
+                        {
+                            model.MeshCount1 = item.Value.GetMeshCount();
+                            model.MeshCount2 = model.Node2.GetMeshCount();
+                        }
+
+                        model.RESULT_EXIST_A = true;
+                        model.RESULT_EXIST_B = true;
+                        model.RESULT_EXIST_BOTH = true;
+
+                        // 위치 및 형상 비교 수행
+                        model.Compare();
+                    }
+                    else
+                    {
+                        // 모델1에만 존재하는 노드: 삭제된 항목
+                        model.Node1 = item.Value;
+
+                        model.BBox1 = item.Value.GetBoundBox();
+
+                        if (item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.PART
+                            || item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.BODY)
+                        {
+                            model.MeshCount1 = item.Value.GetMeshCount();
+                        }
+
+                        model.RESULT_EXIST_A = true;
+                        model.RESULT_EXIST_B = false;
+                        model.RESULT_EXIST_BOTH = false;
+                    }
 
                     result.Add(model);
                 }
-            }
 
-            // 비교 결과를 ListView에 표시
-            lvResult.BeginUpdate();
-            lvResult.Items.Clear();
-            foreach (ModelComparisonItem item in result)
-            {
-                // 열 구성: NAME1, NAME2, 구조변경, 위치변경, 형상변경, MeshCount1, MeshCount2, BBox1, BBox2
-                string[] columns = new string[]
+                // 모델2에만 존재하는 노드: 추가된 항목
+                foreach (KeyValuePair<string, VIZCore3DX.NET.Data.Node> item in map2)
                 {
-                    item.RESULT_EXIST_A == true ? item.Node1.NodeName : String.Empty,
-                    item.RESULT_EXIST_B == true ? item.Node2.NodeName : String.Empty,
-                    item.RESULT_EXIST_BOTH == true ? String.Empty : (item.RESULT_EXIST_A == true ? "모델 삭제" : "모델 추가"),
-                    item.RESULT_EXIST_BOTH == false ? String.Empty : (item.RESULT_LOCATION == true ? String.Empty : "위치 변경"),
-                    item.RESULT_EXIST_BOTH == false ? String.Empty : ((item.Node1.Kind == VIZCore3DX.NET.Data.NodeKind.PART) ? (item.RESULT_SHAPE == true ? String.Empty : "형상 변경") : String.Empty),
-                    item.MeshCount1.ToString(),
-                    item.MeshCount2.ToString(),
-                    item.BBox1 != null ? item.BBox1.ToString() : String.Empty,
-                    item.BBox2 != null ? item.BBox2.ToString() : String.Empty
-                };
-                ListViewItem lvi = new ListViewItem(columns);
-                lvi.Tag = item;
+                    if (map1.ContainsKey(item.Key) == false)
+                    {
+                        ModelComparisonItem model = new ModelComparisonItem();
 
-                // 변경 항목만 표시 옵션이 켜진 경우 동일한 모델은 제외
-                if (ckResultViewType.Checked == true)
+                        model.Node2 = item.Value;
+
+                        model.BBox2 = item.Value.GetBoundBox();
+
+                        if (item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.PART
+                            || item.Value.Kind == VIZCore3DX.NET.Data.NodeKind.BODY)
+                        {
+                            model.MeshCount2 = item.Value.GetMeshCount();
+                        }
+
+                        model.RESULT_EXIST_A = false;
+                        model.RESULT_EXIST_B = true;
+                        model.RESULT_EXIST_BOTH = false;
+
+                        result.Add(model);
+                    }
+                }
+
+                // 비교 결과를 ListView에 표시
+                lvResult.BeginUpdate();
+                lvResult.Items.Clear();
+                foreach (ModelComparisonItem item in result)
                 {
-                    if (item.IsSameModel() == false)
+                    // 열 구성: NAME1, NAME2, 구조변경, 위치변경, 형상변경, MeshCount1, MeshCount2, BBox1, BBox2
+                    string[] columns = new string[]
+                    {
+                        item.RESULT_EXIST_A == true ? item.Node1.NodeName : String.Empty,
+                        item.RESULT_EXIST_B == true ? item.Node2.NodeName : String.Empty,
+                        item.RESULT_EXIST_BOTH == true ? String.Empty : (item.RESULT_EXIST_A == true ? "모델 삭제" : "모델 추가"),
+                        item.RESULT_EXIST_BOTH == false ? String.Empty : (item.RESULT_LOCATION == true ? String.Empty : "위치 변경"),
+                        item.RESULT_EXIST_BOTH == false ? String.Empty : ((item.Node1.Kind == VIZCore3DX.NET.Data.NodeKind.PART || item.Node1.Kind == VIZCore3DX.NET.Data.NodeKind.BODY) ? (item.RESULT_SHAPE == true ? String.Empty : "형상 변경") : String.Empty),
+                        item.MeshCount1.ToString(),
+                        item.MeshCount2.ToString(),
+                        item.BBox1 != null ? item.BBox1.ToString() : String.Empty,
+                        item.BBox2 != null ? item.BBox2.ToString() : String.Empty
+                    };
+                    ListViewItem lvi = new ListViewItem(columns);
+                    lvi.Tag = item;
+
+                    // 변경 항목만 표시 옵션이 켜진 경우 동일한 모델은 제외
+                    if (ckResultViewType.Checked == true)
+                    {
+                        if (item.IsSameModel() == false)
+                            lvResult.Items.Add(lvi);
+                    }
+                    else
+                    {
                         lvResult.Items.Add(lvi);
+                    }
                 }
-                else
-                {
-                    lvResult.Items.Add(lvi);
-                }
+                lvResult.EndUpdate();
             }
-            lvResult.EndUpdate();
-
-            vizcore1.CloseWaitForm();
+            finally
+            {
+                // 예외가 나도 대기창은 닫음
+                vizcore1.CloseWaitForm();
+            }
 
             MessageBox.Show("Completed", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }

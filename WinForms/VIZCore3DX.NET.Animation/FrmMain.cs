@@ -164,7 +164,12 @@ namespace VIZCore3DX.NET.Animation
 
         private void btnOpenModel_Click(object sender, EventArgs e)
         {
-            vizcore3dx.Model.Open("primitiveCrane.vizx");
+            // 파일이 없으면 Open이 예외를 던지므로 먼저 확인
+            if (System.IO.File.Exists("primitiveCrane.vizx") == false || vizcore3dx.Model.Open("primitiveCrane.vizx") == false)
+            {
+                MessageBox.Show("모델(primitiveCrane.vizx)을 열 수 없습니다.", "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             // 애니메이션 생성
             CreateAnimation();
@@ -270,8 +275,17 @@ namespace VIZCore3DX.NET.Animation
             int fps = (int)numFps.Value;
 
             // 출력 폴더 안에 내보내기 전용 폴더를 만들어 그 안에 PNG 파일 저장
-            string folder = System.IO.Path.Combine(txtOutputFolder.Text, string.Format("{0}_{1:yyyyMMdd_HHmmss}", ani.Name, DateTime.Now));
-            System.IO.Directory.CreateDirectory(folder);
+            string folder;
+            try
+            {
+                folder = System.IO.Path.Combine(txtOutputFolder.Text, string.Format("{0}_{1:yyyyMMdd_HHmmss}", ani.Name, DateTime.Now));
+                System.IO.Directory.CreateDirectory(folder);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("출력 폴더를 만들 수 없습니다.\n\n{0}", ex.Message), "VIZCore3DX.NET.Animation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             SetExporting(true);
             lblExportStatus.Text = string.Format("상태 : 내보내는 중... ({0} fps, 예상 {1}프레임)", fps, (int)Math.Ceiling(ani.Duration.TotalSeconds * fps));
@@ -482,22 +496,22 @@ namespace VIZCore3DX.NET.Animation
                 craneGroup.CreateTranslationAction(TimeSpan.FromSeconds(0.0), TimeSpan.FromSeconds(2.0), new Vector3D(-1, 0, 0), 20000);
 
                 // 0초에서 2초 동안, 회전의 중심이 (633, 0, 2897)이고, 회전의 축이 (0, 0, 1)인 회전축에 대해서 -90도 회전하는 액션
-                craneGroup.CreateRotationAction(TimeSpan.FromSeconds(0.0), TimeSpan.FromSeconds(2.0), new Vector3D(633, 0, 2897), new Vector3D(0, 0, 1), Deg2Rad(-90.0f));
+                craneGroup.CreateRotationAction(TimeSpan.FromSeconds(0.0), TimeSpan.FromSeconds(2.0), new Vector3D(633, 0, 2897), new Vector3D(0, 0, 1), VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(-90.0f));
             }
 
             // Crane Jib 그룹에 액션을 추가
             {
                 // 3초에서 1초 동안, 회전의 중심이 (1061, 29, 2200)이고, 회전의 축이 (0, 0, 1)인 회전축에 대해서 90도 회전하는 액션
-                craneJibGroup.CreateRotationAction(TimeSpan.FromSeconds(3.0), TimeSpan.FromSeconds(1.0), new Vector3D(1061, 29, 2200), new Vector3D(0, 0, 1), Deg2Rad(90.0f));
+                craneJibGroup.CreateRotationAction(TimeSpan.FromSeconds(3.0), TimeSpan.FromSeconds(1.0), new Vector3D(1061, 29, 2200), new Vector3D(0, 0, 1), VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(90.0f));
 
                 // 20초에서 1초 동안, 회전의 중심이 (1043, -58, 2200)이고, 회전의 축이 (0, 0, 1)인 회전축에 대해서 -90도 회전하는 액션
-                craneJibGroup.CreateRotationAction(TimeSpan.FromSeconds(20.0), TimeSpan.FromSeconds(1.0), new Vector3D(1043, -58, 2200), new Vector3D(0, 0, 1), Deg2Rad(-90.0f));
+                craneJibGroup.CreateRotationAction(TimeSpan.FromSeconds(20.0), TimeSpan.FromSeconds(1.0), new Vector3D(1043, -58, 2200), new Vector3D(0, 0, 1), VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(-90.0f));
             }
 
             // Boom 그룹에 액션을 추가
             {
                 // 10초에서 2초 동안, 회전의 중심이 (936, -1000, 1810)이고, 회전의 축이 (0, -1, 0)인 회전축에 대해서 -30도 회전하는 액션
-                boomGroup.CreateRotationAction(TimeSpan.FromSeconds(10.0), TimeSpan.FromSeconds(2.0), new Vector3D(936, -1000, 1810), new Vector3D(0, -1, 0), Deg2Rad(-30.0f));
+                boomGroup.CreateRotationAction(TimeSpan.FromSeconds(10.0), TimeSpan.FromSeconds(2.0), new Vector3D(936, -1000, 1810), new Vector3D(0, -1, 0), VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(-30.0f));
             }
 
             // Boom2 그룹에 액션을 추가
@@ -519,7 +533,7 @@ namespace VIZCore3DX.NET.Animation
             // Hook 그룹에 액션을 추가
             {
                 // 10초에서 2초 동안, 회전의 중심이 (5087, -200, 5594)이고, 회전의 축이 (0, -1, 0)인 회전축에 대해서 30도 회전하는 액션
-                hookGroup.CreateRotationAction(TimeSpan.FromSeconds(10.0), TimeSpan.FromSeconds(2.0), new Vector3D(5087, -200, 5594), new Vector3D(0, -1, 0), Deg2Rad(30.0f));
+                hookGroup.CreateRotationAction(TimeSpan.FromSeconds(10.0), TimeSpan.FromSeconds(2.0), new Vector3D(5087, -200, 5594), new Vector3D(0, -1, 0), VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(30.0f));
 
                 // 13초에서 2초 동안, (0, 0, -1) 방향으로 1000mm 이동하는 액션. 후크가 탱크를 향해 내려가는 동작.
                 hookGroup.CreateTranslationAction(TimeSpan.FromSeconds(13.0), TimeSpan.FromSeconds(2.0), new Vector3D(0, 0, -1), 1000);
@@ -576,11 +590,6 @@ namespace VIZCore3DX.NET.Animation
         private void Ani_OnAnimationStoppedEvent(object sender, EventManager.AnimationPlaybackEventArgs e)
         {
             Console.WriteLine($"OnAnimationStoppedEvent: Ani name: {e.Animation.Name}");
-        }
-
-        public float Deg2Rad(float degree)
-        {
-            return degree * (float)Math.PI / 180.0f;
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.

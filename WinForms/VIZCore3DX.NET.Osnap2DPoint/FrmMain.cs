@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using VIZCore3DX.NET.Data;
 
@@ -8,6 +9,16 @@ namespace VIZCore3DX.NET.Osnap2DPoint
     {
         // VIZCore3DX.NET 선언
         private VIZCore3DXControl vizcore3dx;
+
+        // 좌표 찍기 중에는 버튼을 다시 눌러도 새로 시작하지 않습니다.
+        private bool _picking;
+
+        // 카메라를 움직이는 마우스 동작
+        private static readonly InputAction[] CameraActions =
+        {
+            InputAction.Orbit, InputAction.Pan, InputAction.ZoomDrag, InputAction.Roll, InputAction.LookAround,
+            InputAction.ZoomWheel, InputAction.Tilt, InputAction.CenterViewAtCursor, InputAction.FitAtCursor, InputAction.SetPivotAtCursor
+        };
 
         public FrmMain()
         {
@@ -71,18 +82,34 @@ namespace VIZCore3DX.NET.Osnap2DPoint
             vizcore3dx.EndUpdate();
         }
 
+        // 위에서 내려다본 2D 화면으로 고정하고, Esc 로 끝낼 때까지 Osnap 한 지점마다 XY 좌표 노트를 찍습니다.
         private async void btnShowOsnap_Click(object sender, EventArgs e)
         {
+            if (_picking) return;
             if (vizcore3dx.Object3D.GetNodeCount() <= 0) return;
 
-            // 2D 좌표 확인을 위한 상단 고정 뷰 설정
-            vizcore3dx.View.MoveCamera(CameraDirection.Z_PLUS);
-            vizcore3dx.View.RotationAngle = 0.0f;
-            vizcore3dx.View.EnableAnimation = false;
-            vizcore3dx.View.EnableAutoFit = false;
-            vizcore3dx.View.SetCameraMode(CameraMode.FixedUpOrbit);
+            _picking = true;
+            LockTopView();
+            try
+            {
+                while (true)
+                {
+                    OsnapResult result = await CreatePointOsnap().GetResultAsync();
+                    if (result?.Position == null) break;   // Esc 등으로 취소하면 종료
 
-            // 점 스냅만 활성화
+                    AddPointNote(result.Position.ToVertex3D());
+                }
+            }
+            finally
+            {
+                UnlockTopView();
+                _picking = false;
+            }
+        }
+
+        // 점 스냅만 켠 Osnap
+        private OsnapController CreatePointOsnap()
+        {
             OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
             osnap.EdgeEndpointSnap = true;
             osnap.EdgeMidpointSnap = true;
@@ -91,19 +118,54 @@ namespace VIZCore3DX.NET.Osnap2DPoint
             osnap.CircleSnap = false;
             osnap.CircleCenterSnap = false;
             osnap.CylinderSnap = false;
-            osnap.CommandText = "Osnap 할 지점을 선택하세요.";
+            osnap.CommandText = "모서리 끝점·중점을 선택하세요. (Esc : 종료)";
 
             vizcore3dx.Focus();
+            return osnap;
+        }
 
-            OsnapResult result = await osnap.GetResultAsync();
-            if (result?.Position == null) return;
-
-            // 선택 위치의 XY 좌표를 노트로 표시
-            Vertex3D surfacePos = result.Position.ToVertex3D();
-            Vertex3D notePos = new Vertex3D(surfacePos.X, surfacePos.Y + 500.0f, surfacePos.Z);
+        // 선택 위치의 XY 좌표를 노트로 표시
+        private void AddPointNote(Vertex3D surfacePos)
+        {
+            Vertex3D notePos = surfacePos + new Vector3D(0.0f, 500.0f, 0.0f);
             string text = string.Format("{0:F2}, {1:F2}", surfacePos.X, surfacePos.Y);
 
             vizcore3dx.Note.AddNoteSurface(text, notePos, surfacePos, false);
+        }
+
+        // 평면도(Z+ 위에서 내려다봄) + 정사영으로 맞추고, 카메라를 움직이는 입력을 모두 막습니다.
+        private void LockTopView()
+        {
+            vizcore3dx.View.EnableAnimation = false;
+            vizcore3dx.View.EnableAutoFit = false;
+            vizcore3dx.View.Projection = Projections.Orthographic;
+            vizcore3dx.View.MoveCamera(CameraDirection.Z_PLUS);
+            vizcore3dx.View.RotationAngle = 0.0f;
+
+            List<InputBindingItem> bindings = vizcore3dx.Input.GetCustomBindings();
+            foreach (InputBindingItem item in bindings)
+            {
+                if (Array.IndexOf(CameraActions, item.Action) >= 0) item.Assigned = false;
+            }
+            vizcore3dx.Input.ApplyCustomBindings(bindings);
+
+            vizcore3dx.View.NavigationDragMode = NavigationDragMode.NONE;
+            vizcore3dx.Shortcuts.Enable = false;
+            vizcore3dx.ViewCube.Enable = false;
+            vizcore3dx.View.Toolbar.Enable = false;
+        }
+
+        // 좌표 찍기를 끝내면 카메라 입력과 투영 방식을 기본값으로 되돌립니다.
+        private void UnlockTopView()
+        {
+            vizcore3dx.Input.ResetCustomBindings();
+
+            vizcore3dx.Shortcuts.Enable = true;
+            vizcore3dx.ViewCube.Enable = true;
+            vizcore3dx.View.Toolbar.Enable = true;
+            vizcore3dx.View.Projection = Projections.Perspective;
+            vizcore3dx.View.EnableAutoFit = true;
+            vizcore3dx.View.EnableAnimation = true;
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.

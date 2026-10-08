@@ -82,7 +82,7 @@ namespace VIZCore3DX.NET.UDA
 
         private void Object3D_OnNodeEvent(object sender, EventManager.NodeEventArgs e)
         {
-            if (e.Node.Count == 0)
+            if (e.Node == null || e.Node.Count == 0)
             {
                 lvAttribute.BeginUpdate();
                 lvAttribute.Items.Clear();
@@ -91,6 +91,7 @@ namespace VIZCore3DX.NET.UDA
             else
             {
                 ObjectAttributeCollection attribute = vizcore3dx.Object3D.UDA.FromNode(e.Node[0], true);
+                if (attribute == null) { lvAttribute.Items.Clear(); return; }
 
 
                 lvAttribute.BeginUpdate();

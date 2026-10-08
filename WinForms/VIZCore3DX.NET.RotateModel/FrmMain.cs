@@ -214,7 +214,12 @@ namespace VIZCore3DX.NET.RotateModel
                 return;
             }
 
-            vizcore3dx.Model.Open(txtPath.Text);
+            // 열기 실패 시 이전 모델에 Matrix가 적용되지 않도록 중단
+            if (vizcore3dx.Model.Open(txtPath.Text) == false)
+            {
+                MessageBox.Show("모델을 열 수 없습니다.");
+                return;
+            }
 
             List<Node> roots = vizcore3dx.Object3D.GetRootNodes();
             string matrix = txtMatrix.Text;

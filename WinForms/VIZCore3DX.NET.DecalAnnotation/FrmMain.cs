@@ -142,7 +142,7 @@ namespace VIZCore3DX.NET.DecalAnnotation
             VIZCore3DX.NET.Data.Vector3D cross = baseUpDirection.Cross(currentUpDirection);
             float sin = normal.Dot(cross);
 
-            double angle = Math.Atan2(sin, cos) * 180.0 / Math.PI;
+            double angle = VIZCore3DX.NET.Utility.AngleFormatHelper.RadiansToDegrees(Math.Atan2(sin, cos));
             if (angle < 0.0) angle += 360.0;
             if (Math.Abs(angle - 360.0) < 0.001) angle = 0.0;
 
@@ -364,7 +364,7 @@ namespace VIZCore3DX.NET.DecalAnnotation
             VIZCore3DX.NET.Data.OsnapResult end = await PickSurface("화살표의 끝점(촉 위치)을 선택하세요.");
             if (end == null) return;
 
-            if (start.Position.X == end.Position.X && start.Position.Y == end.Position.Y && start.Position.Z == end.Position.Z)
+            if (start.Position == end.Position)
             {
                 MessageBox.Show("화살표의 시작점과 끝점은 같을 수 없습니다.", "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -494,7 +494,14 @@ namespace VIZCore3DX.NET.DecalAnnotation
                     return;
                 }
 
-                File.WriteAllText(dlg.FileName, json, Encoding.UTF8);
+                try
+                {
+                    File.WriteAllText(dlg.FileName, json, Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -511,9 +518,17 @@ namespace VIZCore3DX.NET.DecalAnnotation
                 dlg.Filter = "Decal JSON (*.json)|*.json";
                 if (dlg.ShowDialog() != DialogResult.OK) return;
 
-                if (vizcore3dx.Decal.FromJson(File.ReadAllText(dlg.FileName, Encoding.UTF8)) == false)
+                try
                 {
-                    CheckLastOperation("JSON에서 Decal 목록을 복원할 수 없습니다.");
+                    if (vizcore3dx.Decal.FromJson(File.ReadAllText(dlg.FileName, Encoding.UTF8)) == false)
+                    {
+                        CheckLastOperation("JSON에서 Decal 목록을 복원할 수 없습니다.");
+                        return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Decal Annotation", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }

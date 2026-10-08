@@ -144,7 +144,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             Vertex3D center = box.GetCenter();
 
             // 오브젝트가 한 곳에 겹치지 않도록, 모델 크기에 비례한 간격(step)만큼 서로 떨어뜨려 배치한다.
-            float step = Math.Max(box.LengthX, Math.Max(box.LengthY, box.LengthZ)) * 0.2f;
+            float step = box.MaxLength * 0.2f;
             if (step < 1f) step = 1000f;
 
             // 마크업 종류별로 생성 API가 달라 개별 try/catch 로 일부 실패를 허용한다.
@@ -170,6 +170,9 @@ namespace VIZCore3DX.NET.ExportNodeStatus
                 // X/Z 는 모델 전체, Y 길이만 절반인 클리핑 박스
                 BoundBox3D sectionBox = new Data.BoundBox3D(center, box.LengthX, box.LengthY * 0.5f, box.LengthZ);
                 vizcore3dx.Section.AddBox(sectionBox);
+
+                // 상자 안쪽만 남기면 상자 밖에 놓인 모델이 전부 잘려 보이지 않으므로, 방향을 뒤집어 상자 안쪽만 잘라 냅니다.
+                vizcore3dx.Section.InvertDirection();
                 Log("[Review] Section 생성");
             }
             catch (Exception ex) { Log("[Review] Section 실패 : " + ex.Message); }
@@ -190,6 +193,31 @@ namespace VIZCore3DX.NET.ExportNodeStatus
                 Log("[Review] Decal 생성");
             }
             catch (Exception ex) { Log("[Review] Decal 실패 : " + ex.Message); }
+        }
+
+        /// <summary>
+        /// Add Review Object 로 만든 마크업(Note/Measure/Section/Snapshot/Decal)을 모두 지워 모델이 다시 보이게 한다.
+        /// </summary>
+        private void btnClearReview_Click(object sender, EventArgs e)
+        {
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            vizcore3dx.BeginUpdate();
+            try
+            {
+                vizcore3dx.Note.Clear();
+                vizcore3dx.Measure.Clear();
+                vizcore3dx.Section.Clear();
+                vizcore3dx.Snapshot.Clear();
+                vizcore3dx.Decal.Clear();
+            }
+            finally
+            {
+                vizcore3dx.EndUpdate();
+            }
+
+            vizcore3dx.View.FitToView();
+            Log("[Review] 리뷰 오브젝트 삭제");
         }
 
         /// <summary>
@@ -276,7 +304,17 @@ namespace VIZCore3DX.NET.ExportNodeStatus
                 return;
             }
 
-            NodeStatusDiff diff = vizcore3dx.Model.CompareNodeStatus(path, cbIncludeMarkup.Checked);
+            NodeStatusDiff diff;
+            try
+            {
+                diff = vizcore3dx.Model.CompareNodeStatus(path, cbIncludeMarkup.Checked);
+            }
+            catch (Exception ex)
+            {
+                Log("[Import] 실패 : " + ex.Message);
+                return;
+            }
+
             if (diff == null)
             {
                 Log("[Import] 비교 실패 (모델 없음 또는 포맷 불일치)");

@@ -65,8 +65,8 @@ namespace VIZCore3DX.NET.ModelComparison
             if (BBox1 != null && BBox2 != null && BBox1.Equals(BBox2, true) == true)
                 RESULT_LOCATION = true;
 
-            // PART 노드는 메시 개수로 형상 동일 여부 판단
-            if (Node1.Kind == NodeKind.PART)
+            // PART/BODY 노드는 메시 개수로 형상 동일 여부 판단
+            if (Node1.Kind == NodeKind.PART || Node1.Kind == NodeKind.BODY)
             {
                 if (MeshCount1 == MeshCount2)
                     RESULT_SHAPE = true;
@@ -84,8 +84,8 @@ namespace VIZCore3DX.NET.ModelComparison
             if (RESULT_EXIST_BOTH == false) return false;
             if (RESULT_LOCATION == false) return false;
 
-            // PART가 아닌 노드(예: ASSEMBLY)는 위치만 같으면 동일로 판단
-            if (Node1.Kind != NodeKind.PART) return true;
+            // PART/BODY가 아닌 노드(예: ASSEMBLY)는 위치만 같으면 동일로 판단
+            if (Node1.Kind != NodeKind.PART && Node1.Kind != NodeKind.BODY) return true;
 
             // PART는 형상까지 동일해야 함
             if (RESULT_SHAPE == false) return false;

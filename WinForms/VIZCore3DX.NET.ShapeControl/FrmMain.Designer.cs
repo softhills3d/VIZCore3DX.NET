@@ -1299,9 +1299,9 @@
             // btnMoveOsnap
             //
             this.btnMoveOsnap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnMoveOsnap.Location = new System.Drawing.Point(290, 469);
+            this.btnMoveOsnap.Location = new System.Drawing.Point(272, 469);
             this.btnMoveOsnap.Name = "btnMoveOsnap";
-            this.btnMoveOsnap.Size = new System.Drawing.Size(74, 23);
+            this.btnMoveOsnap.Size = new System.Drawing.Size(94, 23);
             this.btnMoveOsnap.TabIndex = 25;
             this.btnMoveOsnap.Text = "Osnap 이동";
             this.btnMoveOsnap.UseVisualStyleBackColor = true;
@@ -1311,7 +1311,7 @@
             //
             this.numMoveZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numMoveZ.DecimalPlaces = 3;
-            this.numMoveZ.Location = new System.Drawing.Point(208, 470);
+            this.numMoveZ.Location = new System.Drawing.Point(196, 470);
             this.numMoveZ.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -1323,14 +1323,15 @@
             0,
             -2147483648});
             this.numMoveZ.Name = "numMoveZ";
-            this.numMoveZ.Size = new System.Drawing.Size(76, 21);
+            this.numMoveZ.Size = new System.Drawing.Size(70, 21);
             this.numMoveZ.TabIndex = 24;
+            this.numMoveZ.ValueChanged += new System.EventHandler(this.numMove_ValueChanged);
             //
             // numMoveY
             //
             this.numMoveY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.numMoveY.DecimalPlaces = 3;
-            this.numMoveY.Location = new System.Drawing.Point(128, 470);
+            this.numMoveY.Location = new System.Drawing.Point(122, 470);
             this.numMoveY.Maximum = new decimal(new int[] {
             100000000,
             0,
@@ -1342,8 +1343,9 @@
             0,
             -2147483648});
             this.numMoveY.Name = "numMoveY";
-            this.numMoveY.Size = new System.Drawing.Size(76, 21);
+            this.numMoveY.Size = new System.Drawing.Size(70, 21);
             this.numMoveY.TabIndex = 23;
+            this.numMoveY.ValueChanged += new System.EventHandler(this.numMove_ValueChanged);
             //
             // numMoveX
             //
@@ -1361,8 +1363,9 @@
             0,
             -2147483648});
             this.numMoveX.Name = "numMoveX";
-            this.numMoveX.Size = new System.Drawing.Size(76, 21);
+            this.numMoveX.Size = new System.Drawing.Size(70, 21);
             this.numMoveX.TabIndex = 22;
+            this.numMoveX.ValueChanged += new System.EventHandler(this.numMove_ValueChanged);
             //
             // lblMove
             //

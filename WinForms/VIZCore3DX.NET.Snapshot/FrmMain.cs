@@ -102,9 +102,10 @@ namespace VIZCore3DX.NET.Snapshot
         private void Snapshot_OnSnapshotCreated(object sender, Event.EventManager.SnapshotEventArgs e)
         {
             // Snapshot Created
-            if (vizcore3dx.Snapshot.GetItem(e.ID).Text.Equals("Snapshot"))
+            VIZCore3DX.NET.Data.SnapshotItem item = vizcore3dx.Snapshot.GetItem(e.ID);
+            if (item != null && item.Text == "Snapshot")
             {
-                tempSnapshot = vizcore3dx.Snapshot.GetItem(e.ID);
+                tempSnapshot = item;
             }
         }
 
@@ -145,8 +146,13 @@ namespace VIZCore3DX.NET.Snapshot
         {
             // Restore Snapshot
             if (vizcore3dx.Model.IsOpen() == false) return;
+            if (listView1.SelectedItems.Count == 0) return;
 
-            vizcore3dx.Snapshot.GetItem((uint)listView1.SelectedItems[0].Tag).Restore();
+            // 리본 등에서 삭제된 스냅샷이면 무시
+            VIZCore3DX.NET.Data.SnapshotItem item = vizcore3dx.Snapshot.GetItem((uint)listView1.SelectedItems[0].Tag);
+            if (item == null) return;
+
+            item.Restore();
         }
 
         private void button1_Click(object sender, EventArgs e)

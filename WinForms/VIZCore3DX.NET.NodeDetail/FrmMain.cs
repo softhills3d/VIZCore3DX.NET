@@ -106,6 +106,10 @@ namespace VIZCore3DX.NET.NodeDetail
             vizcore3dx.Object3D.OnNodeClick -= Object3D_OnNodeClick;
             vizcore3dx.Object3D.OnNodeClick += Object3D_OnNodeClick;
 
+            // 모델이 닫히면 이전 노드·이동/회전 이력 초기화
+            vizcore3dx.Model.OnModelClosedEvent -= Model_OnModelClosedEvent;
+            vizcore3dx.Model.OnModelClosedEvent += Model_OnModelClosedEvent;
+
             tbRotateX.MouseDown -= TrackBarRotate_MouseDown;
             tbRotateY.MouseDown -= TrackBarRotate_MouseDown;
             tbRotateZ.MouseDown -= TrackBarRotate_MouseDown;
@@ -121,6 +125,26 @@ namespace VIZCore3DX.NET.NodeDetail
             tbRotateX.MouseUp += TrackBarRotate_MouseUp;
             tbRotateY.MouseUp += TrackBarRotate_MouseUp;
             tbRotateZ.MouseUp += TrackBarRotate_MouseUp;
+        }
+
+        private void Model_OnModelClosedEvent(object sender, EventArgs e)
+        {
+            if (InvokeRequired == true)
+            {
+                BeginInvoke(new Action(() => Model_OnModelClosedEvent(sender, e)));
+                return;
+            }
+
+            node = null;
+            _nodeMoveMap.Clear();
+            _nodeRotateHistoryMap.Clear();
+            _nodeRotateValueMap.Clear();
+
+            txtNodeIndex.Text = string.Empty;
+            pgNode.SelectedObject = null;
+            propertyGrid.SelectedObject = null;
+            lvList.Items.Clear();
+            ResetInputValues();
         }
 
         private void Object3D_OnNodeClick(object sender, EventManager.NodeMouseEventArgs e)

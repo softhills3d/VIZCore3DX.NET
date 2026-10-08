@@ -917,24 +917,6 @@ namespace VIZCore3DX.NET.RibbonCustomization
 
         private void RestoreOriginalItems()
         {
-            List<RibbonItemOrigin> origins = new List<RibbonItemOrigin>(itemOrigins.Values);
-
-            origins.Sort(delegate (RibbonItemOrigin x, RibbonItemOrigin y)
-            {
-                int groupCompare = string.Compare(x.GroupName, y.GroupName, StringComparison.OrdinalIgnoreCase);
-
-                if (groupCompare != 0) return groupCompare;
-
-                return x.Index.CompareTo(y.Index);
-            });
-
-            foreach (RibbonItemOrigin origin in origins)
-            {
-                string currentGroup = vizcore3dx.Ribbon.GetParentGroupName(FindOriginalItemName(origin));
-
-                if (string.IsNullOrEmpty(currentGroup)) continue;
-            }
-
             foreach (KeyValuePair<string, RibbonItemOrigin> pair in GetOrderedOriginalItems())
             {
                 string itemName = pair.Key;
@@ -965,16 +947,6 @@ namespace VIZCore3DX.NET.RibbonCustomization
             });
 
             return items;
-        }
-
-        private string FindOriginalItemName(RibbonItemOrigin origin)
-        {
-            foreach (KeyValuePair<string, RibbonItemOrigin> pair in itemOrigins)
-            {
-                if (object.ReferenceEquals(pair.Value, origin)) return pair.Key;
-            }
-
-            return string.Empty;
         }
 
         private void RestoreOriginalProperties()

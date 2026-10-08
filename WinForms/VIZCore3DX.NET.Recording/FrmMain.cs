@@ -121,13 +121,11 @@ namespace VIZCore3DX.NET.Recording
         }
         private void btnStop_Click(object sender, EventArgs e)
         {
-            bool recordFlag = vizcore3dx.StopRecording();
+            vizcore3dx.StopRecording();
 
-            if (recordFlag)
-            {
-                btnRecord.Enabled = true;
-                btnStop.Enabled = false;
-            }
+            // 컨트롤 크기 변경으로 녹화가 자동 중지된 경우 false가 반환되므로 버튼은 항상 복구
+            btnRecord.Enabled = true;
+            btnStop.Enabled = false;
         }
 
         private void cbCustom_CheckedChanged(object sender, EventArgs e)

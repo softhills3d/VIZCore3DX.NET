@@ -37,7 +37,6 @@ namespace VIZCore3DX.NET.MultiPrimitive
             //VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseFile("C:\\Temp\\VIZCore3DX.NET.lic");
 
             // 라이선스 서버를 통한 인증
-            //VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
             VIZCore3DX.NET.Data.LicenseResults result = vizcore3dx.License.LicenseServer("127.0.0.1", 8901);
 
             // ================================================================
@@ -210,6 +209,7 @@ namespace VIZCore3DX.NET.MultiPrimitive
             float intervalX = (float)numIntervalX.Value;
             float intervalY = (float)numIntervalY.Value;
             float intervalZ = (float)numIntervalZ.Value;
+            Vector3D interval = new Vector3D(intervalX, intervalY, intervalZ);
             bool createAssembly = chkCreateAssembly.Checked;
             List<Node> nodes = null;
 
@@ -219,19 +219,19 @@ namespace VIZCore3DX.NET.MultiPrimitive
                 {
                     case 0:
                         List<PrimitiveBox> boxes = new List<PrimitiveBox>();
-                        for (int i = 0; i < count; i++) boxes.Add(new PrimitiveBox(string.Format("Box {0}", i + 1), axisAnchor, color, new Vector3D((float)numValue1.Value, (float)numValue2.Value, (float)numValue3.Value), new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) boxes.Add(new PrimitiveBox(string.Format("Box {0}", i + 1), axisAnchor, color, new Vector3D((float)numValue1.Value, (float)numValue2.Value, (float)numValue3.Value), move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveBox(parent, nodeName, boxes, createAssembly);
                         break;
 
                     case 1:
                         List<PrimitiveCone> cones = new List<PrimitiveCone>();
-                        for (int i = 0; i < count; i++) cones.Add(new PrimitiveCone(string.Format("Cone {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) cones.Add(new PrimitiveCone(string.Format("Cone {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveCone(parent, nodeName, cones, createAssembly);
                         break;
 
                     case 2:
                         List<PrimitiveCylinder> cylinders = new List<PrimitiveCylinder>();
-                        for (int i = 0; i < count; i++) cylinders.Add(new PrimitiveCylinder(string.Format("Cylinder {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) cylinders.Add(new PrimitiveCylinder(string.Format("Cylinder {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveCylinder(parent, nodeName, cylinders, createAssembly);
                         break;
 
@@ -239,37 +239,37 @@ namespace VIZCore3DX.NET.MultiPrimitive
                         List<ColorMeshVertex> vertices = new List<ColorMeshVertex> { new ColorMeshVertex(new Vector3D(0, 0, 0), Axis.Z, Color.Red), new ColorMeshVertex(new Vector3D(1000, 0, 0), Axis.Z, Color.Green), new ColorMeshVertex(new Vector3D(1000, 1000, 0), Axis.Z, Color.Blue), new ColorMeshVertex(new Vector3D(0, 1000, 0), Axis.Z, Color.Yellow) };
                         List<ushort> indices = new List<ushort> { 0, 1, 2, 0, 2, 3 };
                         List<PrimitiveMesh> meshes = new List<PrimitiveMesh>();
-                        for (int i = 0; i < count; i++) meshes.Add(new PrimitiveMesh(string.Format("Mesh {0}", i + 1), vertices, indices, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) meshes.Add(new PrimitiveMesh(string.Format("Mesh {0}", i + 1), vertices, indices, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveMesh(parent, nodeName, meshes, createAssembly);
                         break;
 
                     case 4:
                         List<PrimitivePyramid> pyramids = new List<PrimitivePyramid>();
-                        for (int i = 0; i < count; i++) pyramids.Add(new PrimitivePyramid(string.Format("Pyramid {0}", i + 1), axisAnchor, color, new Vector2((float)numValue1.Value, (float)numValue2.Value), (float)numValue3.Value, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) pyramids.Add(new PrimitivePyramid(string.Format("Pyramid {0}", i + 1), axisAnchor, color, new Vector2((float)numValue1.Value, (float)numValue2.Value), (float)numValue3.Value, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitivePyramid(parent, nodeName, pyramids, createAssembly);
                         break;
 
                     case 5:
                         List<PrimitiveRectangularTorus> rectangularToruses = new List<PrimitiveRectangularTorus>();
-                        for (int i = 0; i < count; i++) rectangularToruses.Add(new PrimitiveRectangularTorus(string.Format("RectangularTorus {0}", i + 1), axisAnchor, color, (float)numValue1.Value, new Vector2((float)numValue2.Value, (float)numValue3.Value), new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) rectangularToruses.Add(new PrimitiveRectangularTorus(string.Format("RectangularTorus {0}", i + 1), axisAnchor, color, (float)numValue1.Value, new Vector2((float)numValue2.Value, (float)numValue3.Value), move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveRectangularTorus(parent, nodeName, rectangularToruses, createAssembly);
                         break;
 
                     case 6:
                         List<PrimitiveSphere> spheres = new List<PrimitiveSphere>();
-                        for (int i = 0; i < count; i++) spheres.Add(new PrimitiveSphere(string.Format("Sphere {0}", i + 1), axisAnchor, color, (float)numValue1.Value, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) spheres.Add(new PrimitiveSphere(string.Format("Sphere {0}", i + 1), axisAnchor, color, (float)numValue1.Value, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveSphere(parent, nodeName, spheres, createAssembly);
                         break;
 
                     case 7:
                         List<PrimitiveSphericalCap> sphericalCaps = new List<PrimitiveSphericalCap>();
-                        for (int i = 0; i < count; i++) sphericalCaps.Add(new PrimitiveSphericalCap(string.Format("SphericalCap {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) sphericalCaps.Add(new PrimitiveSphericalCap(string.Format("SphericalCap {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveSphericalCap(parent, nodeName, sphericalCaps, createAssembly);
                         break;
 
                     case 8:
                         List<PrimitiveTorus> toruses = new List<PrimitiveTorus>();
-                        for (int i = 0; i < count; i++) toruses.Add(new PrimitiveTorus(string.Format("Torus {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, new Vector3D(move.X + (intervalX * i), move.Y + (intervalY * i), move.Z + (intervalZ * i))));
+                        for (int i = 0; i < count; i++) toruses.Add(new PrimitiveTorus(string.Format("Torus {0}", i + 1), axisAnchor, color, (float)numValue1.Value, (float)numValue2.Value, move + interval * i));
                         nodes = vizcore3dx.Object3D.Primitive.AddMultiPrimitiveTorus(parent, nodeName, toruses, createAssembly);
                         break;
                 }

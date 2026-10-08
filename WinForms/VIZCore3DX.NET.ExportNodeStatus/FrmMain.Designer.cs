@@ -47,6 +47,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.btnPipe = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.btnAddReview = new System.Windows.Forms.Button();
+            this.btnClearReview = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.btnOpenModel = new System.Windows.Forms.Button();
@@ -181,6 +182,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             this.groupBox4.Controls.Add(this.groupBox5);
             this.groupBox4.Controls.Add(this.label2);
             this.groupBox4.Controls.Add(this.btnAddReview);
+            this.groupBox4.Controls.Add(this.btnClearReview);
             this.groupBox4.Location = new System.Drawing.Point(12, 74);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(355, 195);
@@ -274,15 +276,26 @@ namespace VIZCore3DX.NET.ExportNodeStatus
             // 
             // btnAddReview
             // 
-            this.btnAddReview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAddReview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.btnAddReview.Location = new System.Drawing.Point(16, 24);
             this.btnAddReview.Name = "btnAddReview";
-            this.btnAddReview.Size = new System.Drawing.Size(325, 23);
+            this.btnAddReview.Size = new System.Drawing.Size(160, 23);
             this.btnAddReview.TabIndex = 0;
             this.btnAddReview.Text = "Add Review Object";
             this.btnAddReview.UseVisualStyleBackColor = true;
             this.btnAddReview.Click += new System.EventHandler(this.btnAddReview_Click);
+            // 
+            // btnClearReview
+            // 
+            this.btnClearReview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearReview.Location = new System.Drawing.Point(181, 24);
+            this.btnClearReview.Name = "btnClearReview";
+            this.btnClearReview.Size = new System.Drawing.Size(160, 23);
+            this.btnClearReview.TabIndex = 2;
+            this.btnClearReview.Text = "Clear Review Object";
+            this.btnClearReview.UseVisualStyleBackColor = true;
+            this.btnClearReview.Click += new System.EventHandler(this.btnClearReview_Click);
             // 
             // groupBox3
             // 
@@ -389,6 +402,7 @@ namespace VIZCore3DX.NET.ExportNodeStatus
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button btnAddReview;
+        private System.Windows.Forms.Button btnClearReview;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button btnPart;

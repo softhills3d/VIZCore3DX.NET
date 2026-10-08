@@ -168,6 +168,8 @@ namespace VIZCore3DX.NET.SearchSpace
                 searchResult = vizcore3dx.Object3D.FromZone(BoundingBox, BoundBoxSearchOption.IncludingPartOnly, false, true);
             }
 
+            if (searchResult == null) searchResult = new List<Node>();
+
             gvResult.RowCount = searchResult.Count;
 
             gvResult.ClearSelection();
@@ -272,8 +274,7 @@ namespace VIZCore3DX.NET.SearchSpace
                     break;
 
                 case 2: // Node Name
-                    var node = vizcore3dx.Object3D.GetNodes(resultItem.EntityID, resultItem.Index);
-                    e.Value = (node != null) ? node.NodeName : "";
+                    e.Value = resultItem.NodeName;
                     break;
 
                 default:

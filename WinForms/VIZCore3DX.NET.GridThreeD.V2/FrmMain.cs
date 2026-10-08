@@ -189,7 +189,7 @@ namespace VIZCore3DX.NET.GridThreeD.V2
             if (Block_Rotate_Angle != 0.0f && RotateV1 != null && RotateV2 != null)
                 vizcore3dx.Object3D.Transform.Rotate(RotateNodes, RotateV1, RotateV2, -Block_Rotate_Angle, false);
 
-            float centerY = BoundBox.MinY + (BoundBox.LengthY * 0.5f);
+            float centerY = BoundBox.CenterY;
 
             RotateV1 = new Vertex3D(BoundBox.MinX, centerY, BoundBox.MinZ);
             RotateV2 = new Vertex3D(BoundBox.MaxX, centerY, BoundBox.MinZ);

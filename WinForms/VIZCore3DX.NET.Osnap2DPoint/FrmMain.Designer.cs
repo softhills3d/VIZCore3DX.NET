@@ -32,6 +32,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnShowOsnap = new System.Windows.Forms.Button();
+            this.lblHint = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -57,10 +58,11 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.lblHint);
             this.groupBox1.Controls.Add(this.btnShowOsnap);
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(263, 52);
+            this.groupBox1.Size = new System.Drawing.Size(263, 112);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Osnap";
@@ -74,6 +76,16 @@
             this.btnShowOsnap.Text = "Show";
             this.btnShowOsnap.UseVisualStyleBackColor = true;
             this.btnShowOsnap.Click += new System.EventHandler(this.btnShowOsnap_Click);
+            // 
+            // lblHint
+            // 
+            this.lblHint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblHint.Location = new System.Drawing.Point(13, 48);
+            this.lblHint.Name = "lblHint";
+            this.lblHint.Size = new System.Drawing.Size(240, 56);
+            this.lblHint.TabIndex = 1;
+            this.lblHint.Text = "위에서 본 2D 화면으로 고정됩니다.\r\n모서리 끝점·중점에만 스냅됩니다.\r\n찍을 때마다 X, Y 좌표 노트가 생기고\r\nEsc 를 누르면 끝납니다.";
             // 
             // FrmMain
             // 
@@ -97,6 +109,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button btnShowOsnap;
+        private System.Windows.Forms.Label lblHint;
     }
 }
 

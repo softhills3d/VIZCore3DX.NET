@@ -334,32 +334,37 @@ namespace VIZCore3DX.NET.ClashTest
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (cbClashTestId.Items.Count == 0) return;
-            if (dicResult.Count == 0) return;
+            if (cbClashTestId.SelectedItem == null) return;
 
-            foreach (var dic in dicResult)
-            {
-                if (dic.Key == Convert.ToInt32(cbClashTestId.SelectedItem))
-                {
-                    dicResult.Remove(dic.Key);
-                    break;
-                }
-            }
+            // 수행 전(결과 없는) 간섭검사도 삭제 가능
+            int id = Convert.ToInt32(cbClashTestId.SelectedItem);
+            dicResult.Remove(id);
 
             foreach (var item in vizcore3dx.Clash.Items)
             {
-                if (item.ID == Convert.ToInt32(cbClashTestId.SelectedItem))
+                if (item.ID == id)
                 {
                     vizcore3dx.Clash.Delete(item);
                     break;
                 }
             }
 
-            int bNum = Convert.ToInt32(cbClashTestId.SelectedIndex) - 1;
+            // 표시 중인 검사를 삭제하면 결과 목록·심볼도 정리
+            if (clash != null && clash.ID == id)
+            {
+                clash = null;
+                _isClashTestMode = false;
+                vizcore3dx.Clash.ClearResultSymbol();
+                _filteredResultItems.Clear();
+                dgvResult.RowCount = 0;
+            }
+
+            int bNum = Math.Max(0, cbClashTestId.SelectedIndex - 1);
 
             cbClashTestId.Items.Remove(cbClashTestId.SelectedItem);
 
             // Clash Test가 모두 삭제되었을 경우
-            if (bNum < 0)
+            if (cbClashTestId.Items.Count == 0)
             {
                 cbClashTestId.Text = "";
 
@@ -385,6 +390,11 @@ namespace VIZCore3DX.NET.ClashTest
         /// <param name="e">Event Args</param>
         private void btnStart_Click(object sender, EventArgs e)
         {
+            // 콤보에서 선택한 ID 의 간섭검사 수행
+            if (cbClashTestId.SelectedItem != null && _isClashTestMode == false)
+                clash = vizcore3dx.Clash.GetClashTest(Convert.ToInt32(cbClashTestId.SelectedItem));
+
+            if (clash == null) return;
             if (!cbClashTestId.Items.Contains(clash.ID)) return;
 
             vizcore3dx.Clash.ClearResultSymbol();
@@ -404,6 +414,7 @@ namespace VIZCore3DX.NET.ClashTest
 
             if (result == false)
             {
+                _isClashTestMode = false;
                 MessageBox.Show("간섭검사 수행에 실패하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -463,10 +474,8 @@ namespace VIZCore3DX.NET.ClashTest
 
             vizcore3dx.Clash.ShowResultSymbol(clash.ID, Color.FromArgb(20, 225, 0, 0), Color.FromArgb(50, 0, 0, 225), true, true, true);
 
-            if (!dicResult.ContainsKey(e.ID))
-            {
-                dicResult.Add(e.ID, resultItems);
-            }
+            // 재수행 시 최신 결과로 교체
+            dicResult[e.ID] = resultItems;
 
             UpdateResultList(resultItems);
 
@@ -643,6 +652,7 @@ namespace VIZCore3DX.NET.ClashTest
         private void dgvResult_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvResult.SelectedRows.Count == 0) return;
+            if (clash == null) return;
 
             if (_isResultUpdating)
                 return;

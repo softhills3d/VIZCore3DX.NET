@@ -45,7 +45,6 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         /// <summary>
         /// 테스트 ID, 간섭 결과 Dictionary
         /// </summary>
-        public Dictionary<int, List<VIZCore3DX.NET.Data.ClashTestResultItem>> dicResult = new Dictionary<int, List<VIZCore3DX.NET.Data.ClashTestResultItem>>();
 
         /// <summary>
         /// 그리드 뷰 순번
@@ -324,32 +323,38 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (cbClashTestId.Items.Count == 0) return;
-            if (dicResult.Count == 0) return;
+            if (cbClashTestId.SelectedItem == null) return;
+            if (_isClashTestMode) return;
 
-            foreach (var dic in dicResult)
+            // 선택한 간섭검사 삭제
+            int id = Convert.ToInt32(cbClashTestId.SelectedItem);
+
+            // 삭제 대상이 현재 표시 중인 검사이면 이동 그룹 위치와 결과 목록 초기화
+            if (clash != null && clash.ID == id)
             {
-                if (dic.Key == Convert.ToInt32(cbClashTestId.SelectedItem))
-                {
-                    dicResult.Remove(dic.Key);
-                    break;
-                }
+                RestoreGroupBTransform();
+                datagridviewInterferencePath.Rows.Clear();
+                datagridviewInterferenceResult.Rows.Clear();
+                lstTestPaths.Items.Clear();
             }
 
             foreach (var item in vizcore3dx.Clash.Items)
             {
-                if (item.ID == Convert.ToInt32(cbClashTestId.SelectedItem))
+                if (item.ID == id)
                 {
                     vizcore3dx.Clash.Delete(item);
                     break;
                 }
             }
 
-            int bNum = Convert.ToInt32(cbClashTestId.SelectedIndex) - 1;
+            if (clash != null && clash.ID == id) clash = null;
+
+            int bNum = Math.Max(0, cbClashTestId.SelectedIndex - 1);
 
             cbClashTestId.Items.Remove(cbClashTestId.SelectedItem);
 
             // Clash Test가 모두 삭제되었을 경우
-            if (bNum < 0)
+            if (cbClashTestId.Items.Count == 0)
             {
                 cbClashTestId.Text = "";
 
@@ -377,6 +382,18 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             // 간섭검사 결과를 그룹화하기 위한 옵션 ( 파트 or 어셈블리 )
             ResultGroupingOptions resultGroupingOptions;
 
+            // 콤보에서 선택한 ID 의 간섭검사 수행
+            if (cbClashTestId.SelectedItem != null && _isClashTestMode == false)
+            {
+                VIZCore3DX.NET.Data.ClashTest selected = vizcore3dx.Clash.GetClashTest(Convert.ToInt32(cbClashTestId.SelectedItem));
+                if (selected != null && selected != clash)
+                {
+                    RestoreGroupBTransform();
+                    clash = selected;
+                }
+            }
+
+            if (clash == null) return;
             if (!cbClashTestId.Items.Contains(clash.ID)) return;
             if (clash.MoveTest == null) return;
 
@@ -395,7 +412,8 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             if (rbResultGroupingAssy.Checked) resultGroupingOptions = ResultGroupingOptions.ASSEMBLY;
             else resultGroupingOptions = ResultGroupingOptions.PART;
 
-            // 이동 간섭 검사가 끝났을 때 실행하는 이벤트 ( 결과 보여주기 등 )
+            // 이동 간섭 검사가 끝났을 때 실행하는 이벤트 ( 결과 보여주기 등 ) - 실행마다 중복 구독되지 않도록 먼저 해제
+            vizcore3dx.Clash.OnClashMoveTestReportFinished -= Clash_OnClashMoveTestReportFinished;
             vizcore3dx.Clash.OnClashMoveTestReportFinished += Clash_OnClashMoveTestReportFinished;
 
             // 간섭검사 수행
@@ -403,6 +421,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
 
             if (result == false)
             {
+                _isClashTestMode = false;
                 MessageBox.Show("간섭검사 수행에 실패하였습니다.", "VIZCore3DX.NET.ClashTest", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -424,6 +443,7 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
             vizcore3dx.Clash.Clear();
             vizcore3dx.View.ResetView();
             cbClashTestId.Items.Clear();
+            clash = null;
 
             datagridviewInterferencePath.Rows.Clear();
             datagridviewInterferenceResult.Rows.Clear();
@@ -624,6 +644,8 @@ namespace VIZCore3DX.NET.ClashTest_MoveTest
 
         private void btnPathClear_Click(object sender, EventArgs e)
         {
+            if (clash == null) return;
+
             // 이동 검사 경로를 Clear 합니다.
             vizcore3dx.Clash.ClearTestPath(clash);
 

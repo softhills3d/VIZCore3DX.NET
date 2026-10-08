@@ -32,6 +32,9 @@ namespace VIZCore3DX.NET.ShapeControl
         // 목록 갱신 중에는 선택 변경을 처리하지 않습니다.
         private bool _syncing;
 
+        // 코드가 위치 칸을 채우는 중에는 형상을 옮기지 않습니다.
+        private bool _fillingMovePosition;
+
         public FrmMain()
         {
             InitializeComponent();
@@ -411,11 +414,24 @@ namespace VIZCore3DX.NET.ShapeControl
             if (result == null) return;
 
             VIZCore3DX.NET.Data.Vector3D current = targets[0].Position ?? Zero();
-            VIZCore3DX.NET.Data.Vector3D move = new VIZCore3DX.NET.Data.Vector3D(result.Position.X - current.X, result.Position.Y - current.Y, result.Position.Z - current.Z);
+            VIZCore3DX.NET.Data.Vector3D move = result.Position - current;
             MoveShapes(targets, move);
 
             _selectedShapes = targets;
-            SetPositionValue(numMoveX, numMoveY, numMoveZ, targets[0].Position);
+            ShowMovePosition(targets[0].Position);
+            SetStatus(string.Format("이동 : {0}개", targets.Count));
+        }
+
+        // 위치 칸을 바꾸면 선택 형상을 그 위치로 옮깁니다. 여러 개면 첫 형상의 이동량만큼 함께 옮깁니다.
+        private void numMove_ValueChanged(object sender, EventArgs e)
+        {
+            if (_fillingMovePosition) return;
+
+            List<VIZCore3DX.NET.Data.ShapeItem> targets = _selectedShapes.Where(x => x != null).ToList();
+            if (targets.Count == 0) return;
+
+            VIZCore3DX.NET.Data.Vector3D current = targets[0].Position ?? Zero();
+            MoveShapes(targets, ReadPoint(numMoveX, numMoveY, numMoveZ) - current);
             SetStatus(string.Format("이동 : {0}개", targets.Count));
         }
 
@@ -425,7 +441,7 @@ namespace VIZCore3DX.NET.ShapeControl
             if (_selectedShapes.Count == 0) { SetStatus("형상 목록에서 형상을 선택하세요."); return; }
 
             VIZCore3DX.NET.Data.Vector3D axis = ReadPoint(numAxisX, numAxisY, numAxisZ);
-            vizcore3dx.Shape.SetRotation(_selectedShapes, VIZCore3DX.NET.Data.Quaternion.FromAxisAngle(axis, (float)((double)numAngle.Value * Math.PI / 180.0)));
+            vizcore3dx.Shape.SetRotation(_selectedShapes, VIZCore3DX.NET.Data.Quaternion.FromAxisAngle(axis, VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians((double)numAngle.Value)));
             SetStatus(string.Format("회전 : {0}개", _selectedShapes.Count));
         }
 
@@ -456,7 +472,7 @@ namespace VIZCore3DX.NET.ShapeControl
         {
             VIZCore3DX.NET.Data.Vector3D start = Point1();
             VIZCore3DX.NET.Data.Vector3D end = Point2();
-            if (start.X == end.X && start.Y == end.Y && start.Z == end.Z) { SetStatus("선분의 시작점과 끝점은 같을 수 없습니다."); return; }
+            if (start == end) { SetStatus("선분의 시작점과 끝점은 같을 수 없습니다."); return; }
 
             VIZCore3DX.NET.Data.Line3D line = new VIZCore3DX.NET.Data.Line3D
             {
@@ -812,7 +828,7 @@ namespace VIZCore3DX.NET.ShapeControl
         private VIZCore3DX.NET.Data.ShapeItem CreateLineSegment(CreateMode mode)
         {
             VIZCore3DX.NET.Data.Vector3D end = mode == CreateMode.PositionRotation ? new VIZCore3DX.NET.Data.Vector3D((float)numValue1.Value, 0f, 0f) : FromPoint1(Point2());
-            if (IsZero(end)) { SetStatus("선분의 시작점과 끝점은 같을 수 없습니다."); return null; }
+            if (end.IsZero()) { SetStatus("선분의 시작점과 끝점은 같을 수 없습니다."); return null; }
 
             VIZCore3DX.NET.Data.Line3D line = new VIZCore3DX.NET.Data.Line3D { Start3D = Origin(), End3D = new VIZCore3DX.NET.Data.Vertex3D(end.X, end.Y, end.Z) };
             return vizcore3dx.Shape.CreateLineSegmentShape(line, Thickness(), Pattern(), btnCreateColor.BackColor);
@@ -832,8 +848,8 @@ namespace VIZCore3DX.NET.ShapeControl
 
             List<VIZCore3DX.NET.Data.Line3D> local = segments.Select(line => new VIZCore3DX.NET.Data.Line3D
             {
-                Start3D = new VIZCore3DX.NET.Data.Vertex3D(line.Start3D.X - origin.X, line.Start3D.Y - origin.Y, line.Start3D.Z - origin.Z),
-                End3D = new VIZCore3DX.NET.Data.Vertex3D(line.End3D.X - origin.X, line.End3D.Y - origin.Y, line.End3D.Z - origin.Z)
+                Start3D = line.Start3D - origin,
+                End3D = line.End3D - origin
             }).ToList();
 
             return vizcore3dx.Shape.CreateLineSegmentsShape(local, Thickness(), Pattern(), btnCreateColor.BackColor);
@@ -901,7 +917,7 @@ namespace VIZCore3DX.NET.ShapeControl
                 if (!TryGetSelectedBoundBox(out bb)) return null;
 
                 _createPosition = Center(bb);
-                VIZCore3DX.NET.Data.Vector3D size = new VIZCore3DX.NET.Data.Vector3D(bb.MaxX - bb.MinX, bb.MaxY - bb.MinY, bb.MaxZ - bb.MinZ);
+                VIZCore3DX.NET.Data.Vector3D size = new VIZCore3DX.NET.Data.Vector3D(bb.LengthX, bb.LengthY, bb.LengthZ);
                 return vizcore3dx.Shape.CreateCubeShape(size, btnCreateColor.BackColor, VIZCore3DX.NET.Data.AxisAnchor.Center, Zero());
             }
 
@@ -922,8 +938,8 @@ namespace VIZCore3DX.NET.ShapeControl
                 if (!TryGetSelectedBoundBox(out bb)) return null;
 
                 _createPosition = Center(bb);
-                radius = Math.Max(bb.MaxX - bb.MinX, bb.MaxY - bb.MinY) / 2f;
-                height = bb.MaxZ - bb.MinZ;
+                radius = bb.MaxLengthXY / 2f;
+                height = bb.LengthZ;
             }
 
             return vizcore3dx.Shape.CreateCylinderShape(radius, height, btnCreateColor.BackColor, AnchorFor(mode), Zero(), segments);
@@ -939,7 +955,7 @@ namespace VIZCore3DX.NET.ShapeControl
                 if (!TryGetSelectedBoundBox(out bb)) return null;
 
                 _createPosition = Center(bb);
-                radius = Math.Max(Math.Max(bb.MaxX - bb.MinX, bb.MaxY - bb.MinY), bb.MaxZ - bb.MinZ) / 2f;
+                radius = bb.MaxLength / 2f;
             }
 
             return vizcore3dx.Shape.CreateSphereShape(radius, btnCreateColor.BackColor, AnchorFor(mode), Zero(), SegmentCount());
@@ -953,7 +969,7 @@ namespace VIZCore3DX.NET.ShapeControl
         private VIZCore3DX.NET.Data.ShapeItem CreateArrow()
         {
             VIZCore3DX.NET.Data.Vector3D end = FromPoint1(Point2());
-            if (IsZero(end)) { SetStatus("화살표의 시작점과 끝점은 같을 수 없습니다."); return null; }
+            if (end.IsZero()) { SetStatus("화살표의 시작점과 끝점은 같을 수 없습니다."); return null; }
 
             return vizcore3dx.Shape.CreateArrowShape(Zero(), end, (float)numValue1.Value, btnCreateColor.BackColor);
         }
@@ -972,9 +988,9 @@ namespace VIZCore3DX.NET.ShapeControl
                 VIZCore3DX.NET.Data.BoundBox3D bb;
                 if (!TryGetSelectedBoundBox(out bb)) return null;
 
-                float hx = (bb.MaxX - bb.MinX) / 2f;
-                float hy = (bb.MaxY - bb.MinY) / 2f;
-                float hz = (bb.MaxZ - bb.MinZ) / 2f;
+                float hx = bb.LengthX / 2f;
+                float hy = bb.LengthY / 2f;
+                float hz = bb.LengthZ / 2f;
                 _createPosition = Center(bb);
                 return vizcore3dx.Shape.CreateBoundingBoxShape(new VIZCore3DX.NET.Data.Vertex3D(-hx, -hy, -hz), new VIZCore3DX.NET.Data.Vertex3D(hx, hy, hz), Thickness(), Pattern(), btnCreateColor.BackColor);
             }
@@ -1046,7 +1062,7 @@ namespace VIZCore3DX.NET.ShapeControl
         private void SetSelectedShapes(List<VIZCore3DX.NET.Data.ShapeItem> shapes)
         {
             _selectedShapes = shapes;
-            if (shapes.Count > 0 && shapes[0].Position != null) SetPositionValue(numMoveX, numMoveY, numMoveZ, shapes[0].Position);
+            if (shapes.Count > 0 && shapes[0].Position != null) ShowMovePosition(shapes[0].Position);
 
             SetStatus(shapes.Count == 0 ? "선택 형상 : 없음" : string.Format("선택 형상 : {0} ({1}개)", TypeName(shapes[0]), shapes.Count));
         }
@@ -1060,7 +1076,7 @@ namespace VIZCore3DX.NET.ShapeControl
                 foreach (VIZCore3DX.NET.Data.ShapeItem shape in shapes)
                 {
                     VIZCore3DX.NET.Data.Vector3D position = shape.Position ?? Zero();
-                    vizcore3dx.Shape.SetPosition(shape, new VIZCore3DX.NET.Data.Vector3D(position.X + move.X, position.Y + move.Y, position.Z + move.Z));
+                    vizcore3dx.Shape.SetPosition(shape, position + move);
                 }
             }
             finally
@@ -1117,6 +1133,20 @@ namespace VIZCore3DX.NET.ShapeControl
         }
 
         // 좌표를 칸의 범위 안으로 맞춰 넣습니다.
+        // 형상을 옮기지 않고 위치 칸에 값만 보입니다.
+        private void ShowMovePosition(VIZCore3DX.NET.Data.Vector3D position)
+        {
+            _fillingMovePosition = true;
+            try
+            {
+                SetPositionValue(numMoveX, numMoveY, numMoveZ, position);
+            }
+            finally
+            {
+                _fillingMovePosition = false;
+            }
+        }
+
         private static void SetPositionValue(NumericUpDown x, NumericUpDown y, NumericUpDown z, VIZCore3DX.NET.Data.Vector3D position)
         {
             x.Value = Math.Max(x.Minimum, Math.Min(x.Maximum, (decimal)position.X));
@@ -1199,13 +1229,12 @@ namespace VIZCore3DX.NET.ShapeControl
         // 첫 번째 점을 원점으로 본 상대 좌표입니다.
         private VIZCore3DX.NET.Data.Vector3D FromPoint1(VIZCore3DX.NET.Data.Vector3D p)
         {
-            VIZCore3DX.NET.Data.Vector3D p1 = Point1();
-            return new VIZCore3DX.NET.Data.Vector3D(p.X - p1.X, p.Y - p1.Y, p.Z - p1.Z);
+            return p - Point1();
         }
 
         private static VIZCore3DX.NET.Data.Vector3D Center(VIZCore3DX.NET.Data.BoundBox3D bb)
         {
-            return new VIZCore3DX.NET.Data.Vector3D(bb.CenterX, bb.CenterY, bb.CenterZ);
+            return new VIZCore3DX.NET.Data.Vector3D(bb.GetCenter());
         }
 
         private static VIZCore3DX.NET.Data.Vector3D Zero()
@@ -1216,11 +1245,6 @@ namespace VIZCore3DX.NET.ShapeControl
         private static VIZCore3DX.NET.Data.Vertex3D Origin()
         {
             return new VIZCore3DX.NET.Data.Vertex3D(0f, 0f, 0f);
-        }
-
-        private static bool IsZero(VIZCore3DX.NET.Data.Vector3D v)
-        {
-            return v.X == 0f && v.Y == 0f && v.Z == 0f;
         }
 
         private static string FormatPoint(VIZCore3DX.NET.Data.Vector3D p)
@@ -1254,7 +1278,7 @@ namespace VIZCore3DX.NET.ShapeControl
         private VIZCore3DX.NET.Data.Quaternion Rotation()
         {
             VIZCore3DX.NET.Data.Vector3D axis = ReadPoint(numRotX, numRotY, numRotZ);
-            return VIZCore3DX.NET.Data.Quaternion.FromAxisAngle(axis, (float)((double)numRotDegree.Value * Math.PI / 180.0));
+            return VIZCore3DX.NET.Data.Quaternion.FromAxisAngle(axis, VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians((double)numRotDegree.Value));
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.

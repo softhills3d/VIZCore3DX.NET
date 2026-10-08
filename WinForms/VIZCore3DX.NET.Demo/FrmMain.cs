@@ -179,6 +179,7 @@ namespace VIZCore3DX.NET.Demo
             if (vizcore3dx.Model.IsOpen() == false) return;
 
             VIZCore3DX.NET.Data.SectionItem section = vizcore3dx.Section.AddBox(false);
+            if (section == null) return;
 
             MessageBox.Show(section.BoundBox.ToString(), "BoundBox", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -196,24 +197,12 @@ namespace VIZCore3DX.NET.Demo
 
             VIZCore3DX.NET.Data.BoundBox3D box = vizcore3dx.Model.BoundBox;
 
-            float minX = box.MinX + (box.LengthX / 4);
-            float minY = box.MinY + (box.LengthY / 4);
-            float minZ = box.MinZ + (box.LengthZ / 4);
-
-            float maxX = box.MaxX - (box.LengthX / 4);
-            float maxY = box.MaxY - (box.LengthY / 4);
-            float maxZ = box.MaxZ - (box.LengthZ / 4);
-
-            box.MinX = minX;
-            box.MinY = minY;
-            box.MinZ = minZ;
-
-            box.MaxX = maxX;
-            box.MaxY = maxY;
-            box.MaxZ = maxZ;
+            // 모델 중심 기준으로 각 축 길이를 절반으로 줄인 박스
+            box = new VIZCore3DX.NET.Data.BoundBox3D(box.GetCenter(), box.LengthX * 0.5f, box.LengthY * 0.5f, box.LengthZ * 0.5f);
 
             vizcore3dx.Section.Clear();
             VIZCore3DX.NET.Data.SectionItem section = vizcore3dx.Section.AddBox(true);
+            if (section == null) return;
 
             vizcore3dx.Section.SetBoxSize(section.ID, box);
         }
@@ -238,8 +227,10 @@ namespace VIZCore3DX.NET.Demo
         private void btnGetCenter_Click(object sender, EventArgs e)
         {
             if (vizcore3dx.Model.IsOpen() == false) return;
+            if (cbSectionID.SelectedItem == null || cbSectionSubID.SelectedItem == null) return;
 
             Vertex3D center = vizcore3dx.Section.GetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem));
+            if (center == null) return;
 
             txtSectionX.Text = center.X.ToString();
             txtSectionY.Text = center.Y.ToString();
@@ -256,8 +247,14 @@ namespace VIZCore3DX.NET.Demo
             if (vizcore3dx.Model.IsOpen() == false) return;
 
             if (String.IsNullOrEmpty(txtCenterPosition.Text)) return;
+            if (cbSectionID.SelectedItem == null || cbSectionSubID.SelectedItem == null) return;
 
-            float position = Convert.ToSingle(txtCenterPosition.Text);
+            float position;
+            if (float.TryParse(txtCenterPosition.Text, out position) == false)
+            {
+                MessageBox.Show("Position 값을 숫자로 입력하세요.", "Section", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             vizcore3dx.Section.SetCenter((uint)Convert.ToInt32(cbSectionID.SelectedItem), Convert.ToInt32(cbSectionSubID.SelectedItem), position);
         }
 
@@ -302,6 +299,7 @@ namespace VIZCore3DX.NET.Demo
             SectionItem section = vizcore3dx.Section.FromID((uint)Convert.ToInt32(cbSectionID.SelectedItem));
 
             cbSectionSubID.Items.Clear();
+            if (section == null) return;
 
             if (section.SectionType == Manager.SectionManager.SectionTypes.SECTION)
             {
@@ -506,7 +504,16 @@ namespace VIZCore3DX.NET.Demo
         /// <param name="e"></param>
         private void btnViewGetBoundBox_Click(object sender, EventArgs e)
         {
-            Node node = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_TOP)[0];
+            // 선택이 없으면 이전 값을 남기지 않고 Min/Max 칸을 비웁니다.
+            txtViewBounboxMinX.Text = txtViewBounboxMinY.Text = txtViewBounboxMinZ.Text = string.Empty;
+            txtViewBounboxMaxX.Text = txtViewBounboxMaxY.Text = txtViewBounboxMaxZ.Text = string.Empty;
+
+            if (vizcore3dx.Model.IsOpen() == false) return;
+
+            List<Node> selected = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_TOP);
+            if (selected == null || selected.Count == 0) return;
+
+            Node node = selected[0];
             if (node == null) return;
 
             Data.BoundBox3D bb = node.GetBoundBox();
@@ -536,13 +543,17 @@ namespace VIZCore3DX.NET.Demo
                 || String.IsNullOrEmpty(txtViewBounboxMaxY.Text)
                 || String.IsNullOrEmpty(txtViewBounboxMaxZ.Text)) return;
 
-            float minX = Convert.ToSingle(txtViewBounboxMinX.Text);
-            float minY = Convert.ToSingle(txtViewBounboxMinY.Text);
-            float minZ = Convert.ToSingle(txtViewBounboxMinZ.Text);
-
-            float maxX = Convert.ToSingle(txtViewBounboxMaxX.Text);
-            float maxY = Convert.ToSingle(txtViewBounboxMaxY.Text);
-            float maxZ = Convert.ToSingle(txtViewBounboxMaxZ.Text);
+            float minX, minY, minZ, maxX, maxY, maxZ;
+            if (float.TryParse(txtViewBounboxMinX.Text, out minX) == false
+                || float.TryParse(txtViewBounboxMinY.Text, out minY) == false
+                || float.TryParse(txtViewBounboxMinZ.Text, out minZ) == false
+                || float.TryParse(txtViewBounboxMaxX.Text, out maxX) == false
+                || float.TryParse(txtViewBounboxMaxY.Text, out maxY) == false
+                || float.TryParse(txtViewBounboxMaxZ.Text, out maxZ) == false)
+            {
+                MessageBox.Show("Min / Max 값을 숫자로 입력하세요.", "Box Zoom", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             Data.Vector3D min = new Vector3D(minX, minY, minZ);
             Data.Vector3D max = new Vector3D(maxX, maxY, maxZ);
@@ -579,7 +590,14 @@ namespace VIZCore3DX.NET.Demo
             }
 
             //vizcore3dx.Object3D.UDA.FromEntry(items[0].EntityID, items[0].Index) 함수 대체 소스 수정
-            Dictionary<string, string> uda = vizcore3dx.Object3D.UDA.FromNode(items[0]).ToDictionary();
+            var udaItem = vizcore3dx.Object3D.UDA.FromNode(items[0]);
+            if (udaItem == null)
+            {
+                MessageBox.Show("UDA is null", "Objects", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            Dictionary<string, string> uda = udaItem.ToDictionary();
 
             List<string> keyItems = new List<string>();
             List<string> valueItems = new List<string>();
@@ -845,7 +863,10 @@ namespace VIZCore3DX.NET.Demo
             if (vizcore3dx.Model.IsOpen() == false) return;
             if (String.IsNullOrEmpty(txtModelTreeIndex.Text)) return;
 
-            Node node = vizcore3dx.Object3D.GetNodes(txtModelTreeIndex.Text)[0];
+            List<Node> found = vizcore3dx.Object3D.GetNodes(txtModelTreeIndex.Text);
+            if (found == null || found.Count == 0) return;
+
+            Node node = found[0];
             if (node == null) return;
 
             vizcore3dx.ModelTree.Focus(node);

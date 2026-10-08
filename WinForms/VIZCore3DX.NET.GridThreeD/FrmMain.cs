@@ -655,26 +655,10 @@ namespace VIZCore3DX.NET.GridThreeD
         {
             if (GridBoxes.Count == 0) return null;
 
-            float minX = GridBoxes[0].Box.MinX;
-            float minY = GridBoxes[0].Box.MinY;
-            float minZ = GridBoxes[0].Box.MinZ;
-            float maxX = GridBoxes[0].Box.MaxX;
-            float maxY = GridBoxes[0].Box.MaxY;
-            float maxZ = GridBoxes[0].Box.MaxZ;
+            BoundBox3D total = new BoundBox3D();
+            foreach (var item in GridBoxes) total.AddBox(item.Box);
 
-            for (int i = 1; i < GridBoxes.Count; i++)
-            {
-                BoundBox3D box = GridBoxes[i].Box;
-
-                minX = Math.Min(minX, box.MinX);
-                minY = Math.Min(minY, box.MinY);
-                minZ = Math.Min(minZ, box.MinZ);
-                maxX = Math.Max(maxX, box.MaxX);
-                maxY = Math.Max(maxY, box.MaxY);
-                maxZ = Math.Max(maxZ, box.MaxZ);
-            }
-
-            return new BoundBox3D(minX, minY, minZ, maxX, maxY, maxZ);
+            return total;
         }
 
         // ================================================

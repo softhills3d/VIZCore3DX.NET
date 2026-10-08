@@ -232,7 +232,7 @@ namespace VIZCore3DX.NET.Note.V2
             if (result == null) return;
 
             // 노트가 가리키는 지점 이동 (OnNoteMoved 발생, Undo 가능)
-            Vertex3D target = new Vertex3D(result.Position.X, result.Position.Y, result.Position.Z);
+            Vertex3D target = result.Position.ToVertex3D();
             if (vizcore3dx.Note.SetTargetPosition(note.ID, target) == false)
             {
                 ShowLastOperationStatus("대상점을 이동하지 못했습니다.");
@@ -327,6 +327,14 @@ namespace VIZCore3DX.NET.Note.V2
         {
             if (vizcore3dx?.View?.Message == null) return;
 
+            // 심벌 노트 배치를 ESC 등으로 취소한 경우 클릭 이벤트 복구
+            if (ckEnable.Checked == false && _symbolMode == true)
+            {
+                _symbolMode = false;
+                vizcore3dx.Object3D.OnNodeClick -= Object3D_OnNodeClick;
+                vizcore3dx.Object3D.OnNodeClick += Object3D_OnNodeClick;
+            }
+
             // 기존 메시지 삭제
             if (msg != null)
             {
@@ -362,8 +370,7 @@ namespace VIZCore3DX.NET.Note.V2
 
             // 선택 지점과 노드 중심을 이용해 Normal Vector 계산
             Vertex3D centerPt = node.GetCenter();
-            Vector3D normal = new Vector3D(surfacePt.X - centerPt.X, surfacePt.Y - centerPt.Y, surfacePt.Z - centerPt.Z);
-            normal.Normalize();
+            Vector3D normal = new Vector3D(surfacePt - centerPt).GetNormalized();
 
             // XYZ 반올림
             normal.X = (float)Math.Round(normal.X);
@@ -416,12 +423,12 @@ namespace VIZCore3DX.NET.Note.V2
 
                 // 일반 클릭 이벤트 잠시 해제
                 vizcore3dx.Object3D.OnNodeClick -= Object3D_OnNodeClick;
-                vizcore3dx.Note.AddNoteSurface(text, NoteSymbolType.Circle, Convert.ToString(vizcore3dx.Note.GetID().Count + 1));
+                vizcore3dx.Note.AddNoteSurface(text, NoteSymbolType.Circle, Convert.ToString(vizcore3dx.Note.GetCount() + 1));
             }
             // 일반 노트
             else
             {
-                Vertex3D notePt = new Vertex3D(surfacePt.X + 1000.0f, surfacePt.Y, surfacePt.Z + 1000.0f);
+                Vertex3D notePt = surfacePt + new Vector3D(1000.0f, 0.0f, 1000.0f);
                 vizcore3dx.Note.AddNoteSurface(text, notePt, surfacePt);
             }
 

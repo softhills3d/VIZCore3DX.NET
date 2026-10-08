@@ -204,7 +204,7 @@ namespace VIZCore3DX.NET.NoteTransform
                     NoteItem note = vizcore3dx.Note.GetItem(noteId);
                     if (note == null || note.IsDeleted == true) continue;
 
-                    Vertex3D text = new Vertex3D(note.TextPosition.X + x, note.TextPosition.Y + y, note.TextPosition.Z + z);
+                    Vertex3D text = note.TextPosition.ToVertex3D() + new Vector3D(x, y, z);
                     Vertex3D surface = node.GetCenter();
 
                     vizcore3dx.Note.Delete(noteId);

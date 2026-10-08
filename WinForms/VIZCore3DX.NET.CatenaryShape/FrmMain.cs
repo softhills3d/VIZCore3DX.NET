@@ -94,11 +94,6 @@ namespace VIZCore3DX.NET.CatenaryShape
             return result;
         }
 
-        private bool IsSamePoint(VIZCore3DX.NET.Data.Vector3D p1, VIZCore3DX.NET.Data.Vector3D p2)
-        {
-            return p1.X == p2.X && p1.Y == p2.Y && p1.Z == p2.Z;
-        }
-
         private VIZCore3DX.NET.Data.OsnapController CreatePointOsnap(string commandText)
         {
             VIZCore3DX.NET.Data.OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
@@ -248,7 +243,7 @@ namespace VIZCore3DX.NET.CatenaryShape
             VIZCore3DX.NET.Data.Vector3D p1 = GetStartPoint();
             VIZCore3DX.NET.Data.Vector3D p2 = GetEndPoint();
 
-            if (IsSamePoint(p1, p2) == true)
+            if (p1 == p2)
             {
                 MessageBox.Show("시작점 P1과 끝점 P2가 같습니다.", "Catenary Shape", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -285,7 +280,7 @@ namespace VIZCore3DX.NET.CatenaryShape
             VIZCore3DX.NET.Data.Vector3D p1 = GetStartPoint();
             VIZCore3DX.NET.Data.Vector3D p2 = GetEndPoint();
 
-            if (IsSamePoint(p1, p2) == true)
+            if (p1 == p2)
             {
                 MessageBox.Show("시작점 P1과 끝점 P2가 같습니다.", "Catenary Shape", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -310,7 +305,7 @@ namespace VIZCore3DX.NET.CatenaryShape
             VIZCore3DX.NET.Data.Vector3D p1 = GetStartPoint();
             VIZCore3DX.NET.Data.Vector3D p2 = GetEndPoint();
 
-            if (IsSamePoint(p1, p2) == true)
+            if (p1 == p2)
             {
                 MessageBox.Show("시작점 P1과 끝점 P2가 같습니다.", "Catenary Shape", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

@@ -186,12 +186,22 @@ namespace VIZCore3DX.NET.GeometryProperty
         private bool TryGetTargetNodes(bool selectedOnly, out List<VIZCore3DX.NET.Data.Node> nodes)
         {
             nodes = null;
+            if (CheckModelOpened() == false) return false;
             if (selectedOnly == false) return true;
 
             nodes = vizcore3dx.Object3D.FromFilter(VIZCore3DX.NET.Data.Object3dFilter.SELECTED_TOP);
             if (nodes.Count > 0) return true;
 
             MessageBox.Show("선택된 개체가 없습니다.", "VIZCore3DX.NET.GeometryProperty", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
+        }
+
+        // 모델이 열려 있지 않으면 안내 후 false
+        private bool CheckModelOpened()
+        {
+            if (vizcore3dx.Model.IsOpen()) return true;
+
+            MessageBox.Show("모델을 먼저 열어주세요.", "VIZCore3DX.NET.GeometryProperty", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return false;
         }
 
@@ -332,6 +342,7 @@ namespace VIZCore3DX.NET.GeometryProperty
         private void btnAxisDistribution_Click(object sender, EventArgs e)
         {
             if (cmbAxis.SelectedItem == null) return;
+            if (CheckModelOpened() == false) return;
 
             VIZCore3DX.NET.Data.Axis axis = (VIZCore3DX.NET.Data.Axis)cmbAxis.SelectedItem;
 
@@ -406,9 +417,10 @@ namespace VIZCore3DX.NET.GeometryProperty
 
             stopwatch.Stop();
 
-            if (vizcore3dx.Model.LastOperationStatus.IsFailure)
+            VIZCore3DX.NET.Data.OperationStatus status = vizcore3dx.Model.LastOperationStatus;
+            if (status != null && status.IsFailure)
             {
-                MessageBox.Show(string.Format("노드 기본 특성을 로드하지 못했습니다.\r\n\r\nResult : {0}", vizcore3dx.Model.LastOperationStatus.Result), "VIZCore3DX.NET.GeometryProperty", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(string.Format("노드 기본 특성을 로드하지 못했습니다.\r\n\r\nResult : {0}", status.Result), "VIZCore3DX.NET.GeometryProperty", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

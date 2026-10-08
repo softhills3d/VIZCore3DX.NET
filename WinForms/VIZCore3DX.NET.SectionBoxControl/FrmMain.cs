@@ -203,10 +203,13 @@ namespace VIZCore3DX.NET.SectionBoxControl
             // Section Box의 바운드 박스(사이즈) 정보 가져오기 
             VIZCore3DX.NET.Data.BoundBox3D bbox = Section.BoundBox;
 
+            float minX, minY, minZ;
+            if (!TryGetFloat(txtMinX, out minX) || !TryGetFloat(txtMinY, out minY) || !TryGetFloat(txtMinZ, out minZ)) return;
+
             // Min 값 지정 하여 Section Box 반영
-            bbox.MinX = Convert.ToSingle(txtMinX.Text);
-            bbox.MinY = Convert.ToSingle(txtMinY.Text);
-            bbox.MinZ = Convert.ToSingle(txtMinZ.Text);
+            bbox.MinX = minX;
+            bbox.MinY = minY;
+            bbox.MinZ = minZ;
 
             vizcore3dx.Section.SetBoxSize(Section.ID, bbox);
             vizcore3dx.Update();
@@ -225,10 +228,13 @@ namespace VIZCore3DX.NET.SectionBoxControl
             // Section Box의 바운드 박스(사이즈) 정보 가져오기 
             VIZCore3DX.NET.Data.BoundBox3D bbox = Section.BoundBox;
 
-            // Min 값 지정 하여 Section Box 반영
-            bbox.MaxX = Convert.ToSingle(txtMaxX.Text);
-            bbox.MaxY = Convert.ToSingle(txtMaxY.Text);
-            bbox.MaxZ = Convert.ToSingle(txtMaxZ.Text);
+            float maxX, maxY, maxZ;
+            if (!TryGetFloat(txtMaxX, out maxX) || !TryGetFloat(txtMaxY, out maxY) || !TryGetFloat(txtMaxZ, out maxZ)) return;
+
+            // Max 값 지정 하여 Section Box 반영
+            bbox.MaxX = maxX;
+            bbox.MaxY = maxY;
+            bbox.MaxZ = maxZ;
 
             vizcore3dx.Section.SetBoxSize(Section.ID, bbox);
             vizcore3dx.Update();
@@ -368,10 +374,12 @@ namespace VIZCore3DX.NET.SectionBoxControl
             if (vizcore3dx.Model.IsOpen() == false || Section == null) return;
 
             // offset 값 가져오기
-            float offset = Convert.ToSingle(offsetValue.Text);
+            float offset;
+            if (!TryGetFloat(offsetValue, out offset)) return;
 
             // 현재 Min/Max 값 가져오기
-            float current = Convert.ToSingle(minMaxValue.Text);
+            float current;
+            if (!TryGetFloat(minMaxValue, out current)) return;
 
             // 증가 또는 감소 연산
             current += increase ? offset : -offset;
@@ -390,19 +398,14 @@ namespace VIZCore3DX.NET.SectionBoxControl
         {
             // Section Box 추가
             Section = vizcore3dx.Section.AddBox();
+            if (Section == null)
+            {
+                ShowOperationFailure("단면 박스를 추가하지 못했습니다.");
+                return;
+            }
 
-            // Section Box의 바운드 박스(사이즈) 정보 가져오기 
-            VIZCore3DX.NET.Data.BoundBox3D bbox = Section.BoundBox;
-
-            // Min 값
-            txtMinX.Text = bbox.MinX.ToString();
-            txtMinY.Text = bbox.MinY.ToString();
-            txtMinZ.Text = bbox.MinZ.ToString();
-
-            // Max 값
-            txtMaxX.Text = bbox.MaxX.ToString();
-            txtMaxY.Text = bbox.MaxY.ToString();
-            txtMaxZ.Text = bbox.MaxZ.ToString();
+            // Section Box의 바운드 박스(사이즈) 정보 표시
+            UpdateBoxText(Section.BoundBox);
 
             // View 업데이트
             vizcore3dx.Update();
@@ -439,7 +442,14 @@ namespace VIZCore3DX.NET.SectionBoxControl
                 dialog.FileName = "Section.json";
                 if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
-                File.WriteAllText(dialog.FileName, json, Encoding.UTF8);
+                try
+                {
+                    File.WriteAllText(dialog.FileName, json, Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("파일을 저장하지 못했습니다.\n{0}", ex.Message), "SectionBoxControl", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
         }
 
@@ -458,7 +468,16 @@ namespace VIZCore3DX.NET.SectionBoxControl
                 dialog.Filter = "JSON 파일 (*.json)|*.json|모든 파일 (*.*)|*.*";
                 if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
-                string json = File.ReadAllText(dialog.FileName, Encoding.UTF8);
+                string json;
+                try
+                {
+                    json = File.ReadAllText(dialog.FileName, Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(string.Format("파일을 읽지 못했습니다.\n{0}", ex.Message), "SectionBoxControl", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 // JSON 문자열로 Section 목록 복원
                 if (!vizcore3dx.Section.FromJson(json))
@@ -537,6 +556,18 @@ namespace VIZCore3DX.NET.SectionBoxControl
             txtMaxX.Text = bbox.MaxX.ToString();
             txtMaxY.Text = bbox.MaxY.ToString();
             txtMaxZ.Text = bbox.MaxZ.ToString();
+        }
+
+        /// <summary>
+        /// TextBox 값을 float으로 변환 (실패 시 메시지 표시)
+        /// </summary>
+        private bool TryGetFloat(TextBox textBox, out float value)
+        {
+            if (float.TryParse(textBox.Text, out value)) return true;
+
+            MessageBox.Show(string.Format("숫자를 입력해 주세요. ({0})", textBox.Text), "SectionBoxControl", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            textBox.Focus();
+            return false;
         }
 
         /// <summary>

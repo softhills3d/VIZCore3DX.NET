@@ -125,7 +125,7 @@ namespace VIZCore3DX.NET.SightAnalysis
             numPosX.Value = (decimal)observer.X;
             numPosY.Value = (decimal)observer.Y;
             numPosZ.Value = (decimal)observer.Z;
-            numMaxDistance.Value = (decimal)(5000f + box.LengthX);
+            numMaxDistance.Value = Math.Min(numMaxDistance.Maximum, (decimal)(5000f + box.LengthX));
             chkCone.Checked = true;
             cmbConeDirection.SelectedIndex = 1;   // -X : 모델 쪽
             numConeAngle.Value = 60;
@@ -172,9 +172,16 @@ namespace VIZCore3DX.NET.SightAnalysis
             SetRunning(true);
             SetStatus("분석 중입니다. 첫 분석은 장애물 추출로 시간이 걸릴 수 있습니다.");
 
-            VIZCore3DX.NET.Data.SightMapResult result = await vizcore3dx.Observer.AnalyzeAsync(options, progress);
-
-            SetRunning(false);
+            VIZCore3DX.NET.Data.SightMapResult result;
+            try
+            {
+                result = await vizcore3dx.Observer.AnalyzeAsync(options, progress);
+            }
+            finally
+            {
+                // 예외가 나도 실행 버튼 잠금 해제
+                SetRunning(false);
+            }
 
             if (result.IsCanceled)
             {
@@ -468,7 +475,7 @@ namespace VIZCore3DX.NET.SightAnalysis
         // 원뿔: 축 방향으로 r·cos(반각) 떨어진 곳에 반지름 r·sin(반각) 링을 두고, 정점에서 링까지 모선 8개를 잇습니다.
         private static void AppendCone(VIZCore3DX.NET.Data.Vector3D origin, VIZCore3DX.NET.Data.Vector3D axis, double radius, double halfAngleDeg, List<float> xyz, List<int> sizes)
         {
-            double half = halfAngleDeg * Math.PI / 180.0;
+            double half = VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(halfAngleDeg);
             VIZCore3DX.NET.Data.Vector3D u, v;
             MakeBasis(axis, out u, out v);
 
@@ -507,10 +514,8 @@ namespace VIZCore3DX.NET.SightAnalysis
         private static void MakeBasis(VIZCore3DX.NET.Data.Vector3D axis, out VIZCore3DX.NET.Data.Vector3D u, out VIZCore3DX.NET.Data.Vector3D v)
         {
             VIZCore3DX.NET.Data.Vector3D helper = Math.Abs(axis.Z) < 0.9f ? new VIZCore3DX.NET.Data.Vector3D(0, 0, 1) : new VIZCore3DX.NET.Data.Vector3D(1, 0, 0);
-            u = axis.Cross(helper);
-            u = u / u.Length();
-            v = axis.Cross(u);
-            v = v / v.Length();
+            u = axis.Cross(helper).GetNormalized();
+            v = axis.Cross(u).GetNormalized();
         }
 
         private static void AppendPolyline(List<VIZCore3DX.NET.Data.Vector3D> points, List<float> xyz, List<int> sizes)

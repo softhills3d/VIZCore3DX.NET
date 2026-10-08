@@ -145,21 +145,32 @@ namespace VIZCore3DX.NET.CaptureImage
         {
             if (lvImage.Items.Count == 0) return;
 
-            for (int i = 0; i < lvImage.Items.Count; i++)
+            try
             {
-                ListViewItem lvi = lvImage.Items[i];
-                if (lvi.Tag == null) return;
+                // 저장 폴더가 없으면 생성
+                System.IO.Directory.CreateDirectory(txtPath.Text);
 
-                System.Drawing.Image img = (System.Drawing.Image)lvi.Tag;
-                img.Save(
-                    string.Format(
-                        "{0}\\VIZCore.NET.{1}.{2}.png"
-                        , txtPath.Text
-                        , i + 1
-                        , DateTime.Now.ToString("yyyyMMddHHmmss")
-                        )
-                    , System.Drawing.Imaging.ImageFormat.Png
-                    );
+                for (int i = 0; i < lvImage.Items.Count; i++)
+                {
+                    ListViewItem lvi = lvImage.Items[i];
+                    if (lvi.Tag == null) return;
+
+                    System.Drawing.Image img = (System.Drawing.Image)lvi.Tag;
+                    img.Save(
+                        string.Format(
+                            "{0}\\VIZCore.NET.{1}.{2}.png"
+                            , txtPath.Text
+                            , i + 1
+                            , DateTime.Now.ToString("yyyyMMddHHmmss")
+                            )
+                        , System.Drawing.Imaging.ImageFormat.Png
+                        );
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("이미지 저장 중 오류 발생: " + ex.Message, "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
 
             VIZCore3DX.NET.Utility.ExplorerHelper.ShowPath(txtPath.Text);
@@ -170,17 +181,9 @@ namespace VIZCore3DX.NET.CaptureImage
             if (vizcore3dx.Model.IsOpen() == false) return;
 
             System.Drawing.Image img = vizcore3dx.View.CaptureImage();
+            if (img == null) return;
 
-
-            imgThumb.Images.Add(img);
-
-            ListViewItem lvi = new ListViewItem("", imgThumb.Images.Count - 1);
-            lvi.Tag = img;
-
-            lvImage.Items.Add(lvi);
-
-            lvImage.EnsureVisible(lvImage.Items.Count - 1);
-
+            AddCaptureImage(img);
         }
 
         private void btnCaptureRender_Click(object sender, EventArgs e)

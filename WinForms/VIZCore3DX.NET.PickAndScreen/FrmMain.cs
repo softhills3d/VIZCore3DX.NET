@@ -30,6 +30,13 @@ namespace VIZCore3DX.NET.PickAndScreen
         // 충돌점 (0 이면 없음)
         private uint _hitPoints;
 
+        // 마지막으로 조회한 화면 영역과 그 테두리 선 (0 이면 없음)
+        private System.Drawing.Rectangle _lastArea = System.Drawing.Rectangle.Empty;
+        private uint _areaLine;
+
+        // 마지막 영역 조회 결과. 있으면 우클릭 픽·광선 충돌을 이 개체들 안에서만 찾습니다. (null 이면 전체)
+        private List<VIZCore3DX.NET.Data.Node> _areaNodes;
+
         // 표를 코드로 채우는 동안에는 표 선택을 뷰로 넘기지 않습니다.
         private bool _syncing;
 
@@ -134,6 +141,21 @@ namespace VIZCore3DX.NET.PickAndScreen
             SetStatus(string.Format("FrontObjectOnly = {0}", vizcore3dx.View.EnableBoxSelectionFrontObjectOnly));
         }
 
+        // 완전 포함 조건을 바꾸면 마지막으로 조회한 영역을 같은 조건으로 다시 조회합니다.
+        private void chkFullContains_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_lastArea.IsEmpty || !IsModelOpened()) return;
+
+            QueryArea(_lastArea);
+        }
+
+        // 조회 영역 테두리 표시를 켜고 끕니다. 켜면 마지막 영역을 다시 그립니다.
+        private void chkShowArea_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkShowArea.Checked) ShowArea();
+            else HideArea();
+        }
+
         // 광선·충돌점 표시를 켜고 끕니다. 켜면 마지막 결과를 다시 그립니다.
         private void chkShowRay_CheckedChanged(object sender, EventArgs e)
         {
@@ -146,11 +168,11 @@ namespace VIZCore3DX.NET.PickAndScreen
         // 3D 뷰 가운데 절반(가로·세로 1/4 ~ 3/4)을 영역 좌표로 채웁니다.
         private void btnCenterRect_Click(object sender, EventArgs e)
         {
-            SetNumber(numX1, vizcore3dx.Width / 4);
-            SetNumber(numY1, vizcore3dx.Height / 4);
-            SetNumber(numX2, vizcore3dx.Width * 3 / 4);
-            SetNumber(numY2, vizcore3dx.Height * 3 / 4);
-            SetStatus("3D 뷰 가운데 절반을 영역으로 채웠습니다.");
+            if (!IsModelOpened()) return;
+
+            System.Drawing.Size size = ViewPixelSize();
+            SetArea(size.Width / 4, size.Height / 4, size.Width * 3 / 4, size.Height * 3 / 4);
+            SetStatus(string.Format("3D 뷰({0} x {1}) 가운데 절반을 영역으로 채웠습니다.", size.Width, size.Height));
         }
 
         // 입력한 화면 사각형(뷰 픽셀 좌표) 안의 노드를 조회해 선택합니다.
@@ -158,8 +180,7 @@ namespace VIZCore3DX.NET.PickAndScreen
         {
             if (!IsModelOpened()) return;
 
-            List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.FromScreen((int)numX1.Value, (int)numY1.Value, (int)numX2.Value, (int)numY2.Value, chkFullContains.Checked);
-            ApplyArea(nodes);
+            QueryArea(System.Drawing.Rectangle.FromLTRB((int)numX1.Value, (int)numY1.Value, (int)numX2.Value, (int)numY2.Value));
         }
 
         // 3D 뷰 전체를 영역으로 삼아 노드를 조회해 선택합니다.
@@ -167,8 +188,12 @@ namespace VIZCore3DX.NET.PickAndScreen
         {
             if (!IsModelOpened()) return;
 
+            // 조회한 범위가 보이도록 3D 뷰 전체 크기를 영역 좌표에도 채웁니다.
+            System.Drawing.Size size = ViewPixelSize();
+            SetArea(0, 0, size.Width, size.Height);
+
             List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.FromScreen(chkFullContains.Checked);
-            ApplyArea(nodes);
+            ApplyArea(nodes, new System.Drawing.Rectangle(0, 0, size.Width, size.Height));
         }
         #endregion
 
@@ -282,7 +307,7 @@ namespace VIZCore3DX.NET.PickAndScreen
 
             _lastPoint = point;
             _pickIndex = 0;
-            _picks = vizcore3dx.Object3D.GetPickableObjects(point, SelectedFilter());
+            _picks = OnlyInArea(vizcore3dx.Object3D.GetPickableObjects(point, SelectedFilter()));
             FillPicks();
 
             int pickCount = _picks == null ? 0 : _picks.Count;
@@ -298,10 +323,14 @@ namespace VIZCore3DX.NET.PickAndScreen
             }
 
             _rayOrigin = vizcore3dx.View.GetCameraEyePosition();
-            VIZCore3DX.NET.Data.Vector3D direction = new VIZCore3DX.NET.Data.Vector3D(target.Item2.X - _rayOrigin.X, target.Item2.Y - _rayOrigin.Y, target.Item2.Z - _rayOrigin.Z);
+            VIZCore3DX.NET.Data.Vector3D direction = target.Item2 - _rayOrigin;
             if (direction.Length() < 1e-4f) return;
 
-            _hits = vizcore3dx.Object3D.RaycastAll(new VIZCore3DX.NET.Data.Ray3D(_rayOrigin, direction));
+            // 영역 조회를 했으면 그 결과 개체만 광선 충돌 대상으로 삼습니다.
+            VIZCore3DX.NET.Data.Ray3D ray = new VIZCore3DX.NET.Data.Ray3D(_rayOrigin, direction);
+            if (_areaNodes == null) _hits = vizcore3dx.Object3D.RaycastAll(ray);
+            else if (_areaNodes.Count == 0) _hits = new List<VIZCore3DX.NET.Data.RaycastHit>();
+            else _hits = vizcore3dx.Object3D.RaycastAll(ray, _areaNodes);
             FillHits();
             if (chkShowRay.Checked) ShowRay();
             SelectFirstPick();
@@ -339,7 +368,7 @@ namespace VIZCore3DX.NET.PickAndScreen
                 _syncing = false;
             }
 
-            lblPick.Text = string.Format("픽 결과 (우클릭 지점) : {0} 개", rows.Count);
+            lblPick.Text = string.Format("픽 결과 (우클릭 지점) : {0} 개{1}", rows.Count, _areaNodes == null ? "" : " · 영역 결과 안에서");
         }
 
         // 광선 충돌 결과를 표에 넣습니다.
@@ -370,7 +399,7 @@ namespace VIZCore3DX.NET.PickAndScreen
                 _syncing = false;
             }
 
-            lblHits.Text = string.Format("광선 충돌 (카메라 → 지점) : {0} 개", rows.Count);
+            lblHits.Text = string.Format("광선 충돌 (카메라 → 지점) : {0} 개{1}", rows.Count, _areaNodes == null ? "" : " · 영역 결과 안에서");
         }
 
         // 픽 결과 첫 행을 고릅니다. 노드면 표 선택 이벤트에서 그 노드만 선택됩니다.
@@ -410,8 +439,15 @@ namespace VIZCore3DX.NET.PickAndScreen
             return pick.Object == null ? "" : pick.Object.GetType().Name;
         }
 
-        // 영역 조회 결과를 선택하고 조회 조건과 함께 상태줄에 알립니다.
-        private void ApplyArea(List<VIZCore3DX.NET.Data.Node> nodes)
+        // 화면 사각형 안의 노드를 조회합니다. 완전 포함 체크가 켜져 있으면 영역에 온전히 들어온 개체만 돌려받습니다.
+        private void QueryArea(System.Drawing.Rectangle area)
+        {
+            List<VIZCore3DX.NET.Data.Node> nodes = vizcore3dx.Object3D.FromScreen(area.Left, area.Top, area.Right, area.Bottom, chkFullContains.Checked);
+            ApplyArea(nodes, area);
+        }
+
+        // 영역 조회 결과를 선택하고, 결과 개수와 영역을 표시합니다.
+        private void ApplyArea(List<VIZCore3DX.NET.Data.Node> nodes, System.Drawing.Rectangle area)
         {
             if (nodes == null) nodes = new List<VIZCore3DX.NET.Data.Node>();
 
@@ -426,7 +462,80 @@ namespace VIZCore3DX.NET.PickAndScreen
                 vizcore3dx.EndUpdate();
             }
 
-            SetStatus(string.Format("영역 조회 완료 : {0} 개 (FrontObjectOnly={1}, 완전 포함={2})", nodes.Count, vizcore3dx.View.EnableBoxSelectionFrontObjectOnly, chkFullContains.Checked));
+            lblArea.Text = string.Format("영역 조회 결과 : {0} 개  ({1}, {2}) - ({3}, {4})", nodes.Count, area.Left, area.Top, area.Right, area.Bottom);
+            _lastArea = area;
+            _areaNodes = nodes;
+            if (chkShowArea.Checked) ShowArea();
+
+            SetStatus(string.Format("영역 조회 완료 : {0} 개", nodes.Count));
+        }
+
+        // 3D 뷰 렌더링 영역의 픽셀 크기. 시선 위의 점은 화면 정중앙에 찍히므로 그 화면 좌표의 2배가 크기입니다.
+        private System.Drawing.Size ViewPixelSize()
+        {
+            VIZCore3DX.NET.Data.Vector3D eye = vizcore3dx.View.GetCameraEyePosition();
+            VIZCore3DX.NET.Data.Vector3D direction = vizcore3dx.View.GetCameraAxis()[2];
+            VIZCore3DX.NET.Data.Vertex3D center = vizcore3dx.View.WorldToScreen((eye + direction * 1000f).ToVertex3D());
+
+            return new System.Drawing.Size((int)Math.Round(center.X * 2), (int)Math.Round(center.Y * 2));
+        }
+
+        // 영역 조회 결과가 있으면 노드 픽 중 그 결과에 든 것만 남깁니다. 노드가 아닌 픽(표식 등)은 그대로 둡니다.
+        private List<VIZCore3DX.NET.Data.PickableObject> OnlyInArea(List<VIZCore3DX.NET.Data.PickableObject> picks)
+        {
+            if (picks == null || _areaNodes == null) return picks;
+
+            // 노드 고유키는 (EntityID, Index) 쌍입니다.
+            HashSet<long> keys = new HashSet<long>();
+            foreach (VIZCore3DX.NET.Data.Node node in _areaNodes) keys.Add(NodeKey(node));
+
+            return picks.FindAll(pick =>
+            {
+                VIZCore3DX.NET.Data.Node node = pick.Object as VIZCore3DX.NET.Data.Node;
+                return pick.Type != VIZCore3DX.NET.Data.PickableObjectType.Node || (node != null && keys.Contains(NodeKey(node)));
+            });
+        }
+
+        private static long NodeKey(VIZCore3DX.NET.Data.Node node)
+        {
+            return ((long)node.EntityID << 32) | (uint)node.Index;
+        }
+
+        private void SetArea(int x1, int y1, int x2, int y2)
+        {
+            SetNumber(numX1, x1);
+            SetNumber(numY1, y1);
+            SetNumber(numX2, x2);
+            SetNumber(numY2, y2);
+        }
+
+        // 마지막으로 조회한 화면 영역의 테두리를 3D 뷰에 하늘색 사각형으로 그립니다.
+        private void ShowArea()
+        {
+            HideArea();
+            if (_lastArea.IsEmpty) return;
+
+            int[,] corners = { { _lastArea.Left, _lastArea.Top }, { _lastArea.Right, _lastArea.Top }, { _lastArea.Right, _lastArea.Bottom }, { _lastArea.Left, _lastArea.Bottom }, { _lastArea.Left, _lastArea.Top } };
+            float[] line = new float[corners.GetLength(0) * 3];
+            for (int i = 0; i < corners.GetLength(0); i++)
+            {
+                VIZCore3DX.NET.Data.Vertex3D p = vizcore3dx.View.ScreenToWorld(corners[i, 0], corners[i, 1], 0.5f);
+                line[i * 3 + 0] = p.X; line[i * 3 + 1] = p.Y; line[i * 3 + 2] = p.Z;
+            }
+
+            VIZCore3DX.NET.Data.DataSetOptions options = new VIZCore3DX.NET.Data.DataSetOptions();
+            options.Color = System.Drawing.Color.DeepSkyBlue;
+            options.LineWidth = 3f;
+            options.AlwaysOnTop = true;
+            _areaLine = vizcore3dx.View.Effect.AddLineSet(line, new int[] { corners.GetLength(0) }, null, options);
+        }
+
+        private void HideArea()
+        {
+            if (_areaLine == 0) return;
+
+            vizcore3dx.View.Effect.RemoveDataSet(_areaLine);
+            _areaLine = 0;
         }
 
         private static void SetNumber(NumericUpDown num, int value)
@@ -483,6 +592,10 @@ namespace VIZCore3DX.NET.PickAndScreen
         private void ClearResults()
         {
             HideRay();
+            HideArea();
+            _lastArea = System.Drawing.Rectangle.Empty;
+            _areaNodes = null;
+            lblArea.Text = "영역 조회 결과 : -";
             _picks = null;
             _hits = null;
             _pickIndex = 0;

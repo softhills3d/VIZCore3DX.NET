@@ -90,19 +90,9 @@ namespace VIZCore3DX.NET.Search
               , false /* True : Full Match, False : Contains */
             );
 
-            vizcore3dx.Object3D.Select(nodes, true);
-
-            lvResult1.Items.Clear();
-
-            lvResult1.BeginUpdate();
-            foreach (VIZCore3DX.NET.Data.Node item in nodes)
-            {
-                ListViewItem lvi = new ListViewItem(new string[] { item.Index.ToString(), item.EntityID.ToString(), item.NodeName });
-                lvResult1.Items.Add(lvi);
-            }
-            lvResult1.EndUpdate();
-
             vizcore3dx.CloseWaitForm();
+
+            ShowSearchResult(lvResult1, nodes);
         }
 
         private void btnSearch2_Click(object sender, EventArgs e)
@@ -122,19 +112,9 @@ namespace VIZCore3DX.NET.Search
               , false /* True : Full Match, False : Contains */
             );
 
-            vizcore3dx.Object3D.Select(nodes, true);
-
-            lvResult2.Items.Clear();
-
-            lvResult2.BeginUpdate();
-            foreach (VIZCore3DX.NET.Data.Node item in nodes)
-            {
-                ListViewItem lvi = new ListViewItem(new string[] { item.Index.ToString(), item.EntityID.ToString(), item.NodeName });
-                lvResult2.Items.Add(lvi);
-            }
-            lvResult2.EndUpdate();
-
             vizcore3dx.CloseWaitForm();
+
+            ShowSearchResult(lvResult2, nodes);
         }
 
         private void btnSearch3_Click(object sender, EventArgs e)
@@ -143,7 +123,12 @@ namespace VIZCore3DX.NET.Search
 
             List<Data.Node> nodes = vizcore3dx.Object3D.Find.QuickSearch(txtKeyword3.Text.Trim(), false);
 
-            vizcore3dx.Object3D.Show(nodes, false);
+            vizcore3dx.CloseWaitForm();
+
+            // 검색 결과 없음 (모델 미로드 등)
+            if (nodes == null) nodes = new List<Data.Node>();
+
+            if (nodes.Count > 0) vizcore3dx.Object3D.Show(nodes, false);
 
             lvResult3.Items.Clear();
 
@@ -154,8 +139,6 @@ namespace VIZCore3DX.NET.Search
                 lvResult3.Items.Add(lvi);
             }
             lvResult3.EndUpdate();
-
-            vizcore3dx.CloseWaitForm();
         }
 
         #region Common

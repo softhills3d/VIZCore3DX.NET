@@ -128,9 +128,18 @@ namespace VIZCore3DX.NET.BoxSpaceObjects
         {
             if (SelectionBox == -1 || cbFilter.SelectedIndex == -1) return;
 
-            Data.BoundBox3D box = vizcore3dx.SelectionBox.GetItem(SelectionBox).BoundBox;
+            // 선택상자가 리본에서 삭제되었거나 모델을 닫은 경우
+            var item = vizcore3dx.SelectionBox.GetItem(SelectionBox);
+            if (item == null)
+            {
+                SelectionBox = -1;
+                MessageBox.Show("선택상자가 없습니다. 상자를 다시 추가해 주세요.", "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Data.BoundBox3D box = item.BoundBox;
             Data.BoundBoxSearchOption option = (Data.BoundBoxSearchOption)cbFilter.SelectedIndex;
-            List<Data.Node> items = vizcore3dx.Object3D.FromZone(box, option);
+            List<Data.Node> items = vizcore3dx.Object3D.FromZone(box, option) ?? new List<Data.Node>();
 
             dataGridNode.DataSource = items;
             gbObjects.Text = string.Format("Objects - {0:N0}", items.Count);

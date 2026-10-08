@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using VIZCore3DX.NET.Data;
 
 namespace VIZCore3DX.NET.Projection2D
 {
@@ -54,10 +48,7 @@ namespace VIZCore3DX.NET.Projection2D
             // 카메라가 바라보는 방향을 Projection 평면의 법선 방향으로 사용
             Data.Vector3D eye = new Data.Vector3D(cameraData.EyePosition);
             Data.Vector3D pivot = new Data.Vector3D(cameraData.PivotPosition);
-            Data.Vector3D viewDir = new Data.Vector3D(pivot.X - eye.X, pivot.Y - eye.Y, pivot.Z - eye.Z).GetNormalized();
-
-            // 기존 EyePosition/PivotPosition 계산 대신 CameraDirection을 직접 사용하면 보는것과 약간 달라지는 부분이 잇어서, 직접 계산하는 방식을 사용했다.
-            //Data.Vector3D viewDir = new Data.Vector3D(cameraData.CameraDirection).GetNormalized();
+            Data.Vector3D viewDir = (pivot - eye).GetNormalized();
 
             Data.BoundBox3D boundBox = vizcore3dx.Object3D.GetBoundBox(nodes);
             if (boundBox == null) return;

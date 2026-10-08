@@ -53,12 +53,6 @@ namespace VIZCore3DX.NET.UserView
                 return;
             }
 
-            if (result != Data.LicenseResults.SUCCESS)
-            {
-                MessageBox.Show(string.Format("LICENSE CODE : {0}", result.ToString()), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             InitializeVIZCore3DX();
             InitializeVIZCore3DEvent();
         }
@@ -101,6 +95,8 @@ namespace VIZCore3DX.NET.UserView
             InitControl();
 
             List<string> files = vizcore3dx.Model.Files;
+            if (files == null || files.Count == 0) return;
+
             string path = files[0];
             vizcore3dx.Model.ImportMarkupJson(path, false, false, false, true, false, false);
 
@@ -307,12 +303,17 @@ namespace VIZCore3DX.NET.UserView
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             string newName = dlg.NodeName.Trim();
+            if (newName.Length == 0) return;
 
             if (selectedNode.Tag != null && selectedNode.Tag.ToString() == "FOLDER_TYPE")
             {
                 selectedNode.Text = newName;
                 return;
             }
+
+            // 스냅샷은 SDK 스냅샷 이름도 함께 변경
+            if (selectedNode.Tag is Data.SnapshotItem item && vizcore3dx.Snapshot.EditSnapshotText(item.ID, newName))
+                selectedNode.Text = newName;
         }
 
         private void ckAnimation_CheckedChanged(object sender, EventArgs e)
@@ -381,7 +382,14 @@ namespace VIZCore3DX.NET.UserView
                 if (elem != null) root.Add(elem);
             }
 
-            new XDocument(root).Save(file);
+            try
+            {
+                new XDocument(root).Save(file);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("폴더 트리를 저장하지 못했습니다.{0}{1}", Environment.NewLine, ex.Message), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         // TreeNode -> XML
@@ -422,7 +430,16 @@ namespace VIZCore3DX.NET.UserView
             if (string.IsNullOrWhiteSpace(file)) return;
             if (File.Exists(file) == false) return;
 
-            XDocument doc = XDocument.Load(file);
+            XDocument doc;
+            try
+            {
+                doc = XDocument.Load(file);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("폴더 트리 파일을 읽지 못했습니다.{0}{1}", Environment.NewLine, ex.Message), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (doc.Root == null) return;
 
             tvUserView.BeginUpdate();

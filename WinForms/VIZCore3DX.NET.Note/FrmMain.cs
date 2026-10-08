@@ -171,7 +171,7 @@ namespace VIZCore3DX.NET.Note
                 // 일반 클릭 이벤트 잠시 해제
                 vizcore3dx.Object3D.OnNodeClick -= Object3D_OnNodeClick;
 
-                vizcore3dx.Note.AddNoteSurface(text, NoteSymbolType.Circle, Convert.ToString(vizcore3dx.Note.GetID().Count + 1));
+                vizcore3dx.Note.AddNoteSurface(text, NoteSymbolType.Circle, Convert.ToString(vizcore3dx.Note.GetCount() + 1));
                 return;
             }
 
@@ -189,7 +189,7 @@ namespace VIZCore3DX.NET.Note
             Vertex3D surfacePt = pick.Item2.ToVertex3D();
 
             // 노트 텍스트 위치
-            Vertex3D notePt = new Vertex3D(surfacePt.X + 2000.0f, surfacePt.Y, surfacePt.Z + 2000.0f);
+            Vertex3D notePt = surfacePt + new Vector3D(2000.0f, 0.0f, 2000.0f);
 
             // 화면 갱신 차단
             vizcore3dx.BeginUpdate();

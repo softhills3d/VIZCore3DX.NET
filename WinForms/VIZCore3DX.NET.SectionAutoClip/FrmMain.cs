@@ -87,7 +87,7 @@ namespace VIZCore3DX.NET.SectionAutoClip
             if (enable == false) return;
 
             // 선택 해제 또는 선택된 객체가 없으면 단면을 제거하고 종료
-            if (e.EventKind == Object3DManager.NodeEventKind.SELECTION_UNSELECTED_NODE || e.Node.Count == 0)
+            if (e.EventKind == Object3DManager.NodeEventKind.SELECTION_UNSELECTED_NODE || e.Node == null || e.Node.Count == 0)
             {
                 vizcore3dx.Section.Clear();
                 return;
@@ -99,9 +99,15 @@ namespace VIZCore3DX.NET.SectionAutoClip
             bool margin = ckMargin.Checked;
 
             // 여백 값 읽기
-            float marginX = Convert.ToSingle(txtX.Text);
-            float marginY = Convert.ToSingle(txtY.Text);
-            float marginZ = Convert.ToSingle(txtZ.Text);
+            float marginX = 0.0f;
+            float marginY = 0.0f;
+            float marginZ = 0.0f;
+
+            if (margin == true && (float.TryParse(txtX.Text, out marginX) == false || float.TryParse(txtY.Text, out marginY) == false || float.TryParse(txtZ.Text, out marginZ) == false))
+            {
+                MessageBox.Show("여백 값을 숫자로 입력해 주세요.");
+                return;
+            }
 
             BoundBox3D sectionBoxSize;
 
@@ -153,7 +159,7 @@ namespace VIZCore3DX.NET.SectionAutoClip
                 vizcore3dx.BeginUpdate();
 
                 SectionItem section = vizcore3dx.Section.AddBox(false);
-                vizcore3dx.Section.SetBoxSize(section.ID, sectionBoxSize);
+                if (section != null) vizcore3dx.Section.SetBoxSize(section.ID, sectionBoxSize);
 
                 vizcore3dx.EndUpdate();
             }

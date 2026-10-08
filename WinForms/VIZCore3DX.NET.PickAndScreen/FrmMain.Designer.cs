@@ -56,6 +56,8 @@
             this.lblX1 = new System.Windows.Forms.Label();
             this.grpSetup = new System.Windows.Forms.GroupBox();
             this.chkShowRay = new System.Windows.Forms.CheckBox();
+            this.chkShowArea = new System.Windows.Forms.CheckBox();
+            this.lblArea = new System.Windows.Forms.Label();
             this.chkFullContains = new System.Windows.Forms.CheckBox();
             this.chkFrontOnly = new System.Windows.Forms.CheckBox();
             this.cmbFilter = new System.Windows.Forms.ComboBox();
@@ -240,6 +242,7 @@
             //
             // grpRun
             //
+            this.grpRun.Controls.Add(this.lblArea);
             this.grpRun.Controls.Add(this.btnScreenAll);
             this.grpRun.Controls.Add(this.btnScreenRect);
             this.grpRun.Controls.Add(this.btnCenterRect);
@@ -261,9 +264,9 @@
             //
             // btnScreenAll
             //
-            this.btnScreenAll.Location = new System.Drawing.Point(228, 56);
+            this.btnScreenAll.Location = new System.Drawing.Point(224, 54);
             this.btnScreenAll.Name = "btnScreenAll";
-            this.btnScreenAll.Size = new System.Drawing.Size(104, 23);
+            this.btnScreenAll.Size = new System.Drawing.Size(108, 23);
             this.btnScreenAll.TabIndex = 10;
             this.btnScreenAll.Text = "전체 화면 조회";
             this.btnScreenAll.UseVisualStyleBackColor = true;
@@ -271,7 +274,7 @@
             //
             // btnScreenRect
             //
-            this.btnScreenRect.Location = new System.Drawing.Point(138, 56);
+            this.btnScreenRect.Location = new System.Drawing.Point(136, 54);
             this.btnScreenRect.Name = "btnScreenRect";
             this.btnScreenRect.Size = new System.Drawing.Size(84, 23);
             this.btnScreenRect.TabIndex = 9;
@@ -281,7 +284,7 @@
             //
             // btnCenterRect
             //
-            this.btnCenterRect.Location = new System.Drawing.Point(12, 56);
+            this.btnCenterRect.Location = new System.Drawing.Point(12, 54);
             this.btnCenterRect.Name = "btnCenterRect";
             this.btnCenterRect.Size = new System.Drawing.Size(120, 23);
             this.btnCenterRect.TabIndex = 8;
@@ -291,20 +294,20 @@
             //
             // numY2
             //
-            this.numY2.Location = new System.Drawing.Point(266, 24);
+            this.numY2.Location = new System.Drawing.Point(272, 24);
             this.numY2.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
             this.numY2.Name = "numY2";
-            this.numY2.Size = new System.Drawing.Size(52, 21);
+            this.numY2.Size = new System.Drawing.Size(60, 21);
             this.numY2.TabIndex = 7;
             //
             // lblY2
             //
             this.lblY2.AutoSize = true;
-            this.lblY2.Location = new System.Drawing.Point(246, 28);
+            this.lblY2.Location = new System.Drawing.Point(252, 28);
             this.lblY2.Name = "lblY2";
             this.lblY2.Size = new System.Drawing.Size(18, 12);
             this.lblY2.TabIndex = 6;
@@ -312,20 +315,20 @@
             //
             // numX2
             //
-            this.numX2.Location = new System.Drawing.Point(188, 24);
+            this.numX2.Location = new System.Drawing.Point(192, 24);
             this.numX2.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
             this.numX2.Name = "numX2";
-            this.numX2.Size = new System.Drawing.Size(52, 21);
+            this.numX2.Size = new System.Drawing.Size(56, 21);
             this.numX2.TabIndex = 5;
             //
             // lblX2
             //
             this.lblX2.AutoSize = true;
-            this.lblX2.Location = new System.Drawing.Point(168, 28);
+            this.lblX2.Location = new System.Drawing.Point(172, 28);
             this.lblX2.Name = "lblX2";
             this.lblX2.Size = new System.Drawing.Size(18, 12);
             this.lblX2.TabIndex = 4;
@@ -333,20 +336,20 @@
             //
             // numY1
             //
-            this.numY1.Location = new System.Drawing.Point(110, 24);
+            this.numY1.Location = new System.Drawing.Point(112, 24);
             this.numY1.Maximum = new decimal(new int[] {
             10000,
             0,
             0,
             0});
             this.numY1.Name = "numY1";
-            this.numY1.Size = new System.Drawing.Size(52, 21);
+            this.numY1.Size = new System.Drawing.Size(56, 21);
             this.numY1.TabIndex = 3;
             //
             // lblY1
             //
             this.lblY1.AutoSize = true;
-            this.lblY1.Location = new System.Drawing.Point(90, 28);
+            this.lblY1.Location = new System.Drawing.Point(92, 28);
             this.lblY1.Name = "lblY1";
             this.lblY1.Size = new System.Drawing.Size(18, 12);
             this.lblY1.TabIndex = 2;
@@ -361,7 +364,7 @@
             0,
             0});
             this.numX1.Name = "numX1";
-            this.numX1.Size = new System.Drawing.Size(52, 21);
+            this.numX1.Size = new System.Drawing.Size(56, 21);
             this.numX1.TabIndex = 1;
             //
             // lblX1
@@ -375,6 +378,7 @@
             //
             // grpSetup
             //
+            this.grpSetup.Controls.Add(this.chkShowArea);
             this.grpSetup.Controls.Add(this.chkShowRay);
             this.grpSetup.Controls.Add(this.chkFullContains);
             this.grpSetup.Controls.Add(this.chkFrontOnly);
@@ -393,7 +397,7 @@
             this.chkShowRay.AutoSize = true;
             this.chkShowRay.Checked = true;
             this.chkShowRay.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkShowRay.Location = new System.Drawing.Point(12, 108);
+            this.chkShowRay.Location = new System.Drawing.Point(12, 96);
             this.chkShowRay.Name = "chkShowRay";
             this.chkShowRay.Size = new System.Drawing.Size(116, 16);
             this.chkShowRay.TabIndex = 4;
@@ -401,20 +405,46 @@
             this.chkShowRay.UseVisualStyleBackColor = true;
             this.chkShowRay.CheckedChanged += new System.EventHandler(this.chkShowRay_CheckedChanged);
             //
+            // chkShowArea
+            //
+            this.chkShowArea.AutoSize = true;
+            this.chkShowArea.Checked = true;
+            this.chkShowArea.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkShowArea.Location = new System.Drawing.Point(12, 118);
+            this.chkShowArea.Name = "chkShowArea";
+            this.chkShowArea.Size = new System.Drawing.Size(104, 16);
+            this.chkShowArea.TabIndex = 5;
+            this.chkShowArea.Text = "조회 영역 표시";
+            this.chkShowArea.UseVisualStyleBackColor = true;
+            this.chkShowArea.CheckedChanged += new System.EventHandler(this.chkShowArea_CheckedChanged);
+            //
+            // lblArea
+            //
+            this.lblArea.ForeColor = System.Drawing.Color.RoyalBlue;
+            this.lblArea.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblArea.Location = new System.Drawing.Point(12, 84);
+            this.lblArea.Name = "lblArea";
+            this.lblArea.Size = new System.Drawing.Size(320, 24);
+            this.lblArea.TabIndex = 11;
+            this.lblArea.Text = "영역 조회 결과 : -";
+            this.lblArea.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             // chkFullContains
             //
             this.chkFullContains.AutoSize = true;
-            this.chkFullContains.Location = new System.Drawing.Point(12, 82);
+            this.chkFullContains.Location = new System.Drawing.Point(12, 74);
             this.chkFullContains.Name = "chkFullContains";
             this.chkFullContains.Size = new System.Drawing.Size(184, 16);
             this.chkFullContains.TabIndex = 3;
             this.chkFullContains.Text = "영역에 완전히 포함된 개체만";
             this.chkFullContains.UseVisualStyleBackColor = true;
+            this.chkFullContains.CheckedChanged += new System.EventHandler(this.chkFullContains_CheckedChanged);
             //
             // chkFrontOnly
             //
             this.chkFrontOnly.AutoSize = true;
-            this.chkFrontOnly.Location = new System.Drawing.Point(12, 56);
+            this.chkFrontOnly.Location = new System.Drawing.Point(12, 52);
             this.chkFrontOnly.Name = "chkFrontOnly";
             this.chkFrontOnly.Size = new System.Drawing.Size(220, 16);
             this.chkFrontOnly.TabIndex = 2;
@@ -425,9 +455,11 @@
             // cmbFilter
             //
             this.cmbFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFilter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbFilter.Location = new System.Drawing.Point(80, 24);
             this.cmbFilter.Name = "cmbFilter";
-            this.cmbFilter.Size = new System.Drawing.Size(120, 20);
+            this.cmbFilter.Size = new System.Drawing.Size(252, 20);
             this.cmbFilter.TabIndex = 1;
             //
             // lblFilter
@@ -485,9 +517,9 @@
             //
             // btnClear
             //
-            this.btnClear.Location = new System.Drawing.Point(116, 24);
+            this.btnClear.Location = new System.Drawing.Point(174, 24);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(100, 23);
+            this.btnClear.Size = new System.Drawing.Size(158, 23);
             this.btnClear.TabIndex = 1;
             this.btnClear.Text = "결과 지우기";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -497,7 +529,7 @@
             //
             this.btnClearSelection.Location = new System.Drawing.Point(12, 24);
             this.btnClearSelection.Name = "btnClearSelection";
-            this.btnClearSelection.Size = new System.Drawing.Size(100, 23);
+            this.btnClearSelection.Size = new System.Drawing.Size(158, 23);
             this.btnClearSelection.TabIndex = 0;
             this.btnClearSelection.Text = "선택 해제";
             this.btnClearSelection.UseVisualStyleBackColor = true;
@@ -556,6 +588,8 @@
         private System.Windows.Forms.CheckBox chkFrontOnly;
         private System.Windows.Forms.CheckBox chkFullContains;
         private System.Windows.Forms.CheckBox chkShowRay;
+        private System.Windows.Forms.CheckBox chkShowArea;
+        private System.Windows.Forms.Label lblArea;
         private System.Windows.Forms.GroupBox grpRun;
         private System.Windows.Forms.Label lblX1;
         private System.Windows.Forms.NumericUpDown numX1;

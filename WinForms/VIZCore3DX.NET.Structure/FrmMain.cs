@@ -61,12 +61,6 @@ namespace VIZCore3DX.NET.Structure
                 return;
             }
 
-            if (result != Data.LicenseResults.SUCCESS)
-            {
-                MessageBox.Show(string.Format("LICENSE CODE : {0}", result), "VIZCore3DX.NET", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
             // 모델 로드
             InitializeVIZCore3DX();
         }
@@ -97,7 +91,8 @@ namespace VIZCore3DX.NET.Structure
         {
             using (OpenFileDialog dlg = new OpenFileDialog())
             {
-                dlg.Filter = vizcore3dx.Model.OpenFilter;
+                // StructureManager 는 VIZX 파일만 읽음
+                dlg.Filter = "VIZX (*.vizx)|*.vizx";
                 if (dlg.ShowDialog() != DialogResult.OK) return;
 
                 Cursor = Cursors.WaitCursor;

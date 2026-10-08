@@ -59,18 +59,23 @@ namespace VIZCore3DX.NET.SplitObjects
                 return;
             }
 
-            VIZCore3DX.NET.Data.Plane3D plane = new VIZCore3DX.NET.Data.Plane3D(
-                new VIZCore3DX.NET.Data.Vector3D(
-                    Convert.ToSingle(ptX.Text)
-                    , Convert.ToSingle(ptY.Text)
-                    , Convert.ToSingle(ptZ.Text)
-                    ),
+            float px, py, pz, nx, ny, nz;
+            if (!float.TryParse(ptX.Text, out px) || !float.TryParse(ptY.Text, out py) || !float.TryParse(ptZ.Text, out pz)
+                || !float.TryParse(vX.Text, out nx) || !float.TryParse(vY.Text, out ny) || !float.TryParse(vZ.Text, out nz))
+            {
+                MessageBox.Show("Point / Vector 값을 숫자로 입력해 주세요.");
+                return;
+            }
 
-                new VIZCore3DX.NET.Data.Vector3D(
-                    Convert.ToSingle(vX.Text)
-                    , Convert.ToSingle(vY.Text)
-                    , Convert.ToSingle(vZ.Text)
-                    )
+            if (nx == 0 && ny == 0 && nz == 0)
+            {
+                MessageBox.Show("Vector 는 (0, 0, 0) 일 수 없습니다.");
+                return;
+            }
+
+            VIZCore3DX.NET.Data.Plane3D plane = new VIZCore3DX.NET.Data.Plane3D(
+                new VIZCore3DX.NET.Data.Vector3D(px, py, pz),
+                new VIZCore3DX.NET.Data.Vector3D(nx, ny, nz)
                 );
 
             vizcore3dx.Object3D.SplitMesh(selectedPart, plane);

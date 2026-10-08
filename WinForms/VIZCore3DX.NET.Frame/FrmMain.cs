@@ -243,7 +243,8 @@ namespace VIZCore3DX.NET.Frame
             dlg.DefaultExt = "json";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            vizcore3dx.Frame.Export(dlg.FileName);
+            bool result = vizcore3dx.Frame.Export(dlg.FileName);
+            Log($"Export Frame : {(result ? "Success" : "Fail")}, {dlg.FileName}");
         }
 
         private void btnImportFrame_Click(object sender, EventArgs e)
@@ -254,7 +255,8 @@ namespace VIZCore3DX.NET.Frame
             dlg.Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            vizcore3dx.Frame.Import(dlg.FileName);
+            bool result = vizcore3dx.Frame.Import(dlg.FileName);
+            Log($"Import Frame : {(result ? "Success" : "Fail")}, {dlg.FileName}");
         }
 
         private void btnHasFrame_Click(object sender, EventArgs e)

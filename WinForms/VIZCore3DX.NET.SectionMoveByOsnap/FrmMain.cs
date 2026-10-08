@@ -87,11 +87,12 @@ namespace VIZCore3DX.NET.SectionMoveByOsnap
 
         private async void btnSection_Position_Click(object sender, EventArgs e)
         {
-            if (!vizcore3dx.Model.IsOpen() || vizcore3dx.Section.Sections == null) return;
+            if (!HasSection()) return;
             Data.OsnapController osnap = vizcore3dx.GeometryUtility.Osnap();
             osnap.CommandText = "이동 할 지점을 선택하세요.";
 
             Data.OsnapResult position = await osnap.GetResultAsync();
+            if (position == null || position.Position == null || !HasSection()) return;   // ESC 취소 등
 
             // 선택한 Osnap 위치로 Section Plane 위치 이동
             vizcore3dx.Section.SetSectionPosition(vizcore3dx.Section.Sections[0].ID, position.Position);
@@ -99,21 +100,27 @@ namespace VIZCore3DX.NET.SectionMoveByOsnap
 
         private void btnX_Axis_Click(object sender, EventArgs e)
         {
-            if (!vizcore3dx.Model.IsOpen() || vizcore3dx.Section.Sections == null) return;
+            if (!HasSection()) return;
             vizcore3dx.Section.SetSectionDirection(vizcore3dx.Section.Sections[0].ID, Data.SectionPlaneDirectionType.XPlus);
         }
 
         private void btnY_Axis_Click(object sender, EventArgs e)
         {
-            if (!vizcore3dx.Model.IsOpen() || vizcore3dx.Section.Sections == null) return;
+            if (!HasSection()) return;
             vizcore3dx.Section.SetSectionDirection(vizcore3dx.Section.Sections[0].ID, Data.SectionPlaneDirectionType.YPlus);
         }
 
         private void btnZ_Axis_Click(object sender, EventArgs e)
         {
-            if (!vizcore3dx.Model.IsOpen() || vizcore3dx.Section.Sections == null) return;
+            if (!HasSection()) return;
             vizcore3dx.Section.SetSectionDirection(vizcore3dx.Section.Sections[0].ID, Data.SectionPlaneDirectionType.ZPlus);
 
+        }
+
+        // 모델이 열려 있고 단면이 하나 이상 있는지 확인
+        private bool HasSection()
+        {
+            return vizcore3dx.Model.IsOpen() && vizcore3dx.Section.Sections != null && vizcore3dx.Section.Sections.Count > 0;
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.

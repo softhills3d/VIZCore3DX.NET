@@ -101,7 +101,22 @@ namespace VIZCore3DX.NET.MeasureFrame
 
         private void btnOpenFrame_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Frame.OpenTribonFileDialog() == false) return;
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Filter = "프레임 파일 (*.dmp;*.xml)|*.dmp;*.xml|모든 파일 (*.*)|*.*";
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            // 확장자로 열기 방식을 나눕니다. .dmp 는 Tribon 좌표계, 그 밖(Export 로 저장한 .xml 등)은 Import.
+            string ext = System.IO.Path.GetExtension(dlg.FileName).ToLower();
+            bool result = ext == ".dmp" ? vizcore3dx.Frame.OpenTribon(dlg.FileName) : vizcore3dx.Frame.Import(dlg.FileName);
+
+            // Import 가 읽지 못한 .xml 은 구 형식(/Frame/Grid)일 수 있어 Tribon 열기로 한 번 더 시도합니다.
+            if (result == false && ext == ".xml") result = vizcore3dx.Frame.OpenTribon(dlg.FileName);
+
+            if (result == false)
+            {
+                MessageBox.Show(string.Format("프레임을 불러오지 못했습니다. ({0})", vizcore3dx.Frame.LastOperationResult), "VIZCore3DX.NET.MeasureFrame", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             vizcore3dx.Frame.Visible = true;
         }
@@ -127,7 +142,7 @@ namespace VIZCore3DX.NET.MeasureFrame
             // 여기서 사용자가 화면에서 Osnap 선택할 때까지 기다림
             OsnapResult result = await osnap.GetResultAsync();
 
-            if (result == null) return;
+            if (result == null || result.Position == null) return;
 
             txtX.Text = result.Position.X.ToString();
             txtY.Text = result.Position.Y.ToString();
@@ -147,16 +162,19 @@ namespace VIZCore3DX.NET.MeasureFrame
 
                 if (baseFrame == null) return;
 
-                Vertex3D v = new Vertex3D(txtX.Text, txtY.Text, txtZ.Text);
+                Vertex3D v = ReadPosition();
+                if (v == null) return;
                 NoteCustomStyle textOnlyStyle = CreateTextOnlyNoteStyle();
 
                 FrameSnapResult xSnap = vizcore3dx.Frame.GetSnap(Axis.X, (float)v.X);
                 FrameSnapResult ySnap = vizcore3dx.Frame.GetSnap(Axis.Y, (float)v.Y);
                 FrameSnapResult zSnap = vizcore3dx.Frame.GetSnap(Axis.Z, (float)v.Z);
 
-                float xFramePos = baseFrame.XAxis.GetFrameLines().First(x => x.ID == xSnap.LineID).Offset;
-                float yFramePos = baseFrame.YAxis.GetFrameLines().First(x => x.ID == ySnap.LineID).Offset;
-                float zFramePos = baseFrame.ZAxis.GetFrameLines().First(x => x.ID == zSnap.LineID).Offset;
+                if (xSnap == null || ySnap == null || zSnap == null) return;
+
+                float xFramePos = xSnap.LineOffset;
+                float yFramePos = ySnap.LineOffset;
+                float zFramePos = zSnap.LineOffset;
 
                 // X
                 {
@@ -228,7 +246,7 @@ namespace VIZCore3DX.NET.MeasureFrame
                         Color.Yellow);
 
                     vizcore3dx.Note.AddNoteSurface(
-                        Math.Abs(yFramePos - v.Y).ToString(),
+                        Math.Abs(yFramePos - (float)v.Y).ToString("0"),
                         v.X - 950.0f, (v.Y + yFramePos) / 2, v.Z,
                         v.X - 950.0f, (v.Y + yFramePos) / 2, v.Z,
                         textOnlyStyle);
@@ -259,7 +277,7 @@ namespace VIZCore3DX.NET.MeasureFrame
                         Color.Yellow);
 
                     vizcore3dx.Note.AddNoteSurface(
-                        (zFramePos - v.Z).ToString(),
+                        Math.Abs(zFramePos - (float)v.Z).ToString("0"),
                         v.X, v.Y - 750.0f, (v.Z + zFramePos) / 2,
                         v.X, v.Y - 750.0f, (v.Z + zFramePos) / 2,
                         textOnlyStyle);
@@ -286,6 +304,19 @@ namespace VIZCore3DX.NET.MeasureFrame
                 vizcore3dx.EndUpdate();
             }
         } // btnShowFrame_Click
+
+        // X / Y / Z 입력값을 좌표로 변환 (숫자가 아니면 안내 후 null)
+        private Vertex3D ReadPosition()
+        {
+            float x, y, z;
+            if (float.TryParse(txtX.Text, out x) == false || float.TryParse(txtY.Text, out y) == false || float.TryParse(txtZ.Text, out z) == false)
+            {
+                MessageBox.Show("X / Y / Z 좌표를 숫자로 입력하세요.", "VIZCore3DX.NET.MeasureFrame", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+            }
+
+            return new Vertex3D(x, y, z);
+        }
 
         private NoteCustomStyle CreateTextOnlyNoteStyle()
         {
@@ -328,16 +359,19 @@ namespace VIZCore3DX.NET.MeasureFrame
 
             if (baseFrame == null) return;
 
-            Vertex3D v = new Vertex3D(txtX.Text, txtY.Text, txtZ.Text);
-            Vector3D position = new Vector3D(v.X, v.Y, v.Z);
+            Vertex3D v = ReadPosition();
+            if (v == null) return;
+            Vector3D position = v.ToVector3D();
 
             FrameSnapResult xSnap = vizcore3dx.Frame.GetSnap(Axis.X, (float)v.X);
             FrameSnapResult ySnap = vizcore3dx.Frame.GetSnap(Axis.Y, (float)v.Y);
             FrameSnapResult zSnap = vizcore3dx.Frame.GetSnap(Axis.Z, (float)v.Z);
 
-            float xFramePos = baseFrame.XAxis.GetFrameLines().First(x => x.ID == xSnap.LineID).Offset;
-            float yFramePos = baseFrame.YAxis.GetFrameLines().First(x => x.ID == ySnap.LineID).Offset;
-            float zFramePos = baseFrame.ZAxis.GetFrameLines().First(x => x.ID == zSnap.LineID).Offset;
+            if (xSnap == null || ySnap == null || zSnap == null) return;
+
+            float xFramePos = xSnap.LineOffset;
+            float yFramePos = ySnap.LineOffset;
+            float zFramePos = zSnap.LineOffset;
 
             // 프레임 라인 위에 있는 축(거리 0)은 생성하지 않음
             if (xFramePos != (float)v.X)

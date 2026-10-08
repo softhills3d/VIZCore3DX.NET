@@ -562,7 +562,7 @@ namespace VIZCore3DX.NET.Effect
             options.AlwaysOnTop = chkOption1.Checked;
 
             int[] polylineSizes = mode == LineSetMode.Polyline ? new int[] { points.Count } : null;
-            return vizcore3dx.View.Effect.AddLineSet(ToXyz(points), polylineSizes, null, options);
+            return vizcore3dx.View.Effect.AddLineSet(VIZCore3DX.NET.Data.Vector3D.GetVectorFloatArray(points), polylineSizes, null, options);
         }
 
         private uint CreateMarker(List<VIZCore3DX.NET.Data.Vector3D> points)
@@ -699,17 +699,6 @@ namespace VIZCore3DX.NET.Effect
             return vizcore3dx.View.Effect.AddWeldingSpark(points[0]);
         }
 
-        private static float[] ToXyz(List<VIZCore3DX.NET.Data.Vector3D> points)
-        {
-            float[] xyz = new float[points.Count * 3];
-            for (int i = 0; i < points.Count; i++)
-            {
-                xyz[(i * 3) + 0] = points[i].X;
-                xyz[(i * 3) + 1] = points[i].Y;
-                xyz[(i * 3) + 2] = points[i].Z;
-            }
-            return xyz;
-        }
         #endregion
 
         #region 5. 정리

@@ -165,7 +165,7 @@ namespace VIZCore3DX.NET.Osnap
 
             // 선택 위치에 노트 생성
             Vertex3D surfacePt = point.ToVertex3D();
-            Vertex3D notePt = new Vertex3D(point.X + 100.0f, point.Y + 100.0f, point.Z + 100.0f);
+            Vertex3D notePt = surfacePt + 100.0f;
 
             vizcore3dx.Note.AddNoteSurface(point.ToString(), notePt, surfacePt, false);
         }

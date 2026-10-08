@@ -122,7 +122,7 @@ namespace VIZCore3DX.NET.SelectionBox
             float lengthX = (float)numLengthX.Value;
             float lengthY = (float)numLengthY.Value;
             float lengthZ = (float)numLengthZ.Value;
-            BoundBox3D boundBox = new BoundBox3D(position.X - lengthX / 2.0f, position.Y - lengthY / 2.0f, position.Z - lengthZ / 2.0f, position.X + lengthX / 2.0f, position.Y + lengthY / 2.0f, position.Z + lengthZ / 2.0f);
+            BoundBox3D boundBox = new BoundBox3D(position.ToVertex3D(), lengthX, lengthY, lengthZ);
 
             SetNumericRange(boundBox);
             SetStatus(string.Format("{0} 위치를 Selection Box 좌표에 적용했습니다. Node: {1}", result.Type, result.Node == null ? "없음" : result.Node.NodeName));
@@ -454,12 +454,18 @@ namespace VIZCore3DX.NET.SelectionBox
 
         private void SetNumericRange(BoundBox3D boundBox)
         {
-            numMinX.Value = (decimal)boundBox.MinX;
-            numMinY.Value = (decimal)boundBox.MinY;
-            numMinZ.Value = (decimal)boundBox.MinZ;
-            numMaxX.Value = (decimal)boundBox.MaxX;
-            numMaxY.Value = (decimal)boundBox.MaxY;
-            numMaxZ.Value = (decimal)boundBox.MaxZ;
+            SetNumericValue(numMinX, boundBox.MinX);
+            SetNumericValue(numMinY, boundBox.MinY);
+            SetNumericValue(numMinZ, boundBox.MinZ);
+            SetNumericValue(numMaxX, boundBox.MaxX);
+            SetNumericValue(numMaxY, boundBox.MaxY);
+            SetNumericValue(numMaxZ, boundBox.MaxZ);
+        }
+
+        // NumericUpDown 범위를 벗어난 좌표는 범위 안으로 제한 (범위 초과 시 예외 방지)
+        private static void SetNumericValue(NumericUpDown control, float value)
+        {
+            control.Value = Math.Max(control.Minimum, Math.Min(control.Maximum, (decimal)value));
         }
 
         private void SetStatus(string message)

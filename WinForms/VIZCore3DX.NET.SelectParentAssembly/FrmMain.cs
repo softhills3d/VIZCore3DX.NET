@@ -96,10 +96,14 @@ namespace VIZCore3DX.NET.SelectParentAssembly
                 {
                     selected = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_ALL);
 
-                    while (selected[0].Kind != Data.NodeKind.ASSEMBLY)
+                    while (selected != null && selected.Count > 0 && selected[0].Kind != Data.NodeKind.ASSEMBLY)
                     {
                         Node selectedNode = selected[0];
                         Node parentNode = vizcore3dx.Object3D.GetParentNode(selectedNode);
+
+                        // 상위 어셈블리가 없으면 중단
+                        if (parentNode == null) return;
+
                         selected = new List<Node> { parentNode };
                     }
                 }
@@ -108,6 +112,9 @@ namespace VIZCore3DX.NET.SelectParentAssembly
                     selected = vizcore3dx.Object3D.GetRootNodes();
 
                 }
+
+                // 선택 옵션이 없거나 선택 결과가 없으면 처리하지 않음
+                if (selected == null || selected.Count == 0) return;
 
                 vizcore3dx.Object3D.Select(selected, true, true);
                 if (ckShow_Selection_Only.Checked) vizcore3dx.Object3D.ShowSelection(selected);

@@ -134,9 +134,9 @@ namespace VIZCore3DX.NET.Observer
             if (vizcore3dx.Model.OpenFileDialog() == false) return;
 
             VIZCore3DX.NET.Data.BoundBox3D box = vizcore3dx.Model.BoundBox;
-            numPosX.Value = (decimal)box.CenterX;
-            numPosY.Value = (decimal)box.CenterY;
-            numPosZ.Value = (decimal)box.CenterZ;
+            numPosX.Value = Clamp(numPosX, (decimal)box.CenterX);
+            numPosY.Value = Clamp(numPosY, (decimal)box.CenterY);
+            numPosZ.Value = Clamp(numPosZ, (decimal)box.CenterZ);
 
             _rayLines = 0;
             _rangeLines = 0;
@@ -569,7 +569,7 @@ namespace VIZCore3DX.NET.Observer
         private static void AppendCone(VIZCore3DX.NET.Data.Vector3D origin, VIZCore3DX.NET.Data.Vector3D axis, double radius, double halfAngleDeg,
             List<float> xyz, List<int> sizes)
         {
-            double half = halfAngleDeg * Math.PI / 180.0;
+            double half = VIZCore3DX.NET.Utility.AngleFormatHelper.DegreesToRadians(halfAngleDeg);
             VIZCore3DX.NET.Data.Vector3D u, v;
             MakeBasis(axis, out u, out v);
 
@@ -608,10 +608,8 @@ namespace VIZCore3DX.NET.Observer
         private static void MakeBasis(VIZCore3DX.NET.Data.Vector3D axis, out VIZCore3DX.NET.Data.Vector3D u, out VIZCore3DX.NET.Data.Vector3D v)
         {
             VIZCore3DX.NET.Data.Vector3D helper = Math.Abs(axis.Z) < 0.9f ? new VIZCore3DX.NET.Data.Vector3D(0, 0, 1) : new VIZCore3DX.NET.Data.Vector3D(1, 0, 0);
-            u = axis.Cross(helper);
-            u = u / u.Length();
-            v = axis.Cross(u);
-            v = v / v.Length();
+            u = axis.Cross(helper).GetNormalized();
+            v = axis.Cross(u).GetNormalized();
         }
 
         private static void AppendPolyline(List<VIZCore3DX.NET.Data.Vector3D> points, List<float> xyz, List<int> sizes)

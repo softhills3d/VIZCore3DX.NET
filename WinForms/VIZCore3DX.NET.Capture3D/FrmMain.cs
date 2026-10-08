@@ -188,9 +188,11 @@ namespace VIZCore3DX.NET.Capture3D
             if (vizcore3dx.Model.Files == null) return false;
             if (vizcore3dx.Model.Files.Count == 0) return false;
 
-            if (vizcore3dx_MiniView.Model.IsOpen() == false)
+            // 메인뷰에서 다른 모델을 열었으면 미니뷰도 다시 열기
+            string path = vizcore3dx.Model.Files[0];
+            if (vizcore3dx_MiniView.Model.IsOpen(path) == false)
             {
-                vizcore3dx_MiniView.Model.Open(vizcore3dx.Model.Files[0]);
+                return vizcore3dx_MiniView.Model.Open(path);
             }
 
             return true;

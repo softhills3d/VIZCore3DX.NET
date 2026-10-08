@@ -118,8 +118,8 @@ namespace VIZCore3DX.NET.CustomAxisRotation
             OsnapResult r1 = await osnap1.GetResultAsync();
             if (r1 == null || r1.Position == null) return;
 
-            v1 = new Vertex3D(r1.Position.X, r1.Position.Y, r1.Position.Z);
-            txtV1.Text = $"{v1.X}, {v1.Y}, {v1.Z}";
+            Vertex3D p1 = r1.Position.ToVertex3D();
+            txtV1.Text = p1.ToString();
 
             OsnapController osnap2 = vizcore3dx.GeometryUtility.Osnap();
             if (osnap2 == null) return;
@@ -128,8 +128,18 @@ namespace VIZCore3DX.NET.CustomAxisRotation
             OsnapResult r2 = await osnap2.GetResultAsync();
             if (r2 == null || r2.Position == null) return;
 
-            v2 = new Vertex3D(r2.Position.X, r2.Position.Y, r2.Position.Z);
-            txtV2.Text = $"{v2.X}, {v2.Y}, {v2.Z}";
+            Vertex3D p2 = r2.Position.ToVertex3D();
+            txtV2.Text = p2.ToString();
+
+            // 같은 점이면 회전축을 만들 수 없으므로 축으로 쓰지 않습니다.
+            if (p1 == p2)
+            {
+                MessageBox.Show("회전축의 두 점이 같습니다. 서로 다른 두 점을 선택하세요.");
+                return;
+            }
+
+            v1 = p1;
+            v2 = p2;
         }
 
 
@@ -161,6 +171,12 @@ namespace VIZCore3DX.NET.CustomAxisRotation
             if (v1 == null || v2 == null)
             {
                 MessageBox.Show("회전축 좌표(V1, V2)를 \"X, Y, Z\" 형식으로 입력하세요.");
+                return;
+            }
+
+            if (v1 == v2)
+            {
+                MessageBox.Show("회전축의 두 점이 같습니다. 서로 다른 두 점을 입력하세요.");
                 return;
             }
 
@@ -221,7 +237,7 @@ namespace VIZCore3DX.NET.CustomAxisRotation
                 List<Vertex3D> vertices = Vertex3D.GetVertexList(text);
                 return vertices.Count == 1 ? vertices[0] : null;
             }
-            catch (FormatException)
+            catch (Exception ex) when (ex is FormatException || ex is OverflowException)
             {
                 return null;
             }

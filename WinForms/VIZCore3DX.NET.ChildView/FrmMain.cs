@@ -11,7 +11,6 @@ namespace VIZCore3DX.NET.ChildView
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
         // 열려 있는 팝업(Child View) 목록 : Show Child View 를 누를 때마다 새 팝업 생성
         private readonly List<ShowModelDialog> ModelDialogs = new List<ShowModelDialog>();
-        private List<Tuple<int, int>> SelectedNodeKeys;
 
         public FrmMain()
         {
@@ -26,9 +25,6 @@ namespace VIZCore3DX.NET.ChildView
 
             // license 인증
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
-
-            SelectedNodeKeys = new List<Tuple<int, int>>();
-
         }
 
         private void VIZCore3DX_OnInitializedVIZCore3DX(object sender, EventArgs e)
@@ -113,32 +109,7 @@ namespace VIZCore3DX.NET.ChildView
             // ================================================================
             // 모델 열기 시, 3D 화면 Rendering 재시작
             // ================================================================
-
-
-            vizcore3dx.Model.OnModelOpenedEvent -= Model_OnModelOpenedEvent;
-            vizcore3dx.Model.OnModelOpenedEvent += Model_OnModelOpenedEvent;
-
-            vizcore3dx.Model.OnModelClosedEvent -= Model_OnModelClosedEvent;
-            vizcore3dx.Model.OnModelClosedEvent += Model_OnModelClosedEvent;
-
-
             vizcore3dx.EndUpdate();
-        }
-
-        private void Model_OnModelOpenedEvent(object sender, EventManager.ModelOpendEventArgs e)
-        {
-            if (SelectedNodeKeys == null)
-                SelectedNodeKeys = new List<Tuple<int, int>>();
-            else
-                SelectedNodeKeys.Clear();
-        }
-
-        private void Model_OnModelClosedEvent(object sender, EventArgs e)
-        {
-            if (SelectedNodeKeys == null)
-                SelectedNodeKeys = new List<Tuple<int, int>>();
-            else
-                SelectedNodeKeys.Clear();
         }
 
         private void btnOpenChildView_Click(object sender, EventArgs e)

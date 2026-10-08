@@ -115,20 +115,20 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             List<Node> selectedNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.SELECTED_ALL); // selectByBox로 선택한 PART 노드
             List<Node> fullNode = vizcore3dx.Object3D.FromFilter(Object3dFilter.ALL); // 모델의 전체 노드
 
-            var mapFull = fullNode.ToDictionary(n => n.Index); // 전체 노드의 Index Dictionary
+            var mapFull = fullNode.ToDictionary(n => NodeKey(n.EntityID, n.Index)); // 전체 노드 Dictionary (모델이 여러 개면 Index가 겹치므로 EntityID 포함)
 
             var resultList = new List<Node>(selectedNode); // 결과 리스트
-            var resultSet = new HashSet<int>(selectedNode.Select(x => x.Index)); // 중복 방지용 HashSet
+            var resultSet = new HashSet<long>(selectedNode.Select(x => NodeKey(x.EntityID, x.Index))); // 중복 방지용 HashSet
 
             var queue = new Queue<Node>(); // 상위 탐색 큐
-            var childCounts = new Dictionary<int, int>(); // 자식노드 개수
+            var childCounts = new Dictionary<long, int>(); // 자식노드 개수
 
             foreach (var node in selectedNode) // 선택된 노드(PART)들의 부모 노드 찾기
             {
                 // 딕셔너리에서 바로 Index로 부모 조회
-                if (mapFull.TryGetValue(node.ParentIndex, out Node parent))
+                if (mapFull.TryGetValue(NodeKey(node.EntityID, node.ParentIndex), out Node parent))
                 {
-                    if (resultSet.Add(parent.Index))
+                    if (resultSet.Add(NodeKey(parent.EntityID, parent.Index)))
                     {
                         resultList.Add(parent);
                         queue.Enqueue(parent);
@@ -140,16 +140,18 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             {
                 var child = queue.Dequeue();
 
-                if (mapFull.TryGetValue(child.ParentIndex, out Node parent))
+                if (mapFull.TryGetValue(NodeKey(child.EntityID, child.ParentIndex), out Node parent))
                 {
-                    if (!childCounts.ContainsKey(parent.Index))
-                        childCounts[parent.Index] = 0;
+                    long parentKey = NodeKey(parent.EntityID, parent.Index);
 
-                    childCounts[parent.Index]++;
+                    if (!childCounts.ContainsKey(parentKey))
+                        childCounts[parentKey] = 0;
 
-                    if (childCounts[parent.Index] == parent.ChildCount)
+                    childCounts[parentKey]++;
+
+                    if (childCounts[parentKey] == parent.ChildCount)
                     {
-                        if (resultSet.Add(parent.Index))
+                        if (resultSet.Add(parentKey))
                         {
                             resultList.Add(parent);
                             queue.Enqueue(parent);
@@ -164,6 +166,12 @@ namespace VIZCore3DX.NET.SelectByBox_IncludeAssembly
             resultGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
             MessageBox.Show("조회된 노드 수 : " + resultList.Count + "개");
+        }
+
+        // 노드 고유키 (EntityID, Index)
+        private static long NodeKey(int entityId, int index)
+        {
+            return ((long)entityId << 32) | (uint)index;
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
