@@ -195,3 +195,4 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.Command.Console** | 명령 목록과 인자 형식을 조회하고 이름 + 인자 JSON 으로 명령을 실행하며 상태 요약을 확인하는 예제 | 1.6.26.10XX |
 | **VIZCore3DX.NET.Command.Mcp** | AI 클라이언트가 MCP 로 보내는 요청을 명령으로 실행하는 예제 (로컬 HTTP 서버, 조회 명령만 공개 선택) | 1.6.26.10XX |
 | **VIZCore3DX.NET.Command.WebSocket** | 웹 페이지가 WebSocket 으로 보내는 요청을 명령으로 실행하는 예제 (시험용 웹 페이지 포함) | 1.6.26.10XX |
+| **VIZCore3DX.NET.Command.Chat** | AI(LLM)와 대화하며 AI 가 고른 명령을 실행하고 결과를 돌려주는 예제 (Claude / OpenAI 호환 공급자 교체) | 1.6.26.10XX |
