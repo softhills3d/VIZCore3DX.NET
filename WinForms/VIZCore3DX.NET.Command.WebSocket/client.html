@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>VIZCore3DX.NET.Command.WebSocket</title>
+<style>
+  body { font-family: "Malgun Gothic", sans-serif; margin: 24px; max-width: 860px; }
+  fieldset { margin-bottom: 12px; }
+  input[type=text] { width: 240px; }
+  textarea { width: 100%; height: 48px; font-family: Consolas, monospace; }
+  pre { background: #f4f4f4; padding: 12px; height: 360px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+</style>
+</head>
+<body>
+<h2>VIZCore3DX.NET 웹 연계 시험 페이지</h2>
+<p id="state">접속 중...</p>
+
+<fieldset>
+  <legend>조회</legend>
+  <button onclick="send({ type: 'catalog' })">명령 목록</button>
+  <button onclick="send({ type: 'context' })">상태 요약</button>
+  <button onclick="execute('get_model_info', {})">get_model_info</button>
+</fieldset>
+
+<fieldset>
+  <legend>이름으로 선택 (select_by_name)</legend>
+  <input type="text" id="keyword" placeholder="노드 이름">
+  <button onclick="execute('select_by_name', { name: document.getElementById('keyword').value })">선택</button>
+  <button onclick="execute('clear_selection', {})">선택 해제</button>
+</fieldset>
+
+<fieldset>
+  <legend>직접 실행</legend>
+  명령 이름 <input type="text" id="name" value="fit_to_view">
+  <button onclick="executeCustom()">실행</button>
+  <p>인자 (JSON 개체)</p>
+  <textarea id="arguments">{}</textarea>
+</fieldset>
+
+<pre id="log"></pre>
+
+<script>
+  // 이 페이지를 연 주소(127.0.0.1:포트)의 WebSocket 으로 접속합니다.
+  var socket = new WebSocket('ws://' + location.host + '/');
+  var nextId = 1;
+
+  socket.onopen = function () { setState('접속됨 : ' + socket.url); };
+  socket.onclose = function () { setState('접속이 끊겼습니다. 예제에서 서버를 시작한 뒤 페이지를 새로 고치세요.'); };
+  socket.onmessage = function (e) { write('← ' + e.data); };
+
+  // 요청마다 id 를 붙여 보내면 같은 id 의 응답이 돌아옵니다.
+  function send(request) {
+    request.id = nextId++;
+    var text = JSON.stringify(request);
+    write('→ ' + text);
+    socket.send(text);
+  }
+
+  function execute(name, args) {
+    send({ type: 'execute', name: name, arguments: args });
+  }
+
+  function executeCustom() {
+    var args;
+    try { args = JSON.parse(document.getElementById('arguments').value || '{}'); }
+    catch (e) { write('인자가 JSON 이 아닙니다 : ' + e.message); return; }
+    execute(document.getElementById('name').value, args);
+  }
+
+  function setState(text) { document.getElementById('state').textContent = text; }
+
+  function write(text) {
+    var log = document.getElementById('log');
+    log.textContent += text + '\n\n';
+    log.scrollTop = log.scrollHeight;
+  }
+</script>
+</body>
+</html>
