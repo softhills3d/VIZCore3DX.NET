@@ -38,6 +38,7 @@
             this.tpMeasure = new System.Windows.Forms.TabPage();
             this.tpSection = new System.Windows.Forms.TabPage();
             this.tpDecal = new System.Windows.Forms.TabPage();
+            this.tpSpace = new System.Windows.Forms.TabPage();
             this.tpFrame = new System.Windows.Forms.TabPage();
             this.tpObserver = new System.Windows.Forms.TabPage();
             this.tpPreSelect = new System.Windows.Forms.TabPage();
@@ -116,7 +117,7 @@
             this.label81 = new System.Windows.Forms.Label();
             this.label80 = new System.Windows.Forms.Label();
             this.label79 = new System.Windows.Forms.Label();
-            this.grpHomeSelectionBox = new System.Windows.Forms.GroupBox();
+            this.grpSpaceSelectionBox = new System.Windows.Forms.GroupBox();
             this.cbSelectionBoxStrokePattern = new System.Windows.Forms.ComboBox();
             this.label101 = new System.Windows.Forms.Label();
             this.cbSelectionBoxTextSize = new System.Windows.Forms.ComboBox();
@@ -137,7 +138,7 @@
             this.label96 = new System.Windows.Forms.Label();
             this.btnSelectionBoxDefaultFillColor = new System.Windows.Forms.Button();
             this.label95 = new System.Windows.Forms.Label();
-            this.grpHomeZone = new System.Windows.Forms.GroupBox();
+            this.grpSpaceZone = new System.Windows.Forms.GroupBox();
             this.numZoneFaceOpacity = new System.Windows.Forms.NumericUpDown();
             this.lblZoneFaceOpacity = new System.Windows.Forms.Label();
             this.btnZoneLineColor = new System.Windows.Forms.Button();
@@ -215,7 +216,7 @@
             this.cbZoomBoxStrokePattern = new System.Windows.Forms.ComboBox();
             this.lblZoomBoxStrokeThickness = new System.Windows.Forms.Label();
             this.numZoomBoxStrokeThickness = new System.Windows.Forms.NumericUpDown();
-            this.grpInputModelingControl = new System.Windows.Forms.GroupBox();
+            this.grpWindowModelingControl = new System.Windows.Forms.GroupBox();
             this.ckModelingControl = new System.Windows.Forms.CheckBox();
             this.grpMcSize = new System.Windows.Forms.GroupBox();
             this.rbMcSizeSmall = new System.Windows.Forms.RadioButton();
@@ -626,9 +627,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numSnapCylinderAxisSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSnapPointSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSnapPlaneSize)).BeginInit();
-            this.grpHomeSelectionBox.SuspendLayout();
+            this.grpSpaceSelectionBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSelectionBoxStrokeThickness)).BeginInit();
-            this.grpHomeZone.SuspendLayout();
+            this.grpSpaceZone.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numZoneFaceOpacity)).BeginInit();
             this.tpView.SuspendLayout();
             this.grpViewView.SuspendLayout();
@@ -644,7 +645,7 @@
             this.grpViewZoomBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numZoomBoxStrokeThickness)).BeginInit();
             this.tpInput.SuspendLayout();
-            this.grpInputModelingControl.SuspendLayout();
+            this.grpWindowModelingControl.SuspendLayout();
             this.grpMcSize.SuspendLayout();
             this.grpMcPosition.SuspendLayout();
             this.grpMcColor.SuspendLayout();
@@ -680,6 +681,7 @@
             this.grpSectionStyle.SuspendLayout();
             this.grpSectionCap.SuspendLayout();
             this.tpDecal.SuspendLayout();
+            this.tpSpace.SuspendLayout();
             this.grpDecal.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numDecalRotationAngleStep)).BeginInit();
             this.tpFrame.SuspendLayout();
@@ -765,7 +767,7 @@
             this.splitContainer1.Panel1.Controls.Add(this.grpApply);
             this.splitContainer1.Panel1.Controls.Add(this.lblStatus);
             this.splitContainer1.Panel1.Controls.Add(this.grpModel);
-            this.splitContainer1.Size = new System.Drawing.Size(1400, 860);
+            this.splitContainer1.Size = new System.Drawing.Size(1400, 800);
             this.splitContainer1.SplitterDistance = 676;
             this.splitContainer1.TabIndex = 0;
             //
@@ -773,30 +775,29 @@
             //
             this.tabSettings.Controls.Add(this.tpHome);
             this.tabSettings.Controls.Add(this.tpView);
+            this.tabSettings.Controls.Add(this.tpSpace);
+            this.tabSettings.Controls.Add(this.tpWindow);
+            this.tabSettings.Controls.Add(this.tpToolbar);
             this.tabSettings.Controls.Add(this.tpInput);
+            this.tabSettings.Controls.Add(this.tpPreSelect);
             this.tabSettings.Controls.Add(this.tpNote);
             this.tabSettings.Controls.Add(this.tpMeasure);
             this.tabSettings.Controls.Add(this.tpSection);
             this.tabSettings.Controls.Add(this.tpDecal);
             this.tabSettings.Controls.Add(this.tpFrame);
             this.tabSettings.Controls.Add(this.tpObserver);
-            this.tabSettings.Controls.Add(this.tpPreSelect);
-            this.tabSettings.Controls.Add(this.tpToolbar);
-            this.tabSettings.Controls.Add(this.tpWindow);
             this.tabSettings.Controls.Add(this.tpDevTools);
             this.tabSettings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabSettings.Location = new System.Drawing.Point(0, 58);
             this.tabSettings.Multiline = true;
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.SelectedIndex = 0;
-            this.tabSettings.Size = new System.Drawing.Size(676, 718);
+            this.tabSettings.Size = new System.Drawing.Size(676, 658);
             this.tabSettings.TabIndex = 0;
             //
             // tpHome
             //
             this.tpHome.AutoScroll = true;
-            this.tpHome.Controls.Add(this.grpHomeZone);
-            this.tpHome.Controls.Add(this.grpHomeSelectionBox);
             this.tpHome.Controls.Add(this.grpHomeSnap);
             this.tpHome.Controls.Add(this.grpHomeBackground);
             this.tpHome.Controls.Add(this.grpHomeSelection);
@@ -806,28 +807,28 @@
             this.tpHome.Location = new System.Drawing.Point(4, 40);
             this.tpHome.Name = "tpHome";
             this.tpHome.Padding = new System.Windows.Forms.Padding(3);
-            this.tpHome.Size = new System.Drawing.Size(668, 674);
+            this.tpHome.Size = new System.Drawing.Size(668, 614);
             this.tpHome.TabIndex = 0;
             this.tpHome.Text = "기본";
             this.tpHome.UseVisualStyleBackColor = true;
             //
-            // grpHomeZone
+            // grpSpaceZone
             //
-            this.grpHomeZone.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.grpSpaceZone.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpHomeZone.Controls.Add(this.numZoneFaceOpacity);
-            this.grpHomeZone.Controls.Add(this.lblZoneFaceOpacity);
-            this.grpHomeZone.Controls.Add(this.btnZoneLineColor);
-            this.grpHomeZone.Controls.Add(this.lblZoneLineColor);
-            this.grpHomeZone.Controls.Add(this.btnZoneFaceColor);
-            this.grpHomeZone.Controls.Add(this.lblZoneFaceColor);
-            this.grpHomeZone.Location = new System.Drawing.Point(6, 1048);
-            this.grpHomeZone.MinimumSize = new System.Drawing.Size(590, 0);
-            this.grpHomeZone.Name = "grpHomeZone";
-            this.grpHomeZone.Size = new System.Drawing.Size(590, 76);
-            this.grpHomeZone.TabIndex = 37;
-            this.grpHomeZone.TabStop = false;
-            this.grpHomeZone.Text = "다면체 공간";
+            this.grpSpaceZone.Controls.Add(this.numZoneFaceOpacity);
+            this.grpSpaceZone.Controls.Add(this.lblZoneFaceOpacity);
+            this.grpSpaceZone.Controls.Add(this.btnZoneLineColor);
+            this.grpSpaceZone.Controls.Add(this.lblZoneLineColor);
+            this.grpSpaceZone.Controls.Add(this.btnZoneFaceColor);
+            this.grpSpaceZone.Controls.Add(this.lblZoneFaceColor);
+            this.grpSpaceZone.Location = new System.Drawing.Point(6, 188);
+            this.grpSpaceZone.MinimumSize = new System.Drawing.Size(590, 0);
+            this.grpSpaceZone.Name = "grpSpaceZone";
+            this.grpSpaceZone.Size = new System.Drawing.Size(590, 76);
+            this.grpSpaceZone.TabIndex = 1;
+            this.grpSpaceZone.TabStop = false;
+            this.grpSpaceZone.Text = "다면체 공간";
             //
             // numZoneFaceOpacity
             //
@@ -881,37 +882,37 @@
             this.lblZoneFaceColor.TabIndex = 0;
             this.lblZoneFaceColor.Text = "경계면 색상";
             //
-            // grpHomeSelectionBox
+            // grpSpaceSelectionBox
             //
-            this.grpHomeSelectionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.grpSpaceSelectionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpHomeSelectionBox.Controls.Add(this.cbSelectionBoxStrokePattern);
-            this.grpHomeSelectionBox.Controls.Add(this.label101);
-            this.grpHomeSelectionBox.Controls.Add(this.cbSelectionBoxTextSize);
-            this.grpHomeSelectionBox.Controls.Add(this.label104);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxTextColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label103);
-            this.grpHomeSelectionBox.Controls.Add(this.numSelectionBoxStrokeThickness);
-            this.grpHomeSelectionBox.Controls.Add(this.label102);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxHighlightedStrokeColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label100);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxDefaultStrokeColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label99);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxSelectedStrokeColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label98);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxSelectedFillColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label97);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxHighlightedFillColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label96);
-            this.grpHomeSelectionBox.Controls.Add(this.btnSelectionBoxDefaultFillColor);
-            this.grpHomeSelectionBox.Controls.Add(this.label95);
-            this.grpHomeSelectionBox.Location = new System.Drawing.Point(6, 866);
-            this.grpHomeSelectionBox.MinimumSize = new System.Drawing.Size(590, 0);
-            this.grpHomeSelectionBox.Name = "grpHomeSelectionBox";
-            this.grpHomeSelectionBox.Size = new System.Drawing.Size(590, 176);
-            this.grpHomeSelectionBox.TabIndex = 36;
-            this.grpHomeSelectionBox.TabStop = false;
-            this.grpHomeSelectionBox.Text = "선택 상자";
+            this.grpSpaceSelectionBox.Controls.Add(this.cbSelectionBoxStrokePattern);
+            this.grpSpaceSelectionBox.Controls.Add(this.label101);
+            this.grpSpaceSelectionBox.Controls.Add(this.cbSelectionBoxTextSize);
+            this.grpSpaceSelectionBox.Controls.Add(this.label104);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxTextColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label103);
+            this.grpSpaceSelectionBox.Controls.Add(this.numSelectionBoxStrokeThickness);
+            this.grpSpaceSelectionBox.Controls.Add(this.label102);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxHighlightedStrokeColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label100);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxDefaultStrokeColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label99);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxSelectedStrokeColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label98);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxSelectedFillColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label97);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxHighlightedFillColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label96);
+            this.grpSpaceSelectionBox.Controls.Add(this.btnSelectionBoxDefaultFillColor);
+            this.grpSpaceSelectionBox.Controls.Add(this.label95);
+            this.grpSpaceSelectionBox.Location = new System.Drawing.Point(6, 6);
+            this.grpSpaceSelectionBox.MinimumSize = new System.Drawing.Size(590, 0);
+            this.grpSpaceSelectionBox.Name = "grpSpaceSelectionBox";
+            this.grpSpaceSelectionBox.Size = new System.Drawing.Size(590, 176);
+            this.grpSpaceSelectionBox.TabIndex = 0;
+            this.grpSpaceSelectionBox.TabStop = false;
+            this.grpSpaceSelectionBox.Text = "3D 선택 상자";
             //
             // cbSelectionBoxStrokePattern
             //
@@ -1117,7 +1118,7 @@
             this.grpHomeSnap.Size = new System.Drawing.Size(590, 112);
             this.grpHomeSnap.TabIndex = 18;
             this.grpHomeSnap.TabStop = false;
-            this.grpHomeSnap.Text = "스냅";
+            this.grpHomeSnap.Text = "스냅 표식";
             //
             // btnSnapHighlightColor
             //
@@ -1537,7 +1538,7 @@
             this.btnSelectionBoxStrokeColor.Location = new System.Drawing.Point(461, 20);
             this.btnSelectionBoxStrokeColor.Name = "btnSelectionBoxStrokeColor";
             this.btnSelectionBoxStrokeColor.Size = new System.Drawing.Size(111, 23);
-            this.btnSelectionBoxStrokeColor.Text = "선택 박스 경계";
+            this.btnSelectionBoxStrokeColor.Text = "드래그 영역 경계";
             this.btnSelectionBoxStrokeColor.TabIndex = 13;
             this.btnSelectionBoxStrokeColor.UseVisualStyleBackColor = false;
             this.btnSelectionBoxStrokeColor.Click += new System.EventHandler(this.btnColor_Click);
@@ -1547,7 +1548,7 @@
             this.btnSelectionBoxFillColor.Location = new System.Drawing.Point(345, 20);
             this.btnSelectionBoxFillColor.Name = "btnSelectionBoxFillColor";
             this.btnSelectionBoxFillColor.Size = new System.Drawing.Size(110, 23);
-            this.btnSelectionBoxFillColor.Text = "선택 박스";
+            this.btnSelectionBoxFillColor.Text = "드래그 영역";
             this.btnSelectionBoxFillColor.TabIndex = 12;
             this.btnSelectionBoxFillColor.UseVisualStyleBackColor = false;
             this.btnSelectionBoxFillColor.Click += new System.EventHandler(this.btnColor_Click);
@@ -1831,7 +1832,7 @@
             this.grpHomeView.Size = new System.Drawing.Size(590, 134);
             this.grpHomeView.TabIndex = 8;
             this.grpHomeView.TabStop = false;
-            this.grpHomeView.Text = "보기";
+            this.grpHomeView.Text = "렌더링";
             //
             // cbCameraMode
             //
@@ -1967,8 +1968,6 @@
             // tpView
             //
             this.tpView.AutoScroll = true;
-            this.tpView.Controls.Add(this.grpViewZoomBox);
-            this.tpView.Controls.Add(this.grpViewCubeFace);
             this.tpView.Controls.Add(this.grpViewCommand);
             this.tpView.Controls.Add(this.grpViewLight);
             this.tpView.Controls.Add(this.grpViewCube);
@@ -1977,7 +1976,7 @@
             this.tpView.Location = new System.Drawing.Point(4, 40);
             this.tpView.Name = "tpView";
             this.tpView.Padding = new System.Windows.Forms.Padding(3);
-            this.tpView.Size = new System.Drawing.Size(668, 674);
+            this.tpView.Size = new System.Drawing.Size(668, 614);
             this.tpView.TabIndex = 1;
             this.tpView.Text = "보기";
             this.tpView.UseVisualStyleBackColor = true;
@@ -1994,10 +1993,10 @@
             this.grpViewZoomBox.Controls.Add(this.cbZoomBoxStrokePattern);
             this.grpViewZoomBox.Controls.Add(this.lblZoomBoxStrokeThickness);
             this.grpViewZoomBox.Controls.Add(this.numZoomBoxStrokeThickness);
-            this.grpViewZoomBox.Location = new System.Drawing.Point(6, 781);
-            this.grpViewZoomBox.MinimumSize = new System.Drawing.Size(590, 0);
+            this.grpViewZoomBox.Location = new System.Drawing.Point(10, 76);
+            this.grpViewZoomBox.MinimumSize = new System.Drawing.Size(570, 0);
             this.grpViewZoomBox.Name = "grpViewZoomBox";
-            this.grpViewZoomBox.Size = new System.Drawing.Size(590, 170);
+            this.grpViewZoomBox.Size = new System.Drawing.Size(570, 170);
             this.grpViewZoomBox.TabIndex = 2;
             this.grpViewZoomBox.TabStop = false;
             this.grpViewZoomBox.Text = "확대 상자";
@@ -2094,10 +2093,10 @@
             this.grpViewCubeFace.Controls.Add(this.txtViewCubeFront);
             this.grpViewCubeFace.Controls.Add(this.lblViewCubeBack);
             this.grpViewCubeFace.Controls.Add(this.txtViewCubeBack);
-            this.grpViewCubeFace.Location = new System.Drawing.Point(6, 392);
-            this.grpViewCubeFace.MinimumSize = new System.Drawing.Size(590, 0);
+            this.grpViewCubeFace.Location = new System.Drawing.Point(10, 176);
+            this.grpViewCubeFace.MinimumSize = new System.Drawing.Size(570, 0);
             this.grpViewCubeFace.Name = "grpViewCubeFace";
-            this.grpViewCubeFace.Size = new System.Drawing.Size(590, 130);
+            this.grpViewCubeFace.Size = new System.Drawing.Size(570, 130);
             this.grpViewCubeFace.TabIndex = 1;
             this.grpViewCubeFace.TabStop = false;
             this.grpViewCubeFace.Text = "뷰큐브 면 문자열";
@@ -2204,13 +2203,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.grpViewCommand.Controls.Add(this.btnCommandMessageTextColor);
             this.grpViewCommand.Controls.Add(this.label105);
-            this.grpViewCommand.Location = new System.Drawing.Point(6, 528);
+            this.grpViewCommand.Location = new System.Drawing.Point(6, 692);
             this.grpViewCommand.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpViewCommand.Name = "grpViewCommand";
             this.grpViewCommand.Size = new System.Drawing.Size(590, 54);
-            this.grpViewCommand.TabIndex = 17;
+            this.grpViewCommand.TabIndex = 3;
             this.grpViewCommand.TabStop = false;
-            this.grpViewCommand.Text = "명령";
+            this.grpViewCommand.Text = "명령 메시지";
             //
             // btnCommandMessageTextColor
             //
@@ -2252,11 +2251,11 @@
             this.grpViewLight.Controls.Add(this.lblSpecularIntensity);
             this.grpViewLight.Controls.Add(this.numSpecularIntensity);
             this.grpViewLight.Controls.Add(this.lblSpecularRange);
-            this.grpViewLight.Location = new System.Drawing.Point(6, 588);
+            this.grpViewLight.Location = new System.Drawing.Point(6, 752);
             this.grpViewLight.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpViewLight.Name = "grpViewLight";
             this.grpViewLight.Size = new System.Drawing.Size(590, 187);
-            this.grpViewLight.TabIndex = 5;
+            this.grpViewLight.TabIndex = 4;
             this.grpViewLight.TabStop = false;
             this.grpViewLight.Text = "환경조명";
             //
@@ -2457,11 +2456,12 @@
             this.grpViewCube.Controls.Add(this.label91);
             this.grpViewCube.Controls.Add(this.label90);
             this.grpViewCube.Controls.Add(this.label89);
-            this.grpViewCube.Location = new System.Drawing.Point(6, 202);
+            this.grpViewCube.Controls.Add(this.grpViewCubeFace);
+            this.grpViewCube.Location = new System.Drawing.Point(6, 372);
             this.grpViewCube.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpViewCube.Name = "grpViewCube";
-            this.grpViewCube.Size = new System.Drawing.Size(590, 184);
-            this.grpViewCube.TabIndex = 4;
+            this.grpViewCube.Size = new System.Drawing.Size(590, 314);
+            this.grpViewCube.TabIndex = 2;
             this.grpViewCube.TabStop = false;
             this.grpViewCube.Text = "뷰큐브";
             //
@@ -2590,11 +2590,12 @@
             this.grpViewZoom.Controls.Add(this.numZoomRatio);
             this.grpViewZoom.Controls.Add(this.label84);
             this.grpViewZoom.Controls.Add(this.label85);
+            this.grpViewZoom.Controls.Add(this.grpViewZoomBox);
             this.grpViewZoom.Location = new System.Drawing.Point(6, 112);
             this.grpViewZoom.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpViewZoom.Name = "grpViewZoom";
-            this.grpViewZoom.Size = new System.Drawing.Size(590, 84);
-            this.grpViewZoom.TabIndex = 3;
+            this.grpViewZoom.Size = new System.Drawing.Size(590, 254);
+            this.grpViewZoom.TabIndex = 1;
             this.grpViewZoom.TabStop = false;
             this.grpViewZoom.Text = "확대/축소";
             //
@@ -2654,9 +2655,9 @@
             this.grpViewView.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpViewView.Name = "grpViewView";
             this.grpViewView.Size = new System.Drawing.Size(590, 100);
-            this.grpViewView.TabIndex = 2;
+            this.grpViewView.TabIndex = 0;
             this.grpViewView.TabStop = false;
-            this.grpViewView.Text = "보기";
+            this.grpViewView.Text = "화면";
             //
             // ckEnableAnimation
             //
@@ -2758,13 +2759,12 @@
             this.tpInput.Controls.Add(this.grpInputClick);
             this.tpInput.Controls.Add(this.grpInputSpeed);
             this.tpInput.Controls.Add(this.grpInputSensitivity);
-            this.tpInput.Controls.Add(this.grpInputModelingControl);
             this.tpInput.Location = new System.Drawing.Point(4, 40);
             this.tpInput.Name = "tpInput";
             this.tpInput.Padding = new System.Windows.Forms.Padding(3);
-            this.tpInput.Size = new System.Drawing.Size(668, 674);
-            this.tpInput.TabIndex = 2;
-            this.tpInput.Text = "조작";
+            this.tpInput.Size = new System.Drawing.Size(668, 614);
+            this.tpInput.TabIndex = 5;
+            this.tpInput.Text = "입력 (마우스/키)";
             this.tpInput.UseVisualStyleBackColor = true;
             //
             // grpInputClick
@@ -2778,11 +2778,11 @@
             this.grpInputClick.Controls.Add(this.numInputLongPress);
             this.grpInputClick.Controls.Add(this.lblInputClickTolerance);
             this.grpInputClick.Controls.Add(this.numInputClickTolerance);
-            this.grpInputClick.Location = new System.Drawing.Point(6, 738);
+            this.grpInputClick.Location = new System.Drawing.Point(6, 346);
             this.grpInputClick.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpInputClick.Name = "grpInputClick";
             this.grpInputClick.Size = new System.Drawing.Size(590, 150);
-            this.grpInputClick.TabIndex = 3;
+            this.grpInputClick.TabIndex = 2;
             this.grpInputClick.TabStop = false;
             this.grpInputClick.Text = "클릭 판정·휠";
             //
@@ -2876,11 +2876,11 @@
             this.grpInputSpeed.Controls.Add(this.numInputFlySpeed);
             this.grpInputSpeed.Controls.Add(this.lblInputFlyBoost);
             this.grpInputSpeed.Controls.Add(this.numInputFlyBoost);
-            this.grpInputSpeed.Location = new System.Drawing.Point(6, 582);
+            this.grpInputSpeed.Location = new System.Drawing.Point(6, 190);
             this.grpInputSpeed.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpInputSpeed.Name = "grpInputSpeed";
             this.grpInputSpeed.Size = new System.Drawing.Size(590, 150);
-            this.grpInputSpeed.TabIndex = 2;
+            this.grpInputSpeed.TabIndex = 1;
             this.grpInputSpeed.TabStop = false;
             this.grpInputSpeed.Text = "이동 속도";
             //
@@ -3046,11 +3046,11 @@
             this.grpInputSensitivity.Controls.Add(this.numInputRollSens);
             this.grpInputSensitivity.Controls.Add(this.lblInputLookSens);
             this.grpInputSensitivity.Controls.Add(this.numInputLookSens);
-            this.grpInputSensitivity.Location = new System.Drawing.Point(6, 398);
+            this.grpInputSensitivity.Location = new System.Drawing.Point(6, 6);
             this.grpInputSensitivity.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpInputSensitivity.Name = "grpInputSensitivity";
             this.grpInputSensitivity.Size = new System.Drawing.Size(590, 178);
-            this.grpInputSensitivity.TabIndex = 1;
+            this.grpInputSensitivity.TabIndex = 0;
             this.grpInputSensitivity.TabStop = false;
             this.grpInputSensitivity.Text = "감도";
             //
@@ -3239,24 +3239,24 @@
             0,
             131072});
             //
-            // grpInputModelingControl
+            // grpWindowModelingControl
             //
-            this.grpInputModelingControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.grpWindowModelingControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.grpInputModelingControl.Controls.Add(this.ckModelingControl);
-            this.grpInputModelingControl.Controls.Add(this.grpMcSize);
-            this.grpInputModelingControl.Controls.Add(this.grpMcPosition);
-            this.grpInputModelingControl.Controls.Add(this.grpMcColor);
-            this.grpInputModelingControl.Controls.Add(this.grpMcBackground);
-            this.grpInputModelingControl.Controls.Add(this.grpMcBackgroundColor);
-            this.grpInputModelingControl.Controls.Add(this.grpMcOrientation);
-            this.grpInputModelingControl.Location = new System.Drawing.Point(6, 6);
-            this.grpInputModelingControl.MinimumSize = new System.Drawing.Size(590, 0);
-            this.grpInputModelingControl.Name = "grpInputModelingControl";
-            this.grpInputModelingControl.Size = new System.Drawing.Size(590, 386);
-            this.grpInputModelingControl.TabIndex = 18;
-            this.grpInputModelingControl.TabStop = false;
-            this.grpInputModelingControl.Text = "모델링 컨트롤";
+            this.grpWindowModelingControl.Controls.Add(this.ckModelingControl);
+            this.grpWindowModelingControl.Controls.Add(this.grpMcSize);
+            this.grpWindowModelingControl.Controls.Add(this.grpMcPosition);
+            this.grpWindowModelingControl.Controls.Add(this.grpMcColor);
+            this.grpWindowModelingControl.Controls.Add(this.grpMcBackground);
+            this.grpWindowModelingControl.Controls.Add(this.grpMcBackgroundColor);
+            this.grpWindowModelingControl.Controls.Add(this.grpMcOrientation);
+            this.grpWindowModelingControl.Location = new System.Drawing.Point(6, 324);
+            this.grpWindowModelingControl.MinimumSize = new System.Drawing.Size(590, 0);
+            this.grpWindowModelingControl.Name = "grpWindowModelingControl";
+            this.grpWindowModelingControl.Size = new System.Drawing.Size(590, 386);
+            this.grpWindowModelingControl.TabIndex = 3;
+            this.grpWindowModelingControl.TabStop = false;
+            this.grpWindowModelingControl.Text = "모델링 컨트롤";
             //
             // ckModelingControl
             //
@@ -3590,8 +3590,8 @@
             this.tpNote.Location = new System.Drawing.Point(4, 40);
             this.tpNote.Name = "tpNote";
             this.tpNote.Padding = new System.Windows.Forms.Padding(3);
-            this.tpNote.Size = new System.Drawing.Size(668, 674);
-            this.tpNote.TabIndex = 3;
+            this.tpNote.Size = new System.Drawing.Size(668, 614);
+            this.tpNote.TabIndex = 7;
             this.tpNote.Text = "노트";
             this.tpNote.UseVisualStyleBackColor = true;
             //
@@ -3982,8 +3982,8 @@
             this.tpMeasure.Location = new System.Drawing.Point(4, 40);
             this.tpMeasure.Name = "tpMeasure";
             this.tpMeasure.Padding = new System.Windows.Forms.Padding(3);
-            this.tpMeasure.Size = new System.Drawing.Size(668, 674);
-            this.tpMeasure.TabIndex = 4;
+            this.tpMeasure.Size = new System.Drawing.Size(668, 614);
+            this.tpMeasure.TabIndex = 8;
             this.tpMeasure.Text = "측정";
             this.tpMeasure.UseVisualStyleBackColor = true;
             //
@@ -4003,7 +4003,7 @@
             this.grpMeasureSnap.Size = new System.Drawing.Size(590, 112);
             this.grpMeasureSnap.TabIndex = 28;
             this.grpMeasureSnap.TabStop = false;
-            this.grpMeasureSnap.Text = "스냅";
+            this.grpMeasureSnap.Text = "측정 스냅";
             //
             // numMeasureSnapCylinderAxisSize
             //
@@ -4489,8 +4489,8 @@
             this.tpSection.Controls.Add(this.grpSectionStyle);
             this.tpSection.Location = new System.Drawing.Point(4, 40);
             this.tpSection.Name = "tpSection";
-            this.tpSection.Size = new System.Drawing.Size(668, 674);
-            this.tpSection.TabIndex = 5;
+            this.tpSection.Size = new System.Drawing.Size(668, 614);
+            this.tpSection.TabIndex = 9;
             this.tpSection.Text = "단면";
             this.tpSection.UseVisualStyleBackColor = true;
             //
@@ -4823,10 +4823,23 @@
             this.tpDecal.Location = new System.Drawing.Point(4, 40);
             this.tpDecal.Name = "tpDecal";
             this.tpDecal.Padding = new System.Windows.Forms.Padding(3);
-            this.tpDecal.Size = new System.Drawing.Size(668, 674);
-            this.tpDecal.TabIndex = 6;
+            this.tpDecal.Size = new System.Drawing.Size(668, 614);
+            this.tpDecal.TabIndex = 10;
             this.tpDecal.Text = "데칼";
             this.tpDecal.UseVisualStyleBackColor = true;
+            //
+            // tpSpace
+            //
+            this.tpSpace.AutoScroll = true;
+            this.tpSpace.Controls.Add(this.grpSpaceZone);
+            this.tpSpace.Controls.Add(this.grpSpaceSelectionBox);
+            this.tpSpace.Location = new System.Drawing.Point(4, 40);
+            this.tpSpace.Name = "tpSpace";
+            this.tpSpace.Padding = new System.Windows.Forms.Padding(3);
+            this.tpSpace.Size = new System.Drawing.Size(668, 614);
+            this.tpSpace.TabIndex = 2;
+            this.tpSpace.Text = "공간";
+            this.tpSpace.UseVisualStyleBackColor = true;
             //
             // grpDecal
             //
@@ -4951,8 +4964,8 @@
             this.tpFrame.Location = new System.Drawing.Point(4, 40);
             this.tpFrame.Name = "tpFrame";
             this.tpFrame.Padding = new System.Windows.Forms.Padding(3);
-            this.tpFrame.Size = new System.Drawing.Size(668, 674);
-            this.tpFrame.TabIndex = 7;
+            this.tpFrame.Size = new System.Drawing.Size(668, 614);
+            this.tpFrame.TabIndex = 11;
             this.tpFrame.Text = "프레임";
             this.tpFrame.UseVisualStyleBackColor = true;
             //
@@ -5279,8 +5292,8 @@
             this.tpPreSelect.Location = new System.Drawing.Point(4, 40);
             this.tpPreSelect.Name = "tpPreSelect";
             this.tpPreSelect.Padding = new System.Windows.Forms.Padding(3);
-            this.tpPreSelect.Size = new System.Drawing.Size(668, 674);
-            this.tpPreSelect.TabIndex = 9;
+            this.tpPreSelect.Size = new System.Drawing.Size(668, 614);
+            this.tpPreSelect.TabIndex = 6;
             this.tpPreSelect.Text = "사전 선택";
             this.tpPreSelect.UseVisualStyleBackColor = true;
             //
@@ -5296,8 +5309,6 @@
             this.grpPreSelect.Controls.Add(this.lblPreSelectLimit);
             this.grpPreSelect.Controls.Add(this.numPreSelectLimit);
             this.grpPreSelect.Controls.Add(this.ckPreSelectAutoScroll);
-            this.grpPreSelect.Controls.Add(this.ckModelTreeAutoExpand);
-            this.grpPreSelect.Controls.Add(this.ckModelTreeAutoScroll);
             this.grpPreSelect.Controls.Add(this.ckPreSelectNodeNameVisible);
             this.grpPreSelect.Controls.Add(this.lblPreSelectNodeNameTarget);
             this.grpPreSelect.Controls.Add(this.cbPreSelectNodeNameTarget);
@@ -5398,7 +5409,7 @@
             // ckModelTreeAutoExpand
             //
             this.ckModelTreeAutoExpand.AutoSize = true;
-            this.ckModelTreeAutoExpand.Location = new System.Drawing.Point(300, 152);
+            this.ckModelTreeAutoExpand.Location = new System.Drawing.Point(15, 84);
             this.ckModelTreeAutoExpand.Name = "ckModelTreeAutoExpand";
             this.ckModelTreeAutoExpand.Size = new System.Drawing.Size(152, 16);
             this.ckModelTreeAutoExpand.TabIndex = 11;
@@ -5408,7 +5419,7 @@
             // ckModelTreeAutoScroll
             //
             this.ckModelTreeAutoScroll.AutoSize = true;
-            this.ckModelTreeAutoScroll.Location = new System.Drawing.Point(300, 180);
+            this.ckModelTreeAutoScroll.Location = new System.Drawing.Point(300, 84);
             this.ckModelTreeAutoScroll.Name = "ckModelTreeAutoScroll";
             this.ckModelTreeAutoScroll.Size = new System.Drawing.Size(164, 16);
             this.ckModelTreeAutoScroll.TabIndex = 12;
@@ -5449,11 +5460,12 @@
             this.tpWindow.Controls.Add(this.grpWindowSplit);
             this.tpWindow.Controls.Add(this.grpWindowAttribute);
             this.tpWindow.Controls.Add(this.grpWindowModelTree);
+            this.tpWindow.Controls.Add(this.grpWindowModelingControl);
             this.tpWindow.Location = new System.Drawing.Point(4, 40);
             this.tpWindow.Name = "tpWindow";
             this.tpWindow.Padding = new System.Windows.Forms.Padding(3);
-            this.tpWindow.Size = new System.Drawing.Size(668, 674);
-            this.tpWindow.TabIndex = 11;
+            this.tpWindow.Size = new System.Drawing.Size(668, 614);
+            this.tpWindow.TabIndex = 3;
             this.tpWindow.Text = "창";
             this.tpWindow.UseVisualStyleBackColor = true;
             //
@@ -5465,7 +5477,7 @@
             this.grpWindowSplit.Controls.Add(this.rbSplitBottom);
             this.grpWindowSplit.Controls.Add(this.rbSplitLeft);
             this.grpWindowSplit.Controls.Add(this.rbSplitRight);
-            this.grpWindowSplit.Location = new System.Drawing.Point(6, 218);
+            this.grpWindowSplit.Location = new System.Drawing.Point(6, 248);
             this.grpWindowSplit.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpWindowSplit.Name = "grpWindowSplit";
             this.grpWindowSplit.Size = new System.Drawing.Size(590, 70);
@@ -5526,7 +5538,7 @@
             this.grpWindowAttribute.Controls.Add(this.cbAttributePanelPosition);
             this.grpWindowAttribute.Controls.Add(this.lblAttributePanelWidth);
             this.grpWindowAttribute.Controls.Add(this.numAttributePanelWidth);
-            this.grpWindowAttribute.Location = new System.Drawing.Point(6, 97);
+            this.grpWindowAttribute.Location = new System.Drawing.Point(6, 127);
             this.grpWindowAttribute.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpWindowAttribute.Name = "grpWindowAttribute";
             this.grpWindowAttribute.Size = new System.Drawing.Size(590, 115);
@@ -5603,10 +5615,12 @@
             this.grpWindowModelTree.Controls.Add(this.cbModelTreePanelPosition);
             this.grpWindowModelTree.Controls.Add(this.lblModelTreePanelWidth);
             this.grpWindowModelTree.Controls.Add(this.numModelTreePanelWidth);
+            this.grpWindowModelTree.Controls.Add(this.ckModelTreeAutoExpand);
+            this.grpWindowModelTree.Controls.Add(this.ckModelTreeAutoScroll);
             this.grpWindowModelTree.Location = new System.Drawing.Point(6, 6);
             this.grpWindowModelTree.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpWindowModelTree.Name = "grpWindowModelTree";
-            this.grpWindowModelTree.Size = new System.Drawing.Size(590, 85);
+            this.grpWindowModelTree.Size = new System.Drawing.Size(590, 115);
             this.grpWindowModelTree.TabIndex = 0;
             this.grpWindowModelTree.TabStop = false;
             this.grpWindowModelTree.Text = "모델 트리 탭";
@@ -5680,8 +5694,8 @@
             this.tpObserver.Location = new System.Drawing.Point(4, 40);
             this.tpObserver.Name = "tpObserver";
             this.tpObserver.Padding = new System.Windows.Forms.Padding(3);
-            this.tpObserver.Size = new System.Drawing.Size(668, 674);
-            this.tpObserver.TabIndex = 8;
+            this.tpObserver.Size = new System.Drawing.Size(668, 614);
+            this.tpObserver.TabIndex = 12;
             this.tpObserver.Text = "옵저버";
             this.tpObserver.UseVisualStyleBackColor = true;
             //
@@ -5984,8 +5998,8 @@
             this.tpDevTools.Location = new System.Drawing.Point(4, 40);
             this.tpDevTools.Name = "tpDevTools";
             this.tpDevTools.Padding = new System.Windows.Forms.Padding(3);
-            this.tpDevTools.Size = new System.Drawing.Size(668, 674);
-            this.tpDevTools.TabIndex = 12;
+            this.tpDevTools.Size = new System.Drawing.Size(668, 614);
+            this.tpDevTools.TabIndex = 13;
             this.tpDevTools.Text = "개발 도구";
             this.tpDevTools.UseVisualStyleBackColor = true;
             //
@@ -6217,8 +6231,8 @@
             this.tpToolbar.Location = new System.Drawing.Point(4, 40);
             this.tpToolbar.Name = "tpToolbar";
             this.tpToolbar.Padding = new System.Windows.Forms.Padding(3);
-            this.tpToolbar.Size = new System.Drawing.Size(668, 674);
-            this.tpToolbar.TabIndex = 10;
+            this.tpToolbar.Size = new System.Drawing.Size(668, 614);
+            this.tpToolbar.TabIndex = 4;
             this.tpToolbar.Text = "툴바";
             this.tpToolbar.UseVisualStyleBackColor = true;
             //
@@ -6662,11 +6676,11 @@
             this.grpToolbarSnapshot.Controls.Add(this.rbToolbarSnapshotLeft);
             this.grpToolbarSnapshot.Controls.Add(this.rbToolbarSnapshotTop);
             this.grpToolbarSnapshot.Controls.Add(this.ckToolbarSnapshot);
-            this.grpToolbarSnapshot.Location = new System.Drawing.Point(6, 381);
+            this.grpToolbarSnapshot.Location = new System.Drawing.Point(6, 531);
             this.grpToolbarSnapshot.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpToolbarSnapshot.Name = "grpToolbarSnapshot";
             this.grpToolbarSnapshot.Size = new System.Drawing.Size(590, 69);
-            this.grpToolbarSnapshot.TabIndex = 5;
+            this.grpToolbarSnapshot.TabIndex = 7;
             this.grpToolbarSnapshot.TabStop = false;
             this.grpToolbarSnapshot.Text = "스냅샷";
             //
@@ -6758,11 +6772,11 @@
             this.grpToolbarDecal.Controls.Add(this.rbToolbarDecalLeft);
             this.grpToolbarDecal.Controls.Add(this.rbToolbarDecalTop);
             this.grpToolbarDecal.Controls.Add(this.ckToolbarDecal);
-            this.grpToolbarDecal.Location = new System.Drawing.Point(6, 456);
+            this.grpToolbarDecal.Location = new System.Drawing.Point(6, 381);
             this.grpToolbarDecal.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpToolbarDecal.Name = "grpToolbarDecal";
             this.grpToolbarDecal.Size = new System.Drawing.Size(590, 69);
-            this.grpToolbarDecal.TabIndex = 6;
+            this.grpToolbarDecal.TabIndex = 5;
             this.grpToolbarDecal.TabStop = false;
             this.grpToolbarDecal.Text = "데칼";
             //
@@ -6855,11 +6869,11 @@
             this.grpToolbarPrimitive.Controls.Add(this.rbToolbarPrimitiveLeft);
             this.grpToolbarPrimitive.Controls.Add(this.rbToolbarPrimitiveTop);
             this.grpToolbarPrimitive.Controls.Add(this.ckToolbarPrimitive);
-            this.grpToolbarPrimitive.Location = new System.Drawing.Point(6, 531);
+            this.grpToolbarPrimitive.Location = new System.Drawing.Point(6, 456);
             this.grpToolbarPrimitive.MinimumSize = new System.Drawing.Size(590, 0);
             this.grpToolbarPrimitive.Name = "grpToolbarPrimitive";
             this.grpToolbarPrimitive.Size = new System.Drawing.Size(590, 69);
-            this.grpToolbarPrimitive.TabIndex = 7;
+            this.grpToolbarPrimitive.TabIndex = 6;
             this.grpToolbarPrimitive.TabStop = false;
             this.grpToolbarPrimitive.Text = "형상 생성";
             //
@@ -7329,7 +7343,7 @@
             this.grpApply.Controls.Add(this.btnSave);
             this.grpApply.Controls.Add(this.btnLoad);
             this.grpApply.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.grpApply.Location = new System.Drawing.Point(0, 776);
+            this.grpApply.Location = new System.Drawing.Point(0, 716);
             this.grpApply.Name = "grpApply";
             this.grpApply.Size = new System.Drawing.Size(676, 62);
             this.grpApply.TabIndex = 1;
@@ -7390,7 +7404,7 @@
             //
             this.lblStatus.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblStatus.Location = new System.Drawing.Point(0, 838);
+            this.lblStatus.Location = new System.Drawing.Point(0, 778);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(676, 22);
             this.lblStatus.TabIndex = 2;
@@ -7421,7 +7435,7 @@
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1400, 860);
+            this.ClientSize = new System.Drawing.Size(1400, 800);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -7453,11 +7467,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.numSnapCylinderAxisSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSnapPointSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSnapPlaneSize)).EndInit();
-            this.grpHomeSelectionBox.ResumeLayout(false);
-            this.grpHomeSelectionBox.PerformLayout();
+            this.grpSpaceSelectionBox.ResumeLayout(false);
+            this.grpSpaceSelectionBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numSelectionBoxStrokeThickness)).EndInit();
-            this.grpHomeZone.ResumeLayout(false);
-            this.grpHomeZone.PerformLayout();
+            this.grpSpaceZone.ResumeLayout(false);
+            this.grpSpaceZone.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numZoneFaceOpacity)).EndInit();
             this.tpView.ResumeLayout(false);
             this.grpViewView.ResumeLayout(false);
@@ -7480,8 +7494,8 @@
             this.grpViewZoomBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numZoomBoxStrokeThickness)).EndInit();
             this.tpInput.ResumeLayout(false);
-            this.grpInputModelingControl.ResumeLayout(false);
-            this.grpInputModelingControl.PerformLayout();
+            this.grpWindowModelingControl.ResumeLayout(false);
+            this.grpWindowModelingControl.PerformLayout();
             this.grpMcSize.ResumeLayout(false);
             this.grpMcSize.PerformLayout();
             this.grpMcPosition.ResumeLayout(false);
@@ -7533,6 +7547,7 @@
             this.grpSectionCap.ResumeLayout(false);
             this.grpSectionCap.PerformLayout();
             this.tpDecal.ResumeLayout(false);
+            this.tpSpace.ResumeLayout(false);
             this.grpDecal.ResumeLayout(false);
             this.grpDecal.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numDecalRotationAngleStep)).EndInit();
@@ -7644,6 +7659,7 @@
         private System.Windows.Forms.TabPage tpMeasure;
         private System.Windows.Forms.TabPage tpSection;
         private System.Windows.Forms.TabPage tpDecal;
+        private System.Windows.Forms.TabPage tpSpace;
         private System.Windows.Forms.TabPage tpFrame;
         private System.Windows.Forms.TabPage tpObserver;
         private System.Windows.Forms.TabPage tpPreSelect;
@@ -7722,7 +7738,7 @@
         private System.Windows.Forms.Label label81;
         private System.Windows.Forms.Label label80;
         private System.Windows.Forms.Label label79;
-        private System.Windows.Forms.GroupBox grpHomeSelectionBox;
+        private System.Windows.Forms.GroupBox grpSpaceSelectionBox;
         private System.Windows.Forms.ComboBox cbSelectionBoxStrokePattern;
         private System.Windows.Forms.Label label101;
         private System.Windows.Forms.ComboBox cbSelectionBoxTextSize;
@@ -7743,7 +7759,7 @@
         private System.Windows.Forms.Label label96;
         private System.Windows.Forms.Button btnSelectionBoxDefaultFillColor;
         private System.Windows.Forms.Label label95;
-        private System.Windows.Forms.GroupBox grpHomeZone;
+        private System.Windows.Forms.GroupBox grpSpaceZone;
         private System.Windows.Forms.NumericUpDown numZoneFaceOpacity;
         private System.Windows.Forms.Label lblZoneFaceOpacity;
         private System.Windows.Forms.Button btnZoneLineColor;
@@ -7821,7 +7837,7 @@
         private System.Windows.Forms.ComboBox cbZoomBoxStrokePattern;
         private System.Windows.Forms.Label lblZoomBoxStrokeThickness;
         private System.Windows.Forms.NumericUpDown numZoomBoxStrokeThickness;
-        private System.Windows.Forms.GroupBox grpInputModelingControl;
+        private System.Windows.Forms.GroupBox grpWindowModelingControl;
         private System.Windows.Forms.CheckBox ckModelingControl;
         private System.Windows.Forms.GroupBox grpMcSize;
         private System.Windows.Forms.RadioButton rbMcSizeSmall;
