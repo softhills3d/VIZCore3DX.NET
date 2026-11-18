@@ -20,7 +20,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.RibbonEx** | DevExpress Ribbon 메뉴로 VIZCore3DX.NET 기능을 구성하는 예제 (DevExpress 26.1.5 필요) | 1.5.26.928 |
 | **VIZCore3DX.NET.RibbonCustomization** | 리본 탭·그룹·기능을 사용자 정의 탭으로 재구성하고, 순서 변경, 빠른 실행 도구 모음 및 사용자 정의 버튼 추가를 관리하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.CustomUI** | 툴바에 사용자 버튼(텍스트·아이콘·토글)을 추가하고, 모델 트리·속성 패널에 사용자 UserControl 탭을 부착·정렬·숨기고, 패널을 왼쪽·오른쪽에 배치하는 예제 (리본 재구성은 RibbonCustomization 참고) | 1.6.26.1118 |
-| **VIZCore3DX.NET.Print** | 3D 화면을 인쇄하고 미리보기, 머리글·바닥글·날짜·페이지 번호, 용지 방향 및 여백을 설정하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Settings** | SettingManager 로 뷰어 설정을 읽고, 화면에서 편집해 적용하고, 파일로 저장·불러오는 예제 | 1.6.26.1118 |
 
 ### 모델 구조 / 속성
@@ -28,7 +27,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 |---|---|---|
 | **VIZCore3DX.NET.Structure** | 모델을 로드하지 않은 상태에서 파일 구조와 선택한 노드의 속성 정보를 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.CustomModelTree** | 모델의 노드 구조를 사용자 정의 트리 형태로 조회하고 관리하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.ModelTree** | 기본 모델 트리의 이름 필터, 정렬, 검색바, 선택 연동, 역할별 색상 및 테마를 설정하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.NodeDetail** | 선택한 노드의 색상, 투명도, 이동, 회전, UDA 및 형상 정보를 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.NodeVisibleChanged** | 모델 노드의 가시성 변경을 감지하고 관련 이벤트를 처리하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.GeometryProperty** | 모델의 Surface Area, Volume, Center of Volume 및 Geometry 등 기하학 속성과 메시 집계, 동일 형상 통계, 지표 순위, 축 방향 분포를 조회하고, 기본 특성 로드 결과를 노드별로 확인하는 예제 | 1.5.26.928 |
@@ -61,7 +59,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 | API version |
 |---|---|---|
 | **VIZCore3DX.NET.Search** | 키워드·정규식으로 노드를 검색하고 검색 조건을 Search Set으로 저장·실행하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.ScreenSelection** | 화면 좌표·영역으로 선택 가능한 객체와 노드를 조회하고 선택 순서를 묶음 단위로 확인하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SearchSpace** | 지정한 공간 범위에 포함된 모델 객체를 검색하고 조회하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectByBox_IncludeAssembly** | 박스 선택으로 Part를 선택하고 상위 Assembly까지 포함하여 선택하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SelectParentAssembly** | 3D 형상을 선택하여 해당 객체의 상위 Assembly 노드를 조회하고 선택하는 예제 | 1.5.26.928 |
@@ -121,7 +118,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 | API version |
 |---|---|---|
 | **VIZCore3DX.NET.ModelComparison** | 두 개의 3D 모델을 열어 구조, 위치, 형상 및 차이점을 비교하는 예제 | 1.5.26.928 |
-| **VIZCore3DX.NET.Observer** | 옵저버(관측 지점)를 배치하고 시야 분석으로 보이는 객체와 가려진 객체, 커버리지를 확인하는 예제 | 1.5.26.928 |
 
 ### 시야 / 분석
 | 프로젝트 | 설명 | API version |
