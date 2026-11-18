@@ -19,7 +19,9 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.RenderScale** | 3D 뷰의 렌더 스케일을 조정하여 렌더링 품질과 성능을 비교하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.RibbonEx** | DevExpress Ribbon 메뉴로 VIZCore3DX.NET 기능을 구성하는 예제 (DevExpress 26.1.5 필요) | 1.5.26.928 |
 | **VIZCore3DX.NET.RibbonCustomization** | 리본 탭·그룹·기능을 사용자 정의 탭으로 재구성하고, 순서 변경, 빠른 실행 도구 모음 및 사용자 정의 버튼 추가를 관리하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.CustomUI** | 툴바에 사용자 버튼(텍스트·아이콘·토글)을 추가하고, 모델 트리·속성 패널에 사용자 UserControl 탭을 부착·정렬·숨기고, 패널을 왼쪽·오른쪽에 배치하는 예제 (리본 재구성은 RibbonCustomization 참고) | 1.6.26.1118 |
 | **VIZCore3DX.NET.Print** | 3D 화면을 인쇄하고 미리보기, 머리글·바닥글·날짜·페이지 번호, 용지 방향 및 여백을 설정하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.Settings** | SettingManager 로 뷰어 설정을 읽고, 화면에서 편집해 적용하고, 파일로 저장·불러오는 예제 | 1.6.26.1118 |
 
 ### 모델 구조 / 속성
 | 프로젝트 | 설명 | API version |
@@ -34,6 +36,8 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.UDA** | 선택 객체의 사용자 정의 속성 조회, 전체 속성 트리·값 분포 조회 및 속성 내보내기(CSV / JSON / XML) 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.ImportAttribute** | 외부 속성 파일을 불러와 각 모델 노드에 속성 정보를 연결하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.SplitObjects** | 모델 객체를 조건에 따라 분리하고 개별 객체로 관리하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.FileQuery** | 파일을 열지 않고 정보·바운딩 박스를 조회하고 지정한 공간 영역에 겹치는 파일과 노드를 검색하는 예제 | 1.6.26.1118 |
+| **VIZCore3DX.NET.BulkNodes** | 대량 노드를 (EntityID, Index) 항목 목록으로 조회·색상·이동·표시 적용하며 노드 목록 방식과 시간을 비교하는 예제 | 1.6.26.1118 |
 
 ### PMI
 | 프로젝트 | 설명 | API version |
@@ -95,6 +99,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.DecalAnnotation** | 모델 표면에 Text / Image / Arrow Decal을 추가하고 위치, 방향, 화살표 스타일과 Decal별 표시 여부를 조정하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Snapshot** | 스냅샷을 생성, 복원하고 JSON 파일로 내보내기/가져오기하는 예제 | 1.5.26.928 |
 | **VIZCore3DX.NET.Sketch** | 2D 스케치(선, 도형, 텍스트 등)를 생성하고 스타일 설정, 삭제 및 카메라 고정 상태를 관리하는 예제 | 1.5.26.928 |
+| **VIZCore3DX.NET.MarkupCategory** | 노트·측정·데칼·스냅샷·형상을 카테고리로 묶어 한꺼번에 보이기·숨기기·삭제하는 예제 | 1.6.26.1118 |
 
 ### 측정 / 단면
 | 프로젝트 | 설명 | API version |
@@ -110,6 +115,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 |---|---|---|
 | **VIZCore3DX.NET.ClashTest** | 3D 모델의 간섭(Clash) 검사를 수행하고 결과(노드 ID 포함)를 확인하며 CSV / HTML 리포트로 내보내는 예제 (primitiveCrane.vizx를 열면 [시나리오 불러오기] 버튼이 활성화되어 바로 테스트 가능) | 1.5.26.928 |
 | **VIZCore3DX.NET.ClashTest_MoveTest** | 3D 모델의 이동 간섭 검사(Clash Move Test)를 수행하고 결과를 확인하는 예제 (primitiveCrane.vizx를 열면 [시나리오] 버튼이 활성화되어 이동 간섭 시나리오 3종으로 바로 테스트 가능) | 1.5.26.928 |
+| **VIZCore3DX.NET.ClashSweep** | 선택한 장비가 어느 방향으로 얼마나 빠질 수 있는지 검사하고 여러 장비를 일괄 판정하며 이동 간섭 검사로 넘기는 예제 | 1.6.26.1118 |
 
 ### 모델 비교 / 분석
 | 프로젝트 | 설명 | API version |
@@ -192,7 +198,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 ### 외부 연계 / 명령
 | 프로젝트 | 설명 | API version |
 |---|---|---|
-| **VIZCore3DX.NET.Command.Console** | 명령 목록과 인자 형식을 조회하고 이름 + 인자 JSON 으로 명령을 실행하며 상태 요약을 확인하는 예제 | 1.6.26.10XX |
-| **VIZCore3DX.NET.Command.Mcp** | AI 클라이언트가 MCP 로 보내는 요청을 명령으로 실행하는 예제 (로컬 HTTP 서버, 조회 명령만 공개 선택) | 1.6.26.10XX |
-| **VIZCore3DX.NET.Command.WebSocket** | 웹 페이지가 WebSocket 으로 보내는 요청을 명령으로 실행하는 예제 (시험용 웹 페이지 포함) | 1.6.26.10XX |
-| **VIZCore3DX.NET.Command.Chat** | AI(LLM)와 대화하며 AI 가 고른 명령을 실행하고 결과를 돌려주는 예제 (Claude / OpenAI 호환 공급자 교체) | 1.6.26.10XX |
+| **VIZCore3DX.NET.Command.Console** | 명령 목록과 인자 형식을 조회하고 이름 + 인자 JSON 으로 명령을 실행하며 상태 요약을 확인하는 예제 | 1.6.26.1118 |
+| **VIZCore3DX.NET.Command.Mcp** | AI 클라이언트가 MCP 로 보내는 요청을 명령으로 실행하는 예제 (로컬 HTTP 서버, 조회 명령만 공개 선택) | 1.6.26.1118 |
+| **VIZCore3DX.NET.Command.WebSocket** | 웹 페이지가 WebSocket 으로 보내는 요청을 명령으로 실행하는 예제 (시험용 웹 페이지 포함) | 1.6.26.1118 |
+| **VIZCore3DX.NET.Command.Chat** | AI(LLM)와 대화하며 AI 가 고른 명령을 실행하고 결과를 돌려주는 예제 (Claude / OpenAI 호환 공급자 교체) | 1.6.26.1118 |
