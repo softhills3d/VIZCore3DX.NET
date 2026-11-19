@@ -150,6 +150,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 | API version |
 |---|---|---|
 | **VIZCore3DX.NET.Projection2D** | 3D 모델의 외곽 형상을 2D로 투영하고 결과를 확인하는 예제 | 1.1.25.609 |
+| **VIZCore3DX.NET.Scenario.LiveDrawing** | 3D 모델에서 만든 2D 도면을 3D 뷰와 같은 좌표의 지도로 쓰는 시나리오 예제 (단면·카메라 표식·닫힌 영역 면적·2D/3D 치수·도면 점으로 카메라 이동·DXF/SVG) | 1.6.26.11XX |
 
 ### 이미지 / 썸네일
 | 프로젝트 | 설명 | API version |
