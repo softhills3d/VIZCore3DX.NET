@@ -51,11 +51,15 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 탱크 바닥 판 (01 장면에서 찾아 둠)
         private List<Data.Node> _tankFloor = new List<Data.Node>();
 
-        // 밝게 칠한 탱크 바닥 판 (되돌릴 때 원래 색으로)
+        // 밝게 칠한 탱크 바닥 판과 칠하기 전의 색 (되돌릴 때 그 색으로 다시 칠합니다)
         private readonly List<Data.Node> _recolored = new List<Data.Node>();
+        private readonly List<Color> _recoloredColors = new List<Color>();
 
         // 실내 장면에서 숨긴 노드 (되돌릴 때 다시 보입니다)
         private readonly List<Data.Node> _hidden = new List<Data.Node>();
+
+        // 대피 장면의 옆 구도에서 켠 상자 단면 (없으면 null)
+        private Data.SectionItem _section;
 
         // 대피 시뮬레이션과 그 갱신 타이머
         private EvacuationSim _evacuation;
@@ -254,10 +258,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 vizcore3dx.View.Effect.ClearWeldingSparks();
                 vizcore3dx.Shape.Delete(SceneValues.StairCategory);
 
-                RestoreXRay();
-                vizcore3dx.Object3D.Show(Data.Object3DKind.ALL, true);
-                RestoreFloorColor();
-
+                RestoreModelView();
                 ClearHud();
             }
             finally
@@ -390,9 +391,9 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             vizcore3dx.Zone.SetVisible(_combustibleZone, false);
             ShowHud(string.Format("P1 이중저 탱크 도장 · 허가 인원 {0}명", SceneValues.PermitHeadcount));
 
-            // X-Ray 를 끄고 바깥 껍데기를 걷어 낸 뒤, 탱크 위(이중저 윗면 ~ 플로어 작업 높이)를 숨겨 안을 들여다볼 창을 냅니다.
+            // X-Ray 를 끄고 위쪽 그룹만 걷어 낸 뒤(외판은 남김), 탱크 위(이중저 윗면 ~ 플로어 작업 높이)를 숨겨 안을 들여다볼 창을 냅니다.
             Data.BoundBox3D keel = _keelBox;
-            SetCutaway(true, true);
+            SetCutaway(true, true, SceneValues.CutawayGroupsKeepShell);
             OpenTankWindow(keel);
 
             List<bool> inside = PlaceKeelWorkers();
@@ -1121,11 +1122,13 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         }
 
         // 대피 시뮬레이션을 시작하고, 사람들이 계단을 올라가는 기둥으로 다가갑니다.
+        // 옆 구도에서는 갑판을 되살리고 우현 쪽만 단면으로 잘라 종단면으로 봅니다.
         private void StartEvacuation(EvacuationSim evacuation)
         {
             if (_evacuation != evacuation) return;
             _evacuationWatch = Stopwatch.StartNew();
             _evacuationTimer.Start();
+            SetCutaway(true, true, SceneValues.CutawayGroupsSection, true);
             FlyToBox(SceneValues.ClimbBox, SceneValues.ViewClimb, 3.0);
         }
 
@@ -1177,6 +1180,8 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             ClearEffects(SceneValues.GroupCrowd);
             ShowHud(string.Format("전원 집결 {0}/{1} · 총 집결 시간 {2:0} s (실제 시간)\n(규정 판정은 500회 반복의 95번째 백분위 — IMO MSC.1/Circ.1533)", arrived, count, _evacuation.Time));
             ClearSpeedHud();
+            // 위에서 내려다보는 구도라 단면을 끄고 처음처럼 바깥 껍데기를 걷어 냅니다.
+            SetCutaway(true, true);
             FlyToEvacuationOverview();
         }
 
@@ -1191,7 +1196,9 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
         // 실내 보기 — 켜면 X-Ray 를 끄고 바깥 껍데기 그룹(값 표)을 숨기고, 끄면 숨긴 노드를 되살려 모델을 원래대로 보입니다(X-Ray 로 돌아가지 않음).
         // 01 장면 뒤로는 X-Ray 대신 실제 형상으로 보여 줍니다. 구역의 반투명 면은 그 안·뒤의 아바타를 가리므로 아바타 장면에서는 faceOff 로 경계선만 남깁니다.
-        private void SetCutaway(bool on, bool faceOff = false)
+        // groups 는 숨길 그룹(없으면 값 표의 CutawayGroups 전부)이고, section 이면 우현 쪽을 상자 단면으로 잘라 냅니다.
+        // 단면은 부를 때마다 먼저 지우므로 section 없이 부르면 단면이 꺼집니다.
+        private void SetCutaway(bool on, bool faceOff = false, string[] groups = null, bool section = false)
         {
             vizcore3dx.BeginUpdate();
             try
@@ -1201,9 +1208,11 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 foreach (int id in _zones)
                     vizcore3dx.Zone.SetFaceOpacity(id, faceOff ? 0 : id == _deckZone ? SceneValues.SuspendedOpacity : SceneValues.ZoneOpacity);
 
+                RemoveSection();
                 if (on)
                 {
-                    HideCutawayGroups();
+                    HideCutawayGroups(groups ?? SceneValues.CutawayGroups);
+                    if (section) AddCutawaySection();
                 }
                 else
                 {
@@ -1218,16 +1227,44 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             }
         }
 
-        // 모델 루트 바로 아래에서 바깥 껍데기 그룹(SceneValues.CutawayGroups)을 찾아 숨깁니다.
-        private void HideCutawayGroups()
+        // 모델 루트 바로 아래의 바깥 껍데기 그룹(SceneValues.CutawayGroups) 가운데 names 에 든 것은 숨기고,
+        // 앞 장면이 숨겼지만 names 에 없는 것은 되살립니다.
+        private void HideCutawayGroups(string[] names)
         {
             List<Data.Node> roots = vizcore3dx.Object3D.FromFilter(Data.Object3dFilter.ROOT);
-            List<Data.Node> groups = new List<Data.Node>();
+            List<Data.Node> hide = new List<Data.Node>(), show = new List<Data.Node>();
             if (roots != null && roots.Count > 0)
                 foreach (Data.Node node in roots[0].GetChildObject3d(Data.Object3DChildOption.CHILD_ONLY))
-                    if (Array.IndexOf(SceneValues.CutawayGroups, node.NodeName) >= 0) groups.Add(node);
-            if (groups.Count > 0) vizcore3dx.Object3D.Show(groups, false);
-            _hidden.AddRange(groups);
+                {
+                    if (Array.IndexOf(names, node.NodeName) >= 0) hide.Add(node);
+                    else if (Array.IndexOf(SceneValues.CutawayGroups, node.NodeName) >= 0) show.Add(node);
+                }
+            if (show.Count > 0) vizcore3dx.Object3D.Show(show, true);
+            if (hide.Count > 0) vizcore3dx.Object3D.Show(hide, false);
+            _hidden.AddRange(hide);
+        }
+
+        // 우현 쪽을 상자 단면으로 잘라 냅니다. 단면 상자 자체는 화면에 보이지 않게 하고 잘린 모양만 남깁니다.
+        private void AddCutawaySection()
+        {
+            _section = vizcore3dx.Section.AddBox(SceneValues.CutawaySection);
+            vizcore3dx.Section.ShowAll(false);
+        }
+
+        // 모델을 원래 모습으로 — X-Ray·숨김·단면·바닥 판 색을 모두 되돌립니다.
+        private void RestoreModelView()
+        {
+            RestoreXRay();
+            vizcore3dx.Object3D.Show(Data.Object3DKind.ALL, true);
+            RemoveSection();
+            RestoreFloorColor();
+        }
+
+        // 이 시나리오가 켠 단면을 지웁니다.
+        private void RemoveSection()
+        {
+            if (_section != null) vizcore3dx.Section.Delete(_section);
+            _section = null;
         }
 
         // 탱크 위(이중저 윗면 ~ 플로어 작업 높이)를 숨겨 안을 들여다볼 창을 내고, 외판 그룹과 함께 숨은 탱크 바닥(선저 외판)은 되살립니다.
@@ -1238,9 +1275,15 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             // 바닥 판을 되살리고 밝게 칠합니다 — 원래 색이 배경과 같은 남색이라 그대로는 바닥이 없어 보입니다.
             if (_tankFloor.Count == 0) return;
             vizcore3dx.Object3D.Show(_tankFloor, true);
-            vizcore3dx.Object3D.Color.SetColor(_tankFloor, SceneValues.ColorTankFloor);
+            // 칠하기 전 색을 기억해 둡니다 — 모델의 색이 파일에 저장된 지정 색이면 RestoreColor 는 그 색까지 지워
+            // 판이 원래 보이던 색이 아닌 색으로 바뀝니다.
             foreach (Data.Node node in _tankFloor)
-                if (!_recolored.Contains(node)) _recolored.Add(node);
+            {
+                if (_recolored.Contains(node)) continue;
+                _recolored.Add(node);
+                _recoloredColors.Add(vizcore3dx.Object3D.Color.GetColor(node));
+            }
+            vizcore3dx.Object3D.Color.SetColor(_tankFloor, SceneValues.ColorTankFloor);
         }
 
         // 상자에 걸치는 파트를 숨깁니다(들여다볼 창). 판정용 공간을 잠시 만들었다가 지웁니다.
@@ -1277,11 +1320,13 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             return floor;
         }
 
-        // 밝게 칠한 탱크 바닥 판을 원래 색으로 되돌립니다.
+        // 밝게 칠한 탱크 바닥 판을 칠하기 전의 색으로 다시 칠합니다.
         private void RestoreFloorColor()
         {
-            if (_recolored.Count > 0) vizcore3dx.Object3D.Color.RestoreColor(_recolored);
+            for (int i = 0; i < _recolored.Count; i++)
+                vizcore3dx.Object3D.Color.SetColor(new List<Data.Node> { _recolored[i] }, _recoloredColors[i]);
             _recolored.Clear();
+            _recoloredColors.Clear();
         }
 
         // ---- 계단 형상 ----

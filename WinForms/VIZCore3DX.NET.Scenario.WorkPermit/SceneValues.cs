@@ -104,6 +104,14 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // X-Ray 를 끄고 바깥 껍데기를 걷어 내며 구역은 경계선만 남깁니다.
         // 이름은 샘플 모델의 파일 노드(모델 루트 바로 아래) 이름입니다.
         public static readonly string[] CutawayGroups = { "Shell", "Casing", "Deckhouse", "Upper Decks", "Main Deck" };
+        // 탱크 인원 장면(04)은 외판을 남깁니다 — 플로어가 격자 틀이라 외판(선저)을 끄면 그 틈으로 배경이 보여 배가 비어 보입니다.
+        // 카메라가 선체 안쪽에 있어 외판은 시야를 가리지 않습니다.
+        public static readonly string[] CutawayGroupsKeepShell = { "Casing", "Deckhouse", "Upper Decks", "Main Deck" };
+        // 대피 장면(06)의 옆 구도는 그룹을 숨기는 대신 우현 쪽을 상자 단면으로 잘라 냅니다(Y 7,200 까지 남김).
+        // "Upper Decks"·"Main Deck" 그룹이 제2갑판·상갑판을 담고 있어 숨기면 계단 둘레가 통째로 비어 보이기 때문입니다.
+        // 단면은 아바타·이펙트·형상을 자르지 않습니다. 단면 위로 솟아 시야를 가리는 거주구·케이싱만 숨깁니다.
+        public static readonly string[] CutawayGroupsSection = { "Casing", "Deckhouse" };
+        public static readonly Data.BoundBox3D CutawaySection = new Data.BoundBox3D(-6000f, -18000f, -1000f, 38000f, 7200f, 40000f);
 
         // 구역 면 불투명도 (0~100, 0 이면 경계선만)
         public const int ZoneOpacity = 12;
