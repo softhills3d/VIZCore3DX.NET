@@ -150,7 +150,6 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | 프로젝트 | 설명 | API version |
 |---|---|---|
 | **VIZCore3DX.NET.Projection2D** | 3D 모델의 외곽 형상을 2D로 투영하고 결과를 확인하는 예제 | 1.1.25.609 |
-| **VIZCore3DX.NET.Scenario.LiveDrawing** | 3D 모델에서 만든 2D 도면을 3D 뷰와 같은 좌표의 지도로 쓰는 시나리오 예제 (단면·카메라 표식·닫힌 영역 면적·2D/3D 치수·도면 점으로 카메라 이동·DXF/SVG) | 1.6.26.11XX |
 
 ### 이미지 / 썸네일
 | 프로젝트 | 설명 | API version |
@@ -199,3 +198,9 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.Command.Mcp** | AI 클라이언트가 MCP 로 보내는 요청을 명령으로 실행하는 예제 (로컬 HTTP 서버, 조회 명령만 공개 선택) | 1.6.26.1118 |
 | **VIZCore3DX.NET.Command.WebSocket** | 웹 페이지가 WebSocket 으로 보내는 요청을 명령으로 실행하는 예제 (시험용 웹 페이지 포함) | 1.6.26.1118 |
 | **VIZCore3DX.NET.Command.Chat** | AI(LLM)와 대화하며 AI 가 고른 명령을 실행하고 결과를 돌려주는 예제 (Claude / OpenAI 호환 공급자 교체) | 1.6.26.1118 |
+
+### 시나리오
+| 프로젝트 | 설명 | API version |
+|---|---|---|
+| **VIZCore3DX.NET.Scenario.LiveDrawing** | 3D 모델에서 만든 2D 도면을 3D 뷰와 같은 좌표의 지도로 쓰는 시나리오 예제 (단면·카메라 표식·닫힌 영역 면적·2D/3D 치수·도면 점으로 카메라 이동·DXF/SVG) | 1.6.26.11XX |
+| **VIZCore3DX.NET.Scenario.WorkPermit** | 작업 허가(PTW)를 공간(Zone)으로 올려 인접·하부·연결 관계로 판정하는 시나리오 예제 (실제 판으로 닫은 다면체 구역·아래 방향 접촉·통로 분석·화기 반경·구역 안 인원·낙하물 통제·120명 대피) | 1.6.26.11XX |
