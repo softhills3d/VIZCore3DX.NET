@@ -13,6 +13,14 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
     // 모델 트리의 층·공정 묶음으로 4D 시공 순서(가시성 애니메이션)를 만들고, 전체 간섭 검사로 관통을 찾아 X-Ray·교차선·단면으로 보여 줍니다.
     // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값(이름 규칙·속성 키·카메라)은 ScenarioScript.cs 한 곳에,
     // 재생은 ScenarioRunner.cs 에 있습니다.
+    //
+    // ── 이 예제에서 SDK 사용을 보려면 ──
+    // · 속성(UDA)으로 4D 시공 순서 만들기: FindStages(), BuildSequence()
+    // · 전체 간섭 검사와 결과 받기: SceneClash(), Clash_OnClashTestFinishedEvent()
+    // · 관통부 X-Ray·교차선: FocusPenetration()
+    // · 설계 변경 Rev A/B 비교와 재검사: SceneRevB()
+    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // 다른 모델에 쓰려면: 같은 속성(Type·InstallSeq·PlannedStart 등)이 있어야 하며, ScenarioScript.cs 의 이름·속성 키를 그 모델에 맞게 바꿉니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언

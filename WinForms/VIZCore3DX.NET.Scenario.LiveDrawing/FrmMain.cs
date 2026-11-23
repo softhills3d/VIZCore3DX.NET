@@ -11,6 +11,15 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
     // 시나리오 예제 "살아 있는 도면"
     // 3D 모델에서 2D 도면을 만들고, 그 도면을 3D 뷰와 같은 좌표를 쓰는 지도로 쓰는 흐름을 장면 순서대로 보여 줍니다.
     // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값은 ScenarioScript.cs 한 곳에, 재생은 ScenarioRunner.cs 에 있습니다.
+    //
+    // ── 이 예제에서 SDK 사용을 보려면 ──
+    // · 단면 도면과 3D 단면: SceneSection(), CutModel()
+    // · 도면 좌표 ↔ 3D 좌표(WorldToLocal·LocalToWorld): Runner_Tick(), VisitTourPoint()
+    // · 은선 제거 정사영 도면: SceneBlockDrawing()
+    // · 닫힌 영역 면적과 치수: SceneClosedAreas(), AddClosedArea(), AddMeasure()
+    // · DXF·SVG 내보내기: SceneExport()
+    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // 다른 모델에 쓰려면: 그대로 동작합니다(mm 단위 가정). 블록 장면은 리본 [블록]에 그 모델의 어셈블리 이름을 넣습니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
@@ -346,7 +355,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             LookLikeDrawing(_sectionDrawing, _modelBox, 2.0);
         }
 
-        // ② 살아 있는 도면 — 3D 카메라의 위치·시선을 도면 위 표식으로 실시간 표시합니다(Timeline_Tick).
+        // ② 살아 있는 도면 — 3D 카메라의 위치·시선을 도면 위 표식으로 실시간 표시합니다(Runner_Tick).
         //    카메라가 모델 위 몇 곳을 차례로 날아다니고, 끝난 뒤 마우스로 돌려도 표식이 따라옵니다.
         private void SceneLiveMap()
         {

@@ -12,6 +12,15 @@ namespace VIZCore3DX.NET.Scenario.Safety
     // 집결지와 작업 구역은 Zone 으로 만들고, 사람이 드나드는 것은 Zone 이 알려 줍니다(Zone.OnZoneContentChangedEvent).
     // 카메라는 장면이 바뀔 때 구도를 옮기고, 사람이 걷는 장면에서는 그 사람들을 따라갑니다(방위·거리는 마우스로 조절).
     // 장면의 값(설명·길이·좌표·색)은 ScenarioScript.cs 한 곳에, 재생은 ScenarioRunner.cs 에 있습니다.
+    //
+    // ── 이 예제에서 SDK 사용을 보려면 ──
+    // · 구역(Zone) 만들기와 드나듦 이벤트: SceneEscape(), SceneDesignate(), Zone_OnZoneContentChanged(), OnEnter(), OnLeave()
+    // · 구역 안 인원 세기: RefreshHud()
+    // · 이펙트(가스 구름·입자·대피 경로선·표식): SceneGasLeak(), SceneEscape(), SceneSparkFire()
+    // · 레이캐스트로 설 자리·바닥 찾기: Standable(), FloorAt() (FloorMap.Cast 가 Object3D.Raycast 를 부릅니다)
+    // 장면 재생·리본·시계·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, Cues.cs, Shot·Follow 등)과 걷기용 바닥 지도(FloorMap.cs, FloorData.cs)는 연출용이니 건너뛰어도 됩니다.
+    // Crew.cs 는 아바타 API(Avatar.Place·SetPosture 등)로 작업자를 놓고 걷게 하므로, 아바타 사용을 보려면 함께 봅니다.
+    // 다른 모델에 쓰려면: 좌표(ScenarioScript.cs)·바닥 격자(FloorData.cs)·가리는 부재 번호(HiddenNodes.cs, Node.Index)가 샘플 모델 전용이라 값을 바꿔야 합니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
@@ -19,9 +28,6 @@ namespace VIZCore3DX.NET.Scenario.Safety
 
         // 조작부 — 리본 사용자 탭 "시나리오" (뷰어 초기화 뒤에 만듭니다)
         private ScenarioRibbon _ribbon;
-
-        // 상태 문구 (창 제목줄에 함께 표시합니다)
-        private string _status;
 
         // 대본과 재생기
         private List<ScenarioShot> _shots;
@@ -328,7 +334,7 @@ namespace VIZCore3DX.NET.Scenario.Safety
 
         #region 3. 재생
 
-        // 첫 장면부터 끝까지 이어서 재생합니다. 녹화는 이 버튼을 누르기 전에 시작합니다.
+        // 첫 장면부터 끝까지 이어서 재생합니다.
         private void Ribbon_PlayAll()
         {
             if (!IsModelOpened() || !IsModelReady()) return;
@@ -1237,13 +1243,6 @@ namespace VIZCore3DX.NET.Scenario.Safety
             _camStart = _clock.Elapsed.TotalSeconds;
         }
 
-        // 장면이 바뀔 때: 옮기는 과정 없이 바로 새 구도로
-        private void Cut(Data.Vector3D target, double az, double el, double dist, params Data.Vector3D[] alsoSee)
-        {
-            Shot(target, az, el, dist, alsoSee);
-            _camStart -= ShotSec;
-        }
-
         // 정한 구도 그대로 바로 바꿈 (가림 검사로 방향을 돌리지 않음)
         private void CutExact(Data.Vector3D target, double az, double el, double dist)
         {
@@ -1393,7 +1392,6 @@ namespace VIZCore3DX.NET.Scenario.Safety
 
         private void SetStatus(string text)
         {
-            _status = text;
             Text = "VIZCore3DX.NET.Scenario.Safety — " + text;
         }
 

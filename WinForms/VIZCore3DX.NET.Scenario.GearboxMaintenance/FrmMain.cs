@@ -11,6 +11,15 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
     // 이동 간섭 검사로 다시 넣는 경로를 확인한 뒤, 단면·측정으로 치수를 검증하고 다시 돌립니다.
     // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값(부품 이름·속성 키·거리·시간)은 ScenarioScript.cs 한 곳에,
     // 재생은 ScenarioRunner.cs 에 있습니다.
+    //
+    // ── 이 예제에서 SDK 사용을 보려면 ──
+    // · 분해 순서 애니메이션: SceneOpenCover(), AddUnscrewGroups()
+    // · 방향 스윕(뺄 수 있는 방향 찾기): SceneSweep(), SweepOptions()
+    // · 이동 간섭 검사(넣는 경로 확인): CreateMountTest(), SceneMount(), Clash_OnClashMoveTestReportFinished()
+    // · 단면: CutAtShaftHeight()
+    // · 측정·최소 거리: SceneVerify(), AddAxialDistance()
+    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // 다른 모델에 쓰려면: ScenarioScript.cs 의 부품 이름·속성 키를 그 모델에 맞게 바꿉니다(IsModelReady 가 확인합니다).
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
@@ -417,7 +426,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             double t1 = t0 + ScenarioScript.NutSeconds;
             double t2 = t1 + ScenarioScript.BoltSeconds;
 
-            // 회전축이 이동 방향(Z)과 같아 한 그룹에 회전·이동을 함께 줘도 축이 흔들리지 않습니다(실측).
+            // 회전축이 이동 방향(Z)과 같아 한 그룹에 회전·이동을 함께 줘도 축이 흔들리지 않습니다.
             Data.AnimationGroup nutGroup = _animation.CreateGroup(set.NodeName + " Nut");
             nutGroup.AddNodes(nutSide);
             nutGroup.CreateRotationAction(Sec(t0), Sec(ScenarioScript.NutSeconds), axis, up, -turns);
@@ -452,7 +461,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             _capStart = _pauseAt + 0.1;
             _shaftPullStart = _capStart + Math.Max(capSets - 1, 0) * ScenarioScript.UnscrewStagger + ScenarioScript.BoltSeconds + ScenarioScript.HideAfter + ScenarioScript.CapRemovedHold;
 
-            // ★Duration 을 직접 주지 않으면 0 초라 Play 가 바로 끝납니다(실측). 04 의 출력축 인출까지 들어가게 여기서 한 번에 잡습니다.
+            // ★Duration 을 직접 주지 않으면 0 초라 Play 가 바로 끝납니다. 04 의 출력축 인출까지 들어가게 여기서 한 번에 잡습니다.
             _animation.Duration = Sec(_shaftPullStart + ScenarioScript.ShaftPullSeconds + 0.5);
         }
 
@@ -482,7 +491,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             // 통과 방향 볼륨(최대 거리만큼 뻗음)까지 들어오게 맞춥니다.
             FlyToBox(SweepViewBox(shaft), ScenarioScript.ViewSweep, 1.2, ScenarioScript.SweepZoom);
 
-            // ★커버를 애니메이션으로 옮긴 뒤에는 장애물 캐시를 비워야 옮긴 위치로 검사합니다(안 비우면 커버가 제자리에 있는 결과, 실측).
+            // ★커버를 애니메이션으로 옮긴 뒤에는 장애물 캐시를 비워야 옮긴 위치로 검사합니다(안 비우면 커버가 제자리에 있는 결과).
             vizcore3dx.Clash.Sweep.InvalidateObstacles();
             ApplySweepStyle();
 
@@ -511,7 +520,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             options.MaxDistanceMm = ScenarioScript.SweepMaxDistance;
             options.MaxSampleCount = ScenarioScript.SweepMaxSamples;
 
-            // ★기본 접촉 허용(5 mm)이면 베어링이 끼워진 하우징이 "맞닿은 부품"으로 빠져 ±X 가 거짓 통과로 나옵니다 — 0.1 mm 로 줄이면 +Z 만 통과(실측).
+            // ★기본 접촉 허용(5 mm)이면 베어링이 끼워진 하우징이 "맞닿은 부품"으로 빠져 ±X 가 거짓 통과로 나옵니다 — 0.1 mm 로 줄이면 +Z 만 통과합니다.
             options.ContactToleranceMm = ScenarioScript.SweepContactTolerance;
             return options;
         }
@@ -1048,7 +1057,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         }
 
         // 출력축을 인출한 높이(ShaftPull)에서 MountStep 씩 내려 안착하는 이동 간섭 검사를 만들고, 축을 맨 위 단계에 둡니다.
-        // 고정 쪽은 보이는 부품 중 출력축 조립품을 뺀 전부입니다. ★숨긴 부품은 검사에서 빠집니다(실측 — 캡 볼트를 숨기면 간섭 0).
+        // 고정 쪽은 보이는 부품 중 출력축 조립품을 뺀 전부입니다. ★숨긴 부품은 검사에서 빠집니다(캡 볼트를 숨기면 간섭 0).
         private Data.ClashTest CreateMountTest()
         {
             Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
@@ -1158,7 +1167,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         }
 
         // 축 높이에서 수평으로 자르고 아래쪽을 남깁니다. 잘린 면은 채웁니다(부품 수가 적어 느려지지 않습니다).
-        // ★뒤집기는 이 순서여야 적용됩니다 : Add → SetSectionPosition → Enable → Deselect → Select → InvertDirection → Deselect (R2 실측).
+        // ★뒤집기는 이 순서여야 적용됩니다 : Add → SetSectionPosition → Enable → Deselect → Select → InvertDirection → Deselect.
         private void CutAtShaftHeight(float z)
         {
             RemoveSection();

@@ -33,7 +33,7 @@ namespace VIZCore3DX.NET.Scenario.Safety
     }
 
     // 작업자들: 배치, 사람처럼 걷기, 제자리 작업 동작
-    // 엔진에서 아바타가 움직이는 동안·자세를 바꿀 때마다 GDI 개체가 새므로, 상시 순찰 없이 사건 때만 걷고 자세는 드물게 바꿉니다.
+    // 상시 순찰은 하지 않고, 사건이 났을 때만 걷거나 자세를 바꿉니다.
     internal class Crew
     {
         public const string PresetName = "Scenario Worker";

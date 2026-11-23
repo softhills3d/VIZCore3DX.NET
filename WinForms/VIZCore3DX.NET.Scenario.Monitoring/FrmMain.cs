@@ -13,6 +13,16 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
     // 그 센서 화면을 크게 확대한 뒤 작업자가 가서 조치합니다.
     // 분할 화면 4개(View.SetSubView)에 센서마다 옵저버 시점을 두고, 이펙트는 Effect.SetViewEnabled 로 분할 화면 모두에 표시합니다.
     // 장면의 값(설명·길이·좌표·사람 배치)은 ScenarioScript.cs 한 곳에, 재생은 ScenarioRunner.cs 에 있습니다.
+    //
+    // ── 이 예제에서 SDK 사용을 보려면 ──
+    // · 옵저버 센서(CCTV·레이더·가스 감지기) 배치: PlaceSensors()
+    // · 센서가 그 점을 보는지 판정: FirstSeeing()
+    // · 분할 화면에 센서 시점 띄우기: ShowSplit(), ShowSingle()
+    // · 출입 금지 구역(Zone)과 출입 이벤트: CreateNoGo(), Zone_OnZoneContentChanged()
+    // · 분할 화면 모두에 이펙트 표시: InitializeVIZCore3DX()
+    // 장면 재생·리본·시계·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, Cues.cs, ZoomTo 등)과 걷기용 바닥 지도(FloorMap.cs, FloorData.cs)는 연출용이니 건너뛰어도 됩니다.
+    // Crew.cs 는 아바타 API(Avatar.Place·SetPosture 등)로 작업자를 놓고 걷게 하므로, 아바타 사용을 보려면 함께 봅니다.
+    // 다른 모델에 쓰려면: 센서 좌표·출입 금지 구역(ScenarioScript.cs)과 바닥 격자(FloorData.cs)가 샘플 모델 전용이라 값을 바꿔야 합니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
@@ -20,9 +30,6 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
 
         // 조작부 — 리본 사용자 탭 "시나리오" (뷰어 초기화 뒤에 만듭니다)
         private ScenarioRibbon _ribbon;
-
-        // 상태 문구 (창 제목줄에 함께 표시합니다)
-        private string _status;
 
         // 대본과 재생기
         private List<ScenarioShot> _shots;
@@ -423,7 +430,7 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
 
         #region 3. 재생
 
-        // 첫 장면부터 끝까지 이어서 재생합니다. 녹화는 이 버튼을 누르기 전에 시작합니다.
+        // 첫 장면부터 끝까지 이어서 재생합니다.
         private void Ribbon_PlayAll()
         {
             if (!IsModelOpened() || !IsModelReady()) return;
@@ -951,7 +958,6 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
 
         private void SetStatus(string text)
         {
-            _status = text;
             Text = "VIZCore3DX.NET.Scenario.Monitoring — " + text;
         }
 

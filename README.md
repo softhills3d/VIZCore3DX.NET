@@ -218,3 +218,15 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 | **VIZCore3DX.NET.Scenario.ConstructionReview** | 철골 10층 건물의 시공 순서와 공종 간 간섭을 검토하는 시나리오 예제 (속성 기반 4D 시공 순서·공종별 색·층 단면·아바타 1인칭 보행·공정 현황·전체 간섭 검사와 교차선·상자 단면·Rev B 모델 비교와 재검사·리본 사용자 탭 조작부) | 1.7.26.1125 |
 | **VIZCore3DX.NET.Scenario.Monitoring** | 기관실을 CCTV·레이더·가스 감지기로 감시하다가 누수와 출입 금지 구역 침입을 감지하고, 그 센서 화면을 확대한 뒤 작업자가 조치하는 시나리오 예제 (분할 화면 4개에 센서별 옵저버 시점·분할 화면 이펙트 표시·Zone 출입 감지·작업자 출동·리본 사용자 탭 조작부) | 1.7.26.1125 |
 | **VIZCore3DX.NET.Scenario.Safety** | 작업 현장의 비상 대피·화기 작업 허가·낙하물과 추락을 Zone 출입 감지로 관제하는 시나리오 예제 (폭염 이상 징후·가스 누출 대피와 집결지 인원 집계·화기 작업 구역 무허가 출입과 퇴거·불티 화재 진화·낙하물·추락 구호·리본 사용자 탭 조작부) | 1.7.26.1125 |
+
+#### 시나리오 예제 읽는 법
+시나리오 예제는 시연용이라 코드 대부분이 장면 재생·카메라 연출입니다. SDK 사용은 아래 메서드부터 보면 되고, 각 `FrmMain.cs` 맨 위 주석에 같은 목록이 있습니다.
+
+| 예제 | 먼저 볼 메서드 | 다른 모델에서 |
+|---|---|---|
+| LiveDrawing | `SceneSection`, `CutModel`, `Runner_Tick`, `SceneBlockDrawing`, `AddClosedArea`, `AddMeasure`, `SceneExport` | 그대로 동작 (블록 이름만 입력) |
+| WorkPermit | `AddZone`, `DownwardGap`, `AnalyzePassageAsync`, `ZonesWithinHotWorkRadius`, `PlaceKeelWorkers`, `SceneDropZone` | 샘플 모델 전용 (구역 좌표 교체) |
+| GearboxMaintenance | `AddUnscrewGroups`, `SceneSweep`, `CreateMountTest`, `CutAtShaftHeight`, `SceneVerify` | 이름·속성 교체 (`ScenarioScript.cs`) |
+| ConstructionReview | `FindStages`, `BuildSequence`, `SceneClash`, `FocusPenetration`, `SceneRevB` | 이름·속성 교체 (같은 속성 필요) |
+| Monitoring | `PlaceSensors`, `FirstSeeing`, `ShowSplit`, `CreateNoGo`, `Zone_OnZoneContentChanged` | 샘플 모델 전용 (센서 좌표·바닥 격자 교체) |
+| Safety | `SceneDesignate`, `Zone_OnZoneContentChanged`, `RefreshHud`, `SceneGasLeak`, `Standable` | 샘플 모델 전용 (좌표·바닥 격자·노드 번호 교체) |

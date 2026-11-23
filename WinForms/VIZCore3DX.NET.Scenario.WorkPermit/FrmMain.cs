@@ -12,6 +12,16 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
     // 작업 장소를 공간(Zone)으로 만들고, 공간끼리의 기하 판정(겹침·거리·포함)으로 위험을 찾아 이펙트로 보여 줍니다.
     // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값은 ScenarioScript.cs 한 곳에, 재생은 ScenarioRunner.cs 에,
     // 대피 계산은 EvacuationSim.cs 에 있습니다.
+    //
+    // ── 이 예제에서 SDK 사용을 보려면 ──
+    // · 공간(Zone) 만들기: AddZone()
+    // · 아래 방향 접촉 거리: DownwardGap()
+    // · 통로 분석(통과 가능한 구): AnalyzePassageAsync()
+    // · 구역 간 최소 거리(화기 반경): ZonesWithinHotWorkRadius()
+    // · 점 포함 판정: PlaceKeelWorkers()
+    // · 구역 겹침 판정: SceneDropZone()
+    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)과 대피 계산(EvacuationSim.cs, SDK 호출 없음)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // 다른 모델에 쓰려면: ScenarioScript.cs 의 구역 좌표가 샘플 모델 전용이라 그 모델에 맞는 값으로 바꿔야 합니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언

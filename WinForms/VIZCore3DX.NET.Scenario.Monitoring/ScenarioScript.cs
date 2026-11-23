@@ -219,7 +219,7 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
         // ------------------------------------------------------------
         // 3D 화면
         // ------------------------------------------------------------
-        // 3D 뷰 왼쪽 위 문구 — 어두운 상자 위 글자(화면 고정 노트). 상자 왼쪽 위 모서리를 여백에 맞춥니다(Size_40 ≈ 33px 높이, 실측).
+        // 3D 뷰 왼쪽 위 문구 — 어두운 상자 위 글자(화면 고정 노트). 상자 왼쪽 위 모서리를 여백에 맞춥니다(Size_40 ≈ 33px 높이).
         public const float HudMarginPixels = 14f;
         public static readonly Color HudColor = Color.FromArgb(255, 214, 0);
         public const Data.TextSizeType HudTextSize = Data.TextSizeType.Size_24;

@@ -102,7 +102,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         public const float UnscrewTurns = 3f;
         public const double HideAfter = 0.1;
 
-        // 커버(점검 덮개·아이볼트 포함) 들어 올린 뒤 옆으로 치우기 — 옆으로 치워야 출력축 위가 비어 +Z 가 통과로 나옵니다(실측).
+        // 커버(점검 덮개·아이볼트 포함) 들어 올린 뒤 옆으로 치우기 — 옆으로 치워야 출력축 위가 비어 +Z 가 통과로 나옵니다.
         public const double LidLiftSeconds = 1.5;
         public const float LidLift = 250f;
         public const double LidAsideSeconds = 1.2;
@@ -119,12 +119,12 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         public const float ShaftPull = 300f;
 
         // ------------------------------------------------------------
-        // 방향 스윕 — 기본 표본 수로는 약 30초, 표본 2만 개로 줄이면 2초에 같은 판정(실측)
+        // 방향 스윕 — 기본 표본 수로는 약 30초, 표본 2만 개로 줄이면 2초에 같은 판정
         // ------------------------------------------------------------
         public const double SweepMaxDistance = 600;
         public const int SweepMaxSamples = 20000;
 
-        // 맞닿음으로 볼 거리 — 기본 5 mm 면 베어링이 끼워진 하우징이 장애물에서 빠져 ±X 가 거짓 통과(실측), 0.1 mm 면 +Z 만 통과
+        // 맞닿음으로 볼 거리 — 기본 5 mm 면 베어링이 끼워진 하우징이 장애물에서 빠져 ±X 가 거짓 통과, 0.1 mm 면 +Z 만 통과
         public const double SweepContactTolerance = 0.1;
 
         // 스윕 표시 — 볼륨을 옅게 (기본은 화면을 덮음)
@@ -137,7 +137,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
         // ------------------------------------------------------------
         // 탑재 경로 이동 간섭 검사 — 인출한 높이(ShaftPull)에서 이 간격들로 내려 안착시킵니다(합 = ShaftPull).
-        // 캡 볼트를 끼운 채면 안착 25 mm 앞에서 볼트 4개가 하우징을 관통하고, 볼트를 숨기면(숨긴 부품은 검사에서 빠짐) 간섭 0 (실측).
+        // 캡 볼트를 끼운 채면 안착 25 mm 앞에서 볼트 4개가 하우징을 관통하고, 볼트를 숨기면(숨긴 부품은 검사에서 빠짐) 간섭 0 입니다.
         // ★예제 창에서는 단계마다 약 0.6초 걸립니다(25 mm 씩 13단계 = 8초, 5단계 = 약 5초) — 멀리서는 크게, 안착 근처만 잘게 나눕니다.
         // ------------------------------------------------------------
         public static readonly float[] MountPath = { 150f, 100f, 25f, 25f };
