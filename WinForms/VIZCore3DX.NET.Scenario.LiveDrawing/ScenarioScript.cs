@@ -2,10 +2,40 @@
 
 namespace VIZCore3DX.NET.Scenario.LiveDrawing
 {
-    // 장면에 쓰는 값(방향·높이·색·개수)을 한 곳에 모읍니다.
+    // 대본 표입니다. 장면의 설명·길이와 장면에 쓰는 값(방향·높이·색·개수)을 이 파일 한 곳에 모읍니다.
     // 위치는 모두 대상 경계 상자에 대한 비율이라 어떤 모델에서도 그대로 동작합니다. 실제 데이터가 있으면 이 값을 갈아 끼웁니다.
-    internal static class SceneValues
+    internal static class ScenarioScript
     {
+        // ------------------------------------------------------------
+        // 장면 (이름 · 설명 · 길이 초) — 재생 순서. 길이는 [전체 재생]에서 다음 장면으로 넘어가기까지의 시간입니다.
+        // ------------------------------------------------------------
+        public static readonly ScenarioShot Section = new ScenarioShot("01 전체 단면",
+            "3D 를 자르고 같은 평면의 도면 만들기", 6);
+
+        public static readonly ScenarioShot LiveMap = new ScenarioShot("02 살아 있는 도면",
+            "3D 카메라를 도면 위 표식으로", 13);
+
+        public static readonly ScenarioShot BlockDrawing = new ScenarioShot("03 블록 도면",
+            "가려진 선을 지운 도면", 6);
+
+        public static readonly ScenarioShot ClosedAreas = new ScenarioShot("04 닫힌 영역 면적",
+            "2D 와 3D 에 함께 칠하기", 8);
+
+        public static readonly ScenarioShot Measure = new ScenarioShot("05 치수",
+            "2D 측정과 같은 값의 3D 치수선", 18);
+
+        public static readonly ScenarioShot PointTour = new ScenarioShot("06 도면 점 → 3D",
+            "도면 위 경로로 카메라 이동", 13);
+
+        public static readonly ScenarioShot ZoomDetail = new ScenarioShot("07 확대",
+            "도면의 한 부분을 자세히", 4);
+
+        public static readonly ScenarioShot Export = new ScenarioShot("08 내보내기",
+            "DXF · SVG", 4);
+
+        // 리본 장면 버튼의 문구 (재생 순서). 한 줄 80px 를 넘으면 띄어쓰기에서 두 줄로 나뉩니다.
+        public static readonly string[] SceneLabels = { "전체 단면", "카메라 표식", "블록 도면", "면적", "치수", "도면->3D", "확대", "내보내기" };
+
         // ------------------------------------------------------------
         // 도면 생성
         // ------------------------------------------------------------

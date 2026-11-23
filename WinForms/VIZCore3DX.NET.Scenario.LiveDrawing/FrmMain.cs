@@ -10,7 +10,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
 {
     // 시나리오 예제 "살아 있는 도면"
     // 3D 모델에서 2D 도면을 만들고, 그 도면을 3D 뷰와 같은 좌표를 쓰는 지도로 쓰는 흐름을 장면 순서대로 보여 줍니다.
-    // 장면 하나 = 메서드 하나(#region 장면), 장면에 쓰는 값은 SceneValues.cs 한 곳에 있습니다.
+    // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값은 ScenarioScript.cs 한 곳에, 재생은 ScenarioRunner.cs 에 있습니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
@@ -20,12 +20,16 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         private VIZCore3DX.NET.Dialogs.ProjectionResultDialog _drawingWindow;
         private VIZCore3DX.NET.Controls.ProjectionViewerControl _viewer;
 
-        // 장면 목록(이름, 장면 메서드)과 다음에 진행할 장면 번호
-        private readonly List<KeyValuePair<string, Action>> _scenes = new List<KeyValuePair<string, Action>>();
-        private int _next;
+        // 조작부 — 리본 사용자 탭 "시나리오" (뷰어 초기화 뒤에 만듭니다)
+        private ScenarioRibbon _ribbon;
 
-        // 장면 안의 동작을 시간 순서로 실행하는 타이머
-        private readonly SceneTimeline _timeline = new SceneTimeline();
+        // 블록 이름 — 리본 [블록] 버튼으로 입력합니다.
+        private string _blockName;
+        private VIZCore3DX.NET.Controls.Ribbon.RibbonButton _blockButton;
+
+        // 대본과 재생기
+        private List<ScenarioShot> _shots;
+        private ScenarioRunner _runner;
 
         // 장면 대상 — 모델 전체와 블록 하나
         private List<Data.Node> _modelParts;
@@ -56,14 +60,17 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         {
             InitializeComponent();
 
-            // 장면 목록은 뷰어와 무관하므로 생성자에서 채웁니다.
-            InitializeScenes();
-            _timeline.Tick += Timeline_Tick;
+            // 대본 목록은 뷰어와 무관하므로 생성자에서 채웁니다.
+            _shots = BuildShots();
+
+            _runner = new ScenarioRunner(_shots);
+            _runner.ShotStarted += Runner_ShotStarted;
+            _runner.Tick += Runner_Tick;
 
             // Initialize VIZCore3DX.NET
             VIZCore3DX.NET.ModuleInitializer.Run();
 
-            // Construction — 가운데 칸은 3D 뷰, 오른쪽 칸은 2D 도면
+            // Construction — 왼쪽 칸은 3D 뷰, 오른쪽 칸은 2D 도면
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
             splitContainer2.Panel1.Controls.Add(vizcore3dx);
@@ -101,36 +108,84 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
 
         private void InitializeVIZCore3DX()
         {
-            // 리본 UI 를 기본으로 켜고, 이 예제가 다루는 리본·패널 탭만 남깁니다.
+            // 리본 UI 를 기본으로 켜고, 사용자 탭 "시나리오"만 남깁니다.
             vizcore3dx.RibbonMode = true;
             ShowRibbonTabs();
             ShowAttributeTabs();
+            InitializeRibbon();
 
             OpenDrawingWindow();
             SetStatus("모델을 열어 주세요.");
         }
 
-        // 장면 이름과 장면 메서드를 순서대로 등록합니다. 이 순서가 진행 순서입니다.
-        private void InitializeScenes()
+        // 리본에 사용자 탭 "시나리오"를 만들고, 버튼을 이 폼의 핸들러에 잇습니다.
+        private void InitializeRibbon()
         {
-            _scenes.Add(new KeyValuePair<string, Action>("① 전체 단면 — 3D 를 자르고 같은 평면의 도면 만들기", SceneSection));
-            _scenes.Add(new KeyValuePair<string, Action>("② 살아 있는 도면 — 3D 카메라를 도면 위 표식으로", SceneLiveMap));
-            _scenes.Add(new KeyValuePair<string, Action>("③ 블록 도면 — 가려진 선을 지운 도면", SceneBlockDrawing));
-            _scenes.Add(new KeyValuePair<string, Action>("④ 닫힌 영역 면적 — 2D 와 3D 에 함께 칠하기", SceneClosedAreas));
-            _scenes.Add(new KeyValuePair<string, Action>("⑤ 치수 — 2D 측정과 같은 값의 3D 치수선", SceneMeasure));
-            _scenes.Add(new KeyValuePair<string, Action>("⑥ 도면 점 → 3D — 도면 위 경로로 카메라 이동", ScenePointTour));
-            _scenes.Add(new KeyValuePair<string, Action>("⑦ 확대 — 도면의 한 부분을 자세히", SceneZoomDetail));
-            _scenes.Add(new KeyValuePair<string, Action>("⑧ 내보내기 — DXF · SVG", SceneExport));
+            List<string> names = new List<string>();
+            for (int i = 0; i < _shots.Count; i++) names.Add(_shots[i].Name);
 
-            foreach (KeyValuePair<string, Action> scene in _scenes)
-                lstScenes.Items.Add(scene.Key);
+            _ribbon = new ScenarioRibbon(vizcore3dx, ScenarioScript.SceneLabels, names);
+            _ribbon.OpenModel += Ribbon_OpenModel;
+            _ribbon.PlayAll += Ribbon_PlayAll;
+            _ribbon.Reset += Ribbon_Reset;
+            _ribbon.GoScene += Ribbon_GoScene;
+            _ribbon.Build();
+
+            // 블록 이름 — 리본에는 글자 입력 칸이 없어, [재생] 그룹 끝에 버튼을 두고 누르면 입력 창을 띄웁니다.
+            _blockButton = vizcore3dx.Ribbon.AddButton("scenario.control", "scenario.block", "블록", null,
+                VIZCore3DX.NET.Controls.Ribbon.RibbonItemSize.Large, (sender, e) => Ribbon_Block());
+            if (_blockButton != null)
+            {
+                _blockButton.Icon = DrawBlockIcon;
+                _blockButton.ToolTipText = "블록 : (없음)";
+            }
         }
 
-        // 창을 닫을 때 장면 타이머부터 멈춥니다.
+        // 대본 표의 장면에 장면 메서드를 잇습니다. 이 순서가 재생 순서입니다.
+        private List<ScenarioShot> BuildShots()
+        {
+            ScenarioScript.Section.Play = SceneSection;
+            ScenarioScript.LiveMap.Play = SceneLiveMap;
+            ScenarioScript.BlockDrawing.Play = SceneBlockDrawing;
+            ScenarioScript.ClosedAreas.Play = SceneClosedAreas;
+            ScenarioScript.Measure.Play = SceneMeasure;
+            ScenarioScript.PointTour.Play = ScenePointTour;
+            ScenarioScript.ZoomDetail.Play = SceneZoomDetail;
+            ScenarioScript.Export.Play = SceneExport;
+
+            // 번호 버튼으로 바로 볼 때 먼저 실행할 장면 — 02 는 전체 단면 도면(01), 04~08 은 블록 도면(03), 05 는 닫힌 영역(04)을 씁니다.
+            ScenarioScript.LiveMap.Before = new[] { 1 };
+            ScenarioScript.ClosedAreas.Before = new[] { 3 };
+            ScenarioScript.Measure.Before = new[] { 3, 4 };
+            ScenarioScript.PointTour.Before = new[] { 3 };
+            ScenarioScript.ZoomDetail.Before = new[] { 3 };
+            ScenarioScript.Export.Before = new[] { 3 };
+
+            return new List<ScenarioShot>
+            {
+                ScenarioScript.Section, ScenarioScript.LiveMap, ScenarioScript.BlockDrawing, ScenarioScript.ClosedAreas,
+                ScenarioScript.Measure, ScenarioScript.PointTour, ScenarioScript.ZoomDetail, ScenarioScript.Export,
+            };
+        }
+
+        // 창을 닫을 때 재생 타이머부터 멈춥니다.
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            _timeline.Stop();
+            _runner.Reset();
             base.OnFormClosing(e);
+        }
+
+        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape && _runner.IsPlaying)
+            {
+                _runner.Reset();
+                SetStatus("재생을 중단했습니다.");
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion
@@ -138,37 +193,71 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         #region 1. 모델
 
         // 모델을 엽니다. 장면은 열린 모델의 범위를 기준으로 진행되므로 어떤 모델이든 쓸 수 있습니다.
-        private void btnOpenModel_Click(object sender, EventArgs e)
+        private void Ribbon_OpenModel()
         {
+            if (_runner.IsPlaying) return;
             if (vizcore3dx.Model.OpenFileDialog() == false) return;
 
             ClearScene();
-            SetStatus("모델을 열었습니다. 블록 이름을 넣고 [다음 장면]을 누르세요.");
+            SetStatus("모델을 열었습니다. [블록]에 블록 이름을 넣고 재생하세요.");
+        }
+
+        #endregion
+
+        #region 2. 설정
+
+        // 블록 도면 장면부터 쓸 어셈블리 이름을 입력받습니다. 바뀌면 처음 상태로 되돌려 다음 재생이 새 블록으로 시작하게 합니다.
+        private void Ribbon_Block()
+        {
+            if (_runner.IsPlaying) return;
+
+            string name = AskText("블록", "블록 도면 장면부터 쓸 어셈블리 이름 (모델 트리의 이름과 똑같이)", _blockName ?? "");
+            if (name == null || name.Trim() == (_blockName ?? "").Trim()) return;
+
+            _blockName = name.Trim();
+            if (_blockButton != null) _blockButton.ToolTipText = "블록 : " + _blockName;
+            ClearScene();
+            SetStatus("블록 : " + _blockName);
         }
 
         #endregion
 
         #region 3. 장면
 
-        // 다음 장면을 진행합니다. 첫 장면 전에 블록을 찾아 두고, 장면마다 이전 장면의 예약 동작은 취소합니다.
-        private void btnNext_Click(object sender, EventArgs e)
+        // 첫 장면부터 끝까지 이어서 재생합니다.
+        private void Ribbon_PlayAll()
         {
-            if (!IsModelOpened()) return;
-            if (_next >= _scenes.Count) { SetStatus("마지막 장면입니다. [처음으로]를 누르세요."); return; }
+            if (!IsModelOpened() || !IsBlockReady()) return;
 
-            if (_next == 0)
-            {
-                if (!IsBlockReady()) return;
-                PrepareTargets();
-            }
-
-            _timeline.Clear();
-            lstScenes.SelectedIndex = _next;
-            _scenes[_next++].Value();
+            ClearScene();
+            PrepareTargets();
+            _runner.PlayAll();
         }
 
-        // 타이머가 돌 때마다 3D 카메라의 위치를 도면 좌표로 바꿔 도면 위 표식을 옮깁니다. 마우스로 카메라를 돌려도 따라옵니다.
-        private void Timeline_Tick()
+        // 번호 버튼 — 그 장면을 재생합니다. 바로 앞 장면에 이어 누른 것이 아니면 처음 상태로 되돌리고 선행 장면을 실행한 뒤 재생합니다.
+        private void Ribbon_GoScene(int first, int last)
+        {
+            if (!IsModelOpened() || !IsBlockReady()) return;
+
+            if (_runner.IsReadyFor(first))
+            {
+                _runner.PlayFrom(first, last);
+                return;
+            }
+
+            ClearScene();
+            PrepareTargets();
+            _runner.Prepare(first, () => _runner.PlayFrom(first, last));
+        }
+
+        private void Runner_ShotStarted(ScenarioShot shot)
+        {
+            _ribbon.SetCurrent(_runner.Index);
+            SetStatus(shot.Name + " — " + shot.Caption);
+        }
+
+        // 재생 중 주기적으로 3D 카메라의 위치를 도면 좌표로 바꿔 도면 위 표식을 옮깁니다. 마우스로 카메라를 돌려도 따라옵니다.
+        private void Runner_Tick()
         {
             if (_cameraMarker == 0 || _sectionDrawing == null) return;
 
@@ -190,7 +279,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         #region 5. 정리
 
         // 어느 장면에서든 처음 상태로 되돌립니다.
-        private void btnReset_Click(object sender, EventArgs e)
+        private void Ribbon_Reset()
         {
             ClearScene();
             if (vizcore3dx.Model.IsOpen())
@@ -201,12 +290,11 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             SetStatus("처음으로 되돌렸습니다.");
         }
 
-        // 장면 진행을 처음으로 되돌리고, 장면이 만든 도면·표식·3D 표시를 전부 지웁니다.
+        // 재생을 멈추고 처음으로 되돌린 뒤, 장면이 만든 도면·표식·3D 표시를 전부 지웁니다.
         private void ClearScene()
         {
-            _timeline.Clear();
-            _next = 0;
-            lstScenes.SelectedIndex = -1;
+            _runner.Reset();
+            if (_ribbon != null) _ribbon.SetCurrent(0);
 
             _cameraMarker = _targetPoint = _tourMarker = 0;
             _sectionDrawing = _blockDrawing = null;
@@ -224,9 +312,9 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             try
             {
                 vizcore3dx.Projection.Clear();
-                vizcore3dx.View.Effect.ClearDimensionLines(SceneValues.EffectGroup);
-                vizcore3dx.View.Effect.ClearMarkers(SceneValues.EffectGroup);
-                vizcore3dx.View.Effect.ClearPulseOutlines(SceneValues.EffectGroup);
+                vizcore3dx.View.Effect.ClearDimensionLines(ScenarioScript.EffectGroup);
+                vizcore3dx.View.Effect.ClearMarkers(ScenarioScript.EffectGroup);
+                vizcore3dx.View.Effect.ClearPulseOutlines(ScenarioScript.EffectGroup);
                 vizcore3dx.View.XRay.Enable = false;
                 vizcore3dx.Object3D.Show(Data.Object3DKind.ALL, true);
                 ClearAreas3D();
@@ -248,9 +336,9 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         //    단면 도면에는 같은 평면의 외곽선을 겹치고, 3D 카메라는 평행 투영으로 도면과 같은 방향에 놓습니다.
         private void SceneSection()
         {
-            Data.Vector3D position = PointInBox(_modelBox, new PointF(0.5f, 0.5f), SceneValues.SectionHeight);
+            Data.Vector3D position = PointInBox(_modelBox, new PointF(0.5f, 0.5f), ScenarioScript.SectionHeight);
             _sectionDrawing = CreateTimed("전체 단면", () => vizcore3dx.Projection.CreateCrossSection(
-                _modelParts, SceneValues.PlaneNormal, position, SceneValues.DrawingColor, SceneValues.DrawingThickness, true));
+                _modelParts, ScenarioScript.PlaneNormal, position, ScenarioScript.DrawingColor, ScenarioScript.DrawingThickness, true));
             if (_sectionDrawing == null) return;
 
             ShowWithOutline(_sectionDrawing, _modelParts, position);
@@ -265,24 +353,24 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             if (_sectionDrawing == null) return;
 
             Data.Vector2 origin = _sectionDrawing.WorldToLocal(new Data.Vector3D(_modelBox.GetCenter()));
-            _targetPoint = _viewer.AddOverlayPoint(_sectionDrawing, origin, SceneValues.TargetPointColor, 10f, "시선");
-            _cameraMarker = _viewer.AddOverlayMarker(_sectionDrawing, origin, 0f, SceneValues.CameraMarkerColor, SceneValues.MarkerSizePx, "카메라");
+            _targetPoint = _viewer.AddOverlayPoint(_sectionDrawing, origin, ScenarioScript.TargetPointColor, 10f, "시선");
+            _cameraMarker = _viewer.AddOverlayMarker(_sectionDrawing, origin, 0f, ScenarioScript.CameraMarkerColor, ScenarioScript.MarkerSizePx, "카메라");
 
             vizcore3dx.View.Projection = Data.Projections.Perspective;
 
             // 카메라는 모델 밖에서 바라보므로, 카메라 표식이 도면 밖으로 나가지 않게 도면을 카메라 거리만큼 넓혀 봅니다.
-            float distance = _modelBox.MaxLength * SceneValues.LiveMapDistance;
+            float distance = _modelBox.MaxLength * ScenarioScript.LiveMapDistance;
             RectangleF bounds = LocalBounds(_sectionDrawing, _modelBox);
-            float margin = distance * SceneValues.LiveMapMargin;
+            float margin = distance * ScenarioScript.LiveMapMargin;
             _viewer.ZoomToBounds(_sectionDrawing,
                 new Data.Vector2(bounds.Left - margin, bounds.Top - margin), new Data.Vector2(bounds.Right + margin, bounds.Bottom + margin));
 
-            for (int i = 0; i < SceneValues.LiveMapTargets.Length; i++)
+            for (int i = 0; i < ScenarioScript.LiveMapTargets.Length; i++)
             {
-                Data.Vector3D target = PointInBox(_modelBox, SceneValues.LiveMapTargets[i], SceneValues.SectionHeight);
-                Data.Vector3D view = SceneValues.LiveMapViews[i];
-                _timeline.After(i * SceneValues.LiveMapSecondsPerView,
-                    () => FlyCamera(target, view, distance, SceneValues.LiveMapSecondsPerView));
+                Data.Vector3D target = PointInBox(_modelBox, ScenarioScript.LiveMapTargets[i], ScenarioScript.SectionHeight);
+                Data.Vector3D view = ScenarioScript.LiveMapViews[i];
+                _runner.After(i * ScenarioScript.LiveMapSecondsPerView,
+                    () => FlyCamera(target, view, distance, ScenarioScript.LiveMapSecondsPerView));
             }
             SetStatus("3D 카메라를 움직이면 도면 위 표식이 따라갑니다.");
         }
@@ -298,11 +386,11 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             vizcore3dx.View.XRay.Select(_blockParts, true);
 
             _blockDrawing = CreateTimed("블록 도면(은선 제거)", () => vizcore3dx.Projection.CreateOrthographic(
-                _blockParts, SceneValues.PlaneNormal, DrawingPlane(), SceneValues.DrawingColor, SceneValues.DrawingThickness, true, false));
+                _blockParts, ScenarioScript.PlaneNormal, DrawingPlane(), ScenarioScript.DrawingColor, ScenarioScript.DrawingThickness, true, false));
             if (_blockDrawing == null) return;
 
             _viewer.SetResult(_blockDrawing);
-            _viewer.SetResultColor(_blockDrawing, SceneValues.DrawingAccent);
+            _viewer.SetResultColor(_blockDrawing, ScenarioScript.DrawingAccent);
             _viewer.IsGridVisible = true;
             LookLikeDrawing(_blockDrawing, _blockBox, 2.0);
         }
@@ -316,16 +404,16 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             IsolateBlock();
 
             Stopwatch watch = Stopwatch.StartNew();
-            _regions = vizcore3dx.Projection.FindClosedRegions(_blockDrawing, SceneValues.AreaMinimum);
+            _regions = vizcore3dx.Projection.FindClosedRegions(_blockDrawing, ScenarioScript.AreaMinimum);
             watch.Stop();
             SetStatus(string.Format("닫힌 영역 {0:N0} 곳 : {1:0.00} 초", _regions.Count, watch.Elapsed.TotalSeconds));
 
-            int count = Math.Min(_regions.Count, SceneValues.AreaCount);
+            int count = Math.Min(_regions.Count, ScenarioScript.AreaCount);
             for (int i = 0; i < count; i++)
             {
                 Data.ProjectionEmptyRegion region = _regions[i];
                 int order = i;
-                _timeline.After(0.3 + i * SceneValues.AreaStepSeconds, () => AddClosedArea(region, order));
+                _runner.After(0.3 + i * ScenarioScript.AreaStepSeconds, () => AddClosedArea(region, order));
             }
         }
 
@@ -334,19 +422,19 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         private void SceneMeasure()
         {
             if (_blockDrawing == null || _regions.Count == 0) return;
-            vizcore3dx.View.Effect.ClearTextLabels(SceneValues.EffectGroup);   // 3D 면적 글자는 치수선과 겹치므로 지웁니다.
+            vizcore3dx.View.Effect.ClearTextLabels(ScenarioScript.EffectGroup);   // 3D 면적 글자는 치수선과 겹치므로 지웁니다.
             TiltToFloatingDrawing(2.5);
 
-            List<RectangleF> shapes = _regions.Take(SceneValues.MeasureShapeCount).Select(r => r.Bounds).ToList();
-            double step = SceneValues.MeasureStepSeconds;
+            List<RectangleF> shapes = _regions.Take(ScenarioScript.MeasureShapeCount).Select(r => r.Bounds).ToList();
+            double step = ScenarioScript.MeasureStepSeconds;
             double at = 0.5;
             int order = 0;
             foreach (RectangleF shape in shapes)
             {
                 RectangleF area = shape;
                 int width = order++, length = order++;
-                _timeline.After(at, () => AddMeasure(area.Left, area.Bottom, area.Right, area.Bottom, width));
-                _timeline.After(at + step, () => AddMeasure(area.Left, area.Top, area.Left, area.Bottom, length));
+                _runner.After(at, () => AddMeasure(area.Left, area.Bottom, area.Right, area.Bottom, width));
+                _runner.After(at + step, () => AddMeasure(area.Left, area.Top, area.Left, area.Bottom, length));
                 at += step * 2;
             }
 
@@ -355,7 +443,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
                 PointF from = Center(shapes[i]);
                 PointF to = Center(shapes[i + 1]);
                 int gap = order++;
-                _timeline.After(at, () => AddMeasure(from.X, from.Y, to.X, to.Y, gap));
+                _runner.After(at, () => AddMeasure(from.X, from.Y, to.X, to.Y, gap));
                 at += step;
             }
         }
@@ -368,19 +456,19 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             _viewer.ClearMeasures();
             _viewer.FitToView();
             ClearAreas3D();
-            vizcore3dx.View.Effect.ClearDimensionLines(SceneValues.EffectGroup);
+            vizcore3dx.View.Effect.ClearDimensionLines(ScenarioScript.EffectGroup);
             TurnToDrawing(_blockDrawing, _blockBox, 1.5);
 
             List<Data.Vector2> route = TourRoute();
-            _viewer.AddOverlayPolyline(_blockDrawing, route, SceneValues.TourColor, 3f);
+            _viewer.AddOverlayPolyline(_blockDrawing, route, ScenarioScript.TourColor, 3f);
             for (int i = 0; i < route.Count; i++)
-                _viewer.AddOverlayPoint(_blockDrawing, route[i], SceneValues.TourColor, 10f, SceneValues.TourLabels[i]);
-            _tourMarker = _viewer.AddOverlayMarker(_blockDrawing, route[0], 0f, SceneValues.CameraMarkerColor, SceneValues.MarkerSizePx);
+                _viewer.AddOverlayPoint(_blockDrawing, route[i], ScenarioScript.TourColor, 10f, ScenarioScript.TourLabels[i]);
+            _tourMarker = _viewer.AddOverlayMarker(_blockDrawing, route[0], 0f, ScenarioScript.CameraMarkerColor, ScenarioScript.MarkerSizePx);
 
             for (int i = 0; i < route.Count; i++)
             {
                 int index = i;
-                _timeline.After(2.0 + i * SceneValues.TourSecondsPerPoint, () => VisitTourPoint(route, index));
+                _runner.After(2.0 + i * ScenarioScript.TourSecondsPerPoint, () => VisitTourPoint(route, index));
             }
         }
 
@@ -392,7 +480,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             RectangleF bounds = LocalBounds(_blockDrawing, _blockBox);
             List<Data.Vector2> route = TourRoute();
             Data.Vector2 center = route[route.Count - 1];
-            float half = Math.Max(bounds.Width, bounds.Height) * SceneValues.ZoomWindow;
+            float half = Math.Max(bounds.Width, bounds.Height) * ScenarioScript.ZoomWindow;
 
             _viewer.IsGridVisible = true;
             _viewer.ZoomToBounds(_blockDrawing, new Data.Vector2(center.X - half, center.Y - half), new Data.Vector2(center.X + half, center.Y + half));
@@ -417,7 +505,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
 
         #region 장면 도우미
 
-        // 장면 대상을 정합니다. 모델 전체 = 모든 파트, 블록 = 설정 그룹에서 이름으로 찾은 어셈블리의 파트.
+        // 장면 대상을 정합니다. 모델 전체 = 모든 파트, 블록 = 리본 [블록]에 넣은 이름으로 찾은 어셈블리의 파트.
         private void PrepareTargets()
         {
             _modelParts = vizcore3dx.Object3D.FromFilter(Data.Object3dFilter.PART);
@@ -428,14 +516,13 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             _blockBox = vizcore3dx.Object3D.GetBoundBox(_blockParts);
         }
 
-        // 설정 그룹의 "블록 이름"으로 어셈블리를 찾아 둡니다. 이름이 비었거나 찾지 못하면 장면을 시작하지 않습니다.
+        // 리본 [블록]에 넣은 이름으로 어셈블리를 찾아 둡니다. 이름이 비었거나 찾지 못하면 장면을 시작하지 않습니다.
         private bool IsBlockReady()
         {
-            string name = txtBlockName.Text.Trim();
+            string name = (_blockName ?? "").Trim();
             if (name.Length == 0)
             {
-                SetStatus("블록 이름을 입력해 주세요.");
-                txtBlockName.Focus();
+                SetStatus("[블록]을 눌러 블록 이름을 입력해 주세요.");
                 return false;
             }
 
@@ -443,7 +530,6 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             if (found == null || found.Count == 0)
             {
                 SetStatus("블록을 찾을 수 없습니다 : " + name);
-                txtBlockName.Focus();
                 return false;
             }
 
@@ -472,7 +558,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         private void ShowWithOutline(Data.ProjectionItem section, List<Data.Node> parts, Data.Vector3D position)
         {
             Data.ProjectionItem outline = vizcore3dx.Projection.CreateOutline(
-                parts, SceneValues.PlaneNormal, position, SceneValues.DrawingAccent, SceneValues.DrawingThickness, true, false);
+                parts, ScenarioScript.PlaneNormal, position, ScenarioScript.DrawingAccent, ScenarioScript.DrawingThickness, true, false);
             if (outline == null)
             {
                 _viewer.SetResult(section);
@@ -482,8 +568,8 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             // 외곽선은 도면에만 쓰고 3D 뷰에는 그리지 않습니다.
             outline.IsVisible = false;
             _viewer.SetResults(new List<Data.ProjectionItem> { section, outline });
-            _viewer.SetResultColor(section, SceneValues.DrawingColor);
-            _viewer.SetResultColor(outline, SceneValues.DrawingAccent);
+            _viewer.SetResultColor(section, ScenarioScript.DrawingColor);
+            _viewer.SetResultColor(outline, ScenarioScript.DrawingAccent);
         }
 
         // 3D 뷰에 블록만 남기고 나머지를 숨깁니다.
@@ -496,14 +582,14 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         // 3D 모델을 도면과 같은 평면으로 실제로 자릅니다.
         private void CutModel(Data.Vector3D position)
         {
-            if (_section == null) _section = vizcore3dx.Section.Add(false, SceneValues.SectionAxis);
+            if (_section == null) _section = vizcore3dx.Section.Add(false, ScenarioScript.SectionAxis);
             if (_section == null) return;
 
             vizcore3dx.Section.SetSectionPosition(_section.ID, position);
             _section.Enable(true);
 
             // 남길 쪽 뒤집기는 단면을 켠 다음, 그 단면만 선택한 상태에서 해야 적용됩니다.
-            if (SceneValues.SectionInvert)
+            if (ScenarioScript.SectionInvert)
             {
                 vizcore3dx.Section.Deselect();
                 vizcore3dx.Section.Select(_section);
@@ -544,11 +630,11 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             }
             if (outline.Count < 3) return;
 
-            Color fill = SceneValues.AreaColors[order % SceneValues.AreaColors.Length];
+            Color fill = ScenarioScript.AreaColors[order % ScenarioScript.AreaColors.Length];
             _viewer.AddOverlayPolygon(_blockDrawing, outline, fill, Color.FromArgb(255, fill));
 
             Data.Vector2 center = new Data.Vector2(region.Bounds.X + region.Bounds.Width / 2f, region.Bounds.Y + region.Bounds.Height / 2f);
-            string area = (region.Area * SceneValues.AreaToSquareMeter).ToString("0.00") + " m²";
+            string area = (region.Area * ScenarioScript.AreaToSquareMeter).ToString("0.00") + " m²";
             _viewer.AddOverlayText(_blockDrawing, center, area, Color.Black, 13f);
 
             AddClosedArea3D(outline, center, fill, area);
@@ -557,7 +643,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         // 같은 영역을 3D 뷰에도 그립니다. 도면 좌표를 3D 좌표로 바꿔, 도면 평면 바로 아래에 반투명 면·윤곽선·면적 글자로 얹습니다.
         private void AddClosedArea3D(List<Data.Vector2> outline, Data.Vector2 center, Color fill, string area)
         {
-            float top = DrawingPlane().Z - SceneValues.AreaLift;
+            float top = DrawingPlane().Z - ScenarioScript.AreaLift;
 
             List<Data.Vertex3D> vertices = new List<Data.Vertex3D>();
             List<Data.Vector3D> border = new List<Data.Vector3D>();
@@ -575,7 +661,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
 
             Data.Vector3D label = _blockDrawing.LocalToWorld(center);
             Data.TextLabelOptions options = new Data.TextLabelOptions();
-            options.Group = SceneValues.EffectGroup;
+            options.Group = ScenarioScript.EffectGroup;
             vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(label.X, label.Y, top), area, options);
         }
 
@@ -589,7 +675,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         {
             if (_shapes.Count > 0) vizcore3dx.Shape.Delete(_shapes);
             _shapes.Clear();
-            vizcore3dx.View.Effect.ClearTextLabels(SceneValues.EffectGroup);
+            vizcore3dx.View.Effect.ClearTextLabels(ScenarioScript.EffectGroup);
         }
 
         // 다각형(도면 좌표)을 삼각형으로 나눕니다. 볼록한 꼭짓점 중 안에 다른 점이 없는 것("귀")을 하나씩 잘라 냅니다.
@@ -651,13 +737,13 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         // 거리 글자는 측정 순번마다 선 위의 자리를 달리해 가까운 측정끼리 겹치지 않게 합니다.
         private void AddMeasure(float x1, float y1, float x2, float y2, int order)
         {
-            float label = SceneValues.MeasureLabelPositions[order % SceneValues.MeasureLabelPositions.Length];
+            float label = ScenarioScript.MeasureLabelPositions[order % ScenarioScript.MeasureLabelPositions.Length];
             Data.Vector2 start = new Data.Vector2(x1, y1);
             Data.Vector2 end = new Data.Vector2(x2, y2);
             _viewer.AddMeasure(_blockDrawing, start, end, label);
 
             Data.DimensionLineOptions options = new Data.DimensionLineOptions();
-            options.Group = SceneValues.EffectGroup;
+            options.Group = ScenarioScript.EffectGroup;
             options.TextPosition = label;
             options.Decimals = 2;   // 2D 측정과 같은 자릿수로 적습니다 (기본은 정수로 반올림)
             vizcore3dx.View.Effect.AddDimensionLine(_blockDrawing.LocalToWorld(start), _blockDrawing.LocalToWorld(end), options);
@@ -673,7 +759,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         {
             RectangleF bounds = LocalBounds(_blockDrawing, _blockBox);
             List<Data.Vector2> route = new List<Data.Vector2>();
-            foreach (PointF ratio in SceneValues.TourPoints)
+            foreach (PointF ratio in ScenarioScript.TourPoints)
                 route.Add(new Data.Vector2(bounds.Left + bounds.Width * ratio.X, bounds.Top + bounds.Height * ratio.Y));
             return route;
         }
@@ -691,13 +777,13 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             if (world == null) return;
 
             Data.MarkerOptions options = new Data.MarkerOptions();
-            options.Group = SceneValues.EffectGroup;
-            options.Label = SceneValues.TourLabels[index];
+            options.Group = ScenarioScript.EffectGroup;
+            options.Label = ScenarioScript.TourLabels[index];
             vizcore3dx.View.Effect.AddMarker(world, Data.MarkerIcon.Information, options);
 
             // 도면과 같은 방향(위)을 유지한 채 그 지점 둘레만 화면에 채웁니다.
-            float reach = _blockBox.MaxLength * SceneValues.TourZoom * 0.5f;
-            vizcore3dx.View.FlyToBoundingBox(world - reach, world + reach, 1.0f, TimeSpan.FromSeconds(SceneValues.TourSecondsPerPoint * 0.6));
+            float reach = _blockBox.MaxLength * ScenarioScript.TourZoom * 0.5f;
+            vizcore3dx.View.FlyToBoundingBox(world - reach, world + reach, 1.0f, TimeSpan.FromSeconds(ScenarioScript.TourSecondsPerPoint * 0.6));
         }
 
         // 3D 경계 상자의 여덟 꼭짓점을 도면 좌표로 옮겨 도면 위 범위를 구합니다.
@@ -728,7 +814,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
         // 블록 도면을 만드는 평면의 위치 — 블록 꼭대기 위에 띄웁니다. 3D 에서 도면 선·치수선·영역이 장비 위에 떠 보입니다.
         private Data.Vector3D DrawingPlane()
         {
-            return new Data.Vector3D(_blockBox.CenterX, _blockBox.CenterY, _blockBox.MaxZ + _blockBox.LengthZ * SceneValues.DrawingLift);
+            return new Data.Vector3D(_blockBox.CenterX, _blockBox.CenterY, _blockBox.MaxZ + _blockBox.LengthZ * ScenarioScript.DrawingLift);
         }
 
         #endregion
@@ -744,10 +830,10 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             // 화면 위쪽으로 상자를 조금 늘려 맞춰, 대상이 리본 바로 아래에 붙지 않게 합니다.
             Data.Vector3D min = new Data.Vector3D(box.GetVertexMin());
             Data.Vector3D max = new Data.Vector3D(box.GetVertexMax());
-            Data.Vector3D room = up * (box.MaxLength * SceneValues.TopRoom);
+            Data.Vector3D room = up * (box.MaxLength * ScenarioScript.TopRoom);
             Data.Vector3D low = new Data.Vector3D(Math.Min(min.X, min.X + room.X), Math.Min(min.Y, min.Y + room.Y), Math.Min(min.Z, min.Z + room.Z));
             Data.Vector3D high = new Data.Vector3D(Math.Max(max.X, max.X + room.X), Math.Max(max.Y, max.Y + room.Y), Math.Max(max.Z, max.Z + room.Z));
-            _timeline.After(seconds + 0.1, () => vizcore3dx.View.FlyToBoundingBox(low, high, 1.0f, TimeSpan.FromSeconds(1.0)));
+            _runner.After(seconds + 0.1, () => vizcore3dx.View.FlyToBoundingBox(low, high, 1.0f, TimeSpan.FromSeconds(1.0)));
         }
 
         // 평행 투영으로 바꾸고, 도면의 오른쪽·위쪽이 화면의 오른쪽·위쪽이 되게 카메라를 돌립니다. 화면 위쪽 방향을 돌려줍니다.
@@ -769,11 +855,11 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             Data.Vector3D between = new Data.Vector3D(_blockBox.CenterX, _blockBox.CenterY, (_blockBox.CenterZ + DrawingPlane().Z) * 0.5f);
 
             // 바라보는 지점을 화면 오른쪽으로 옮기면 블록이 화면 왼쪽으로 옵니다(오른쪽 도구 모음에 가리지 않게).
-            Data.Vector3D right = Data.Vector3D.Cross(SceneValues.ViewFloating, new Data.Vector3D(0f, 0f, 1f)).GetNormalized();
-            Data.Vector3D target = between + right * (_blockBox.MaxLength * SceneValues.FloatingShift);
-            FlyCamera(target, SceneValues.ViewFloating, FitDistance(_blockBox.MaxLength) * SceneValues.FloatingZoom, seconds);
+            Data.Vector3D right = Data.Vector3D.Cross(ScenarioScript.ViewFloating, new Data.Vector3D(0f, 0f, 1f)).GetNormalized();
+            Data.Vector3D target = between + right * (_blockBox.MaxLength * ScenarioScript.FloatingShift);
+            FlyCamera(target, ScenarioScript.ViewFloating, FitDistance(_blockBox.MaxLength) * ScenarioScript.FloatingZoom, seconds);
 
-            _timeline.After(SceneValues.FloatingHoldSeconds, () => ReturnToDrawing(SceneValues.FloatingReturnSeconds));
+            _runner.After(ScenarioScript.FloatingHoldSeconds, () => ReturnToDrawing(ScenarioScript.FloatingReturnSeconds));
         }
 
         // 기울였던 카메라를 seconds 초 동안 천천히 도면과 같은 방향으로 되돌리고, 다 돌아오면 평행 투영으로 맞춥니다.
@@ -782,7 +868,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             Data.Vector3D view, up;
             DrawingAxes(_blockDrawing, out view, out up);
             FlyCamera(new Data.Vector3D(_blockBox.GetCenter()), view, FitDistance(_blockBox.MaxLength), seconds, up);
-            _timeline.After(seconds + 0.2, () => LookLikeDrawing(_blockDrawing, _blockBox, 0.5));
+            _runner.After(seconds + 0.2, () => LookLikeDrawing(_blockDrawing, _blockBox, 0.5));
         }
 
         // 도면을 정면으로 보는 3D 시선과 위 방향을 구합니다.
@@ -803,7 +889,7 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             double fov = vizcore3dx.View.FOV;
             if (fov < 1.0 || fov > 120.0) fov = 30.0;
 
-            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * SceneValues.FitMargin);
+            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * ScenarioScript.FitMargin);
         }
 
         // target 을 direction 방향으로 distance 만큼 떨어져 바라보도록 seconds 초 동안 이동합니다.
@@ -840,9 +926,67 @@ namespace VIZCore3DX.NET.Scenario.LiveDrawing
             return false;
         }
 
+        // 상태 문구를 창 제목줄에 적습니다.
         private void SetStatus(string text)
         {
-            lblStatus.Text = text;
+            Text = "VIZCore3DX.NET.Scenario.LiveDrawing — " + text;
+        }
+
+        // 한 줄 입력 창을 띄웁니다. 취소하면 null 입니다.
+        private string AskText(string title, string prompt, string value)
+        {
+            using (Form form = new Form())
+            using (Label label = new Label())
+            using (TextBox box = new TextBox())
+            using (Button ok = new Button())
+            using (Button cancel = new Button())
+            {
+                form.Text = title;
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.StartPosition = FormStartPosition.CenterParent;
+                form.MinimizeBox = false;
+                form.MaximizeBox = false;
+                form.ShowInTaskbar = false;
+                form.ClientSize = new Size(360, 110);
+
+                label.SetBounds(12, 12, 336, 20);
+                label.Text = prompt;
+                box.SetBounds(12, 38, 336, 23);
+                box.Text = value;
+                ok.SetBounds(192, 74, 75, 25);
+                ok.Text = "확인";
+                ok.DialogResult = DialogResult.OK;
+                cancel.SetBounds(273, 74, 75, 25);
+                cancel.Text = "취소";
+                cancel.DialogResult = DialogResult.Cancel;
+
+                form.Controls.AddRange(new Control[] { label, box, ok, cancel });
+                form.AcceptButton = ok;
+                form.CancelButton = cancel;
+                return form.ShowDialog(this) == DialogResult.OK ? box.Text : null;
+            }
+        }
+
+        // [블록] 버튼 아이콘 — 정육면체 윤곽. 리본이 넘겨 주는 색을 씁니다.
+        private static void DrawBlockIcon(Graphics g, Rectangle b, Color color, bool enabled)
+        {
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            float w = b.Width, h = b.Height, cx = b.X + w * 0.5f;
+            PointF top = new PointF(cx, b.Y + h * 0.15f);
+            PointF right = new PointF(b.X + w * 0.85f, b.Y + h * 0.33f);
+            PointF rightLow = new PointF(b.X + w * 0.85f, b.Y + h * 0.67f);
+            PointF bottom = new PointF(cx, b.Y + h * 0.85f);
+            PointF leftLow = new PointF(b.X + w * 0.15f, b.Y + h * 0.67f);
+            PointF left = new PointF(b.X + w * 0.15f, b.Y + h * 0.33f);
+            PointF center = new PointF(cx, b.Y + h * 0.5f);
+
+            using (Pen pen = new Pen(color, Math.Max(1.5f, w * 0.07f)) { LineJoin = System.Drawing.Drawing2D.LineJoin.Round })
+            {
+                g.DrawPolygon(pen, new[] { top, right, rightLow, bottom, leftLow, left });
+                g.DrawLine(pen, center, left);
+                g.DrawLine(pen, center, right);
+                g.DrawLine(pen, center, bottom);
+            }
         }
 
         // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
