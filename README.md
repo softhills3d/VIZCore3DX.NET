@@ -8,6 +8,7 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 
 ## 샘플 모델
 - `SampleModels\Gearbox.vizx` — 2단 기어 감속기. 축·기어·키에 속성(Type·Teeth·Mate 등)이 들어 있어 **Mechanism.Drive**·**Scenario.GearboxMaintenance** 예제가 사용합니다. 예제를 빌드하면 exe 옆에 복사되고 [모델 열기]가 바로 엽니다.
+| **VIZCore3DX.NET.Mechanism.Monitoring** | 설비 값을 받아 맞물린 부품의 자세를 화면에 반영하는 관제 예제 (시각·조인트별 값 표를 타이머로 `SetValues` 에 넣고, 사용자 끌기는 꺼 둠 — 실제 데이터가 오면 표 대신 받은 값을 넣음) | 1.7.26.1125 |
 - 그 밖의 예제는 [모델 열기]로 가지고 계신 모델을 열어 사용합니다.
 
 ## WinForms 예제 프로젝트
