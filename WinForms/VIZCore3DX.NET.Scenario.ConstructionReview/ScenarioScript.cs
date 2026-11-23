@@ -2,10 +2,61 @@
 
 namespace VIZCore3DX.NET.Scenario.ConstructionReview
 {
-    // 장면에 쓰는 값(노드 이름·속성 키·색·카메라·문구)을 한 곳에 모읍니다.
+    // 대본 표입니다. 장면의 설명·길이와 장면에 쓰는 값(노드 이름·속성 키·색·카메라·문구)을 이 파일 한 곳에 모읍니다.
     // 이 이름과 속성 키는 SDK 샘플 모델 건축\Building_RevA.vizx · Building_RevB.vizx 의 값입니다. 실제 데이터에서는 이 표를 그 모델의 이름·속성에 맞게 갈아 끼웁니다.
-    internal static class SceneValues
+    internal static class ScenarioScript
     {
+        // ------------------------------------------------------------
+        // 장면 (이름 · 설명 · 길이 초) — 재생 순서. 길이는 [전체 재생]에서 다음 장면으로 넘어가기까지의 시간입니다.
+        // ------------------------------------------------------------
+        public static readonly ScenarioShot Intro = new ScenarioShot("01 철골 10층",
+            "기초만 남기고 건물 자리를 내려다보기", 9);
+
+        // 4D 순서(약 30초)가 끝날 때까지 기다립니다.
+        public static readonly ScenarioShot Sequence = new ScenarioShot("02 4D 시공 순서",
+            "공정표 착수일대로 작업 패키지가 나타남", 34);
+
+        public static readonly ScenarioShot Discipline = new ScenarioShot("03 공종별 보기",
+            "공종 속성으로 색을 나누고 설비만 남기기", 9);
+
+        public static readonly ScenarioShot SectionSweep = new ScenarioShot("04 층 단면",
+            "옥상에서 아래층으로 수평 단면을 내림", 8);
+
+        public static readonly ScenarioShot Walk = new ScenarioShot("05 실내 1인칭",
+            "작업자 아바타를 따라 걷다 1인칭으로", 11);
+
+        public static readonly ScenarioShot Progress = new ScenarioShot("06 기준일 공정 현황",
+            "완료·진행·미착수를 색과 X-Ray 로", 13);
+
+        public static readonly ScenarioShot Clash = new ScenarioShot("07 전체 간섭 검사",
+            "전체 부품의 간섭을 검사", 12);
+
+        public static readonly ScenarioShot ClashSummary = new ScenarioShot("08 공종 쌍별 집계",
+            "간섭 부재만 남기고 공종 쌍별·층별 건수", 12);
+
+        public static readonly ScenarioShot Penetration1 = new ScenarioShot("09 간섭 1",
+            "두 부재만 X-Ray 로 남기고 교차선과 함께", 4);
+
+        public static readonly ScenarioShot Penetration2 = new ScenarioShot("10 간섭 2",
+            "두 부재만 X-Ray 로 남기고 교차선과 함께", 4);
+
+        public static readonly ScenarioShot Penetration3 = new ScenarioShot("11 간섭 3",
+            "두 부재만 X-Ray 로 남기고 교차선과 함께", 4);
+
+        public static readonly ScenarioShot Sleeve = new ScenarioShot("12 관통부 확대",
+            "상자 단면으로 잘라 보는 슬리브 자리", 10);
+
+        // Rev B 를 여는 시간과 재검사 시간만큼 더 걸립니다.
+        public static readonly ScenarioShot RevB = new ScenarioShot("13 설계 변경 Rev B",
+            "Rev A 와 비교하고 Rev B 만으로 재검사", 20);
+
+        public static readonly ScenarioShot Outro = new ScenarioShot("14 마무리",
+            "결과 표시를 걷고 건물 전체로", 11);
+
+        // 리본 장면 버튼의 문구 (재생 순서). 한 줄 80px 를 넘으면 띄어쓰기에서 두 줄로 나뉩니다.
+        // 같은 문구가 이어지면 버튼 하나로 묶여, 누르면 그 장면들을 이어서 재생합니다.
+        public static readonly string[] SceneLabels = { "철골", "4D 순서", "공종별", "층 단면", "아바타", "공정 현황", "간섭 검사", "쌍별 집계", "간섭 확인", "간섭 확인", "간섭 확인", "관통부", "Rev B", "마무리" };
+
         // ------------------------------------------------------------
         // 모델 트리 이름 (정확히 일치)
         // ------------------------------------------------------------
