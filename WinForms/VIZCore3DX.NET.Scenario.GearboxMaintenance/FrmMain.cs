@@ -9,18 +9,19 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
     // 시나리오 예제 "감속기 정비 — 인출 방향 · 탑재 경로 · 치수 검증을 화면 하나에서"
     // 돌던 기어열을 멈추고, 정비 순서를 애니메이션으로 재생하고, 방향 스윕으로 출력축을 뺄 방향을 찾고,
     // 이동 간섭 검사로 다시 넣는 경로를 확인한 뒤, 단면·측정으로 치수를 검증하고 다시 돌립니다.
-    // 장면 하나 = 메서드 하나(#region 장면), 장면에 쓰는 값(부품 이름·속성 키·거리·시간)은 SceneValues.cs 한 곳에 있습니다.
+    // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값(부품 이름·속성 키·거리·시간)은 ScenarioScript.cs 한 곳에,
+    // 재생은 ScenarioRunner.cs 에 있습니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
 
-        // 장면 목록(이름, 장면 메서드)과 다음에 진행할 장면 번호
-        private readonly List<KeyValuePair<string, Action>> _scenes = new List<KeyValuePair<string, Action>>();
-        private int _next;
+        // 조작부 — 리본 사용자 탭 "시나리오" (뷰어 초기화 뒤에 만듭니다)
+        private ScenarioRibbon _ribbon;
 
-        // 장면 안의 동작을 시간 순서로 실행하는 타이머
-        private readonly SceneTimeline _timeline = new SceneTimeline();
+        // 대본과 재생기
+        private List<ScenarioShot> _shots;
+        private ScenarioRunner _runner;
 
         // 이름으로 찾은 부품
         private List<Data.Node> _allNodes = new List<Data.Node>();
@@ -33,6 +34,9 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private Data.Animation _spin;
         private Data.Animation _explode;
         private Data.ClashSweepResult _sweep;
+
+        // 처음으로 되돌린 횟수 — 방향 검사를 기다리는 동안 처음으로 되돌렸으면 늦게 온 결과를 버립니다.
+        private int _sweepRun;
 
         // 탑재 경로 이동 간섭 검사 — 캡 볼트를 끼운 채 / 뺀 채 · 빨갛게 칠한 관통 부품
         private Data.ClashTest _mountTry;
@@ -66,8 +70,11 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         {
             InitializeComponent();
 
-            // 장면 목록은 뷰어와 무관하므로 생성자에서 채웁니다.
-            InitializeScenes();
+            // 대본 목록은 뷰어와 무관하므로 생성자에서 채웁니다.
+            _shots = BuildShots();
+
+            _runner = new ScenarioRunner(_shots);
+            _runner.ShotStarted += Runner_ShotStarted;
 
             // Initialize VIZCore3DX.NET
             VIZCore3DX.NET.ModuleInitializer.Run();
@@ -75,7 +82,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             // Construction
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
-            splitContainer1.Panel2.Controls.Add(vizcore3dx);
+            this.Controls.Add(vizcore3dx);
 
             // Event
             vizcore3dx.OnInitializedVIZCore3DX += VIZCore3DX_OnInitializedVIZCore3DX;
@@ -110,10 +117,11 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
         private void InitializeVIZCore3DX()
         {
-            // 리본 UI 를 기본으로 켜고, 홈 탭과 모델 트리만 남깁니다.
+            // 리본 UI 를 기본으로 켜고, 사용자 탭 "시나리오"만 남깁니다.
             vizcore3dx.RibbonMode = true;
             ShowRibbonTabs();
             ShowAttributeTabs();
+            InitializeRibbon();
 
             vizcore3dx.Clash.OnClashMoveTestReportFinished += Clash_OnClashMoveTestReportFinished;
 
@@ -123,37 +131,79 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             SetStatus("모델을 열어 주세요.");
         }
 
-        // 장면 이름과 장면 메서드를 순서대로 등록합니다. 이 순서가 진행 순서입니다.
-        private void InitializeScenes()
+        // 리본에 사용자 탭 "시나리오"를 만들고, 버튼을 이 폼의 핸들러에 잇습니다.
+        private void InitializeRibbon()
         {
-            _scenes.Add(new KeyValuePair<string, Action>("01 운전", SceneRunning));
-            _scenes.Add(new KeyValuePair<string, Action>("02 상부 커버 열기", SceneOpenCover));
-            _scenes.Add(new KeyValuePair<string, Action>("03 인출 방향 검사", SceneSweep));
-            _scenes.Add(new KeyValuePair<string, Action>("04 출력축 인출", ScenePullOut));
-            _scenes.Add(new KeyValuePair<string, Action>("05 전체 분해", SceneExplode));
-            _scenes.Add(new KeyValuePair<string, Action>("06 탑재 경로 검사", SceneMount));
-            _scenes.Add(new KeyValuePair<string, Action>("07 조립 검증", SceneVerify));
-            _scenes.Add(new KeyValuePair<string, Action>("08 재가동", SceneRestart));
+            List<string> names = new List<string>();
+            for (int i = 0; i < _shots.Count; i++) names.Add(_shots[i].Name);
 
-            foreach (KeyValuePair<string, Action> scene in _scenes)
-                lstScenes.Items.Add(scene.Key);
+            _ribbon = new ScenarioRibbon(vizcore3dx, ScenarioScript.SceneLabels, names);
+            _ribbon.OpenModel += Ribbon_OpenModel;
+            _ribbon.PlayAll += Ribbon_PlayAll;
+            _ribbon.Reset += Ribbon_Reset;
+            _ribbon.GoScene += Ribbon_GoScene;
+            _ribbon.Build();
         }
 
-        // 창을 닫을 때 장면 타이머를 멈추고 이벤트 구독부터 해제합니다.
+        // 대본 표의 장면에 장면 메서드를 잇습니다. 이 순서가 재생 순서입니다.
+        private List<ScenarioShot> BuildShots()
+        {
+            ScenarioScript.Running.Play = SceneRunning;
+            ScenarioScript.OpenCover.Play = SceneOpenCover;
+            ScenarioScript.Sweep.Play = SceneSweep;
+            ScenarioScript.PullOut.Play = ScenePullOut;
+            ScenarioScript.Explode.Play = SceneExplode;
+            ScenarioScript.Mount.Play = SceneMount;
+            ScenarioScript.Verify.Play = SceneVerify;
+            ScenarioScript.Restart.Play = SceneRestart;
+
+            // 번호 버튼으로 바로 볼 때 먼저 실행할 장면 — 인출 방향(03)은 커버를 연 상태(02), 인출(04)은 방향 검사 결과(03)를 씁니다.
+            ScenarioScript.Sweep.Before = new[] { 2 };
+            ScenarioScript.PullOut.Before = new[] { 2, 3 };
+            ScenarioScript.Explode.Before = new[] { 2, 3, 4 };
+            ScenarioScript.Mount.Before = new[] { 2 };
+            ScenarioScript.Verify.Before = new[] { 2 };
+
+            // 방향 검사는 비동기라, 선행 장면으로 실행할 때 결과가 나올 때까지 기다립니다.
+            ScenarioScript.Sweep.IsDone = () => _sweep != null;
+
+            return new List<ScenarioShot>
+            {
+                ScenarioScript.Running, ScenarioScript.OpenCover, ScenarioScript.Sweep, ScenarioScript.PullOut,
+                ScenarioScript.Explode, ScenarioScript.Mount, ScenarioScript.Verify, ScenarioScript.Restart,
+            };
+        }
+
+        // 창을 닫을 때 재생 타이머를 멈추고 이벤트 구독부터 해제합니다.
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            _timeline.Stop();
+            _runner.Reset();
             vizcore3dx.Clash.OnClashMoveTestReportFinished -= Clash_OnClashMoveTestReportFinished;
             base.OnFormClosing(e);
+        }
+
+        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape && _runner.IsPlaying)
+            {
+                _runner.Reset();
+                SetStatus("재생을 중단했습니다.");
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion
 
         #region 1. 모델
 
-        // 모델을 엽니다. 장면이 쓰는 부품 이름·속성은 샘플 모델에 맞춰 있습니다(SceneValues.cs).
-        private void btnOpenModel_Click(object sender, EventArgs e)
+        // 모델을 엽니다. 장면이 쓰는 부품 이름·속성은 샘플 모델에 맞춰 있습니다(ScenarioScript.cs).
+        private void Ribbon_OpenModel()
         {
+            if (_runner.IsPlaying) return;
+
             // 리포의 샘플 모델(SampleModels\Gearbox.vizx)이 빌드 때 exe 옆에 복사됩니다. 있으면 바로 열고, 없으면 파일을 고릅니다.
             string sample = System.IO.Path.Combine(Application.StartupPath, "Gearbox.vizx");
             bool opened = System.IO.File.Exists(sample) ? vizcore3dx.Model.Open(sample) : vizcore3dx.Model.OpenFileDialog();
@@ -161,7 +211,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             IndexNodes();
             ClearScene();
-            if (IsModelReady()) SetStatus("모델을 열었습니다. [다음 장면]을 누르세요.");
+            if (IsModelReady()) SetStatus("모델을 열었습니다. [전체 재생]이나 장면 번호를 누르세요.");
         }
 
         // 열린 모델의 부품을 이름·번호로 찾아 둡니다. 이전 모델에서 만든 애니메이션·검사·단면은 버립니다.
@@ -191,22 +241,34 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
         #region 3. 장면
 
-        // 다음 장면을 진행합니다. 첫 장면 전에 장면이 쓰는 부품이 모델에 있는지 확인하고, 장면마다 이전 장면의 예약 동작은 취소합니다.
-        private void btnNext_Click(object sender, EventArgs e)
+        // 첫 장면부터 끝까지 이어서 재생합니다. 첫 장면 전에 장면이 쓰는 부품이 모델에 있는지 확인합니다.
+        private void Ribbon_PlayAll()
         {
-            if (!IsModelOpened()) return;
-            if (_next >= _scenes.Count) { SetStatus("마지막 장면입니다. [처음으로]를 누르세요."); return; }
+            if (!IsModelOpened() || !IsModelReady()) return;
 
-            if (_next == 0)
+            ClearScene();
+            _runner.PlayAll();
+        }
+
+        // 번호 버튼 — 그 장면을 재생합니다. 바로 앞 장면에 이어 누른 것이 아니면 처음 상태로 되돌리고 선행 장면을 실행한 뒤 재생합니다.
+        private void Ribbon_GoScene(int first, int last)
+        {
+            if (!IsModelOpened() || !IsModelReady()) return;
+
+            if (_runner.IsReadyFor(first))
             {
-                if (!IsModelReady()) return;
-                ClearScene();
+                _runner.PlayFrom(first, last);
+                return;
             }
 
-            _timeline.Clear();
-            lstScenes.SelectedIndex = _next;
-            SetStatus("장면 : " + _scenes[_next].Key);
-            _scenes[_next++].Value();
+            ClearScene();
+            _runner.Prepare(first, () => _runner.PlayFrom(first, last));
+        }
+
+        private void Runner_ShotStarted(ScenarioShot shot)
+        {
+            _ribbon.SetCurrent(_runner.Index);
+            SetStatus(shot.Name + " — " + shot.Caption);
         }
 
         #endregion
@@ -214,23 +276,23 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         #region 5. 정리
 
         // 어느 장면에서든 처음 상태로 되돌립니다.
-        private void btnReset_Click(object sender, EventArgs e)
+        private void Ribbon_Reset()
         {
             ClearScene();
             if (vizcore3dx.Model.IsOpen()) vizcore3dx.View.FitToView();
             SetStatus("처음으로 되돌렸습니다.");
         }
 
-        // 장면 진행을 처음으로 되돌리고, 시나리오가 만든 애니메이션·스윕 표시·이동 간섭 검사·단면·측정을 전부 지웁니다.
+        // 재생을 멈추고 처음으로 되돌린 뒤, 시나리오가 만든 애니메이션·스윕 표시·이동 간섭 검사·단면·측정을 전부 지웁니다.
         private void ClearScene()
         {
-            _timeline.Clear();
-            _next = 0;
-            lstScenes.SelectedIndex = -1;
+            _runner.Reset();
+            if (_ribbon != null) _ribbon.SetCurrent(0);
 
             _mountActive = false;
             if (vizcore3dx.Model.IsOpen()) Clear3D();
             _sweep = null;
+            _sweepRun++;
         }
 
         private void Clear3D()
@@ -285,19 +347,19 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             if (_originalSilhouette == null) _originalSilhouette = vizcore3dx.View.SilhouetteEdge;
             vizcore3dx.View.SilhouetteEdge = true;
 
-            Data.Node reducer = Node(SceneValues.NameReducer);
+            Data.Node reducer = Node(ScenarioScript.NameReducer);
             double ratio = 1.0 / Math.Abs(ShaftSpeeds().Last());
-            ShowHud(string.Format("운전 중 · {0} → {1} rpm · 감속비 {2:0.00}", Uda(reducer, SceneValues.UdaInputSpeed), Uda(reducer, SceneValues.UdaOutputSpeed), ratio));
+            ShowHud(string.Format("운전 중 · {0} → {1} rpm · 감속비 {2:0.00}", Uda(reducer, ScenarioScript.UdaInputSpeed), Uda(reducer, ScenarioScript.UdaOutputSpeed), ratio));
 
             Batch(() =>
             {
                 ShowGearTrain(true);
-                StartSpin(false, SceneValues.RunningSeconds - SceneValues.SpinRampSeconds - 0.5, true);
+                StartSpin(false, ScenarioScript.RunningSeconds - ScenarioScript.SpinRampSeconds - 0.5, true);
             });
 
-            FlyToBox(ModelBox(), SceneValues.ViewIntro, 0.8, SceneValues.IntroZoom);
-            _timeline.After(0.8, () => Orbit(SceneValues.IntroOrbitDegrees, SceneValues.RunningSeconds - 1.0));
-            _timeline.After(SceneValues.RunningSeconds - SceneValues.SpinRampSeconds - 0.5, () => ShowHud("정지 · 정비 시작"));
+            FlyToBox(ModelBox(), ScenarioScript.ViewIntro, 0.8, ScenarioScript.IntroZoom);
+            _runner.After(0.8, () => Orbit(ScenarioScript.IntroOrbitDegrees, ScenarioScript.RunningSeconds - 1.0));
+            _runner.After(ScenarioScript.RunningSeconds - ScenarioScript.SpinRampSeconds - 0.5, () => ShowHud("정지 · 정비 시작"));
         }
 
         // 02 상부 커버 열기 — 플랜지 볼트를 한 조씩 풉니다(너트가 돌며 내려가고, 이어서 볼트가 돌며 올라간 뒤 치움). 그다음 커버(점검 덮개·아이볼트 포함)를 들어 뒤로 치우고, 그 시점에서 멈춰 둡니다.
@@ -311,14 +373,14 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
                 ShowGearTrain(false);
             });
 
-            Data.Node flangeBolts = Node(SceneValues.NameFlangeBolts);
+            Data.Node flangeBolts = Node(ScenarioScript.NameFlangeBolts);
             List<Data.Node> sets = _allNodes.Where(n => n.ParentIndex == flangeBolts.Index).ToList();
             float middleX = ModelBox().CenterX;
             sets = sets.OrderBy(n => n.GetBoundBox().CenterX > middleX ? 0 : 1).ThenBy(n => n.GetBoundBox().CenterY).ToList();
 
             // 카메라 쪽(+X) 플랜지 줄 볼트를 가까이서 봅니다. 그 줄부터 풉니다.
             Data.BoundBox3D front = vizcore3dx.Object3D.GetBoundBox(sets.Where(n => n.GetBoundBox().CenterX > middleX).ToList());
-            FlyToBox(front, SceneValues.ViewBolts, 1.0, SceneValues.BoltsZoom);
+            FlyToBox(front, ScenarioScript.ViewBolts, 1.0, ScenarioScript.BoltsZoom);
 
             DeleteAnimation();
             _animation = vizcore3dx.Animation.CreateAnimation("GearboxMaintenance");
@@ -326,13 +388,13 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             double unscrewEnd = 0;
             for (int i = 0; i < sets.Count; i++)
-                unscrewEnd = Math.Max(unscrewEnd, AddUnscrewGroups(sets[i], i * SceneValues.UnscrewStagger));
+                unscrewEnd = Math.Max(unscrewEnd, AddUnscrewGroups(sets[i], i * ScenarioScript.UnscrewStagger));
 
             double lidLift = unscrewEnd + 0.1;
             AddLidGroup(lidLift);
             PlanPullOut(lidLift);
 
-            ShowHud(string.Format("플랜지 볼트 {0}조 · 체결 {1} N·m", sets.Count, Uda(flangeBolts, SceneValues.UdaTorque)));
+            ShowHud(string.Format("플랜지 볼트 {0}조 · 체결 {1} N·m", sets.Count, Uda(flangeBolts, ScenarioScript.UdaTorque)));
             ScheduleOpenCover(lidLift);
         }
 
@@ -340,97 +402,97 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private double AddUnscrewGroups(Data.Node set, double t0)
         {
             List<Data.Node> parts = _allNodes.Where(n => n.ParentIndex == set.Index).ToList();
-            Data.Node bolt = parts.FirstOrDefault(n => IsType(n, SceneValues.TypeBolt));
+            Data.Node bolt = parts.FirstOrDefault(n => IsType(n, ScenarioScript.TypeBolt));
             if (bolt == null) return 0;
 
             Data.Vector3D up = new Data.Vector3D(0f, 0f, 1f);
-            float turns = (float)(Math.PI * 2.0 * SceneValues.UnscrewTurns);
+            float turns = (float)(Math.PI * 2.0 * ScenarioScript.UnscrewTurns);
 
             // 볼트 머리 쪽 와셔는 볼트와, 너트 쪽 와셔는 너트와 함께 움직입니다. 어느 쪽인지는 높이로 가립니다.
             Data.BoundBox3D boltBox = bolt.GetBoundBox();
             Data.Vector3D axis = new Data.Vector3D(boltBox.CenterX, boltBox.CenterY, boltBox.CenterZ);
-            List<Data.Node> headSide = parts.Where(n => n == bolt || (IsType(n, SceneValues.TypeWasher) && n.GetBoundBox().CenterZ > boltBox.CenterZ)).ToList();
-            List<Data.Node> nutSide = parts.Where(n => !headSide.Contains(n) && (IsType(n, SceneValues.TypeNut) || IsType(n, SceneValues.TypeWasher))).ToList();
+            List<Data.Node> headSide = parts.Where(n => n == bolt || (IsType(n, ScenarioScript.TypeWasher) && n.GetBoundBox().CenterZ > boltBox.CenterZ)).ToList();
+            List<Data.Node> nutSide = parts.Where(n => !headSide.Contains(n) && (IsType(n, ScenarioScript.TypeNut) || IsType(n, ScenarioScript.TypeWasher))).ToList();
 
-            double t1 = t0 + SceneValues.NutSeconds;
-            double t2 = t1 + SceneValues.BoltSeconds;
+            double t1 = t0 + ScenarioScript.NutSeconds;
+            double t2 = t1 + ScenarioScript.BoltSeconds;
 
             // 회전축이 이동 방향(Z)과 같아 한 그룹에 회전·이동을 함께 줘도 축이 흔들리지 않습니다(실측).
             Data.AnimationGroup nutGroup = _animation.CreateGroup(set.NodeName + " Nut");
             nutGroup.AddNodes(nutSide);
-            nutGroup.CreateRotationAction(Sec(t0), Sec(SceneValues.NutSeconds), axis, up, -turns);
-            nutGroup.CreateTranslationAction(Sec(t0), Sec(SceneValues.NutSeconds), new Data.Vector3D(0f, 0f, -1f), SceneValues.NutDrop);
-            nutGroup.CreateVisibilityAction(Sec(t2 + SceneValues.HideAfter), false);
+            nutGroup.CreateRotationAction(Sec(t0), Sec(ScenarioScript.NutSeconds), axis, up, -turns);
+            nutGroup.CreateTranslationAction(Sec(t0), Sec(ScenarioScript.NutSeconds), new Data.Vector3D(0f, 0f, -1f), ScenarioScript.NutDrop);
+            nutGroup.CreateVisibilityAction(Sec(t2 + ScenarioScript.HideAfter), false);
 
             Data.AnimationGroup boltGroup = _animation.CreateGroup(set.NodeName + " Bolt");
             boltGroup.AddNodes(headSide);
-            boltGroup.CreateRotationAction(Sec(t1), Sec(SceneValues.BoltSeconds), axis, up, turns);
-            boltGroup.CreateTranslationAction(Sec(t1), Sec(SceneValues.BoltSeconds), up, SceneValues.BoltRise);
-            boltGroup.CreateVisibilityAction(Sec(t2 + SceneValues.HideAfter), false);
+            boltGroup.CreateRotationAction(Sec(t1), Sec(ScenarioScript.BoltSeconds), axis, up, turns);
+            boltGroup.CreateTranslationAction(Sec(t1), Sec(ScenarioScript.BoltSeconds), up, ScenarioScript.BoltRise);
+            boltGroup.CreateVisibilityAction(Sec(t2 + ScenarioScript.HideAfter), false);
 
-            return t2 + SceneValues.HideAfter;
+            return t2 + ScenarioScript.HideAfter;
         }
 
         // 커버(점검 덮개·아이볼트 포함)를 lidLift 초부터 들어 올린 뒤 뒤로 치우는 그룹을 더합니다.
         private void AddLidGroup(double lidLift)
         {
-            double lidAside = lidLift + SceneValues.LidLiftSeconds;
+            double lidAside = lidLift + ScenarioScript.LidLiftSeconds;
             Data.AnimationGroup lidGroup = _animation.CreateGroup("Lid");
-            lidGroup.AddNodes(Nodes(SceneValues.NameLidParts));
-            lidGroup.CreateTranslationAction(Sec(lidLift), Sec(SceneValues.LidLiftSeconds), new Data.Vector3D(0f, 0f, 1f), SceneValues.LidLift);
-            lidGroup.CreateTranslationAction(Sec(lidAside), Sec(SceneValues.LidAsideSeconds), SceneValues.LidAsideDirection, SceneValues.LidAside);
+            lidGroup.AddNodes(Nodes(ScenarioScript.NameLidParts));
+            lidGroup.CreateTranslationAction(Sec(lidLift), Sec(ScenarioScript.LidLiftSeconds), new Data.Vector3D(0f, 0f, 1f), ScenarioScript.LidLift);
+            lidGroup.CreateTranslationAction(Sec(lidAside), Sec(ScenarioScript.LidAsideSeconds), ScenarioScript.LidAsideDirection, ScenarioScript.LidAside);
         }
 
         // 커버를 치운 뒤 멈추는 시각과, 04 에서 캡 볼트를 하나씩 뺀 뒤 축을 드는 시각을 볼트 조 수로 미리 정합니다.
         private void PlanPullOut(double lidLift)
         {
-            double lidAside = lidLift + SceneValues.LidLiftSeconds;
-            _pauseAt = lidAside + SceneValues.LidAsideSeconds + 0.2;
+            double lidAside = lidLift + ScenarioScript.LidLiftSeconds;
+            _pauseAt = lidAside + ScenarioScript.LidAsideSeconds + 0.2;
             int capSets = CapBoltSets().Count;
             _capStart = _pauseAt + 0.1;
-            _shaftPullStart = _capStart + Math.Max(capSets - 1, 0) * SceneValues.UnscrewStagger + SceneValues.BoltSeconds + SceneValues.HideAfter + SceneValues.CapRemovedHold;
+            _shaftPullStart = _capStart + Math.Max(capSets - 1, 0) * ScenarioScript.UnscrewStagger + ScenarioScript.BoltSeconds + ScenarioScript.HideAfter + ScenarioScript.CapRemovedHold;
 
             // ★Duration 을 직접 주지 않으면 0 초라 Play 가 바로 끝납니다(실측). 04 의 출력축 인출까지 들어가게 여기서 한 번에 잡습니다.
-            _animation.Duration = Sec(_shaftPullStart + SceneValues.ShaftPullSeconds + 0.5);
+            _animation.Duration = Sec(_shaftPullStart + ScenarioScript.ShaftPullSeconds + 0.5);
         }
 
         // 문구를 읽을 시간 뒤에 볼트 풀기를 재생하고, 커버를 들 때 물러났다가, 커버를 치운 시점에서 멈춥니다.
         private void ScheduleOpenCover(double lidLift)
         {
-            _timeline.After(SceneValues.ReadPause, () =>
+            _runner.After(ScenarioScript.ReadPause, () =>
             {
                 _animation.PlaybackTime = TimeSpan.Zero;
                 _animation.Play();
             });
 
             // 볼트를 다 풀면 모델 전체로 물러나 커버를 들어 뒤로 치우는 모습을 봅니다.
-            _timeline.After(SceneValues.ReadPause + lidLift - 0.3, () => FlyToBox(LidPathBox(), SceneValues.ViewWork, 1.5, SceneValues.LidZoom));
+            _runner.After(ScenarioScript.ReadPause + lidLift - 0.3, () => FlyToBox(LidPathBox(), ScenarioScript.ViewWork, 1.5, ScenarioScript.LidZoom));
 
             // 04 에서 출력축 인출을 이어 붙이도록, 커버를 치운 시점에서 멈춥니다.
-            _timeline.After(SceneValues.ReadPause + _pauseAt, () => { if (_animation != null) _animation.Pause(); });
+            _runner.After(ScenarioScript.ReadPause + _pauseAt, () => { if (_animation != null) _animation.Pause(); });
         }
 
         // 03 인출 방향 검사 — 출력축 조립품을 6방향으로 밀어 봅니다. 커버를 옮겼으니 장애물을 다시 읽게 합니다.
         private async void SceneSweep()
         {
-            Data.Node shaft = Node(SceneValues.NameOutputShaftAssy);
+            Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
             if (_animation != null) _animation.Pause();
             ShowHud("출력축 6방향 검사 중…");
 
             // 통과 방향 볼륨(최대 거리만큼 뻗음)까지 들어오게 맞춥니다.
-            FlyToBox(SweepViewBox(shaft), SceneValues.ViewSweep, 1.2, SceneValues.SweepZoom);
+            FlyToBox(SweepViewBox(shaft), ScenarioScript.ViewSweep, 1.2, ScenarioScript.SweepZoom);
 
             // ★커버를 애니메이션으로 옮긴 뒤에는 장애물 캐시를 비워야 옮긴 위치로 검사합니다(안 비우면 커버가 제자리에 있는 결과, 실측).
             vizcore3dx.Clash.Sweep.InvalidateObstacles();
             ApplySweepStyle();
 
-            int scene = _next;
+            int run = _sweepRun;
             Stopwatch watch = Stopwatch.StartNew();
             Data.ClashSweepResult result = await vizcore3dx.Clash.Sweep.RunAsync(new List<Data.Node> { shaft }, SweepOptions());
             double seconds = watch.Elapsed.TotalSeconds;
 
-            // 그사이 다른 장면으로 넘어갔거나 처음으로 되돌렸으면 그만둡니다.
-            if (_next != scene) return;
+            // 그사이 처음으로 되돌렸으면 그만둡니다.
+            if (run != _sweepRun) return;
             if (result == null || !result.IsSucceeded) { ShowHud("방향 검사 실패"); return; }
 
             _sweep = result;
@@ -439,18 +501,18 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             int directions = result.Directions == null ? 0 : result.Directions.Count;
             int free = result.FreeDirections == null ? 0 : result.FreeDirections.Count;
             ShowHud(string.Format("{0}방향 검사 {1:0.0}초 · 통과 {2}방향", directions, seconds, free));
-            Orbit(SceneValues.SweepOrbitDegrees, SceneValues.SweepOrbitSeconds);
+            Orbit(ScenarioScript.SweepOrbitDegrees, ScenarioScript.SweepOrbitSeconds);
         }
 
         // 방향 스윕 옵션 — 최대 거리·표본 수·맞닿음 허용 거리
         private static Data.ClashSweepOptions SweepOptions()
         {
             Data.ClashSweepOptions options = new Data.ClashSweepOptions();
-            options.MaxDistanceMm = SceneValues.SweepMaxDistance;
-            options.MaxSampleCount = SceneValues.SweepMaxSamples;
+            options.MaxDistanceMm = ScenarioScript.SweepMaxDistance;
+            options.MaxSampleCount = ScenarioScript.SweepMaxSamples;
 
             // ★기본 접촉 허용(5 mm)이면 베어링이 끼워진 하우징이 "맞닿은 부품"으로 빠져 ±X 가 거짓 통과로 나옵니다 — 0.1 mm 로 줄이면 +Z 만 통과(실측).
-            options.ContactToleranceMm = SceneValues.SweepContactTolerance;
+            options.ContactToleranceMm = ScenarioScript.SweepContactTolerance;
             return options;
         }
 
@@ -458,7 +520,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 같은 애니메이션(02 에서 멈춘 지점)에 이어 붙입니다. 캡 볼트는 축 방향(Y)으로 박혀 있어 Y 축으로 돌며 바깥쪽으로 빠집니다.
         private void ScenePullOut()
         {
-            Data.Node shaft = Node(SceneValues.NameOutputShaftAssy);
+            Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
             if (_sweep == null || _animation == null || _sweep.FreeDirections == null || _sweep.FreeDirections.Count == 0) { ShowHud("통과 방향이 없습니다"); return; }
 
             // 통과 방향이 여럿이면 위쪽(크레인으로 들어 올리는 방향)을 고릅니다.
@@ -471,8 +533,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             // 축이 올라갈 길까지 들어오게 출력축 가까이 다가갑니다.
             Data.BoundBox3D shaftBox = shaft.GetBoundBox();
-            Data.BoundBox3D pullBox = new Data.BoundBox3D(shaftBox.MinX, shaftBox.MinY, shaftBox.MinZ, shaftBox.MaxX, shaftBox.MaxY, shaftBox.MaxZ + SceneValues.ShaftPull);
-            FlyToBox(pullBox, SceneValues.ViewMount, 1.5, SceneValues.PullZoom);
+            Data.BoundBox3D pullBox = new Data.BoundBox3D(shaftBox.MinX, shaftBox.MinY, shaftBox.MinZ, shaftBox.MaxX, shaftBox.MaxY, shaftBox.MaxZ + ScenarioScript.ShaftPull);
+            FlyToBox(pullBox, ScenarioScript.ViewMount, 1.5, ScenarioScript.PullZoom);
 
             AddCapBoltGroups(capBolts, shaftBox);
 
@@ -481,21 +543,21 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             List<Data.Node> lift = _allNodes.Where(n => n.Kind == Data.NodeKind.PART && IsUnder(n, shaft) && !capBolts.Any(c => IsUnder(n, c))).ToList();
             Data.AnimationGroup shaftGroup = _animation.CreateGroup("OutputShaft");
             shaftGroup.AddNodes(lift);
-            shaftGroup.CreateTranslationAction(Sec(_shaftPullStart), Sec(SceneValues.ShaftPullSeconds), best.Direction, SceneValues.ShaftPull);
+            shaftGroup.CreateTranslationAction(Sec(_shaftPullStart), Sec(ScenarioScript.ShaftPullSeconds), best.Direction, ScenarioScript.ShaftPull);
 
-            _timeline.After(SceneValues.ReadPause, () =>
+            _runner.After(ScenarioScript.ReadPause, () =>
             {
                 vizcore3dx.Clash.Sweep.Hide();
                 _animation.Play();
             });
-            _timeline.After(SceneValues.ReadPause + (_shaftPullStart - _pauseAt), () =>
-                ShowHud(string.Format("출력축 인출 · {0} {1:0} mm", name, SceneValues.ShaftPull)));
+            _runner.After(ScenarioScript.ReadPause + (_shaftPullStart - _pauseAt), () =>
+                ShowHud(string.Format("출력축 인출 · {0} {1:0} mm", name, ScenarioScript.ShaftPull)));
         }
 
         // 캡 볼트 조(볼트 + 와셔)를 카메라 쪽(−Y) 캡부터 하나씩 — 돌면서 바깥쪽으로 빠진 뒤 숨기는 그룹을 더합니다.
         private void AddCapBoltGroups(List<Data.Node> capBolts, Data.BoundBox3D shaftBox)
         {
-            float turns = (float)(Math.PI * 2.0 * SceneValues.UnscrewTurns);
+            float turns = (float)(Math.PI * 2.0 * ScenarioScript.UnscrewTurns);
             double start = _capStart;
             List<Data.Node> ordered = capBolts.OrderBy(n => n.GetBoundBox().CenterY).ToList();
             for (int i = 0; i < ordered.Count; i++)
@@ -503,13 +565,13 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
                 Data.BoundBox3D box = ordered[i].GetBoundBox();
                 Data.Vector3D center = new Data.Vector3D(box.CenterX, box.CenterY, box.CenterZ);
                 Data.Vector3D outward = new Data.Vector3D(0f, box.CenterY < shaftBox.CenterY ? -1f : 1f, 0f);
-                double t0 = start + i * SceneValues.UnscrewStagger;
+                double t0 = start + i * ScenarioScript.UnscrewStagger;
 
                 Data.AnimationGroup group = _animation.CreateGroup(ordered[i].NodeName);
                 group.AddNode(ordered[i]);
-                group.CreateRotationAction(Sec(t0), Sec(SceneValues.BoltSeconds), center, outward, turns);
-                group.CreateTranslationAction(Sec(t0), Sec(SceneValues.BoltSeconds), outward, SceneValues.CapBoltBackOut);
-                group.CreateVisibilityAction(Sec(t0 + SceneValues.BoltSeconds + SceneValues.HideAfter), false);
+                group.CreateRotationAction(Sec(t0), Sec(ScenarioScript.BoltSeconds), center, outward, turns);
+                group.CreateTranslationAction(Sec(t0), Sec(ScenarioScript.BoltSeconds), outward, ScenarioScript.CapBoltBackOut);
+                group.CreateVisibilityAction(Sec(t0 + ScenarioScript.BoltSeconds + ScenarioScript.HideAfter), false);
             }
         }
 
@@ -530,12 +592,12 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
                 _explode = vizcore3dx.Animation.CreateAnimation("ExplodedView");
                 _explode.Activate();
-                double t1 = 0, t2 = SceneValues.ExplodePhaseSeconds, t3 = t2 * 2;
-                double d = SceneValues.ExplodePhaseSeconds * 0.8;
+                double t1 = 0, t2 = ScenarioScript.ExplodePhaseSeconds, t3 = t2 * 2;
+                double d = ScenarioScript.ExplodePhaseSeconds * 0.8;
 
                 ExplodeFlangeBolts(ref groups, t1, d);
                 ExplodeLid(ref groups, t1, d);
-                foreach (Data.Node assembly in Nodes(SceneValues.NameShaftAssemblies))
+                foreach (Data.Node assembly in Nodes(ScenarioScript.NameShaftAssemblies))
                     ExplodeShaftAssembly(assembly, ref groups, t2, t3, d);
 
                 _explode.Duration = Sec(t3 + d + 0.5);
@@ -547,9 +609,9 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             ShowHud(string.Format("점검을 위해 전체 분해 · 부품 묶음 {0}개", groups));
 
-            FlyToBox(ExplodedBox(), SceneValues.ViewWork, 1.2, SceneValues.ExplodeZoom);
-            _timeline.After(1.2, () => Orbit(SceneValues.ExplodeOrbitDegrees, SceneValues.ExplodeOrbitSeconds));
-            _timeline.After(SceneValues.ReadPause, () =>
+            FlyToBox(ExplodedBox(), ScenarioScript.ViewWork, 1.2, ScenarioScript.ExplodeZoom);
+            _runner.After(1.2, () => Orbit(ScenarioScript.ExplodeOrbitDegrees, ScenarioScript.ExplodeOrbitSeconds));
+            _runner.After(ScenarioScript.ReadPause, () =>
             {
                 _explode.PlaybackTime = TimeSpan.Zero;
                 _explode.Play();
@@ -561,19 +623,19 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         {
             Data.Vector3D up = new Data.Vector3D(0f, 0f, 1f);
             Data.Vector3D down = new Data.Vector3D(0f, 0f, -1f);
-            foreach (Data.Node set in Children(Node(SceneValues.NameFlangeBolts)))
+            foreach (Data.Node set in Children(Node(ScenarioScript.NameFlangeBolts)))
             {
                 List<Data.Node> parts = Parts(set);
-                Data.Node bolt = parts.FirstOrDefault(n => IsType(n, SceneValues.TypeBolt));
+                Data.Node bolt = parts.FirstOrDefault(n => IsType(n, ScenarioScript.TypeBolt));
                 if (bolt == null) continue;
                 float boltZ = bolt.GetBoundBox().CenterZ;
                 foreach (Data.Node part in parts)
                 {
-                    bool headSide = part == bolt || (IsType(part, SceneValues.TypeWasher) && part.GetBoundBox().CenterZ > boltZ);
-                    float distance = part == bolt ? SceneValues.ExplodeBoltUp
-                        : headSide ? SceneValues.ExplodeBoltUp - SceneValues.ExplodeWasherGap
-                        : IsType(part, SceneValues.TypeNut) ? SceneValues.ExplodeNutDown
-                        : SceneValues.ExplodeNutDown - SceneValues.ExplodeWasherGap;
+                    bool headSide = part == bolt || (IsType(part, ScenarioScript.TypeWasher) && part.GetBoundBox().CenterZ > boltZ);
+                    float distance = part == bolt ? ScenarioScript.ExplodeBoltUp
+                        : headSide ? ScenarioScript.ExplodeBoltUp - ScenarioScript.ExplodeWasherGap
+                        : IsType(part, ScenarioScript.TypeNut) ? ScenarioScript.ExplodeNutDown
+                        : ScenarioScript.ExplodeNutDown - ScenarioScript.ExplodeWasherGap;
                     Move(new List<Data.Node> { part }, groups++, t1, d, headSide ? up : down, distance);
                 }
             }
@@ -583,11 +645,11 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private void ExplodeLid(ref int groups, double t1, double d)
         {
             Data.Vector3D up = new Data.Vector3D(0f, 0f, 1f);
-            Move(Parts(Node(SceneValues.NameLidParts[0])), groups++, t1 + 0.3, d, up, SceneValues.ExplodeCoverUp);
-            for (int i = 1; i < SceneValues.NameLidParts.Length; i++)
-                Move(Parts(Node(SceneValues.NameLidParts[i])), groups++, t1 + 0.3, d, up, SceneValues.ExplodeCoverUp + SceneValues.ExplodeLidPartsUp);
-            foreach (string pin in SceneValues.NameDowelPins)
-                if (Node(pin) != null) Move(Parts(Node(pin)), groups++, t1 + 0.3, d, up, SceneValues.ExplodeDowelUp);
+            Move(Parts(Node(ScenarioScript.NameLidParts[0])), groups++, t1 + 0.3, d, up, ScenarioScript.ExplodeCoverUp);
+            for (int i = 1; i < ScenarioScript.NameLidParts.Length; i++)
+                Move(Parts(Node(ScenarioScript.NameLidParts[i])), groups++, t1 + 0.3, d, up, ScenarioScript.ExplodeCoverUp + ScenarioScript.ExplodeLidPartsUp);
+            foreach (string pin in ScenarioScript.NameDowelPins)
+                if (Node(pin) != null) Move(Parts(Node(pin)), groups++, t1 + 0.3, d, up, ScenarioScript.ExplodeDowelUp);
         }
 
         // ②·③ 축 조립품 — 부품 묶음마다 그룹 하나에 "들어 올리기 → 축 방향 펼치기" 를 이어 붙입니다.
@@ -597,20 +659,20 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             List<Data.Node> moved = new List<Data.Node>();
             foreach (Data.Node child in Children(assembly))
             {
-                if (IsType(child, SceneValues.TypeBearing))
+                if (IsType(child, ScenarioScript.TypeBearing))
                 {
-                    moved.AddRange(ExplodeAxial(Parts(child), centerY, SceneValues.ExplodeBearingOut, groups++, t2, t3, d));
+                    moved.AddRange(ExplodeAxial(Parts(child), centerY, ScenarioScript.ExplodeBearingOut, groups++, t2, t3, d));
                 }
                 else if (Children(child).Count > 0)
                 {
                     // 베어링 캡 조립품 — 캡·오일실은 한 묶음, 캡 볼트 조는 볼트와 와셔를 따로
                     List<Data.Node> boltSets = Children(child).Where(c => Children(c).Count > 0).ToList();
                     List<Data.Node> cap = Parts(child).Where(p => !boltSets.Any(s => IsUnder(p, s))).ToList();
-                    moved.AddRange(ExplodeAxial(cap, centerY, SceneValues.ExplodeCapOut, groups++, t2, t3, d));
+                    moved.AddRange(ExplodeAxial(cap, centerY, ScenarioScript.ExplodeCapOut, groups++, t2, t3, d));
                     foreach (Data.Node set in boltSets)
                         foreach (Data.Node part in Parts(set))
                         {
-                            float distance = IsType(part, SceneValues.TypeBolt) ? SceneValues.ExplodeCapBoltOut : SceneValues.ExplodeCapBoltOut - SceneValues.ExplodeWasherGap;
+                            float distance = IsType(part, ScenarioScript.TypeBolt) ? ScenarioScript.ExplodeCapBoltOut : ScenarioScript.ExplodeCapBoltOut - ScenarioScript.ExplodeWasherGap;
                             moved.AddRange(ExplodeAxial(new List<Data.Node> { part }, centerY, distance, groups++, t2, t3, d));
                         }
                 }
@@ -618,7 +680,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             // 남은 부품(축·기어·키)은 들어 올리기만
             List<Data.Node> core = Parts(assembly).Where(p => !moved.Contains(p)).ToList();
-            Move(core, groups++, t2, d, new Data.Vector3D(0f, 0f, 1f), SceneValues.ExplodeShaftUp);
+            Move(core, groups++, t2, d, new Data.Vector3D(0f, 0f, 1f), ScenarioScript.ExplodeShaftUp);
         }
 
         // 부품들을 한 그룹으로 묶어 start 초부터 seconds 동안 direction 으로 distance 만큼 옮깁니다.
@@ -634,7 +696,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 축 조립품의 부품 묶음 — t2 에 축과 함께 들어 올린 뒤, t3 에 조립품 중심에서 먼 쪽(±Y)으로 distance 만큼 펼칩니다.
         private List<Data.Node> ExplodeAxial(List<Data.Node> parts, float centerY, float distance, int index, double t2, double t3, double seconds)
         {
-            Data.AnimationGroup group = Move(parts, index, t2, seconds, new Data.Vector3D(0f, 0f, 1f), SceneValues.ExplodeShaftUp);
+            Data.AnimationGroup group = Move(parts, index, t2, seconds, new Data.Vector3D(0f, 0f, 1f), ScenarioScript.ExplodeShaftUp);
             if (group == null) return parts;
             float side = vizcore3dx.Object3D.GetBoundBox(parts).CenterY < centerY ? -1f : 1f;
             group.CreateTranslationAction(Sec(t3), Sec(seconds), new Data.Vector3D(0f, side, 0f), distance);
@@ -645,8 +707,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private Data.BoundBox3D ExplodedBox()
         {
             Data.BoundBox3D m = ModelBox();
-            float side = SceneValues.ExplodeCapBoltOut;
-            return new Data.BoundBox3D(m.MinX, m.MinY - side, m.MinZ - SceneValues.ExplodeNutDown, m.MaxX, m.MaxY + side, m.MaxZ + SceneValues.ExplodeCoverUp + SceneValues.ExplodeLidPartsUp);
+            float side = ScenarioScript.ExplodeCapBoltOut;
+            return new Data.BoundBox3D(m.MinX, m.MinY - side, m.MinZ - ScenarioScript.ExplodeNutDown, m.MaxX, m.MaxY + side, m.MaxZ + ScenarioScript.ExplodeCoverUp + ScenarioScript.ExplodeLidPartsUp);
         }
 
         // 노드 바로 아래 자식
@@ -688,9 +750,9 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
                 // ★이동 간섭 검사는 노드 위치를 직접 옮기므로 애니메이션이 살아 있으면 안 됩니다(분해와 같은 이유).
                 DeleteAnimation();
                 EndExplode();
-                Data.Vector3D aside = SceneValues.LidAsideDirection * SceneValues.LidAside;
-                vizcore3dx.Object3D.Transform.Move(Nodes(SceneValues.NameLidParts), aside.X, aside.Y, aside.Z + SceneValues.LidLift, true);
-                vizcore3dx.Object3D.Show(Node(SceneValues.NameFlangeBolts), false);
+                Data.Vector3D aside = ScenarioScript.LidAsideDirection * ScenarioScript.LidAside;
+                vizcore3dx.Object3D.Transform.Move(Nodes(ScenarioScript.NameLidParts), aside.X, aside.Y, aside.Z + ScenarioScript.LidLift, true);
+                vizcore3dx.Object3D.Show(Node(ScenarioScript.NameFlangeBolts), false);
 
                 _mountTry = CreateMountTest();
             }
@@ -703,8 +765,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             _mountActive = true;
             int steps = vizcore3dx.Clash.GetTestPaths(_mountTry).Count;
             ShowHud(string.Format("탑재 경로 {0}단계 이동 간섭 검사 · 캡 볼트 끼운 채", steps));
-            FlyToBox(MountViewBox(), SceneValues.ViewMount, 1.0, SceneValues.MountZoom);
-            _timeline.After(SceneValues.ReadPause, () => vizcore3dx.Clash.PerformInterferenceCheck(_mountTry.ID, Manager.ClashManager.ResultGroupingOptions.PART));
+            FlyToBox(MountViewBox(), ScenarioScript.ViewMount, 1.0, ScenarioScript.MountZoom);
+            _runner.After(ScenarioScript.ReadPause, () => vizcore3dx.Clash.PerformInterferenceCheck(_mountTry.ID, Manager.ClashManager.ResultGroupingOptions.PART));
         }
 
         // 이동 간섭 검사가 끝나면 — 첫 검사는 관통 단계에서 멈춰 볼트를 빨갛게 보이고, 다시 한 검사는 안착 뒤 볼트를 체결합니다.
@@ -730,19 +792,19 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             if (bad == null) { OnMountRetryChecked(); return; }
 
             // 관통한 단계로 축을 되돌려 두고, 관통한 부품(축 쪽)을 빨갛게 칠합니다.
-            Data.Node shaft = Node(SceneValues.NameOutputShaftAssy);
+            Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
             _clashMarked = hits.Select(h => IsUnder(Node(h.NodeNameA), shaft) ? Node(h.NodeNameA) : Node(h.NodeNameB))
                 .Where(n => n != null).GroupBy(n => n.Index).Select(g => g.First()).ToList();
             Batch(() =>
             {
                 vizcore3dx.Clash.ApplyTestPath(_mountTry, bad.ID);
-                vizcore3dx.Object3D.Color.SetColor(_clashMarked, SceneValues.ColorClash);
+                vizcore3dx.Object3D.Color.SetColor(_clashMarked, ScenarioScript.ColorClash);
                 ShowPenetration(shaft);
             });
 
             // 단계 b 의 높이 = 인출 높이 − 그때까지 내린 거리
             int index = paths.IndexOf(bad);
-            float above = SceneValues.ShaftPull - SceneValues.MountPath.Take(index).Sum();
+            float above = ScenarioScript.ShaftPull - ScenarioScript.MountPath.Take(index).Sum();
             double depth = hits.Max(h => Math.Abs(h.Distance));
             ShowHud(string.Format("✗ 안착 {0:0} mm 앞 · 캡 볼트 {1}개 ↔ 하우징 관통 {2:0.0} mm", above, _clashMarked.Count, depth));
 
@@ -750,10 +812,10 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             Data.BoundBox3D shaftBox = shaft.GetBoundBox();
             List<Data.Node> near = _clashMarked.Where(n => n.GetBoundBox().CenterY < shaftBox.CenterY).ToList();
             Data.BoundBox3D focus = vizcore3dx.Object3D.GetBoundBox(near.Count > 0 ? near : _clashMarked);
-            FlyCamera(new Data.Vector3D(focus.GetCenter()), SceneValues.ViewMount, SceneValues.ClashViewDistance, 1.0);
+            FlyCamera(new Data.Vector3D(focus.GetCenter()), ScenarioScript.ViewMount, ScenarioScript.ClashViewDistance, 1.0);
 
             // 잠시 보여 준 뒤 볼트를 빼고 같은 경로로 다시 검사합니다.
-            _timeline.After(SceneValues.MountHoldSeconds, RetryMountWithoutCapBolts);
+            _runner.After(ScenarioScript.MountHoldSeconds, RetryMountWithoutCapBolts);
         }
 
         // 하우징 벽 속으로 들어간 볼트가 보이도록 X-Ray 로 출력축과 관통 볼트만 제 색으로 남깁니다.
@@ -786,8 +848,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             if (_mountRetry == null) return;
 
             ShowHud("캡 볼트를 빼고 다시 검사");
-            FlyToBox(MountViewBox(), SceneValues.ViewMount, 0.8, SceneValues.MountZoom);
-            _timeline.After(SceneValues.ReadPause, () => vizcore3dx.Clash.PerformInterferenceCheck(_mountRetry.ID, Manager.ClashManager.ResultGroupingOptions.PART));
+            FlyToBox(MountViewBox(), ScenarioScript.ViewMount, 0.8, ScenarioScript.MountZoom);
+            _runner.After(ScenarioScript.ReadPause, () => vizcore3dx.Clash.PerformInterferenceCheck(_mountRetry.ID, Manager.ClashManager.ResultGroupingOptions.PART));
         }
 
         private void OnMountRetryChecked()
@@ -821,7 +883,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             ClearHud();
             _mountActive = false;
 
-            List<Data.Node> shafts = Nodes(SceneValues.NameShafts);
+            List<Data.Node> shafts = Nodes(ScenarioScript.NameShafts);
             Data.BoundBox3D input = shafts[0].GetBoundBox();
             Data.BoundBox3D middle = shafts[1].GetBoundBox();
             Data.BoundBox3D output = shafts[2].GetBoundBox();
@@ -840,22 +902,22 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             ShowCenterDistance(Math.Abs(b.X - a.X), Math.Abs(c.X - b.X));
 
             // 맞물림 틈은 미리 재 둡니다.
-            Data.Node gearNode = Node(SceneValues.NameMeshGear);
-            Data.Node pinionNode = Node(Uda(gearNode, SceneValues.UdaMate));
+            Data.Node gearNode = Node(ScenarioScript.NameMeshGear);
+            Data.Node pinionNode = Node(Uda(gearNode, ScenarioScript.UdaMate));
             Data.Vector3D p1, p2;
             double gap = vizcore3dx.Object3D.GeometryProperty.GetMinimumDistance(new List<Data.Node> { pinionNode }, new List<Data.Node> { gearNode }, out p1, out p2);
 
             // 기어열만 화면에 차도록 축 세 개의 범위로 맞춥니다.
-            FlyToBox(vizcore3dx.Object3D.GetBoundBox(shafts), SceneValues.ViewSection, 1.5, SceneValues.SectionZoom);
+            FlyToBox(vizcore3dx.Object3D.GetBoundBox(shafts), ScenarioScript.ViewSection, 1.5, ScenarioScript.SectionZoom);
             if (double.IsNaN(gap) || p1 == null || p2 == null) return;
 
-            _timeline.After(SceneValues.VerifyMeshAt, () => ShowMeshGap(pinionNode, gearNode, gap, (p1 + p2) * 0.5f));
+            _runner.After(ScenarioScript.VerifyMeshAt, () => ShowMeshGap(pinionNode, gearNode, gap, (p1 + p2) * 0.5f));
         }
 
         // 잰 축간 거리를 설계 중심거리(감속기 속성 값 "122.5 / 160")와 견줘 보입니다. 둘 다 0.1 mm 안이면 일치로 봅니다.
         private void ShowCenterDistance(double first, double second)
         {
-            string design = Uda(Node(SceneValues.NameReducer), SceneValues.UdaCenterDistance);
+            string design = Uda(Node(ScenarioScript.NameReducer), ScenarioScript.UdaCenterDistance);
             double[] designs = design.Split('/').Select(s => { double v; return double.TryParse(s.Trim(), out v) ? v : double.NaN; }).ToArray();
             bool same = designs.Length == 2 && Math.Abs(designs[0] - first) < 0.1 && Math.Abs(designs[1] - second) < 0.1;
             ShowHud(string.Format("축간 거리 {0:0.0} / {1:0.0} mm · 설계 {2} {3}", first, second, design, same ? "✓ 일치" : "✗ 다름"));
@@ -871,11 +933,11 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
                 ShowHousing(false);
 
                 Data.MeasureItem item = vizcore3dx.Measure.AddMinimumDistance(new List<Data.Node> { pinionNode }, new List<Data.Node> { gearNode });
-                if (item != null) StyleMeasure(item.ID, 2, SceneValues.KeyLabelTextSize);
+                if (item != null) StyleMeasure(item.ID, 2, ScenarioScript.KeyLabelTextSize);
             });
             ShowHud(string.Format("{0} ↔ {1} 맞물림 틈 {2:0.00} mm {3}", pinionNode.NodeName, gearNode.NodeName, gap, gap > 0 ? "✓ 간섭 없음" : "✗ 간섭"));
 
-            FlyCamera(mesh, SceneValues.ViewMesh, SceneValues.MeshViewDistance, 2.0);
+            FlyCamera(mesh, ScenarioScript.ViewMesh, ScenarioScript.MeshViewDistance, 2.0);
         }
 
         // 08 재가동 — 측정을 지우고 커버·볼트를 제자리로 되돌린 뒤, 기어열을 다시 돌리며 물러납니다.
@@ -886,17 +948,17 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             {
                 RemoveSection();
                 vizcore3dx.Measure.Clear();
-                vizcore3dx.Object3D.Transform.RestoreTransform(Nodes(SceneValues.NameLidParts));
+                vizcore3dx.Object3D.Transform.RestoreTransform(Nodes(ScenarioScript.NameLidParts));
                 ShowHousing(true);
-                vizcore3dx.Object3D.Show(Node(SceneValues.NameFlangeBolts), true);
+                vizcore3dx.Object3D.Show(Node(ScenarioScript.NameFlangeBolts), true);
                 ShowGearTrain(true);
-                StartSpin(true, SceneValues.RestartSpinSeconds, false);
+                StartSpin(true, ScenarioScript.RestartSpinSeconds, false);
             });
-            Data.Node reducer = Node(SceneValues.NameReducer);
-            _timeline.After(1.0, () => ShowHud(string.Format("재가동 · 출력 {0} rpm", Uda(reducer, SceneValues.UdaOutputSpeed))));
+            Data.Node reducer = Node(ScenarioScript.NameReducer);
+            _runner.After(1.0, () => ShowHud(string.Format("재가동 · 출력 {0} rpm", Uda(reducer, ScenarioScript.UdaOutputSpeed))));
 
-            FlyToBox(ModelBox(), SceneValues.ViewIntro, 1.5, SceneValues.OutroZoom);
-            _timeline.After(1.5, () => Orbit(SceneValues.OutroOrbitDegrees, SceneValues.OutroOrbitSeconds));
+            FlyToBox(ModelBox(), ScenarioScript.ViewIntro, 1.5, ScenarioScript.OutroZoom);
+            _runner.After(1.5, () => Orbit(ScenarioScript.OutroOrbitDegrees, ScenarioScript.OutroOrbitSeconds));
         }
 
         #endregion
@@ -906,13 +968,13 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 축 조립품마다 회전 속도 비(입력 = 1)를 구합니다. 이웃한 두 축에서 맞물린 기어 한 쌍(속성 Mate)의 잇수 비로 정해지고, 맞물릴 때마다 방향이 바뀝니다.
         private List<double> ShaftSpeeds()
         {
-            List<Data.Node> assemblies = Nodes(SceneValues.NameShaftAssemblies);
+            List<Data.Node> assemblies = Nodes(ScenarioScript.NameShaftAssemblies);
             List<Data.Node> gears = GearsWithMate();
             List<double> speeds = new List<double> { 1.0 };
             for (int i = 0; i + 1 < assemblies.Count; i++)
             {
-                Data.Node driver = gears.FirstOrDefault(g => IsUnder(g, assemblies[i]) && IsUnder(Node(Uda(g, SceneValues.UdaMate)), assemblies[i + 1]));
-                double ratio = driver == null ? 1.0 : (double)Teeth(driver) / Teeth(Node(Uda(driver, SceneValues.UdaMate)));
+                Data.Node driver = gears.FirstOrDefault(g => IsUnder(g, assemblies[i]) && IsUnder(Node(Uda(g, ScenarioScript.UdaMate)), assemblies[i + 1]));
+                double ratio = driver == null ? 1.0 : (double)Teeth(driver) / Teeth(Node(Uda(driver, ScenarioScript.UdaMate)));
                 speeds.Add(-speeds[i] * ratio);
             }
             return speeds;
@@ -923,15 +985,15 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private void StartSpin(bool rampUp, double hold, bool rampDown)
         {
             DeleteSpin();
-            List<Data.Node> assemblies = Nodes(SceneValues.NameShaftAssemblies);
+            List<Data.Node> assemblies = Nodes(ScenarioScript.NameShaftAssemblies);
             List<double> speeds = ShaftSpeeds();
 
             // 조각 목록 (길이 초, 속도 배율)
             List<Tuple<double, double>> pieces = new List<Tuple<double, double>>();
-            double piece = SceneValues.SpinRampSeconds / SceneValues.SpinRampSteps;
-            if (rampUp) for (int k = 1; k <= SceneValues.SpinRampSteps; k++) pieces.Add(Tuple.Create(piece, (k - 0.5) / SceneValues.SpinRampSteps));
+            double piece = ScenarioScript.SpinRampSeconds / ScenarioScript.SpinRampSteps;
+            if (rampUp) for (int k = 1; k <= ScenarioScript.SpinRampSteps; k++) pieces.Add(Tuple.Create(piece, (k - 0.5) / ScenarioScript.SpinRampSteps));
             pieces.Add(Tuple.Create(hold, 1.0));
-            if (rampDown) for (int k = SceneValues.SpinRampSteps; k >= 1; k--) pieces.Add(Tuple.Create(piece, (k - 0.5) / SceneValues.SpinRampSteps));
+            if (rampDown) for (int k = ScenarioScript.SpinRampSteps; k >= 1; k--) pieces.Add(Tuple.Create(piece, (k - 0.5) / ScenarioScript.SpinRampSteps));
 
             _spin = vizcore3dx.Animation.CreateAnimation("GearTrain");
             _spin.Activate();
@@ -947,7 +1009,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
                 double t = 0;
                 foreach (Tuple<double, double> p in pieces)
                 {
-                    float angle = (float)(2.0 * Math.PI * SceneValues.SpinInputTurnsPerSecond * speeds[i] * p.Item2 * p.Item1);
+                    float angle = (float)(2.0 * Math.PI * ScenarioScript.SpinInputTurnsPerSecond * speeds[i] * p.Item2 * p.Item1);
                     group.CreateRotationAction(Sec(t), Sec(p.Item1), center, axis, angle);
                     t += p.Item1;
                 }
@@ -960,7 +1022,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 축 조립품 아래에서 실제로 도는 부품 (속성 Type 이 SpinTypes 중 하나)
         private List<Data.Node> SpinParts(Data.Node assembly)
         {
-            return _allNodes.Where(n => IsUnder(n, assembly) && SceneValues.SpinTypes.Any(t => IsType(n, t))).ToList();
+            return _allNodes.Where(n => IsUnder(n, assembly) && ScenarioScript.SpinTypes.Any(t => IsType(n, t))).ToList();
         }
 
         private void DeleteSpin()
@@ -982,21 +1044,21 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             if (_originalXRayColor == null) _originalXRayColor = vizcore3dx.View.XRay.ColorType;
             vizcore3dx.View.XRay.ColorType = Data.XRayColorTypes.OBJECT_COLOR;
-            vizcore3dx.View.XRay.Select(Nodes(SceneValues.NameShaftAssemblies), true);
+            vizcore3dx.View.XRay.Select(Nodes(ScenarioScript.NameShaftAssemblies), true);
         }
 
         // 출력축을 인출한 높이(ShaftPull)에서 MountStep 씩 내려 안착하는 이동 간섭 검사를 만들고, 축을 맨 위 단계에 둡니다.
         // 고정 쪽은 보이는 부품 중 출력축 조립품을 뺀 전부입니다. ★숨긴 부품은 검사에서 빠집니다(실측 — 캡 볼트를 숨기면 간섭 0).
         private Data.ClashTest CreateMountTest()
         {
-            Data.Node shaft = Node(SceneValues.NameOutputShaftAssy);
+            Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
             List<Data.Node> fixedParts = vizcore3dx.Object3D.FromFilter(Data.Object3dFilter.VISIBLE_PART).Where(n => !IsUnder(n, shaft)).ToList();
             Data.ClashTest test = vizcore3dx.Clash.CreateMovingTest(fixedParts, new List<Data.Node> { shaft }, false, 0f, 0f, 0f);
             if (test == null) return null;
 
             // 경로를 더하는 동안 축이 실제로 움직입니다 — 올렸다 다 내리면 안착 위치로 돌아옵니다.
-            vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, SceneValues.ShaftPull), 0f, 0f, 0f);
-            foreach (float step in SceneValues.MountPath)
+            vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, ScenarioScript.ShaftPull), 0f, 0f, 0f);
+            foreach (float step in ScenarioScript.MountPath)
                 vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, -step), 0f, 0f, 0f);
 
             vizcore3dx.Clash.ApplyTestPath(test, vizcore3dx.Clash.GetTestPaths(test)[0].ID);
@@ -1013,15 +1075,15 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 출력축 베어링 캡을 하우징에 고정하는 볼트 조(볼트 + 와셔)
         private List<Data.Node> CapBoltSets()
         {
-            Data.Node shaft = Node(SceneValues.NameOutputShaftAssy);
-            return _allNodes.Where(n => IsType(n, SceneValues.TypeBolt) && IsUnder(n, shaft))
+            Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
+            return _allNodes.Where(n => IsType(n, ScenarioScript.TypeBolt) && IsUnder(n, shaft))
                 .Select(n => _byIndex[n.ParentIndex]).GroupBy(n => n.Index).Select(g => g.First()).ToList();
         }
 
         // 인출한 축(맨 위 단계)과 아래 기어열이 함께 들어오는 범위 — 하우징 상자는 치워 둔 커버까지 품어 너무 커서 쓰지 않습니다.
         private Data.BoundBox3D MountViewBox()
         {
-            return vizcore3dx.Object3D.GetBoundBox(Nodes(SceneValues.NameShaftAssemblies));
+            return vizcore3dx.Object3D.GetBoundBox(Nodes(ScenarioScript.NameShaftAssemblies));
         }
 
         // node 가 root 아래(또는 root 자신)인지
@@ -1044,17 +1106,17 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 장면이 쓰는 부품이 열린 모델에 모두 있는지 확인합니다. 이름은 정확히 일치해야 합니다.
         private bool IsModelReady()
         {
-            List<string> names = new List<string> { SceneValues.NameReducer, SceneValues.NameFlangeBolts, SceneValues.NameOutputShaftAssy, SceneValues.NameMeshGear };
-            names.AddRange(SceneValues.NameLidParts);
-            names.Add(SceneValues.NameHousing);
-            names.AddRange(SceneValues.NameShafts);
-            names.AddRange(SceneValues.NameShaftAssemblies);
+            List<string> names = new List<string> { ScenarioScript.NameReducer, ScenarioScript.NameFlangeBolts, ScenarioScript.NameOutputShaftAssy, ScenarioScript.NameMeshGear };
+            names.AddRange(ScenarioScript.NameLidParts);
+            names.Add(ScenarioScript.NameHousing);
+            names.AddRange(ScenarioScript.NameShafts);
+            names.AddRange(ScenarioScript.NameShaftAssemblies);
 
             string missing = names.FirstOrDefault(n => !_byName.ContainsKey(n));
-            if (missing == null && !_byName.ContainsKey(Uda(_byName[SceneValues.NameMeshGear], SceneValues.UdaMate))) missing = SceneValues.NameMeshGear + " 의 속성 " + SceneValues.UdaMate;
+            if (missing == null && !_byName.ContainsKey(Uda(_byName[ScenarioScript.NameMeshGear], ScenarioScript.UdaMate))) missing = ScenarioScript.NameMeshGear + " 의 속성 " + ScenarioScript.UdaMate;
             if (missing == null) return true;
 
-            SetStatus(string.Format("부품 '{0}' 이 모델에 없습니다. 샘플 모델 Gearbox.vizx 를 열거나 SceneValues.cs 의 부품 이름을 바꿔 주세요.", missing));
+            SetStatus(string.Format("부품 '{0}' 이 모델에 없습니다. 샘플 모델 Gearbox.vizx 를 열거나 ScenarioScript.cs 의 부품 이름을 바꿔 주세요.", missing));
             return false;
         }
 
@@ -1091,7 +1153,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             if (_housingHidden == !visible) return;
             if (_byName.Count == 0) return;
 
-            vizcore3dx.Object3D.Show(Node(SceneValues.NameHousing), visible);
+            vizcore3dx.Object3D.Show(Node(ScenarioScript.NameHousing), visible);
             _housingHidden = !visible;
         }
 
@@ -1131,25 +1193,25 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 두 축 중심 사이 X 방향 거리를 잽니다. 글자는 두 점 가운데 위쪽에 둡니다.
         private void AddAxialDistance(Data.Vector3D from, Data.Vector3D to)
         {
-            Data.Vector3D text = (from + to) * 0.5f + new Data.Vector3D(0f, 0f, SceneValues.DimensionLift);
+            Data.Vector3D text = (from + to) * 0.5f + new Data.Vector3D(0f, 0f, ScenarioScript.DimensionLift);
             uint id;
             if (vizcore3dx.Measure.AddDistanceAxialDirection(Data.AxisDistanceDirection.X, text, from, to, out id)) StyleMeasure(id, 1);
         }
 
         // 측정 하나의 표시 스타일을 바꿉니다(전역 설정은 건드리지 않음) — 어두운 상자 · 흰 글씨 · 강조색 선.
-        private void StyleMeasure(uint id, byte decimals, Data.TextSizeType textSize = SceneValues.LabelTextSize)
+        private void StyleMeasure(uint id, byte decimals, Data.TextSizeType textSize = ScenarioScript.LabelTextSize)
         {
             Data.MeasureCustomStyle style = vizcore3dx.Measure.GetStyle(id);
             if (style == null) return;
 
-            style.BoxFillColor = SceneValues.ColorPanel;
-            style.BoxStrokeColor = SceneValues.ColorAccent;
-            style.TextColor = SceneValues.ColorText;
+            style.BoxFillColor = ScenarioScript.ColorPanel;
+            style.BoxStrokeColor = ScenarioScript.ColorAccent;
+            style.TextColor = ScenarioScript.ColorText;
             style.TextSize = textSize;
-            style.LineStrokeColor = SceneValues.ColorAccent;
-            style.LineStrokeThickness = SceneValues.LineThickness;
-            style.ArrowColor = SceneValues.ColorAccent;
-            style.ArrowHeadSize = SceneValues.ArrowHeadSize;
+            style.LineStrokeColor = ScenarioScript.ColorAccent;
+            style.LineStrokeThickness = ScenarioScript.LineThickness;
+            style.ArrowColor = ScenarioScript.ColorAccent;
+            style.ArrowHeadSize = ScenarioScript.ArrowHeadSize;
             style.DecimalPlace = decimals;
             style.IsTypeEnabled = false;
             style.IsUnitEnabled = true;
@@ -1162,9 +1224,9 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             Data.ClashSweepStyle style = vizcore3dx.Clash.Sweep.Style;
             if (_originalSweepStyle == null) _originalSweepStyle = style.Clone();
 
-            style.VolumeOpacity = SceneValues.SweepVolumeOpacity;
-            style.FreeColor = SceneValues.SweepFreeColor;
-            style.BlockedColor = SceneValues.SweepBlockedColor;
+            style.VolumeOpacity = ScenarioScript.SweepVolumeOpacity;
+            style.FreeColor = ScenarioScript.SweepFreeColor;
+            style.BlockedColor = ScenarioScript.SweepBlockedColor;
             style.ShowNearMiss = false;
             style.ShowArrow = true;
         }
@@ -1186,10 +1248,10 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private Data.BoundBox3D LidPathBox()
         {
             Data.BoundBox3D m = ModelBox();
-            Data.Vector3D d = SceneValues.LidAsideDirection * SceneValues.LidAside;
+            Data.Vector3D d = ScenarioScript.LidAsideDirection * ScenarioScript.LidAside;
             return new Data.BoundBox3D(
                 Math.Min(m.MinX, m.MinX + d.X), Math.Min(m.MinY, m.MinY + d.Y), m.MinZ,
-                Math.Max(m.MaxX, m.MaxX + d.X), Math.Max(m.MaxY, m.MaxY + d.Y), m.MaxZ + SceneValues.LidLift);
+                Math.Max(m.MaxX, m.MaxX + d.X), Math.Max(m.MaxY, m.MaxY + d.Y), m.MaxZ + ScenarioScript.LidLift);
         }
 
         // 방향 스윕 볼륨(최대 거리만큼 뻗음)이 들어오는 범위 — 대상 위쪽으로만 늘립니다(통과 방향이 위라서).
@@ -1197,7 +1259,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         {
             Data.BoundBox3D m = ModelBox();
             Data.BoundBox3D t = target.GetBoundBox();
-            return new Data.BoundBox3D(m.MinX, m.MinY, m.MinZ, m.MaxX, m.MaxY, (float)Math.Max(m.MaxZ, t.MaxZ + SceneValues.SweepMaxDistance * 0.6));
+            return new Data.BoundBox3D(m.MinX, m.MinY, m.MinZ, m.MaxX, m.MaxY, (float)Math.Max(m.MaxZ, t.MaxZ + ScenarioScript.SweepMaxDistance * 0.6));
         }
 
         // 여러 상태(단면·숨김·X-Ray·애니메이션 등)를 한꺼번에 바꿀 때 — 중간 과정이 화면에 그려지지 않게 렌더링을 묶습니다.
@@ -1230,7 +1292,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             HashSet<int> indices;
             if (!_typeIndex.TryGetValue(type, out indices))
             {
-                indices = new HashSet<int>(vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes(SceneValues.UdaCategory, SceneValues.UdaType, type).Select(n => n.Index));
+                indices = new HashSet<int>(vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes(ScenarioScript.UdaCategory, ScenarioScript.UdaType, type).Select(n => n.Index));
                 _typeIndex[type] = indices;
             }
             return indices.Contains(node.Index);
@@ -1240,14 +1302,14 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private static int Teeth(Data.Node gear)
         {
             int teeth;
-            return int.TryParse(Uda(gear, SceneValues.UdaTeeth), out teeth) ? teeth : 0;
+            return int.TryParse(Uda(gear, ScenarioScript.UdaTeeth), out teeth) ? teeth : 0;
         }
 
         // 속성 Type=Gear 이고 상대 기어(Mate)가 모델에 있는 기어들
         private List<Data.Node> GearsWithMate()
         {
-            return vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes(SceneValues.UdaCategory, SceneValues.UdaType, SceneValues.TypeGear)
-                .Where(g => _byName.ContainsKey(Uda(g, SceneValues.UdaMate))).ToList();
+            return vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes(ScenarioScript.UdaCategory, ScenarioScript.UdaType, ScenarioScript.TypeGear)
+                .Where(g => _byName.ContainsKey(Uda(g, ScenarioScript.UdaMate))).ToList();
         }
 
         private static TimeSpan Sec(double seconds)
@@ -1280,7 +1342,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             double fov = vizcore3dx.View.FOV;
             if (fov < 1.0 || fov > 120.0) fov = 30.0;
 
-            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * SceneValues.FitMargin);
+            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * ScenarioScript.FitMargin);
         }
 
         // target 을 direction 방향으로 distance 만큼 떨어져 바라보도록 seconds 초 동안 이동합니다.
@@ -1323,16 +1385,17 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             return false;
         }
 
+        // 상태 문구를 창 제목줄에 적습니다.
         private void SetStatus(string text)
         {
-            lblStatus.Text = text;
+            Text = "VIZCore3DX.NET.Scenario.GearboxMaintenance — " + text;
         }
 
         // 3D 뷰 왼쪽 위에 문구 하나를 띄웁니다. 이전 문구는 지웁니다.
         private void ShowHud(string text)
         {
             if (_hud != null) vizcore3dx.View.Message.Delete(_hud);
-            _hud = vizcore3dx.View.Message.Create(text, SceneValues.HudPosition, SceneValues.HudColor, SceneValues.HudTextSize, true, true);
+            _hud = vizcore3dx.View.Message.Create(text, ScenarioScript.HudPosition, ScenarioScript.HudColor, ScenarioScript.HudTextSize, true, true);
         }
 
         // 3D 뷰 왼쪽 위 문구를 지웁니다.

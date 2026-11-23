@@ -2,11 +2,43 @@
 
 namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 {
-    // 장면에 쓰는 값(부품 이름·속성 키·이동 거리·시간·색·카메라 방향)을 한 곳에 모읍니다.
+    // 대본 표입니다. 장면의 설명·길이와 장면에 쓰는 값(부품 이름·속성 키·이동 거리·시간·색·카메라 방향)을 이 파일 한 곳에 모읍니다.
     // 이 이름·속성은 SDK 샘플 모델 부품\Gearbox.vizx 기준입니다. 실제 데이터에서는 이 표를 그 모델의 부품 이름·속성에 맞게 갈아 끼웁니다.
     // 이야기 : 돌고 있던 감속기를 멈춰 → 커버를 열고 → 출력축을 뺄 방향을 찾아 빼고 → 다시 넣는 경로를 검사하고 → 치수를 확인한 뒤 → 다시 돌립니다.
-    internal static class SceneValues
+    internal static class ScenarioScript
     {
+        // ------------------------------------------------------------
+        // 장면 (이름 · 설명 · 길이 초) — 재생 순서. 길이는 [전체 재생]에서 다음 장면으로 넘어가기까지의 시간입니다.
+        // ------------------------------------------------------------
+        public static readonly ScenarioShot Running = new ScenarioShot("01 운전",
+            "X-Ray 로 비춘 기어열이 돌다가 서서히 정지", 11);
+
+        public static readonly ScenarioShot OpenCover = new ScenarioShot("02 상부 커버 열기",
+            "플랜지 볼트를 한 조씩 풀고 커버를 들어 치우기", 10);
+
+        // 방향 검사는 비동기라, 길이는 검사를 시작한 때부터 셉니다.
+        public static readonly ScenarioShot Sweep = new ScenarioShot("03 인출 방향 검사",
+            "출력축 조립품을 6방향으로 밀어 보기", 12);
+
+        public static readonly ScenarioShot PullOut = new ScenarioShot("04 출력축 인출",
+            "베어링 캡 볼트를 빼고 통과 방향으로 출력축 들어 올리기", 10);
+
+        public static readonly ScenarioShot Explode = new ScenarioShot("05 전체 분해",
+            "부품마다 방향을 정해 펼치는 점검용 전개도", 14);
+
+        // 탑재 검사는 캡 볼트를 끼운 채 한 번, 뺀 채 한 번 — 두 번의 이동 간섭 검사가 끝날 때까지 기다립니다.
+        public static readonly ScenarioShot Mount = new ScenarioShot("06 탑재 경로 검사",
+            "다시 내려 안착하는 경로를 단계마다 이동 간섭 검사", 20);
+
+        public static readonly ScenarioShot Verify = new ScenarioShot("07 조립 검증",
+            "축간 거리를 설계값과 견주고 맞물림 틈 확인", 11);
+
+        public static readonly ScenarioShot Restart = new ScenarioShot("08 재가동",
+            "커버·볼트를 되돌리고 기어열을 다시 돌리기", 11);
+
+        // 리본 장면 버튼의 문구 (재생 순서). 한 줄 80px 를 넘으면 띄어쓰기에서 두 줄로 나뉩니다.
+        public static readonly string[] SceneLabels = { "운전", "커버 열기", "인출 방향", "축 인출", "분해", "탑재 경로", "조립 검증", "재가동" };
+
         // ------------------------------------------------------------
         // 부품 이름 (모델 트리 이름과 정확히 일치 — 샘플 모델은 모든 노드 이름이 유일합니다)
         // ------------------------------------------------------------
