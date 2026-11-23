@@ -52,37 +52,37 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             Agents = new List<Agent>();
 
-            int floorPort = AddNode(SceneValues.NodeFloorPortLadder, "좌현 사다리");
-            int platPort = AddNode(SceneValues.NodePlatformPortLadder, "");
-            int floorStbd = AddNode(SceneValues.NodeFloorStbdLadder, "우현 사다리");
-            int platStbd = AddNode(SceneValues.NodePlatformStbdLadder, "");
-            AddLink(floorPort, platPort, "ladder", SceneValues.LadderWidth);
-            AddLink(floorStbd, platStbd, "ladder", SceneValues.LadderWidth);
+            int floorPort = AddNode(ScenarioScript.NodeFloorPortLadder, "좌현 사다리");
+            int platPort = AddNode(ScenarioScript.NodePlatformPortLadder, "");
+            int floorStbd = AddNode(ScenarioScript.NodeFloorStbdLadder, "우현 사다리");
+            int platStbd = AddNode(ScenarioScript.NodePlatformStbdLadder, "");
+            AddLink(floorPort, platPort, "ladder", ScenarioScript.LadderWidth);
+            AddLink(floorStbd, platStbd, "ladder", ScenarioScript.LadderWidth);
 
             // 계단 탑 — 단마다 디딤판 구간(stair)을 오르고, 계단참(landing)에서 옆줄로 건너 되꺾습니다.
-            float[] levels = SceneValues.StairLevels;
-            float middle = (SceneValues.StairLaneA + SceneValues.StairLaneB) / 2f;
-            int from = AddNode(new Data.Vector3D(SceneValues.StairX0, SceneValues.StairLaneA, levels[0]), "계단");
+            float[] levels = ScenarioScript.StairLevels;
+            float middle = (ScenarioScript.StairLaneA + ScenarioScript.StairLaneB) / 2f;
+            int from = AddNode(new Data.Vector3D(ScenarioScript.StairX0, ScenarioScript.StairLaneA, levels[0]), "계단");
             AddLink(platPort, from, "walk", 0f);
             AddLink(platStbd, from, "walk", 0f);
             for (int i = 1; i < levels.Length; i++)
             {
                 bool forward = i % 2 == 1;   // 홀수 단은 A 줄에서 X0 → X1, 짝수 단은 B 줄에서 X1 → X0
-                float endX = forward ? SceneValues.StairX1 : SceneValues.StairX0;
-                int top = AddNode(new Data.Vector3D(endX, forward ? SceneValues.StairLaneA : SceneValues.StairLaneB, levels[i]), "");
-                AddLink(from, top, "stair", SceneValues.StairWidth);
+                float endX = forward ? ScenarioScript.StairX1 : ScenarioScript.StairX0;
+                int top = AddNode(new Data.Vector3D(endX, forward ? ScenarioScript.StairLaneA : ScenarioScript.StairLaneB, levels[i]), "");
+                AddLink(from, top, "stair", ScenarioScript.StairWidth);
 
-                float landingX = forward ? endX + SceneValues.LandingDepth / 2f : endX - SceneValues.LandingDepth / 2f;
+                float landingX = forward ? endX + ScenarioScript.LandingDepth / 2f : endX - ScenarioScript.LandingDepth / 2f;
                 int landing = AddNode(new Data.Vector3D(landingX, middle, levels[i]), i == levels.Length - 1 ? "상갑판 출구" : "");
                 AddLink(top, landing, "landing", 0f);
                 if (i == levels.Length - 1) { from = landing; break; }
 
-                int next = AddNode(new Data.Vector3D(endX, forward ? SceneValues.StairLaneB : SceneValues.StairLaneA, levels[i]), "");
+                int next = AddNode(new Data.Vector3D(endX, forward ? ScenarioScript.StairLaneB : ScenarioScript.StairLaneA, levels[i]), "");
                 AddLink(landing, next, "landing", 0f);
                 from = next;
             }
 
-            _muster = AddNode(SceneValues.NodeMuster, "");
+            _muster = AddNode(ScenarioScript.NodeMuster, "");
             AddLink(from, _muster, "walk", 0f);
         }
 
@@ -158,9 +158,9 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             {
                 AvatarID = avatarID,
                 Position = start,
-                Walk = Uniform(random, SceneValues.WalkSpeedMin, SceneValues.WalkSpeedMax),
-                StairUp = Uniform(random, SceneValues.StairUpSpeedMin, SceneValues.StairUpSpeedMax),
-                Response = random.NextDouble() * SceneValues.ResponseMaxSeconds,
+                Walk = Uniform(random, ScenarioScript.WalkSpeedMin, ScenarioScript.WalkSpeedMax),
+                StairUp = Uniform(random, ScenarioScript.StairUpSpeedMin, ScenarioScript.StairUpSpeedMax),
+                Response = random.NextDouble() * ScenarioScript.ResponseMaxSeconds,
             };
 
             int entry = Entry(start);
@@ -219,8 +219,8 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             return new Agent
             {
-                Walk = (SceneValues.WalkSpeedMin + SceneValues.WalkSpeedMax) / 2,
-                StairUp = (SceneValues.StairUpSpeedMin + SceneValues.StairUpSpeedMax) / 2,
+                Walk = (ScenarioScript.WalkSpeedMin + ScenarioScript.WalkSpeedMax) / 2,
+                StairUp = (ScenarioScript.StairUpSpeedMin + ScenarioScript.StairUpSpeedMax) / 2,
             };
         }
 
@@ -282,7 +282,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             // 계단·사다리도 양 끝을 잇는 실제 경사 길이 (속도는 Circ.1533 의 경사 길이 기준)
             double length = Distance(_nodes[a], _nodes[b]);
-            double headway = widthM > 0f ? 1.0 / (SceneValues.FlowPerMeter * widthM) : 0.0;
+            double headway = widthM > 0f ? 1.0 / (ScenarioScript.FlowPerMeter * widthM) : 0.0;
             _links.Add(new Link { A = a, B = b, Kind = kind, LengthM = length, Headway = headway });
         }
 
@@ -324,7 +324,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private static double Speed(Agent agent, Link link)
         {
             if (link.Kind == "stair") return agent.StairUp;
-            if (link.Kind == "ladder") return SceneValues.LadderUpSpeed;
+            if (link.Kind == "ladder") return ScenarioScript.LadderUpSpeed;
             return agent.Walk;
         }
 

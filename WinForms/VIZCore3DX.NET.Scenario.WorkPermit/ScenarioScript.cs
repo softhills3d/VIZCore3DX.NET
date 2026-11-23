@@ -3,12 +3,40 @@ using System.Drawing;
 
 namespace VIZCore3DX.NET.Scenario.WorkPermit
 {
-    // 장면에 쓰는 값(위치·방향·색·판정 기준·문구)을 한 곳에 모읍니다.
+    // 대본 표입니다. 장면의 설명·길이와 장면에 쓰는 값(위치·방향·색·판정 기준·문구)을 이 파일 한 곳에 모읍니다.
     // 이 좌표들은 SDK 샘플 모델 선박\AftSection_RevA.vizx 에서 잰 값입니다. 실제 데이터에서는 이 표를 그 모델의 구획에 맞게 갈아 끼웁니다.
     //
     // 판정 기준 옆의 [ ] 는 근거 수준입니다 — [1차] 원문 확인 · [2차] 해설·2차 자료 · [예시값] 출처 없음(사내 기준으로 바꿀 값).
-    internal static class SceneValues
+    internal static class ScenarioScript
     {
+        // ------------------------------------------------------------
+        // 장면 (이름 · 설명 · 길이 초) — 재생 순서. 길이는 [전체 재생]에서 다음 장면으로 넘어가기까지의 시간입니다.
+        // ------------------------------------------------------------
+        public static readonly ScenarioShot Permits = new ScenarioShot("01 오늘의 작업 허가",
+            "허가 5건을 실제 구획에 공간으로", 17);
+
+        public static readonly ScenarioShot TankBelow = new ScenarioShot("02 도장 중인 탱크 위 화기",
+            "아래 방향 접촉과 통로 연결로 인접 판정", 20);
+
+        public static readonly ScenarioShot SparkFall = new ScenarioShot("03 플랫폼 화기의 불티",
+            "반경 11 m 안의 작업과 바로 아래 가연물", 21);
+
+        public static readonly ScenarioShot Headcount = new ScenarioShot("04 밀폐 공간 출입 인원",
+            "허가 인원과 위치로 센 인원 대조", 19);
+
+        public static readonly ScenarioShot DropZone = new ScenarioShot("05 낙하물과 정지 허가",
+            "낙하물 통제 구역과 정지 허가의 겹침", 17);
+
+        // 대피는 시뮬레이션이 끝나 전원이 집결할 때까지 기다립니다.
+        public static readonly ScenarioShot Evacuation = new ScenarioShot("06 화재 · 전원 대피",
+            "막힌 길목을 빼고 집결지까지 경로를 다시 계산", 40);
+
+        public static readonly ScenarioShot Outro = new ScenarioShot("07 마무리",
+            "허가 구역을 다시 모두", 10);
+
+        // 리본 장면 버튼의 문구 (재생 순서). 한 줄 80px 를 넘으면 띄어쓰기에서 두 줄로 나뉩니다.
+        public static readonly string[] SceneLabels = { "작업 허가", "탱크 위 화기", "불티", "출입 인원", "낙하물", "대피", "마무리" };
+
         // ------------------------------------------------------------
         // 3D 화면
         // ------------------------------------------------------------

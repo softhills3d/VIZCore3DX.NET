@@ -10,18 +10,19 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 {
     // 시나리오 예제 "작업 허가(PTW) — 공간으로 확인하는 안전"
     // 작업 장소를 공간(Zone)으로 만들고, 공간끼리의 기하 판정(겹침·거리·포함)으로 위험을 찾아 이펙트로 보여 줍니다.
-    // 장면 하나 = 메서드 하나(#region 장면), 장면에 쓰는 값은 SceneValues.cs 한 곳에, 대피 계산은 EvacuationSim.cs 에 있습니다.
+    // 장면 하나 = 메서드 하나(#region 장면), 장면의 설명·길이와 장면에 쓰는 값은 ScenarioScript.cs 한 곳에, 재생은 ScenarioRunner.cs 에,
+    // 대피 계산은 EvacuationSim.cs 에 있습니다.
     public partial class FrmMain : Form
     {
         // VIZCore3DX.NET 선언
         private VIZCore3DX.NET.VIZCore3DXControl vizcore3dx;
 
-        // 장면 목록(이름, 장면 메서드)과 다음에 진행할 장면 번호
-        private readonly List<KeyValuePair<string, Action>> _scenes = new List<KeyValuePair<string, Action>>();
-        private int _next;
+        // 조작부 — 리본 사용자 탭 "시나리오" (뷰어 초기화 뒤에 만듭니다)
+        private ScenarioRibbon _ribbon;
 
-        // 장면 안의 동작을 시간 순서로 실행하는 타이머
-        private readonly SceneTimeline _timeline = new SceneTimeline();
+        // 대본과 재생기
+        private List<ScenarioShot> _shots;
+        private ScenarioRunner _runner;
 
         // 모델 전체의 범위
         private Data.BoundBox3D _modelBox;
@@ -46,7 +47,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private Data.XRayColorTypes? _originalXRayColor;
 
         // 탱크 공간(다면체)의 경계 상자 — 카메라·창·라벨 자리에 씁니다
-        private Data.BoundBox3D _keelBox = SceneValues.ZoneKeel;
+        private Data.BoundBox3D _keelBox = ScenarioScript.ZoneKeel;
 
         // 탱크 바닥 판 (01 장면에서 찾아 둠)
         private List<Data.Node> _tankFloor = new List<Data.Node>();
@@ -80,8 +81,11 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             InitializeComponent();
 
-            // 장면 목록은 뷰어와 무관하므로 생성자에서 채웁니다.
-            InitializeScenes();
+            // 대본 목록은 뷰어와 무관하므로 생성자에서 채웁니다.
+            _shots = BuildShots();
+
+            _runner = new ScenarioRunner(_shots);
+            _runner.ShotStarted += Runner_ShotStarted;
 
             // Initialize VIZCore3DX.NET
             VIZCore3DX.NET.ModuleInitializer.Run();
@@ -89,9 +93,9 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             // Construction
             vizcore3dx = new VIZCore3DX.NET.VIZCore3DXControl();
             vizcore3dx.Dock = DockStyle.Fill;
-            splitContainer1.Panel2.Controls.Add(vizcore3dx);
+            this.Controls.Add(vizcore3dx);
 
-            _evacuationTimer.Interval = SceneValues.EvacuationTickMs;
+            _evacuationTimer.Interval = ScenarioScript.EvacuationTickMs;
             _evacuationTimer.Tick += EvacuationTimer_Tick;
 
             // Event
@@ -127,70 +131,119 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
         private void InitializeVIZCore3DX()
         {
-            // 리본 UI 를 기본으로 켜고, 이 예제가 다루는 리본·패널 탭만 남깁니다.
+            // 리본 UI 를 기본으로 켜고, 사용자 탭 "시나리오"만 남깁니다.
             vizcore3dx.RibbonMode = true;
             ShowRibbonTabs();
             ShowAttributeTabs();
+            InitializeRibbon();
 
             SetStatus("모델을 열어 주세요.");
         }
 
-        // 장면 이름과 장면 메서드를 순서대로 등록합니다. 이 순서가 진행 순서입니다.
-        private void InitializeScenes()
+        // 리본에 사용자 탭 "시나리오"를 만들고, 버튼을 이 폼의 핸들러에 잇습니다.
+        private void InitializeRibbon()
         {
-            _scenes.Add(new KeyValuePair<string, Action>("01 오늘의 작업 허가", ScenePermits));
-            _scenes.Add(new KeyValuePair<string, Action>("02 도장 중인 탱크 위 화기", SceneTankBelow));
-            _scenes.Add(new KeyValuePair<string, Action>("03 플랫폼 화기의 불티", SceneSparkFall));
-            _scenes.Add(new KeyValuePair<string, Action>("04 밀폐 공간 출입 인원", SceneHeadcount));
-            _scenes.Add(new KeyValuePair<string, Action>("05 낙하물과 정지 허가", SceneDropZone));
-            _scenes.Add(new KeyValuePair<string, Action>("06 화재 · 전원 대피", SceneEvacuation));
-            _scenes.Add(new KeyValuePair<string, Action>("07 마무리", SceneOutro));
+            List<string> names = new List<string>();
+            for (int i = 0; i < _shots.Count; i++) names.Add(_shots[i].Name);
 
-            foreach (KeyValuePair<string, Action> scene in _scenes)
-                lstScenes.Items.Add(scene.Key);
+            _ribbon = new ScenarioRibbon(vizcore3dx, ScenarioScript.SceneLabels, names);
+            _ribbon.OpenModel += Ribbon_OpenModel;
+            _ribbon.PlayAll += Ribbon_PlayAll;
+            _ribbon.Reset += Ribbon_Reset;
+            _ribbon.GoScene += Ribbon_GoScene;
+            _ribbon.Build();
         }
 
-        // 창을 닫을 때 대피 타이머와 장면 타이머부터 멈춥니다.
+        // 대본 표의 장면에 장면 메서드를 잇습니다. 이 순서가 재생 순서입니다.
+        private List<ScenarioShot> BuildShots()
+        {
+            ScenarioScript.Permits.Play = ScenePermits;
+            ScenarioScript.TankBelow.Play = SceneTankBelow;
+            ScenarioScript.SparkFall.Play = SceneSparkFall;
+            ScenarioScript.Headcount.Play = SceneHeadcount;
+            ScenarioScript.DropZone.Play = SceneDropZone;
+            ScenarioScript.Evacuation.Play = SceneEvacuation;
+            ScenarioScript.Outro.Play = SceneOutro;
+
+            // 번호 버튼으로 바로 볼 때 먼저 실행할 장면 — 02~07 은 01 이 만든 허가 공간을 씁니다.
+            foreach (ScenarioShot shot in new[] { ScenarioScript.TankBelow, ScenarioScript.SparkFall, ScenarioScript.Headcount,
+                ScenarioScript.DropZone, ScenarioScript.Evacuation, ScenarioScript.Outro })
+                shot.Before = new[] { 1 };
+
+            return new List<ScenarioShot>
+            {
+                ScenarioScript.Permits, ScenarioScript.TankBelow, ScenarioScript.SparkFall, ScenarioScript.Headcount,
+                ScenarioScript.DropZone, ScenarioScript.Evacuation, ScenarioScript.Outro,
+            };
+        }
+
+        // 창을 닫을 때 대피 타이머와 재생 타이머부터 멈춥니다.
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             _evacuationTimer.Stop();
-            _timeline.Stop();
+            _runner.Reset();
             base.OnFormClosing(e);
+        }
+
+        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape && _runner.IsPlaying)
+            {
+                _runner.Reset();
+                SetStatus("재생을 중단했습니다.");
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion
 
         #region 1. 모델
 
-        // 모델을 엽니다. 작업 구역 좌표는 샘플 모델에 맞춰 있습니다(SceneValues.cs).
-        private void btnOpenModel_Click(object sender, EventArgs e)
+        // 모델을 엽니다. 작업 구역 좌표는 샘플 모델 선박\AftSection_RevA.vizx 에 맞춰 있습니다(ScenarioScript.cs).
+        private void Ribbon_OpenModel()
         {
+            if (_runner.IsPlaying) return;
             if (vizcore3dx.Model.OpenFileDialog() == false) return;
 
             ClearScene();
-            SetStatus("모델을 열었습니다. [다음 장면]을 누르세요.");
+            SetStatus("모델을 열었습니다. [전체 재생]이나 장면 번호를 누르세요.");
         }
 
         #endregion
 
         #region 3. 장면
 
-        // 다음 장면을 진행합니다. 첫 장면 전에 작업 구역이 모델 안에 있는지 확인하고, 장면마다 이전 장면의 예약 동작은 취소합니다.
-        private void btnNext_Click(object sender, EventArgs e)
+        // 첫 장면부터 끝까지 이어서 재생합니다. 첫 장면 전에 작업 구역이 모델 안에 있는지 확인합니다.
+        private void Ribbon_PlayAll()
         {
-            if (!IsModelOpened()) return;
-            if (_next >= _scenes.Count) { SetStatus("마지막 장면입니다. [처음으로]를 누르세요."); return; }
+            if (!IsModelOpened() || !IsModelReady()) return;
 
-            if (_next == 0)
+            ClearScene();
+            _runner.PlayAll();
+        }
+
+        // 번호 버튼 — 그 장면을 재생합니다. 바로 앞 장면에 이어 누른 것이 아니면 처음 상태로 되돌리고 선행 장면을 실행한 뒤 재생합니다.
+        private void Ribbon_GoScene(int first, int last)
+        {
+            if (!IsModelOpened() || !IsModelReady()) return;
+
+            if (_runner.IsReadyFor(first))
             {
-                if (!IsModelReady()) return;
-                ClearScene();
+                _runner.PlayFrom(first, last);
+                return;
             }
 
-            _timeline.Clear();
-            lstScenes.SelectedIndex = _next;
-            SetStatus("장면 : " + _scenes[_next].Key);
-            _scenes[_next++].Value();
+            ClearScene();
+            _runner.Prepare(first, () => _runner.PlayFrom(first, last));
+        }
+
+        private void Runner_ShotStarted(ScenarioShot shot)
+        {
+            _ribbon.SetCurrent(_runner.Index);
+            SetStatus(shot.Name + " — " + shot.Caption);
         }
 
         // 대피 한 틱 — 시뮬레이션을 진행하고 아바타를 다음 위치로 보간 이동시킵니다.
@@ -198,13 +251,13 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             if (_evacuation == null) { _evacuationTimer.Stop(); return; }
 
-            _evacuation.Step(SceneValues.EvacuationTickMs / 1000.0 * SceneValues.TimeScale);
+            _evacuation.Step(ScenarioScript.EvacuationTickMs / 1000.0 * ScenarioScript.TimeScale);
             int arrived = MoveEvacuees();
             ShowQueues();
 
             int count = _evacuation.Agents.Count;
             ShowHud(string.Format("집결 {0}/{1} · 대피 중 {2}", arrived, count, count - arrived));
-            ShowSpeedHud(string.Format(SceneValues.SpeedHudText, SceneValues.TimeScale, _evacuation.Time));
+            ShowSpeedHud(string.Format(ScenarioScript.SpeedHudText, ScenarioScript.TimeScale, _evacuation.Time));
             if (!_evacuation.IsFinished) return;
 
             FinishEvacuation(arrived, count);
@@ -215,19 +268,18 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         #region 5. 정리
 
         // 어느 장면에서든 처음 상태로 되돌립니다.
-        private void btnReset_Click(object sender, EventArgs e)
+        private void Ribbon_Reset()
         {
             ClearScene();
             if (vizcore3dx.Model.IsOpen()) vizcore3dx.View.FitToView();
             SetStatus("처음으로 되돌렸습니다.");
         }
 
-        // 장면 진행을 처음으로 되돌리고, 시나리오가 만든 공간·이펙트·3D 표시를 전부 지웁니다.
+        // 재생을 멈추고 처음으로 되돌린 뒤, 시나리오가 만든 공간·이펙트·3D 표시를 전부 지웁니다.
         private void ClearScene()
         {
-            _timeline.Clear();
-            _next = 0;
-            lstScenes.SelectedIndex = -1;
+            _runner.Reset();
+            if (_ribbon != null) _ribbon.SetCurrent(0);
 
             StopEvacuation();
             if (vizcore3dx.Model.IsOpen()) Clear3D();
@@ -254,9 +306,9 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 if (_originalZoneStyle != null) vizcore3dx.Zone.SetStyle(_originalZoneStyle);
                 _originalZoneStyle = null;
 
-                ClearEffects(SceneValues.Groups);
+                ClearEffects(ScenarioScript.Groups);
                 vizcore3dx.View.Effect.ClearWeldingSparks();
-                vizcore3dx.Shape.Delete(SceneValues.StairCategory);
+                vizcore3dx.Shape.Delete(ScenarioScript.StairCategory);
 
                 RestoreModelView();
                 ClearHud();
@@ -314,14 +366,14 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             int[] permits = { _keelZone, _floorHotZone, _platformHotZone, _funnelZone, _deckZone };
             ShowHud(string.Format("허가 {0}건 · 활성 3 · 요청 1 · 정지 1 · 공간 생성 {1} ms\nP1 탱크·P4 연돌은 둘레의 실제 판에서 찾은 평면으로 닫은 다면체", permits.Length, watch.ElapsedMilliseconds));
 
-            FlyToBox(_modelBox, SceneValues.ViewOverview, 2.0);
+            FlyToBox(_modelBox, ScenarioScript.ViewOverview, 2.0);
             for (int i = 0; i < permits.Length; i++)
             {
                 int id = permits[i];
-                _timeline.After(2.0 + i * SceneValues.ZoneStepSeconds, () => RevealZone(id));
+                _runner.After(2.0 + i * ScenarioScript.ZoneStepSeconds, () => RevealZone(id));
             }
-            _timeline.After(2.0 + permits.Length * SceneValues.ZoneStepSeconds, ShowPermitsInXRay);
-            _timeline.After(2.0 + permits.Length * SceneValues.ZoneStepSeconds + 4.5, ShowTankSection);
+            _runner.After(2.0 + permits.Length * ScenarioScript.ZoneStepSeconds, ShowPermitsInXRay);
+            _runner.After(2.0 + permits.Length * ScenarioScript.ZoneStepSeconds + 4.5, ShowTankSection);
         }
 
         // 02 도장 중인 탱크 위 화기 — 이중저 탱크 도장 중에 바로 위 플로어 용접을 요청합니다. 아래 방향 접촉과 통로 연결로 인접을 판정해 허가를 보류합니다.
@@ -330,11 +382,11 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             Data.Vector3D from, to;
             double gap = DownwardGap(_floorHotZone, _keelZone, out from, out to);
             ShowHud("P1 이중저 탱크 도장 중 · P2 플로어 용접 허가 요청 — 통로 분석 중");
-            ClearEffects(SceneValues.GroupStatus);
+            ClearEffects(ScenarioScript.GroupStatus);
 
             Data.BoundBox3D keel = _keelBox;
-            Data.BoundBox3D hot = SceneValues.ZoneFloorHot;
-            FlyToBoxes(keel, hot, SceneValues.ViewTankAbove, 2.5);
+            Data.BoundBox3D hot = ScenarioScript.ZoneFloorHot;
+            FlyToBoxes(keel, hot, ScenarioScript.ViewTankAbove, 2.5);
 
             // 통로 분석은 형상을 숨기기 전에 합니다 — 숨긴 부재는 장애물에서 빠져 결과가 달라집니다.
             int paintZone = _keelZone;
@@ -349,101 +401,101 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             SetCutaway(true, false);
             OpenTankWindow(keel);
 
-            _timeline.After(0.5, () => ShowTankVapor(keel));
-            _timeline.After(2.5, () => ShowHotWorkRequest(hot));
-            _timeline.After(4.5, () => ShowTankGap(from, to, gap));
-            _timeline.After(6.5, () => ShowPassageVerdict(hot, gap, result, watch.Elapsed.TotalSeconds));
-            _timeline.After(10.0, () => Orbit(-25f, 7.0));
+            _runner.After(0.5, () => ShowTankVapor(keel));
+            _runner.After(2.5, () => ShowHotWorkRequest(hot));
+            _runner.After(4.5, () => ShowTankGap(from, to, gap));
+            _runner.After(6.5, () => ShowPassageVerdict(hot, gap, result, watch.Elapsed.TotalSeconds));
+            _runner.After(10.0, () => Orbit(-25f, 7.0));
         }
 
         // 03 플랫폼 화기의 불티 — 플랫폼 용접 반경 11 m 안의 다른 작업과 바로 아래 가연물을 찾고, 불티 낙하 경로와 화재 감시 조건을 보입니다.
         private void SceneSparkFall()
         {
-            ClearEffects(SceneValues.GroupHazard, SceneValues.GroupStatus);
+            ClearEffects(ScenarioScript.GroupHazard, ScenarioScript.GroupStatus);
             ShowHud("P3 플랫폼 배관 지지대 용접 중");
 
-            Data.BoundBox3D hot = SceneValues.ZonePlatformHot;
-            _combustibleZone = AddZone(SceneValues.ZoneCombustible, SceneValues.NameCombustible, SceneValues.ColorCombustible);
+            Data.BoundBox3D hot = ScenarioScript.ZonePlatformHot;
+            _combustibleZone = AddZone(ScenarioScript.ZoneCombustible, ScenarioScript.NameCombustible, ScenarioScript.ColorCombustible);
             vizcore3dx.Zone.SetVisible(_combustibleZone, true);
             List<int> within = ZonesWithinHotWorkRadius();
 
             Data.Vector3D from, to;
             DownwardGap(_platformHotZone, _combustibleZone, out from, out to);
-            FlyToBoxes(hot, SceneValues.ZoneCombustible, SceneValues.ViewZone, 2.5);
+            FlyToBoxes(hot, ScenarioScript.ZoneCombustible, ScenarioScript.ViewZone, 2.5);
 
             ScheduleWeldingSparks(hot);
-            _timeline.After(5.0, () => ShowHotWorkRadius(hot, within.Count));
+            _runner.After(5.0, () => ShowHotWorkRadius(hot, within.Count));
             for (int i = 0; i < within.Count; i++)
             {
                 int id = within[i];
-                _timeline.After(6.5 + i * 0.7, () => Outline(id, SceneValues.ColorAccent, SceneValues.GroupHazard));
+                _runner.After(6.5 + i * 0.7, () => Outline(id, ScenarioScript.ColorAccent, ScenarioScript.GroupHazard));
             }
-            _timeline.After(9.5, () => ShowSparkPath(from, to));
-            _timeline.After(12.0, () => ShowFireWatch(hot));
-            _timeline.After(13.0, () => Orbit(20f, 6.0));
+            _runner.After(9.5, () => ShowSparkPath(from, to));
+            _runner.After(12.0, () => ShowFireWatch(hot));
+            _runner.After(13.0, () => Orbit(20f, 6.0));
         }
 
         // 04 밀폐 공간 출입 인원 — 이중저 탱크 도장 허가의 인원과, 위치로 센 실제 인원을 대조합니다.
         private void SceneHeadcount()
         {
-            ClearEffects(SceneValues.GroupHazard, SceneValues.GroupStatus);
+            ClearEffects(ScenarioScript.GroupHazard, ScenarioScript.GroupStatus);
             vizcore3dx.View.Effect.ClearWeldingSparks();
             vizcore3dx.Zone.SetVisible(_combustibleZone, false);
-            ShowHud(string.Format("P1 이중저 탱크 도장 · 허가 인원 {0}명", SceneValues.PermitHeadcount));
+            ShowHud(string.Format("P1 이중저 탱크 도장 · 허가 인원 {0}명", ScenarioScript.PermitHeadcount));
 
             // X-Ray 를 끄고 위쪽 그룹만 걷어 낸 뒤(외판은 남김), 탱크 위(이중저 윗면 ~ 플로어 작업 높이)를 숨겨 안을 들여다볼 창을 냅니다.
             Data.BoundBox3D keel = _keelBox;
-            SetCutaway(true, true, SceneValues.CutawayGroupsKeepShell);
+            SetCutaway(true, true, ScenarioScript.CutawayGroupsKeepShell);
             OpenTankWindow(keel);
 
             List<bool> inside = PlaceKeelWorkers();
             int count = inside.FindAll(contained => contained).Count;
-            FlyToBoxes(keel, new Data.BoundBox3D(keel.MinX, keel.MinY, keel.MinZ, keel.MaxX, keel.MaxY, 7000f), SceneValues.ViewTank, 2.5);
+            FlyToBoxes(keel, new Data.BoundBox3D(keel.MinX, keel.MinY, keel.MinZ, keel.MaxX, keel.MaxY, 7000f), ScenarioScript.ViewTank, 2.5);
 
-            _timeline.After(2.5, () => ShowGasReading(keel));
+            _runner.After(2.5, () => ShowGasReading(keel));
             ScheduleHeadcountLabels(inside);
-            _timeline.After(4.5 + SceneValues.KeelWorkers.Length * 1.5, () => ShowHeadcountVerdict(keel, count));
-            _timeline.After(12.0, () => Orbit(20f, 5.0));
+            _runner.After(4.5 + ScenarioScript.KeelWorkers.Length * 1.5, () => ShowHeadcountVerdict(keel, count));
+            _runner.After(12.0, () => Orbit(20f, 5.0));
         }
 
         // 05 낙하물과 정지 허가 — 연돌 상부 의장의 낙하물 통제 구역을 만들고, 정지된 허가와 겹치는지 판정합니다.
         private void SceneDropZone()
         {
-            ClearEffects(SceneValues.GroupHazard, SceneValues.GroupStatus);
+            ClearEffects(ScenarioScript.GroupHazard, ScenarioScript.GroupStatus);
             RemoveWorkers();
             SetCutaway(false);
             ShowHud("P4 연돌 상부 의장 (고소 작업)");
 
-            Data.BoundBox3D funnel = SceneValues.ZoneFunnel;
-            float height = funnel.MinZ - SceneValues.DropFloor;
-            float radius = Math.Max(SceneValues.DropMinRadius, height / SceneValues.DropRatio);
-            Data.BoundBox3D drop = new Data.BoundBox3D(funnel.MinX - radius, funnel.MinY - radius, SceneValues.DropFloor, funnel.MaxX + radius, funnel.MaxY + radius, funnel.MinZ);
-            _dropZone = AddZone(drop, SceneValues.NameDrop, SceneValues.ColorAccent);
+            Data.BoundBox3D funnel = ScenarioScript.ZoneFunnel;
+            float height = funnel.MinZ - ScenarioScript.DropFloor;
+            float radius = Math.Max(ScenarioScript.DropMinRadius, height / ScenarioScript.DropRatio);
+            Data.BoundBox3D drop = new Data.BoundBox3D(funnel.MinX - radius, funnel.MinY - radius, ScenarioScript.DropFloor, funnel.MaxX + radius, funnel.MaxY + radius, funnel.MinZ);
+            _dropZone = AddZone(drop, ScenarioScript.NameDrop, ScenarioScript.ColorAccent);
 
             bool overlap = vizcore3dx.Zone.IsIntersecting(_dropZone, _deckZone);
 
             Data.BoundBox3D view = new Data.BoundBox3D(funnel.GetVertexMin(), funnel.GetVertexMax());
             view.AddBox(drop);
-            view.AddBox(SceneValues.ZoneDeck);
-            FlyToBox(view, SceneValues.ViewOverview, 2.5);
+            view.AddBox(ScenarioScript.ZoneDeck);
+            FlyToBox(view, ScenarioScript.ViewOverview, 2.5);
 
-            _timeline.After(2.5, () => ShowDropZone(drop, height, radius));
-            _timeline.After(5.5, () => ShowDropOverlap(overlap));
-            _timeline.After(9.0, () => Orbit(-25f, 6.0));
+            _runner.After(2.5, () => ShowDropZone(drop, height, radius));
+            _runner.After(5.5, () => ShowDropOverlap(overlap));
+            _runner.After(9.0, () => Orbit(-25f, 6.0));
         }
 
         // 06 화재 · 전원 대피 — 플랫폼 화재. 막힌 길목을 빼고 사람마다 집결지까지 경로를 다시 계산해 움직입니다.
         // 평지 구간은 충돌 보행(Avatar.TraceWalkAsync)으로 장비를 피해 실제로 걷는 경로를 먼저 구하고, 막힌 구간만 직선으로 대체합니다.
         private async void SceneEvacuation()
         {
-            ClearEffects(SceneValues.GroupHazard, SceneValues.GroupStatus);
+            ClearEffects(ScenarioScript.GroupHazard, ScenarioScript.GroupStatus);
             vizcore3dx.Zone.SetVisible(_dropZone, false);
             ShowPermitZones(false);   // 대피와 무관한 허가 구역·라벨은 빼고 불이 난 P3 만 남깁니다.
 
-            Data.BoundBox3D fire = SceneValues.ZonePlatformHot;
+            Data.BoundBox3D fire = ScenarioScript.ZonePlatformHot;
             EvacuationSim evacuation = new EvacuationSim();
             _evacuation = evacuation;
-            int blocked = evacuation.BlockNear(fire, SceneValues.FireBlockMargin);
+            int blocked = evacuation.BlockNear(fire, ScenarioScript.FireBlockMargin);
             FlyToEvacuationOverview();
             ShowFire(fire);
 
@@ -461,7 +513,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             PlaceEvacuees(evacuation, preset, traced);
             ShowEvacuationRoutes(evacuation, traced);
             ShowHud(string.Format("경보 — {0}명 대피 · 막힌 길목 {1}곳 · 충돌 보행 경로 {2}/{3} 구간 (나머지 직선)", evacuation.Agents.Count, blocked, traced.Count, legs.Count));
-            _timeline.After(2.0, () => StartEvacuation(evacuation));
+            _runner.After(2.0, () => StartEvacuation(evacuation));
             ScheduleClimbShots(evacuation);
         }
 
@@ -469,13 +521,13 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private void SceneOutro()
         {
             StopEvacuation();
-            vizcore3dx.Shape.Delete(SceneValues.StairCategory);
-            ClearEffects(SceneValues.GroupFire, SceneValues.GroupCrowd);
+            vizcore3dx.Shape.Delete(ScenarioScript.StairCategory);
+            ClearEffects(ScenarioScript.GroupFire, ScenarioScript.GroupCrowd);
             ClearHud();
             SetCutaway(false);
             ShowPermitZones(true);
-            FlyToBox(_modelBox, SceneValues.ViewOverview, 2.5);
-            _timeline.After(2.5, () => Orbit(SceneValues.OrbitDegrees, 5.0));
+            FlyToBox(_modelBox, ScenarioScript.ViewOverview, 2.5);
+            _runner.After(2.5, () => Orbit(ScenarioScript.OrbitDegrees, 5.0));
         }
 
         #endregion
@@ -486,11 +538,11 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private bool IsModelReady()
         {
             Data.BoundBox3D model = vizcore3dx.Object3D.GetBoundBox(vizcore3dx.Object3D.GetRootNodes());
-            foreach (Data.BoundBox3D zone in new[] { SceneValues.ZoneKeel, SceneValues.ZoneFloorHot, SceneValues.ZonePlatformHot, SceneValues.ZoneFunnel, SceneValues.ZoneDeck })
+            foreach (Data.BoundBox3D zone in new[] { ScenarioScript.ZoneKeel, ScenarioScript.ZoneFloorHot, ScenarioScript.ZonePlatformHot, ScenarioScript.ZoneFunnel, ScenarioScript.ZoneDeck })
             {
                 if (model != null && model.Contains(zone.GetCenter())) continue;
 
-                SetStatus("작업 구역이 모델 밖에 있습니다. 샘플 모델 선박\\AftSection_RevA.vizx 를 열거나 SceneValues.cs 의 구역 좌표를 바꿔 주세요.");
+                SetStatus("작업 구역이 모델 밖에 있습니다. 샘플 모델 선박\\AftSection_RevA.vizx 를 열거나 ScenarioScript.cs 의 구역 좌표를 바꿔 주세요.");
                 return false;
             }
             return true;
@@ -506,17 +558,17 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             // 구역 안 부재는 선택 색(빨강) 대신 원래 색으로 또렷하게 — 빨강은 화기 표시에만 씁니다. 정리할 때 되돌립니다.
             if (_originalXRayColor == null) _originalXRayColor = vizcore3dx.View.XRay.ColorType;
             vizcore3dx.View.XRay.ColorType = Data.XRayColorTypes.OBJECT_COLOR;
-            Orbit(SceneValues.OrbitDegrees, 4.0);
+            Orbit(ScenarioScript.OrbitDegrees, 4.0);
         }
 
         // 끝으로 탱크를 길이 방향에서 봅니다 — 선저를 따라 기운 쐐기 단면이 보이게.
         private void ShowTankSection()
         {
-            FlyToBox(_keelBox, SceneValues.ViewTankSection, 2.0);
-            Outline(_keelZone, SceneValues.ColorAccent, SceneValues.GroupStatus);
+            FlyToBox(_keelBox, ScenarioScript.ViewTankSection, 2.0);
+            Outline(_keelZone, ScenarioScript.ColorAccent, ScenarioScript.GroupStatus);
         }
 
-        // 허가 5건의 공간을 만듭니다. 좌표는 값 표(SceneValues.cs)에 있습니다. 처음에는 숨겨 둡니다.
+        // 허가 5건의 공간을 만듭니다. 좌표는 값 표(ScenarioScript.cs)에 있습니다. 처음에는 숨겨 둡니다.
         private void CreatePermitZones()
         {
             // 공간을 선체 너머로도 보이게 합니다(깊이 판정 끔). 정리할 때 원래 스타일로 되돌립니다.
@@ -529,15 +581,15 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             try
             {
                 // P1·P4 는 둘레의 실제 판에서 찾은 평면으로 닫은 다면체 — 탱크는 앞뒤(X)만, 연돌은 위아래(Z)만 상자 면을 씁니다.
-                _keelZone = AddWalledZone(SceneValues.ZoneKeel, SceneValues.TankSearch, SceneValues.TankSeed, AxesYZ, SceneValues.NameKeel, SceneValues.ColorPaint);
-                _floorHotZone = AddZone(SceneValues.ZoneFloorHot, SceneValues.NameFloorHot, SceneValues.ColorHotRequested);
-                _platformHotZone = AddZone(SceneValues.ZonePlatformHot, SceneValues.NamePlatformHot, SceneValues.ColorHot);
-                Data.BoundBox3D funnel = SceneValues.ZoneFunnel;
-                float m = SceneValues.WallSearchMargin;
+                _keelZone = AddWalledZone(ScenarioScript.ZoneKeel, ScenarioScript.TankSearch, ScenarioScript.TankSeed, AxesYZ, ScenarioScript.NameKeel, ScenarioScript.ColorPaint);
+                _floorHotZone = AddZone(ScenarioScript.ZoneFloorHot, ScenarioScript.NameFloorHot, ScenarioScript.ColorHotRequested);
+                _platformHotZone = AddZone(ScenarioScript.ZonePlatformHot, ScenarioScript.NamePlatformHot, ScenarioScript.ColorHot);
+                Data.BoundBox3D funnel = ScenarioScript.ZoneFunnel;
+                float m = ScenarioScript.WallSearchMargin;
                 Data.BoundBox3D funnelSearch = new Data.BoundBox3D(funnel.MinX - m, funnel.MinY - m, funnel.MinZ - m, funnel.MaxX + m, funnel.MaxY + m, funnel.MaxZ + m);
-                _funnelZone = AddWalledZone(funnel, funnelSearch, new Data.Vector3D(funnel.CenterX, funnel.CenterY, funnel.CenterZ), AxesXY, SceneValues.NameFunnel, SceneValues.ColorHeight);
-                _deckZone = AddZone(SceneValues.ZoneDeck, SceneValues.NameDeck, SceneValues.ColorSuspended);
-                vizcore3dx.Zone.SetFaceOpacity(_deckZone, SceneValues.SuspendedOpacity);
+                _funnelZone = AddWalledZone(funnel, funnelSearch, new Data.Vector3D(funnel.CenterX, funnel.CenterY, funnel.CenterZ), AxesXY, ScenarioScript.NameFunnel, ScenarioScript.ColorHeight);
+                _deckZone = AddZone(ScenarioScript.ZoneDeck, ScenarioScript.NameDeck, ScenarioScript.ColorSuspended);
+                vizcore3dx.Zone.SetFaceOpacity(_deckZone, ScenarioScript.SuspendedOpacity);
             }
             finally
             {
@@ -578,7 +630,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             _zoneEdges[id] = PolyhedronEdges(points, normals);
             _zones.Add(id);
             vizcore3dx.Zone.SetColor(id, color, color);
-            vizcore3dx.Zone.SetFaceOpacity(id, SceneValues.ZoneOpacity);
+            vizcore3dx.Zone.SetFaceOpacity(id, ScenarioScript.ZoneOpacity);
             vizcore3dx.Zone.SetVisible(id, false);
             return id;
         }
@@ -645,7 +697,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             }
             double area2 = total / 2e6;   // mm² 양면 합 → m² 한쪽 면
             double length = Math.Sqrt(sx * sx + sy * sy + sz * sz);
-            if (area2 < SceneValues.WallMinArea || length <= 0.0) return null;
+            if (area2 < ScenarioScript.WallMinArea || length <= 0.0) return null;
 
             return new WallPlate
             {
@@ -683,7 +735,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             WallPlate best = null;
             foreach (WallPlate plate in plates)
             {
-                if (Math.Abs(plate.Normal.Dot(direction)) < SceneValues.WallMinAlign) continue;
+                if (Math.Abs(plate.Normal.Dot(direction)) < ScenarioScript.WallMinAlign) continue;
                 if ((plate.Point - seed).Dot(direction) <= 0f) continue;
                 if (!search.Contains(plate.Point.ToVertex3D())) continue;
                 if (best == null || plate.Area > best.Area) best = plate;
@@ -755,7 +807,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
             _zones.Add(id);
             vizcore3dx.Zone.SetColor(id, color, color);
-            vizcore3dx.Zone.SetFaceOpacity(id, SceneValues.ZoneOpacity);
+            vizcore3dx.Zone.SetFaceOpacity(id, ScenarioScript.ZoneOpacity);
             vizcore3dx.Zone.SetVisible(id, false);
             return id;
         }
@@ -763,7 +815,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 허가 구역 5개와 이름 라벨을 모두 보이거나(true), 화기 P3 하나만 남깁니다(false).
         private void ShowPermitZones(bool all)
         {
-            ClearEffects(SceneValues.GroupLabel);
+            ClearEffects(ScenarioScript.GroupLabel);
             foreach (int id in new[] { _keelZone, _floorHotZone, _platformHotZone, _funnelZone, _deckZone })
             {
                 if (all || id == _platformHotZone) RevealZone(id);
@@ -780,7 +832,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             Data.ZoneItem item = vizcore3dx.Zone.GetItem(id);
             Data.BoundBox3D box = vizcore3dx.Zone.GetBoundBox(id);
             vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(box.CenterX, box.CenterY, box.MaxZ), item.Name,
-                new Data.TextLabelOptions { BackColor = item.FaceColor, Group = SceneValues.GroupLabel });
+                new Data.TextLabelOptions { BackColor = item.FaceColor, Group = ScenarioScript.GroupLabel });
         }
 
         // ---- 02 도장 중인 탱크 위 화기 ----
@@ -796,24 +848,24 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 도장 중인 탱크에 유증기와 표식을 띄웁니다.
         private void ShowTankVapor(Data.BoundBox3D keel)
         {
-            Data.Vector3D source = SceneValues.TankSeed;
-            vizcore3dx.View.Effect.AddVapor(source, new Data.VaporOptions { Group = SceneValues.GroupHazard });
+            Data.Vector3D source = ScenarioScript.TankSeed;
+            vizcore3dx.View.Effect.AddVapor(source, new Data.VaporOptions { Group = ScenarioScript.GroupHazard });
             vizcore3dx.View.Effect.AddMarker(new Data.Vector3D(source.X, source.Y, keel.MaxZ + 300f), Data.MarkerIcon.Gas,
-                new Data.MarkerOptions { Label = "도장 중 · 유증기", SizePx = 40, Group = SceneValues.GroupHazard });
+                new Data.MarkerOptions { Label = "도장 중 · 유증기", SizePx = 40, Group = ScenarioScript.GroupHazard });
         }
 
         // 위 플로어의 용접 허가 요청을 강조합니다.
         private void ShowHotWorkRequest(Data.BoundBox3D hot)
         {
-            Outline(_floorHotZone, SceneValues.ColorAccent, SceneValues.GroupHazard);
+            Outline(_floorHotZone, ScenarioScript.ColorAccent, ScenarioScript.GroupHazard);
             vizcore3dx.View.Effect.AddMarker(new Data.Vector3D(hot.CenterX, hot.CenterY, hot.CenterZ + 300f), Data.MarkerIcon.Warning,
-                new Data.MarkerOptions { Label = "용접 허가 요청", Group = SceneValues.GroupStatus });
+                new Data.MarkerOptions { Label = "용접 허가 요청", Group = ScenarioScript.GroupStatus });
         }
 
         // 화기 구역에서 아래 탱크까지의 거리를 치수선으로 보입니다.
         private void ShowTankGap(Data.Vector3D from, Data.Vector3D to, double gap)
         {
-            vizcore3dx.View.Effect.AddDimensionLine(from, to, new Data.DimensionLineOptions { Color = SceneValues.HudColor, TextSizePx = 24, Group = SceneValues.GroupHazard });
+            vizcore3dx.View.Effect.AddDimensionLine(from, to, new Data.DimensionLineOptions { Color = ScenarioScript.HudColor, TextSizePx = 24, Group = ScenarioScript.GroupHazard });
             ShowHud(string.Format("바로 아래 {0:N0} mm 에 도장 중인 탱크", gap));
         }
 
@@ -821,14 +873,14 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private void ShowPassageVerdict(Data.BoundBox3D hot, double gap, Data.ZoneAnalysisResult result, double seconds)
         {
             bool passage = result.HasPassage;
-            ClearEffects(SceneValues.GroupStatus);
+            ClearEffects(ScenarioScript.GroupStatus);
             vizcore3dx.View.Effect.AddMarker(new Data.Vector3D(hot.CenterX, hot.CenterY, hot.CenterZ + 300f), passage ? Data.MarkerIcon.Prohibition : Data.MarkerIcon.Check,
-                new Data.MarkerOptions { Label = passage ? "화기 불가" : "허가 가능", BlinkIntervalMs = passage ? 350 : 0, SizePx = 64, Group = SceneValues.GroupStatus });
+                new Data.MarkerOptions { Label = passage ? "화기 불가" : "허가 가능", BlinkIntervalMs = passage ? 350 : 0, SizePx = 64, Group = ScenarioScript.GroupStatus });
             vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(hot.CenterX, hot.CenterY, hot.MinZ),
                 passage ? string.Format("개구로 이어짐 · 통과 가능 구 {0:N0} mm", result.MaxSphereRadius) : "벽에 막힘 · 인접 아님",
-                new Data.TextLabelOptions { BackColor = passage ? SceneValues.ColorHot : SceneValues.ColorSafe, Group = SceneValues.GroupStatus });
+                new Data.TextLabelOptions { BackColor = passage ? ScenarioScript.ColorHot : ScenarioScript.ColorSafe, Group = ScenarioScript.GroupStatus });
             ShowHud(string.Format("아래 {0:N0} mm · 통로 {1} · 분석 {2:0.0}초 → 화기 허가 {3}\n{4}",
-                gap, passage ? "있음" : "없음", seconds, passage ? "보류" : "가능", SceneValues.AdjacentRuleText));
+                gap, passage ? "있음" : "없음", seconds, passage ? "보류" : "가능", ScenarioScript.AdjacentRuleText));
         }
 
         // 구역 a 에서 아래 방향으로 구역 b 까지의 거리와 그 두 점. 판정이 실패하면 두 상자의 높이 차로 대신합니다.
@@ -858,7 +910,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             List<int> within = new List<int>();
             foreach (int id in new[] { _keelZone, _floorHotZone, _funnelZone, _deckZone, _combustibleZone })
-                if (vizcore3dx.Zone.GetMinDistance(_platformHotZone, id) <= SceneValues.HotWorkRadius) within.Add(id);
+                if (vizcore3dx.Zone.GetMinDistance(_platformHotZone, id) <= ScenarioScript.HotWorkRadius) within.Add(id);
             return within;
         }
 
@@ -870,7 +922,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             {
                 Data.Vector3D p = new Data.Vector3D(Lerp(hot.MinX, hot.MaxX, 0.2f + 0.6f * (float)random.NextDouble()),
                     Lerp(hot.MinY, hot.MaxY, 0.2f + 0.6f * (float)random.NextDouble()), hot.MinZ + 1000f + 800f * (float)random.NextDouble());
-                _timeline.After(2.5 + i * 0.25, () => vizcore3dx.View.Effect.AddWeldingSpark(p));
+                _runner.After(2.5 + i * 0.25, () => vizcore3dx.View.Effect.AddWeldingSpark(p));
             }
         }
 
@@ -878,25 +930,25 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private void ShowHotWorkRadius(Data.BoundBox3D hot, int count)
         {
             vizcore3dx.View.Effect.AddGroundRing(new Data.Vector3D(hot.CenterX, hot.CenterY, hot.MinZ), new Data.GroundRingOptions
-            { RadiusMm = SceneValues.HotWorkRadius, FloorZ = hot.MinZ, Color = SceneValues.ColorAccent, Group = SceneValues.GroupHazard });
-            vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(hot.CenterX, hot.CenterY + SceneValues.HotWorkRadius, hot.MinZ), SceneValues.HotWorkRadiusLabel,
-                new Data.TextLabelOptions { BackColor = SceneValues.ColorNote, TextColor = SceneValues.ColorAccent, Group = SceneValues.GroupHazard });
-            ShowHud(string.Format("화기 반경 11 m 안 다른 작업·가연물 {0}곳\n{1}", count, SceneValues.HotWorkRadiusSource));
+            { RadiusMm = ScenarioScript.HotWorkRadius, FloorZ = hot.MinZ, Color = ScenarioScript.ColorAccent, Group = ScenarioScript.GroupHazard });
+            vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(hot.CenterX, hot.CenterY + ScenarioScript.HotWorkRadius, hot.MinZ), ScenarioScript.HotWorkRadiusLabel,
+                new Data.TextLabelOptions { BackColor = ScenarioScript.ColorNote, TextColor = ScenarioScript.ColorAccent, Group = ScenarioScript.GroupHazard });
+            ShowHud(string.Format("화기 반경 11 m 안 다른 작업·가연물 {0}곳\n{1}", count, ScenarioScript.HotWorkRadiusSource));
         }
 
         // 그레이팅·개구로 아래층 바닥까지 불티가 떨어지는 경로를 보입니다(낙하 길이는 모델의 층 높이 차).
         private void ShowSparkPath(Data.Vector3D from, Data.Vector3D to)
         {
-            vizcore3dx.View.Effect.AddPathLine(new List<Data.Vector3D> { from, to }, new Data.PathLineOptions { Color = SceneValues.ColorAccent, LineWidth = 5f, Group = SceneValues.GroupHazard });
-            vizcore3dx.View.Effect.AddDimensionLine(from, to, new Data.DimensionLineOptions { Color = SceneValues.HudColor, TextSizePx = 24, Group = SceneValues.GroupHazard });
+            vizcore3dx.View.Effect.AddPathLine(new List<Data.Vector3D> { from, to }, new Data.PathLineOptions { Color = ScenarioScript.ColorAccent, LineWidth = 5f, Group = ScenarioScript.GroupHazard });
+            vizcore3dx.View.Effect.AddDimensionLine(from, to, new Data.DimensionLineOptions { Color = ScenarioScript.HudColor, TextSizePx = 24, Group = ScenarioScript.GroupHazard });
         }
 
         // 화재감시자 자리와 감시 조건을 보입니다.
         private void ShowFireWatch(Data.BoundBox3D hot)
         {
             vizcore3dx.View.Effect.AddMarker(new Data.Vector3D(hot.MaxX + 1500f, hot.MinY, hot.MinZ + 1800f), Data.MarkerIcon.Information,
-                new Data.MarkerOptions { Label = SceneValues.FireWatchLabel, SizePx = 48, Group = SceneValues.GroupStatus });
-            ShowHud(SceneValues.FireWatchText);
+                new Data.MarkerOptions { Label = ScenarioScript.FireWatchLabel, SizePx = 48, Group = ScenarioScript.GroupStatus });
+            ShowHud(ScenarioScript.FireWatchText);
         }
 
         // ---- 04 밀폐 공간 출입 인원 ----
@@ -906,10 +958,10 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             string preset = AvatarPreset();
             List<bool> inside = new List<bool>();
-            foreach (Data.Vector3D p in SceneValues.KeelWorkers)
+            foreach (Data.Vector3D p in ScenarioScript.KeelWorkers)
             {
                 // 발은 경계인 바닥 판에 닿아 있으므로 몸 가운데 높이로 판정합니다.
-                bool contained = vizcore3dx.Zone.ContainsPoint(_keelZone, new Data.Vector3D(p.X, p.Y, p.Z + SceneValues.WorkerBodyHeight));
+                bool contained = vizcore3dx.Zone.ContainsPoint(_keelZone, new Data.Vector3D(p.X, p.Y, p.Z + ScenarioScript.WorkerBodyHeight));
                 inside.Add(contained);
                 if (preset != null) _workers.Add(vizcore3dx.Avatar.Place(preset, p, 90.0));
             }
@@ -919,43 +971,43 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 탱크 옆에 가스 측정값을 띄웁니다.
         private void ShowGasReading(Data.BoundBox3D keel)
         {
-            vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(keel.MinX - 600f, keel.CenterY, keel.MaxZ + 400f), SceneValues.GasReadingLabel,
-                new Data.TextLabelOptions { BackColor = SceneValues.ColorConfined, Group = SceneValues.GroupStatus });
-            ShowHud(SceneValues.GasReadingText);
+            vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(keel.MinX - 600f, keel.CenterY, keel.MaxZ + 400f), ScenarioScript.GasReadingLabel,
+                new Data.TextLabelOptions { BackColor = ScenarioScript.ColorConfined, Group = ScenarioScript.GroupStatus });
+            ShowHud(ScenarioScript.GasReadingText);
         }
 
         // 작업자마다 차례로 판정 라벨을 붙입니다. 구역 안 인원을 세어 가며 허가 인원을 넘는 사람은 명단 밖 출입자로 표시합니다.
         private void ScheduleHeadcountLabels(List<bool> inside)
         {
             int seen = 0;
-            for (int i = 0; i < SceneValues.KeelWorkers.Length; i++)
+            for (int i = 0; i < ScenarioScript.KeelWorkers.Length; i++)
             {
                 int n = i;
-                _timeline.After(4.5 + i * 1.5, () =>
+                _runner.After(4.5 + i * 1.5, () =>
                 {
                     if (inside[n]) seen++;
-                    ShowHeadcountLabel(SceneValues.KeelWorkers[n], inside[n], seen);
+                    ShowHeadcountLabel(ScenarioScript.KeelWorkers[n], inside[n], seen);
                 });
             }
         }
 
         private void ShowHeadcountLabel(Data.Vector3D p, bool inside, int seen)
         {
-            bool extra = inside && seen > SceneValues.PermitHeadcount;
+            bool extra = inside && seen > ScenarioScript.PermitHeadcount;
             string text = !inside ? "구역 밖" : extra ? "명단 밖 출입자" : "허가 명단 " + seen;
-            Color color = !inside ? SceneValues.ColorNote : extra ? SceneValues.ColorHot : SceneValues.ColorConfined;
+            Color color = !inside ? ScenarioScript.ColorNote : extra ? ScenarioScript.ColorHot : ScenarioScript.ColorConfined;
             // 탱크 가운데 위의 허가 이름 라벨과 겹치지 않게 옆으로 뺍니다.
-            vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(p.X, p.Y + 1500f, p.Z + 2000f), text, new Data.TextLabelOptions { BackColor = color, Group = SceneValues.GroupHazard });
+            vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(p.X, p.Y + 1500f, p.Z + 2000f), text, new Data.TextLabelOptions { BackColor = color, Group = ScenarioScript.GroupHazard });
         }
 
         // 허가 인원과 실제 인원을 대조한 결과를 보입니다. 다르면 표식을 깜박이고 구역을 강조합니다.
         private void ShowHeadcountVerdict(Data.BoundBox3D keel, int count)
         {
-            bool mismatch = count != SceneValues.PermitHeadcount;
+            bool mismatch = count != ScenarioScript.PermitHeadcount;
             vizcore3dx.View.Effect.AddMarker(new Data.Vector3D(keel.CenterX, keel.CenterY - 3000f, keel.MaxZ + 800f), mismatch ? Data.MarkerIcon.Warning : Data.MarkerIcon.Check,
-                new Data.MarkerOptions { Label = string.Format("허가 {0} / 실제 {1}", SceneValues.PermitHeadcount, count), BlinkIntervalMs = mismatch ? 400 : 0, SizePx = 64, Group = SceneValues.GroupStatus });
-            if (mismatch) Outline(_keelZone, SceneValues.ColorAccent, SceneValues.GroupStatus);
-            ShowHud(string.Format("이중저 탱크 허가 {0}명 · 위치로 센 구역 안 인원 {1}명{2}", SceneValues.PermitHeadcount, count, mismatch ? " → 명단 밖 출입자, 출입 통제" : ""));
+                new Data.MarkerOptions { Label = string.Format("허가 {0} / 실제 {1}", ScenarioScript.PermitHeadcount, count), BlinkIntervalMs = mismatch ? 400 : 0, SizePx = 64, Group = ScenarioScript.GroupStatus });
+            if (mismatch) Outline(_keelZone, ScenarioScript.ColorAccent, ScenarioScript.GroupStatus);
+            ShowHud(string.Format("이중저 탱크 허가 {0}명 · 위치로 센 구역 안 인원 {1}명{2}", ScenarioScript.PermitHeadcount, count, mismatch ? " → 명단 밖 출입자, 출입 통제" : ""));
         }
 
         // 아바타 프리셋 — 라이브러리에 작업자 프리셋이 있으면 그것을, 없으면 내장 작업자 모델을 꺼내 씁니다.
@@ -988,17 +1040,17 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             vizcore3dx.Zone.SetVisible(_dropZone, true);
             vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(drop.MaxX, drop.MinY, drop.MaxZ - 2000f),
                 string.Format("낙하물 통제 반경 {0:0.0} m", radius / 1000f),
-                new Data.TextLabelOptions { BackColor = SceneValues.ColorNote, TextColor = SceneValues.ColorAccent, Group = SceneValues.GroupHazard });
-            ShowHud(string.Format("낙하 높이 {0:0.0} m → 아래 통제 반경 {1:0.0} m\n{2}", height / 1000f, radius / 1000f, SceneValues.DropRuleText));
+                new Data.TextLabelOptions { BackColor = ScenarioScript.ColorNote, TextColor = ScenarioScript.ColorAccent, Group = ScenarioScript.GroupHazard });
+            ShowHud(string.Format("낙하 높이 {0:0.0} m → 아래 통제 반경 {1:0.0} m\n{2}", height / 1000f, radius / 1000f, ScenarioScript.DropRuleText));
         }
 
         // 통제 구역이 정지된 허가와 겹치면 그 허가를 강조합니다.
         private void ShowDropOverlap(bool overlap)
         {
             if (!overlap) { ShowHud("낙하물 통제 구역과 겹치는 허가 없음"); return; }
-            vizcore3dx.View.Effect.AddPulseOutline(Grow(SceneValues.ZoneDeck), PulseOptions(SceneValues.ColorAccent, SceneValues.GroupHazard));
-            vizcore3dx.View.Effect.AddMarker(Above(SceneValues.ZoneDeck), Data.MarkerIcon.Prohibition,
-                new Data.MarkerOptions { Label = "정지 허가와 겹침", BlinkIntervalMs = 350, SizePx = 56, Group = SceneValues.GroupHazard });
+            vizcore3dx.View.Effect.AddPulseOutline(Grow(ScenarioScript.ZoneDeck), PulseOptions(ScenarioScript.ColorAccent, ScenarioScript.GroupHazard));
+            vizcore3dx.View.Effect.AddMarker(Above(ScenarioScript.ZoneDeck), Data.MarkerIcon.Prohibition,
+                new Data.MarkerOptions { Label = "정지 허가와 겹침", BlinkIntervalMs = 350, SizePx = 56, Group = ScenarioScript.GroupHazard });
             ShowHud("통제 구역이 정지된 P5 와 겹침 → 재개 전에 교차 확인\n정지 허가도 판정에 포함합니다 (HSE HSG250)");
         }
 
@@ -1008,18 +1060,18 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private void ShowFire(Data.BoundBox3D fire)
         {
             vizcore3dx.View.Effect.AddMarker(Above(fire), Data.MarkerIcon.Fire,
-                new Data.MarkerOptions { Label = "화재", BlinkIntervalMs = 250, SizePx = 64, ShowOffscreenIndicator = true, Group = SceneValues.GroupFire });
+                new Data.MarkerOptions { Label = "화재", BlinkIntervalMs = 250, SizePx = 64, ShowOffscreenIndicator = true, Group = ScenarioScript.GroupFire });
             Data.Vector3D seat = new Data.Vector3D(fire.CenterX, fire.CenterY, fire.MinZ + 500f);
-            vizcore3dx.View.Effect.AddParticleEmitter(seat, new Data.ParticleOptions(Data.ParticlePreset.Smoke) { Group = SceneValues.GroupFire });
-            vizcore3dx.View.Effect.AddParticleEmitter(seat, new Data.ParticleOptions(Data.ParticlePreset.Sparks) { Group = SceneValues.GroupFire });
+            vizcore3dx.View.Effect.AddParticleEmitter(seat, new Data.ParticleOptions(Data.ParticlePreset.Smoke) { Group = ScenarioScript.GroupFire });
+            vizcore3dx.View.Effect.AddParticleEmitter(seat, new Data.ParticleOptions(Data.ParticlePreset.Sparks) { Group = ScenarioScript.GroupFire });
         }
 
         // 충돌 보행으로 경로를 구할 구간 — 무리 가운데 → 길목 입구, 그리고 길목 사이 통로
         private static List<KeyValuePair<Data.Vector3D, Data.Vector3D>> EvacuationLegs(EvacuationSim evacuation)
         {
             List<KeyValuePair<Data.Vector3D, Data.Vector3D>> legs = new List<KeyValuePair<Data.Vector3D, Data.Vector3D>>();
-            foreach (Data.Vector3D center in SceneValues.FloorGroups) AddLeg(legs, center, evacuation.EntryFor(center));
-            foreach (Data.Vector3D center in SceneValues.PlatformGroups) AddLeg(legs, center, evacuation.EntryFor(center));
+            foreach (Data.Vector3D center in ScenarioScript.FloorGroups) AddLeg(legs, center, evacuation.EntryFor(center));
+            foreach (Data.Vector3D center in ScenarioScript.PlatformGroups) AddLeg(legs, center, evacuation.EntryFor(center));
             legs.AddRange(evacuation.WalkLinks());
             return legs;
         }
@@ -1030,17 +1082,17 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             ShowHud("충돌 보행으로 대피 경로 계산 중");
             Dictionary<string, List<Data.Vector3D>> traced = new Dictionary<string, List<Data.Vector3D>>();
-            int tracer = vizcore3dx.Avatar.Place(preset, legs.Count > 0 ? legs[0].Key : SceneValues.NodeMuster, 0.0);
+            int tracer = vizcore3dx.Avatar.Place(preset, legs.Count > 0 ? legs[0].Key : ScenarioScript.NodeMuster, 0.0);
             foreach (KeyValuePair<Data.Vector3D, Data.Vector3D> leg in legs)
             {
                 vizcore3dx.Avatar.SetPosition(tracer, leg.Key);
-                List<Data.Vector3D> path = await vizcore3dx.Avatar.TraceWalkAsync(tracer, new List<Data.Vector3D> { leg.Value }, SceneValues.TraceStep);
+                List<Data.Vector3D> path = await vizcore3dx.Avatar.TraceWalkAsync(tracer, new List<Data.Vector3D> { leg.Value }, ScenarioScript.TraceStep);
 
                 if (_evacuation != evacuation) { vizcore3dx.Avatar.Remove(tracer); return null; }
                 if (path.Count < 2) continue;
 
                 Data.Vector3D end = path[path.Count - 1];
-                if (Math.Sqrt((end.X - leg.Value.X) * (end.X - leg.Value.X) + (end.Y - leg.Value.Y) * (end.Y - leg.Value.Y)) > SceneValues.TraceReach) continue;
+                if (Math.Sqrt((end.X - leg.Value.X) * (end.X - leg.Value.X) + (end.Y - leg.Value.Y) * (end.Y - leg.Value.Y)) > ScenarioScript.TraceReach) continue;
                 path.Add(leg.Value);
                 traced[LegKey(leg.Key, leg.Value)] = path;
             }
@@ -1064,9 +1116,9 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             List<Data.Vector3D> path;
             if (traced.TryGetValue(LegKey(from, to), out path)) return new List<Data.Vector3D>(path);
 
-            foreach (Data.Vector3D center in SceneValues.FloorGroups.Concat(SceneValues.PlatformGroups))
+            foreach (Data.Vector3D center in ScenarioScript.FloorGroups.Concat(ScenarioScript.PlatformGroups))
             {
-                if (Math.Abs(center.Z - from.Z) > 1f || (center.X - from.X) * (center.X - from.X) + (center.Y - from.Y) * (center.Y - from.Y) > SceneValues.GroupSpread * SceneValues.GroupSpread * 1.01f) continue;
+                if (Math.Abs(center.Z - from.Z) > 1f || (center.X - from.X) * (center.X - from.X) + (center.Y - from.Y) * (center.Y - from.Y) > ScenarioScript.GroupSpread * ScenarioScript.GroupSpread * 1.01f) continue;
                 if (!traced.TryGetValue(LegKey(center, to), out path)) return null;
 
                 List<Data.Vector3D> joined = new List<Data.Vector3D> { from };
@@ -1079,30 +1131,30 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 집결지 판정 구역을 만듭니다. 면은 그리지 않고 경계선만 남깁니다.
         private void AddMusterZone()
         {
-            Data.Vector3D muster = SceneValues.NodeMuster;
-            float r = SceneValues.MusterRadius;
-            _musterZone = AddZone(new Data.BoundBox3D(muster.X - r, muster.Y - r, muster.Z - 100f, muster.X + r, muster.Y + r, muster.Z + 2500f), "집결지", SceneValues.ColorEvacuation);
+            Data.Vector3D muster = ScenarioScript.NodeMuster;
+            float r = ScenarioScript.MusterRadius;
+            _musterZone = AddZone(new Data.BoundBox3D(muster.X - r, muster.Y - r, muster.Z - 100f, muster.X + r, muster.Y + r, muster.Z + 2500f), "집결지", ScenarioScript.ColorEvacuation);
             vizcore3dx.Zone.SetFaceOpacity(_musterZone, 0);
         }
 
         // 사람을 무리 가운데 둘레에 흩어 놓고, 집결지의 자기 자리까지 경로를 정합니다. 씨앗을 고정해 매번 같은 배치입니다.
         private void PlaceEvacuees(EvacuationSim evacuation, string preset, Dictionary<string, List<Data.Vector3D>> traced)
         {
-            Data.Vector3D muster = SceneValues.NodeMuster;
+            Data.Vector3D muster = ScenarioScript.NodeMuster;
             Random random = new Random(11);
-            int total = SceneValues.EvacueesOnFloor + SceneValues.EvacueesOnPlatform;
+            int total = ScenarioScript.EvacueesOnFloor + ScenarioScript.EvacueesOnPlatform;
             Func<Data.Vector3D, Data.Vector3D, List<Data.Vector3D>> walkPath = (from, to) => TracedPath(traced, from, to);
             for (int i = 0; i < total; i++)
             {
-                Data.Vector3D[] groups = i < SceneValues.EvacueesOnFloor ? SceneValues.FloorGroups : SceneValues.PlatformGroups;
+                Data.Vector3D[] groups = i < ScenarioScript.EvacueesOnFloor ? ScenarioScript.FloorGroups : ScenarioScript.PlatformGroups;
                 Data.Vector3D center = groups[i % groups.Length];
-                double angle = random.NextDouble() * Math.PI * 2.0, spread = Math.Sqrt(random.NextDouble()) * SceneValues.GroupSpread;
+                double angle = random.NextDouble() * Math.PI * 2.0, spread = Math.Sqrt(random.NextDouble()) * ScenarioScript.GroupSpread;
                 Data.Vector3D p = new Data.Vector3D(center.X + (float)(Math.Cos(angle) * spread), center.Y + (float)(Math.Sin(angle) * spread), center.Z);
                 int id = vizcore3dx.Avatar.Place(preset, p, random.NextDouble() * 360.0);
                 if (id == 0) continue;
                 _workers.Add(id);
 
-                Data.Vector3D slot = new Data.Vector3D(muster.X + (i % 12 - 5.5f) * SceneValues.MusterSpacing, muster.Y + (i / 12 - 4.5f) * SceneValues.MusterSpacing, muster.Z);
+                Data.Vector3D slot = new Data.Vector3D(muster.X + (i % 12 - 5.5f) * ScenarioScript.MusterSpacing, muster.Y + (i / 12 - 4.5f) * ScenarioScript.MusterSpacing, muster.Z);
                 if (!evacuation.AddAgent(id, p, random, slot, walkPath)) vizcore3dx.Avatar.Remove(id);
             }
         }
@@ -1110,15 +1162,15 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 막힌 길목·열린 길목·충돌 보행 경로와 집결지 둘레를 그립니다.
         private void ShowEvacuationRoutes(EvacuationSim evacuation, Dictionary<string, List<Data.Vector3D>> traced)
         {
-            Data.Vector3D muster = SceneValues.NodeMuster;
+            Data.Vector3D muster = ScenarioScript.NodeMuster;
             foreach (KeyValuePair<string, Data.Vector3D> link in evacuation.BlockedLinks())
                 vizcore3dx.View.Effect.AddMarker(link.Value, Data.MarkerIcon.Prohibition,
-                    new Data.MarkerOptions { Label = link.Key + " 막힘", BlinkIntervalMs = 350, Group = SceneValues.GroupFire });
+                    new Data.MarkerOptions { Label = link.Key + " 막힘", BlinkIntervalMs = 350, Group = ScenarioScript.GroupFire });
             foreach (List<Data.Vector3D> route in evacuation.OpenRoutes())
-                vizcore3dx.View.Effect.AddPathLine(route, new Data.PathLineOptions { Color = SceneValues.ColorEvacuation, LineWidth = 5f, Group = SceneValues.GroupFire });
+                vizcore3dx.View.Effect.AddPathLine(route, new Data.PathLineOptions { Color = ScenarioScript.ColorEvacuation, LineWidth = 5f, Group = ScenarioScript.GroupFire });
             foreach (List<Data.Vector3D> path in traced.Values)
-                vizcore3dx.View.Effect.AddPathLine(path, new Data.PathLineOptions { Color = SceneValues.ColorSafe, LineWidth = 3f, Group = SceneValues.GroupFire });
-            vizcore3dx.View.Effect.AddGroundRing(muster, new Data.GroundRingOptions { RadiusMm = SceneValues.MusterRadius, FloorZ = muster.Z, Color = SceneValues.ColorEvacuation, Group = SceneValues.GroupFire });
+                vizcore3dx.View.Effect.AddPathLine(path, new Data.PathLineOptions { Color = ScenarioScript.ColorSafe, LineWidth = 3f, Group = ScenarioScript.GroupFire });
+            vizcore3dx.View.Effect.AddGroundRing(muster, new Data.GroundRingOptions { RadiusMm = ScenarioScript.MusterRadius, FloorZ = muster.Z, Color = ScenarioScript.ColorEvacuation, Group = ScenarioScript.GroupFire });
         }
 
         // 대피 시뮬레이션을 시작하고, 사람들이 계단을 올라가는 기둥으로 다가갑니다.
@@ -1128,20 +1180,20 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             if (_evacuation != evacuation) return;
             _evacuationWatch = Stopwatch.StartNew();
             _evacuationTimer.Start();
-            SetCutaway(true, true, SceneValues.CutawayGroupsSection, true);
-            FlyToBox(SceneValues.ClimbBox, SceneValues.ViewClimb, 3.0);
+            SetCutaway(true, true, ScenarioScript.CutawayGroupsSection, true);
+            FlyToBox(ScenarioScript.ClimbBox, ScenarioScript.ViewClimb, 3.0);
         }
 
         // 계단을 오르는 동안 가까이 다가갔다가(아래 두 단 → 위 두 단) 다시 물러납니다 — 멀리서만 보면 사람이 걷는지 잘 안 보입니다.
         private void ScheduleClimbShots(EvacuationSim evacuation)
         {
-            foreach (KeyValuePair<double, Data.BoundBox3D> shot in SceneValues.ClimbShots)
+            foreach (KeyValuePair<double, Data.BoundBox3D> shot in ScenarioScript.ClimbShots)
             {
                 Data.BoundBox3D box = shot.Value;
-                _timeline.After(shot.Key, () =>
+                _runner.After(shot.Key, () =>
                 {
                     if (_evacuation != evacuation || evacuation.IsFinished) return;
-                    FlyToBox(box, SceneValues.ViewClimb, SceneValues.ClimbShotSeconds);
+                    FlyToBox(box, ScenarioScript.ViewClimb, ScenarioScript.ClimbShotSeconds);
                 });
             }
         }
@@ -1153,7 +1205,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             int arrived = 0;
             foreach (EvacuationSim.Agent agent in _evacuation.Agents)
             {
-                updates.Add(new Data.AvatarUpdate { ID = agent.AvatarID, Position = agent.Position, HeadingDegrees = agent.Heading, DurationMs = SceneValues.EvacuationTickMs });
+                updates.Add(new Data.AvatarUpdate { ID = agent.AvatarID, Position = agent.Position, HeadingDegrees = agent.Heading, DurationMs = ScenarioScript.EvacuationTickMs });
                 if (vizcore3dx.Zone.ContainsPoint(_musterZone, agent.Position)) arrived++;
             }
             vizcore3dx.Avatar.UpdateMany(updates);
@@ -1166,18 +1218,18 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             if (_evacuationWatch.ElapsedMilliseconds - _crowdShownMs < 1000) return;
 
             _crowdShownMs = _evacuationWatch.ElapsedMilliseconds;
-            ClearEffects(SceneValues.GroupCrowd);
+            ClearEffects(ScenarioScript.GroupCrowd);
             foreach (KeyValuePair<Data.Vector3D, int> queue in _evacuation.Queues())
                 if (queue.Value >= 3)
                     vizcore3dx.View.Effect.AddTextLabel(new Data.Vector3D(queue.Key.X, queue.Key.Y, queue.Key.Z + 2200f), string.Format("대기 {0}명", queue.Value),
-                        new Data.TextLabelOptions { BackColor = SceneValues.ColorHeight, Group = SceneValues.GroupCrowd });
+                        new Data.TextLabelOptions { BackColor = ScenarioScript.ColorHeight, Group = ScenarioScript.GroupCrowd });
         }
 
         // 전원이 집결하면 타이머를 멈추고 총 집결 시간을 알린 뒤 집결지까지 물러납니다.
         private void FinishEvacuation(int arrived, int count)
         {
             _evacuationTimer.Stop();
-            ClearEffects(SceneValues.GroupCrowd);
+            ClearEffects(ScenarioScript.GroupCrowd);
             ShowHud(string.Format("전원 집결 {0}/{1} · 총 집결 시간 {2:0} s (실제 시간)\n(규정 판정은 500회 반복의 95번째 백분위 — IMO MSC.1/Circ.1533)", arrived, count, _evacuation.Time));
             ClearSpeedHud();
             // 위에서 내려다보는 구도라 단면을 끄고 처음처럼 바깥 껍데기를 걷어 냅니다.
@@ -1206,12 +1258,12 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 vizcore3dx.View.XRay.Clear();
                 vizcore3dx.View.XRay.Enable = false;
                 foreach (int id in _zones)
-                    vizcore3dx.Zone.SetFaceOpacity(id, faceOff ? 0 : id == _deckZone ? SceneValues.SuspendedOpacity : SceneValues.ZoneOpacity);
+                    vizcore3dx.Zone.SetFaceOpacity(id, faceOff ? 0 : id == _deckZone ? ScenarioScript.SuspendedOpacity : ScenarioScript.ZoneOpacity);
 
                 RemoveSection();
                 if (on)
                 {
-                    HideCutawayGroups(groups ?? SceneValues.CutawayGroups);
+                    HideCutawayGroups(groups ?? ScenarioScript.CutawayGroups);
                     if (section) AddCutawaySection();
                 }
                 else
@@ -1227,7 +1279,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             }
         }
 
-        // 모델 루트 바로 아래의 바깥 껍데기 그룹(SceneValues.CutawayGroups) 가운데 names 에 든 것은 숨기고,
+        // 모델 루트 바로 아래의 바깥 껍데기 그룹(ScenarioScript.CutawayGroups) 가운데 names 에 든 것은 숨기고,
         // 앞 장면이 숨겼지만 names 에 없는 것은 되살립니다.
         private void HideCutawayGroups(string[] names)
         {
@@ -1237,7 +1289,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 foreach (Data.Node node in roots[0].GetChildObject3d(Data.Object3DChildOption.CHILD_ONLY))
                 {
                     if (Array.IndexOf(names, node.NodeName) >= 0) hide.Add(node);
-                    else if (Array.IndexOf(SceneValues.CutawayGroups, node.NodeName) >= 0) show.Add(node);
+                    else if (Array.IndexOf(ScenarioScript.CutawayGroups, node.NodeName) >= 0) show.Add(node);
                 }
             if (show.Count > 0) vizcore3dx.Object3D.Show(show, true);
             if (hide.Count > 0) vizcore3dx.Object3D.Show(hide, false);
@@ -1247,7 +1299,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 우현 쪽을 상자 단면으로 잘라 냅니다. 단면 상자 자체는 화면에 보이지 않게 하고 잘린 모양만 남깁니다.
         private void AddCutawaySection()
         {
-            _section = vizcore3dx.Section.AddBox(SceneValues.CutawaySection);
+            _section = vizcore3dx.Section.AddBox(ScenarioScript.CutawaySection);
             vizcore3dx.Section.ShowAll(false);
         }
 
@@ -1271,7 +1323,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 바닥이 없으면 작업자가 허공에 뜬 것처럼 보이기 때문입니다.
         private void OpenTankWindow(Data.BoundBox3D tank)
         {
-            HideInBox(new Data.BoundBox3D(tank.MinX, tank.MinY, tank.MaxZ - 100f, tank.MaxX, tank.MaxY, SceneValues.ZoneFloorHot.MaxZ));
+            HideInBox(new Data.BoundBox3D(tank.MinX, tank.MinY, tank.MaxZ - 100f, tank.MaxX, tank.MaxY, ScenarioScript.ZoneFloorHot.MaxZ));
             // 바닥 판을 되살리고 밝게 칠합니다 — 원래 색이 배경과 같은 남색이라 그대로는 바닥이 없어 보입니다.
             if (_tankFloor.Count == 0) return;
             vizcore3dx.Object3D.Show(_tankFloor, true);
@@ -1283,7 +1335,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 _recolored.Add(node);
                 _recoloredColors.Add(vizcore3dx.Object3D.Color.GetColor(node));
             }
-            vizcore3dx.Object3D.Color.SetColor(_tankFloor, SceneValues.ColorTankFloor);
+            vizcore3dx.Object3D.Color.SetColor(_tankFloor, ScenarioScript.ColorTankFloor);
         }
 
         // 상자에 걸치는 파트를 숨깁니다(들여다볼 창). 판정용 공간을 잠시 만들었다가 지웁니다.
@@ -1340,15 +1392,15 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             AddStairTower(shapes);
 
             // 좌현 경사 사다리 (플로어 → 플랫폼)
-            Data.Vector3D low = SceneValues.NodeFloorPortLadder, high = SceneValues.NodePlatformPortLadder;
-            float ladderHalf = SceneValues.LadderLaneWidth / 2f;
-            AddShape(shapes, StepsMesh(low.X, high.X, low.Y - ladderHalf, low.Y + ladderHalf, low.Z, high.Z, SceneValues.LadderSteps), SceneValues.ColorStair);
+            Data.Vector3D low = ScenarioScript.NodeFloorPortLadder, high = ScenarioScript.NodePlatformPortLadder;
+            float ladderHalf = ScenarioScript.LadderLaneWidth / 2f;
+            AddShape(shapes, StepsMesh(low.X, high.X, low.Y - ladderHalf, low.Y + ladderHalf, low.Z, high.Z, ScenarioScript.LadderSteps), ScenarioScript.ColorStair);
 
             // 상갑판 통로 판 (계단 출구 → 집결지)
             KeyValuePair<Data.Vector3D, Data.Vector3D> walk = evacuation.ExitWalk();
             MeshData walkway = new MeshData();
-            walkway.AddStrip(walk.Key, walk.Value, SceneValues.WalkwayWidth / 2f, 60f);
-            AddShape(shapes, walkway, SceneValues.ColorWalkway);
+            walkway.AddStrip(walk.Key, walk.Value, ScenarioScript.WalkwayWidth / 2f, 60f);
+            AddShape(shapes, walkway, ScenarioScript.ColorWalkway);
 
             if (shapes.Count > 0) vizcore3dx.Shape.DepthTestEnable(true, shapes);
         }
@@ -1356,21 +1408,21 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 계단 탑 — 단마다 디딤판 줄과 위쪽 끝의 계단참을 그립니다. 홀수 단은 A 줄에서 X0 → X1, 짝수 단은 B 줄에서 X1 → X0 로 되꺾어 오릅니다.
         private void AddStairTower(List<Data.ShapeItem> shapes)
         {
-            float[] levels = SceneValues.StairLevels;
-            float half = SceneValues.StairLaneWidth / 2f;
-            float x0 = SceneValues.StairX0, x1 = SceneValues.StairX1, depth = SceneValues.LandingDepth;
-            float y0 = SceneValues.StairLaneA - half, y1 = SceneValues.StairLaneB + half;
+            float[] levels = ScenarioScript.StairLevels;
+            float half = ScenarioScript.StairLaneWidth / 2f;
+            float x0 = ScenarioScript.StairX0, x1 = ScenarioScript.StairX1, depth = ScenarioScript.LandingDepth;
+            float y0 = ScenarioScript.StairLaneA - half, y1 = ScenarioScript.StairLaneB + half;
 
             for (int i = 1; i < levels.Length; i++)
             {
                 bool forward = i % 2 == 1;
-                float lane = forward ? SceneValues.StairLaneA : SceneValues.StairLaneB;
-                AddShape(shapes, StepsMesh(forward ? x0 : x1, forward ? x1 : x0, lane - half, lane + half, levels[i - 1], levels[i], SceneValues.StairSteps), SceneValues.ColorStair);
+                float lane = forward ? ScenarioScript.StairLaneA : ScenarioScript.StairLaneB;
+                AddShape(shapes, StepsMesh(forward ? x0 : x1, forward ? x1 : x0, lane - half, lane + half, levels[i - 1], levels[i], ScenarioScript.StairSteps), ScenarioScript.ColorStair);
 
                 // 단 위쪽 끝의 계단참
                 MeshData landing = new MeshData();
                 landing.AddBox(forward ? x1 : x0 - depth, y0, levels[i] - 60f, forward ? x1 + depth : x0, y1, levels[i]);
-                AddShape(shapes, landing, SceneValues.ColorStair);
+                AddShape(shapes, landing, ScenarioScript.ColorStair);
             }
         }
 
@@ -1379,7 +1431,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             Data.ShapeItem.MeshShape shape = vizcore3dx.Shape.CreateMeshShape(mesh.Vertices, mesh.Indices, color);
             if (shape == null) return;
 
-            shape.Category = SceneValues.StairCategory;
+            shape.Category = ScenarioScript.StairCategory;
             shapes.Add(shape);
         }
 
@@ -1497,11 +1549,11 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 화재 구역부터 집결지까지 대피 범위 전체가 보이도록 물러납니다.
         private void FlyToEvacuationOverview()
         {
-            Data.Vector3D muster = SceneValues.NodeMuster;
-            float r = SceneValues.MusterRadius;
+            Data.Vector3D muster = ScenarioScript.NodeMuster;
+            float r = ScenarioScript.MusterRadius;
             Data.BoundBox3D view = new Data.BoundBox3D(10000f, -10000f, 5520f, 30000f, 10000f, 14500f);
             view.AddBox(new Data.BoundBox3D(muster.X - r, muster.Y - r, muster.Z, muster.X + r, muster.Y + r, muster.Z + 2500f));
-            FlyToBox(view, SceneValues.ViewEvacuation, 2.5);
+            FlyToBox(view, ScenarioScript.ViewEvacuation, 2.5);
         }
 
         // 크기 size 인 대상이 화면에 다 들어오는 카메라 거리를 시야각에서 구합니다.
@@ -1510,7 +1562,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             double fov = vizcore3dx.View.FOV;
             if (fov < 1.0 || fov > 120.0) fov = 30.0;
 
-            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * SceneValues.FitMargin);
+            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * ScenarioScript.FitMargin);
         }
 
         // target 을 direction 방향으로 distance 만큼 떨어져 바라보도록 seconds 초 동안 이동합니다.
@@ -1553,16 +1605,17 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             return false;
         }
 
+        // 상태 문구를 창 제목줄에 적습니다.
         private void SetStatus(string text)
         {
-            lblStatus.Text = text;
+            Text = "VIZCore3DX.NET.Scenario.WorkPermit — " + text;
         }
 
         // 3D 뷰 왼쪽 위에 문구 하나를 띄웁니다. 이전 문구는 지웁니다.
         private void ShowHud(string text)
         {
             if (_hud != null) vizcore3dx.View.Message.Delete(_hud);
-            _hud = vizcore3dx.View.Message.Create(text, SceneValues.HudPosition, SceneValues.HudColor, Data.TextSizeType.Size_24, true, true);
+            _hud = vizcore3dx.View.Message.Create(text, ScenarioScript.HudPosition, ScenarioScript.HudColor, Data.TextSizeType.Size_24, true, true);
         }
 
         // 3D 뷰 왼쪽 위 문구를 지웁니다. 빠른 재생 표시도 함께 지웁니다.
@@ -1577,7 +1630,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private void ShowSpeedHud(string text)
         {
             if (_speedHud != null) vizcore3dx.View.Message.Delete(_speedHud);
-            _speedHud = vizcore3dx.View.Message.Create(text, SceneValues.SpeedHudPosition, SceneValues.ColorAccent, Data.TextSizeType.Size_24, true, true);
+            _speedHud = vizcore3dx.View.Message.Create(text, ScenarioScript.SpeedHudPosition, ScenarioScript.ColorAccent, Data.TextSizeType.Size_24, true, true);
         }
 
         private void ClearSpeedHud()
