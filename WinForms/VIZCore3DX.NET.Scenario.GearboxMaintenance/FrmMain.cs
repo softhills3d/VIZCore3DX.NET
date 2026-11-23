@@ -15,10 +15,12 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
     // ── 이 예제에서 SDK 사용을 보려면 ──
     // · 분해 순서 애니메이션: SceneOpenCover(), AddUnscrewGroups()
     // · 방향 스윕(뺄 수 있는 방향 찾기): SceneSweep(), SweepOptions()
-    // · 이동 간섭 검사(넣는 경로 확인): CreateMountTest(), SceneMount(), Clash_OnClashMoveTestReportFinished()
-    // · 단면: CutAtShaftHeight()
-    // · 측정·최소 거리: SceneVerify(), AddAxialDistance()
-    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // · 이동 간섭 검사(넣는 경로 확인): CreateLowerPathTest(), SceneMount(), Clash_OnClashMoveTestReportFinished()
+    // · 단면(한 단면만 뒤집기): AddSectionKeepBelow() (Section.InvertDirection(id))
+    // · 측정·최소 거리(문구 띄우기): SceneVerify(), AddAxialDistance(), ShowMeshGap()
+    // · 카메라 도착 뒤 이어서 하기: WhenCameraArrives() (View.OnCameraMoveCompletedEvent)
+    // · 폼 상태 없이 복사해 쓸 도우미는 #region SDK 기법 에 모아 두었습니다.
+    // 장면 재생·리본(ScenarioRunner.cs, ScenarioRibbon.cs)과 카메라·문구 연출(FrmMain.Demo.cs)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
     // 다른 모델에 쓰려면: ScenarioScript.cs 의 부품 이름·속성 키를 그 모델에 맞게 바꿉니다(IsModelReady 가 확인합니다).
     public partial class FrmMain : Form
     {
@@ -72,8 +74,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private Data.XRayColorTypes? _originalXRayColor;
         private Data.ClashSweepStyle _originalSweepStyle;
 
-        // 3D 뷰에 띄운 문구
-        private Data.MessageItem _hud;
+        // 카메라가 도착하면 할 일 — View.OnCameraMoveCompletedEvent 가 한 번 실행하고 비웁니다. 장면이 바뀌거나 처음으로 가면 버립니다.
+        private Action _onCameraArrived;
 
         public FrmMain()
         {
@@ -133,6 +135,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             InitializeRibbon();
 
             vizcore3dx.Clash.OnClashMoveTestReportFinished += Clash_OnClashMoveTestReportFinished;
+            vizcore3dx.View.OnCameraMoveCompletedEvent += View_OnCameraMoveCompletedEvent;
 
             // 장면 중에 진행 창(간섭 검사 등)이 3D 뷰를 가리지 않게 합니다 — 이동 간섭 검사는 단계마다 진행 창을 띄웁니다.
             vizcore3dx.EnableProgressForm = false;
@@ -188,20 +191,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         {
             _runner.Reset();
             vizcore3dx.Clash.OnClashMoveTestReportFinished -= Clash_OnClashMoveTestReportFinished;
+            vizcore3dx.View.OnCameraMoveCompletedEvent -= View_OnCameraMoveCompletedEvent;
             base.OnFormClosing(e);
-        }
-
-        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Escape && _runner.IsPlaying)
-            {
-                _runner.Reset();
-                SetStatus("재생을 중단했습니다.");
-                return true;
-            }
-
-            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion
@@ -276,6 +267,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
         private void Runner_ShotStarted(ScenarioShot shot)
         {
+            _onCameraArrived = null;
             _ribbon.SetCurrent(_runner.Index);
             SetStatus(shot.Name + " — " + shot.Caption);
         }
@@ -296,6 +288,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         private void ClearScene()
         {
             _runner.Reset();
+            _onCameraArrived = null;
             if (_ribbon != null) _ribbon.SetCurrent(0);
 
             _mountActive = false;
@@ -367,7 +360,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             });
 
             FlyToBox(ModelBox(), ScenarioScript.ViewIntro, 0.8, ScenarioScript.IntroZoom);
-            _runner.After(0.8, () => Orbit(ScenarioScript.IntroOrbitDegrees, ScenarioScript.RunningSeconds - 1.0));
+            WhenCameraArrives(() => Orbit(ScenarioScript.IntroOrbitDegrees, ScenarioScript.RunningSeconds - 1.0));
             _runner.After(ScenarioScript.RunningSeconds - ScenarioScript.SpinRampSeconds - 0.5, () => ShowHud("정지 · 정비 시작"));
         }
 
@@ -513,18 +506,6 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             Orbit(ScenarioScript.SweepOrbitDegrees, ScenarioScript.SweepOrbitSeconds);
         }
 
-        // 방향 스윕 옵션 — 최대 거리·표본 수·맞닿음 허용 거리
-        private static Data.ClashSweepOptions SweepOptions()
-        {
-            Data.ClashSweepOptions options = new Data.ClashSweepOptions();
-            options.MaxDistanceMm = ScenarioScript.SweepMaxDistance;
-            options.MaxSampleCount = ScenarioScript.SweepMaxSamples;
-
-            // ★기본 접촉 허용(5 mm)이면 베어링이 끼워진 하우징이 "맞닿은 부품"으로 빠져 ±X 가 거짓 통과로 나옵니다 — 0.1 mm 로 줄이면 +Z 만 통과합니다.
-            options.ContactToleranceMm = ScenarioScript.SweepContactTolerance;
-            return options;
-        }
-
         // 04 출력축 인출 — 통과한 방향만 남겨 보이고, 출력축 가까이 다가가 베어링 캡 볼트를 하나씩 풀어 뺀 뒤, 출력축(기어 포함)을 천천히 들어 올립니다.
         // 같은 애니메이션(02 에서 멈춘 지점)에 이어 붙입니다. 캡 볼트는 축 방향(Y)으로 박혀 있어 Y 축으로 돌며 바깥쪽으로 빠집니다.
         private void ScenePullOut()
@@ -619,7 +600,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             ShowHud(string.Format("점검을 위해 전체 분해 · 부품 묶음 {0}개", groups));
 
             FlyToBox(ExplodedBox(), ScenarioScript.ViewWork, 1.2, ScenarioScript.ExplodeZoom);
-            _runner.After(1.2, () => Orbit(ScenarioScript.ExplodeOrbitDegrees, ScenarioScript.ExplodeOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.ExplodeOrbitDegrees, ScenarioScript.ExplodeOrbitSeconds));
             _runner.After(ScenarioScript.ReadPause, () =>
             {
                 _explode.PlaybackTime = TimeSpan.Zero;
@@ -941,7 +922,8 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
                 vizcore3dx.Measure.Clear();
                 ShowHousing(false);
 
-                Data.MeasureItem item = vizcore3dx.Measure.AddMinimumDistance(new List<Data.Node> { pinionNode }, new List<Data.Node> { gearNode });
+                // 문구를 위로 띄우면 엔진이 지시선을 그립니다.
+                Data.MeasureItem item = vizcore3dx.Measure.AddMinimumDistance(new List<Data.Node> { pinionNode }, new List<Data.Node> { gearNode }, new Data.Vector3D(0f, 0f, ScenarioScript.DimensionLift));
                 if (item != null) StyleMeasure(item.ID, 2, ScenarioScript.KeyLabelTextSize);
             });
             ShowHud(string.Format("{0} ↔ {1} 맞물림 틈 {2:0.00} mm {3}", pinionNode.NodeName, gearNode.NodeName, gap, gap > 0 ? "✓ 간섭 없음" : "✗ 간섭"));
@@ -967,7 +949,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             _runner.After(1.0, () => ShowHud(string.Format("재가동 · 출력 {0} rpm", Uda(reducer, ScenarioScript.UdaOutputSpeed))));
 
             FlyToBox(ModelBox(), ScenarioScript.ViewIntro, 1.5, ScenarioScript.OutroZoom);
-            _runner.After(1.5, () => Orbit(ScenarioScript.OutroOrbitDegrees, ScenarioScript.OutroOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.OutroOrbitDegrees, ScenarioScript.OutroOrbitSeconds));
         }
 
         #endregion
@@ -1056,22 +1038,13 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             vizcore3dx.View.XRay.Select(Nodes(ScenarioScript.NameShaftAssemblies), true);
         }
 
-        // 출력축을 인출한 높이(ShaftPull)에서 MountStep 씩 내려 안착하는 이동 간섭 검사를 만들고, 축을 맨 위 단계에 둡니다.
+        // 출력축을 인출한 높이(ShaftPull)에서 MountPath 씩 내려 안착하는 이동 간섭 검사를 만들고, 축을 맨 위 단계에 둡니다.
         // 고정 쪽은 보이는 부품 중 출력축 조립품을 뺀 전부입니다. ★숨긴 부품은 검사에서 빠집니다(캡 볼트를 숨기면 간섭 0).
         private Data.ClashTest CreateMountTest()
         {
             Data.Node shaft = Node(ScenarioScript.NameOutputShaftAssy);
             List<Data.Node> fixedParts = vizcore3dx.Object3D.FromFilter(Data.Object3dFilter.VISIBLE_PART).Where(n => !IsUnder(n, shaft)).ToList();
-            Data.ClashTest test = vizcore3dx.Clash.CreateMovingTest(fixedParts, new List<Data.Node> { shaft }, false, 0f, 0f, 0f);
-            if (test == null) return null;
-
-            // 경로를 더하는 동안 축이 실제로 움직입니다 — 올렸다 다 내리면 안착 위치로 돌아옵니다.
-            vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, ScenarioScript.ShaftPull), 0f, 0f, 0f);
-            foreach (float step in ScenarioScript.MountPath)
-                vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, -step), 0f, 0f, 0f);
-
-            vizcore3dx.Clash.ApplyTestPath(test, vizcore3dx.Clash.GetTestPaths(test)[0].ID);
-            return test;
+            return CreateLowerPathTest(vizcore3dx, fixedParts, shaft, ScenarioScript.ShaftPull, ScenarioScript.MountPath);
         }
 
         // 이동 경로 한 단계의 관통 결과
@@ -1167,7 +1140,6 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         }
 
         // 축 높이에서 수평으로 자르고 아래쪽을 남깁니다. 잘린 면은 채웁니다(부품 수가 적어 느려지지 않습니다).
-        // ★뒤집기는 이 순서여야 적용됩니다 : Add → SetSectionPosition → Enable → Deselect → Select → InvertDirection → Deselect.
         private void CutAtShaftHeight(float z)
         {
             RemoveSection();
@@ -1176,18 +1148,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             vizcore3dx.Section.IsCapFillEnabled = true;
 
             Data.BoundBox3D model = ModelBox();
-            _section = vizcore3dx.Section.Add(false, Data.Axis.Z);
-            if (_section == null) return;
-
-            vizcore3dx.Section.SetSectionPosition(_section.ID, new Data.Vector3D(model.CenterX, model.CenterY, z));
-            vizcore3dx.Section.Enable(true);
-            vizcore3dx.Section.Deselect();
-            vizcore3dx.Section.Select(_section);
-            vizcore3dx.Section.InvertDirection();
-            vizcore3dx.Section.Deselect();
-
-            // 자르는 평면의 사각형은 숨기고 절단만 남깁니다.
-            _section.Show(false);
+            _section = AddSectionKeepBelow(vizcore3dx, new Data.Vector3D(model.CenterX, model.CenterY, z));
         }
 
         private void RemoveSection()
@@ -1337,48 +1298,69 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
         #endregion
 
-        #region 카메라
+        #region SDK 기법 — 폼 상태 없이 복사해 쓸 수 있는 도우미
 
-        // box 가 화면에 다 들어오도록 direction 방향에서 seconds 초 동안 이동합니다. zoom 이 1 보다 크면 그만큼 더 물러납니다.
-        private void FlyToBox(Data.BoundBox3D box, Data.Vector3D direction, double seconds, float zoom = 1f)
+        // 방향 스윕 옵션 — 최대 거리·표본 수·맞닿음 허용 거리
+        private static Data.ClashSweepOptions SweepOptions()
         {
-            FlyCamera(new Data.Vector3D(box.GetCenter()), direction, FitDistance(box.MaxLength) * zoom, seconds);
+            Data.ClashSweepOptions options = new Data.ClashSweepOptions();
+            options.MaxDistanceMm = ScenarioScript.SweepMaxDistance;
+            options.MaxSampleCount = ScenarioScript.SweepMaxSamples;
+
+            // ★기본 접촉 허용(5 mm)이면 베어링이 끼워진 하우징이 "맞닿은 부품"으로 빠져 ±X 가 거짓 통과로 나옵니다 — 0.1 mm 로 줄이면 +Z 만 통과합니다.
+            options.ContactToleranceMm = ScenarioScript.SweepContactTolerance;
+            return options;
         }
 
-        // 크기 size 인 대상이 화면에 다 들어오는 카메라 거리를 시야각에서 구합니다.
-        private float FitDistance(float size)
+        // moving 을 lift 만큼 올린 뒤 steps 씩 내려 안착하는 이동 간섭 검사를 만들고, 맨 위 단계에 둡니다. 만들지 못하면 null 을 돌려줍니다.
+        private static Data.ClashTest CreateLowerPathTest(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, List<Data.Node> fixedParts, Data.Node moving, float lift, float[] steps)
         {
-            double fov = vizcore3dx.View.FOV;
-            if (fov < 1.0 || fov > 120.0) fov = 30.0;
+            Data.ClashTest test = vizcore3dx.Clash.CreateMovingTest(fixedParts, new List<Data.Node> { moving }, false, 0f, 0f, 0f);
+            if (test == null) return null;
 
-            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * ScenarioScript.FitMargin);
+            // 경로를 더하는 동안 축이 실제로 움직입니다 — 올렸다 다 내리면 안착 위치로 돌아옵니다.
+            vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, lift), 0f, 0f, 0f);
+            foreach (float step in steps)
+                vizcore3dx.Clash.AddTestPath(test, new Data.Vector3D(0f, 0f, -step), 0f, 0f, 0f);
+
+            vizcore3dx.Clash.ApplyTestPath(test, vizcore3dx.Clash.GetTestPaths(test)[0].ID);
+            return test;
         }
 
-        // target 을 direction 방향으로 distance 만큼 떨어져 바라보도록 seconds 초 동안 이동합니다.
-        // 위 방향은 Z 입니다. direction 이 정확히 수직이면 안 됩니다.
-        private void FlyCamera(Data.Vector3D target, Data.Vector3D direction, float distance, double seconds)
+        // position 높이에서 수평(Z)으로 자르고 아래쪽을 남기는 단면을 만듭니다. 자르는 평면의 사각형은 숨깁니다. 만들지 못하면 null 을 돌려줍니다.
+        private static Data.SectionItem AddSectionKeepBelow(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, Data.Vector3D position)
         {
-            Data.CameraData camera = vizcore3dx.View.GetCameraData();
-            if (camera == null) return;
+            Data.SectionItem section = vizcore3dx.Section.Add(false, Data.Axis.Z);
+            if (section == null) return null;
 
-            // 시선 방향 값의 부호는 지금 카메라가 쓰는 규칙을 그대로 따릅니다.
-            Data.Vector3D current = new Data.Vector3D(camera.PivotPosition) - new Data.Vector3D(camera.EyePosition);
-            float sign = current.Dot(new Data.Vector3D(camera.CameraDirection)) < 0f ? -1f : 1f;
+            vizcore3dx.Section.SetSectionPosition(section.ID, position);
+            vizcore3dx.Section.Enable(true);
 
-            Data.Vector3D view = direction.GetNormalized();
-            camera.PivotPosition = target.ToVertex3D();
-            camera.EyePosition = (target - view * distance).ToVertex3D();
-            camera.CameraDirection = (view * sign).ToVertex3D();
+            // 이 단면만 뒤집어 아래쪽을 남깁니다(선택과 무관).
+            vizcore3dx.Section.InvertDirection(section.ID);
+            vizcore3dx.Section.Deselect();
 
-            // 위 방향은 시선에 직교해야 합니다. SetCameraData 가 시선에 맞게 다시 보정합니다.
-            camera.UpDirection = new Data.Vector3D(0f, 0f, 1f).ToVertex3D();
-            vizcore3dx.View.SetCameraData(camera, TimeSpan.FromSeconds(seconds));
+            // 자르는 평면의 사각형은 숨기고 절단만 남깁니다.
+            section.Show(false);
+            return section;
         }
 
-        // 지금 보는 지점을 중심으로 수직축 둘레를 degrees 도만큼 seconds 초 동안 돕니다.
-        private void Orbit(float degrees, double seconds)
+        #endregion
+
+        #region 카메라 도착 알림
+
+        // 지금 진행 중인 카메라 이동이 끝나 카메라가 멈추면 next 를 실행합니다.
+        private void WhenCameraArrives(Action next)
         {
-            vizcore3dx.View.OrbitCamera(new Data.Vector3D(0f, 0f, 1f), degrees, TimeSpan.FromSeconds(Math.Max(seconds, 1.0)));
+            _onCameraArrived = next;
+        }
+
+        private void View_OnCameraMoveCompletedEvent(object sender, VIZCore3DX.NET.Event.EventManager.CameraMoveCompletedEventArgs e)
+        {
+            Action next = _onCameraArrived;
+            _onCameraArrived = null;
+            if (next == null || !vizcore3dx.Model.IsOpen()) return;
+            next();
         }
 
         #endregion
@@ -1392,56 +1374,6 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
 
             SetStatus("모델을 먼저 열어 주세요.");
             return false;
-        }
-
-        // 상태 문구를 창 제목줄에 적습니다.
-        private void SetStatus(string text)
-        {
-            Text = "VIZCore3DX.NET.Scenario.GearboxMaintenance — " + text;
-        }
-
-        // 3D 뷰 왼쪽 위에 문구 하나를 띄웁니다. 이전 문구는 지웁니다.
-        private void ShowHud(string text)
-        {
-            if (_hud != null) vizcore3dx.View.Message.Delete(_hud);
-            _hud = vizcore3dx.View.Message.Create(text, ScenarioScript.HudPosition, ScenarioScript.HudColor, ScenarioScript.HudTextSize, true, true);
-        }
-
-        // 3D 뷰 왼쪽 위 문구를 지웁니다.
-        private void ClearHud()
-        {
-            if (_hud != null) vizcore3dx.View.Message.Delete(_hud);
-            _hud = null;
-        }
-
-        // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
-        private void ShowRibbonTabs(params VIZCore3DX.NET.Data.ToolbarKind[] keep)
-        {
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
-                vizcore3dx.Toolbar.SetVisible(kind, kind == VIZCore3DX.NET.Data.ToolbarKind.Main || Array.IndexOf(keep, kind) >= 0);
-
-            // 남길 탭은 먼저 켜고(설정 파일로 꺼져 있을 수 있음), 그 다음 모델 트리를 뺀 나머지를 끕니다. 내장 탭 이름은 "tabPage" + 툴바 종류입니다.
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in keep)
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, "tabPage" + kind, true);
-
-            foreach (string name in vizcore3dx.Panel.GetTabNames(VIZCore3DX.NET.Data.PanelKind.ModelTree))
-            {
-                if (name == "tabPageSceneTree") continue;
-                bool show = Array.Exists(keep, kind => name == "tabPage" + kind);
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, name, show);
-            }
-        }
-
-        // 속성 패널은 노드 특성·노드 속성만 기본으로 남기고, 예제가 다루는 탭만 켭니다.
-        private void ShowAttributeTabs(bool attributeTree = false, bool nodeGroup = false, bool projection = false, bool pmi = false)
-        {
-            vizcore3dx.TabAttributeTreeEnabled = attributeTree;
-            vizcore3dx.TabNodeGroupEnabled = nodeGroup;
-            vizcore3dx.TabProjectionEnabled = projection;
-            vizcore3dx.TabPmiEnabled = pmi;
-            vizcore3dx.TabEnvironmentEnabled = false;
-            vizcore3dx.TabGenericDataEnabled = false;
-            vizcore3dx.AttributePanelVisible = attributeTree || nodeGroup || projection || pmi;
         }
 
         #endregion

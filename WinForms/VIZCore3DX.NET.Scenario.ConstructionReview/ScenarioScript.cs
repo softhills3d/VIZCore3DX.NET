@@ -194,12 +194,8 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
         // 문구를 띄운 뒤 동작(열기·검사)을 시작할 때까지 — 무엇을 할지 읽을 시간
         public const double ReadPause = 1.5;
 
-        // 3D 뷰 왼쪽 위 문구 — 어두운 상자 위 글자(화면 고정 노트). 상자 폭은 글자 폭을 재서 정합니다(Size_40 ≈ 33px 높이).
-        public const string HudFontName = "Malgun Gothic";
-        public const float HudFontPixels = 38f;
-        public const float HudPaddingPixels = 40f;
+        // 3D 뷰 왼쪽 위 문구 — 어두운 상자 위 글자(화면 고정 노트). 상자 왼쪽 위 모서리를 화면 가장자리에서 이만큼(px) 띄웁니다.
         public const float HudMarginPixels = 14f;
-        public const float HudBoxHeightPixels = 58f;
         public static readonly Color HudColor = Color.FromArgb(255, 214, 0);
         public const Data.TextSizeType HudTextSize = Data.TextSizeType.Size_40;
 

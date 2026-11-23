@@ -57,6 +57,9 @@
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmMain.Demo.cs">
+      <DependentUpon>FrmMain.cs</DependentUpon>
+    </Compile>
     <Compile Include="FloorData.cs" />
     <Compile Include="HiddenNodes.cs" />
     <Compile Include="Crew.cs" />

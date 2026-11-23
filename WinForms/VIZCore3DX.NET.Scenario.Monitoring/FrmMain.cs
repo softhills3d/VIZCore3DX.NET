@@ -20,7 +20,8 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
     // · 분할 화면에 센서 시점 띄우기: ShowSplit(), ShowSingle()
     // · 출입 금지 구역(Zone)과 출입 이벤트: CreateNoGo(), Zone_OnZoneContentChanged()
     // · 분할 화면 모두에 이펙트 표시: InitializeVIZCore3DX()
-    // 장면 재생·리본·시계·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, Cues.cs, ZoomTo 등)과 걷기용 바닥 지도(FloorMap.cs, FloorData.cs)는 연출용이니 건너뛰어도 됩니다.
+    // · 화면 고정 문구: ShowHud() (Note.AddNote2D 기준점 · View.ViewPixelSize, FrmMain.Demo.cs)
+    // 장면 재생·리본·시계·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, Cues.cs, ZoomTo 등), 키·문구·탭 정리(FrmMain.Demo.cs)와 걷기용 바닥 지도(FloorMap.cs, FloorData.cs)는 연출용이니 건너뛰어도 됩니다.
     // Crew.cs 는 아바타 API(Avatar.Place·SetPosture 등)로 작업자를 놓고 걷게 하므로, 아바타 사용을 보려면 함께 봅니다.
     // 다른 모델에 쓰려면: 센서 좌표·출입 금지 구역(ScenarioScript.cs)과 바닥 격자(FloorData.cs)가 샘플 모델 전용이라 값을 바꿔야 합니다.
     public partial class FrmMain : Form
@@ -75,11 +76,8 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
         private int _noGoZone = -1;
         private bool _zoneHooked;
 
-        // 3D 뷰에 띄운 문구 (장면 안의 문구 + 가스 감지기 상태 · 구역 안 인원)
-        private uint _hudNote;
-        private string _hudText;
+        // 장면 안의 문구 — 3D 뷰 문구(가스 감지기 상태 · 구역 안 인원)의 첫 줄 (FrmMain.Demo.cs)
         private string _beat = "";
-        private Size _renderSize;
 
         // 크게 띄운 화면(-1 이면 4분할)과 확대(PTZ): 렌즈 자리는 두고 시선 방향·화각만 보간
         private int _zoomed = -1;
@@ -235,30 +233,6 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
             if (_zoneHooked) vizcore3dx.Zone.OnZoneContentChangedEvent -= Zone_OnZoneContentChanged;
             _zoneHooked = false;
             base.OnFormClosing(e);
-        }
-
-        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Escape && _runner.IsPlaying)
-            {
-                _runner.Reset();
-                SetStatus("재생을 중단했습니다.");
-                return true;
-            }
-
-            return base.ProcessCmdKey(ref msg, keyData);
-        }
-
-        // 리본과 3D 화면만 남김: 옆 뷰 툴바·모델 트리·속성 패널·상태바 숨김
-        // 분할 화면을 만들면 뷰 툴바가 다시 보이므로 화면을 바꿀 때마다 부릅니다.
-        private void HideViewerUI()
-        {
-            vizcore3dx.View.Toolbar.Enable = false;
-            vizcore3dx.ModelingControlVisible = false;
-            vizcore3dx.ModelTreeVisible = false;
-            vizcore3dx.AttributePanelVisible = false;
-            vizcore3dx.Statusbar.Visible = false;
         }
 
         #endregion
@@ -696,28 +670,51 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
         }
 
         // 09 — 정비사 B 가 구역 밖에서 손짓해 불러내고, 작업자 C 가 구역 밖으로 나갑니다(나간 순간 구역 이벤트).
+        // 순서: 정비사 B 가 구역 밖으로 감 → 작업자 C 쪽으로 돌아섬(EscortFaceWorkerC) → 손짓(EscortBeckon)
+        //       → 작업자 C 가 돌아섬(EscortWorkerCTurns) → 구역 밖으로 걸어 나감(EscortWalkOut) → 확인 문구(EscortExited)
         private void SceneEscort()
         {
             Beat(ScenarioScript.TextDispatchB);
             Data.BoundBox3D noGo = ScenarioScript.NoGo;
             _techB.Speed = ScenarioScript.HurrySpeed;
-            _crew.Walk(_techB, _map.Snap(noGo.MinX - ScenarioScript.EscortOffsetX, ScenarioScript.EscortY), () => _crew.TurnTo(_techB, _techB.Token, _crew.Pos(_workerC), () =>
-            {
-                _crew.Posture(_techB, "Hands Half Up");
-                int tc = _crew.NewToken(_workerC);
-                _crew.Posture(_workerC, null);
-                _cues.After(ScenarioScript.EscortTurnDelay, () => _crew.TurnTo(_workerC, tc, _crew.Pos(_techB), () => _cues.After(ScenarioScript.EscortWalkDelay, () =>
-                {
-                    _crew.Posture(_techB, null);
-                    _escorting = true;
-                    _crew.Walk(_workerC, _map.Snap(noGo.MinX - ScenarioScript.ExitOffsetX, ScenarioScript.ExitY), () =>
-                    {
-                        // 구역 밖에 멈춰 선 뒤 그 자리에 확인 문구
-                        Data.Vector3D q = _crew.Pos(_workerC);
-                        _crew.Own(_workerC, Effect.AddTextLabel(Geo.Up(q, 2300), ScenarioScript.LabelExit, new Data.TextLabelOptions { SizePx = ScenarioScript.LabelSizePx, TextColor = Color.White, BackColor = ScenarioScript.Green, ExpireMs = 3000, Group = Group }), id => Effect.RemoveTextLabel(id));
-                    });
-                })));
-            }));
+            _crew.Walk(_techB, _map.Snap(noGo.MinX - ScenarioScript.EscortOffsetX, ScenarioScript.EscortY), EscortFaceWorkerC);
+        }
+
+        // 정비사 B 가 도착하면 작업자 C 쪽으로 돌아섭니다.
+        private void EscortFaceWorkerC()
+        {
+            _crew.TurnTo(_techB, _techB.Token, _crew.Pos(_workerC), EscortBeckon);
+        }
+
+        // 정비사 B 가 손짓하고, 작업자 C 는 하던 자세를 풀고 잠시 뒤 돌아섭니다(진행 시계에 겁니다).
+        private void EscortBeckon()
+        {
+            _crew.Posture(_techB, "Hands Half Up");
+            int tc = _crew.NewToken(_workerC);
+            _crew.Posture(_workerC, null);
+            _cues.After(ScenarioScript.EscortTurnDelay, () => EscortWorkerCTurns(tc));
+        }
+
+        // 작업자 C 가 정비사 B 쪽으로 돌아서고, 잠시 뒤 걸어 나갑니다. tc 는 EscortBeckon 에서 받은 작업자 C 의 토큰입니다.
+        private void EscortWorkerCTurns(int tc)
+        {
+            _crew.TurnTo(_workerC, tc, _crew.Pos(_techB), () => _cues.After(ScenarioScript.EscortWalkDelay, EscortWalkOut));
+        }
+
+        // 정비사 B 는 손을 내리고, 작업자 C 가 구역 밖으로 걸어 나갑니다(나간 순간 구역 이벤트).
+        private void EscortWalkOut()
+        {
+            Data.BoundBox3D noGo = ScenarioScript.NoGo;
+            _crew.Posture(_techB, null);
+            _escorting = true;
+            _crew.Walk(_workerC, _map.Snap(noGo.MinX - ScenarioScript.ExitOffsetX, ScenarioScript.ExitY), EscortExited);
+        }
+
+        // 구역 밖에 멈춰 선 뒤 그 자리에 확인 문구
+        private void EscortExited()
+        {
+            Data.Vector3D q = _crew.Pos(_workerC);
+            _crew.Own(_workerC, Effect.AddTextLabel(Geo.Up(q, 2300), ScenarioScript.LabelExit, new Data.TextLabelOptions { SizePx = ScenarioScript.LabelSizePx, TextColor = Color.White, BackColor = ScenarioScript.Green, ExpireMs = 3000, Group = Group }), id => Effect.RemoveTextLabel(id));
         }
 
         // 구역 이벤트 — 작업자 C 가 나감: 구역을 주황으로 되돌림
@@ -956,101 +953,7 @@ namespace VIZCore3DX.NET.Scenario.Monitoring
             return false;
         }
 
-        private void SetStatus(string text)
-        {
-            Text = "VIZCore3DX.NET.Scenario.Monitoring — " + text;
-        }
-
-        // 장면 안의 문구 — 창 제목줄과 3D 뷰 왼쪽 위 문구의 첫 줄에 띄웁니다.
-        private void Beat(string text)
-        {
-            _beat = text;
-            SetStatus(text);
-            RefreshHud();
-        }
-
-        // 3D 뷰 왼쪽 위 문구: 장면 안의 문구 아래에 가스 감지기 상태와 출입 금지 구역 안 인원을 붙입니다. 감시 중일 때만 띄웁니다.
-        private void RefreshHud()
-        {
-            if (!_working || _noGoZone < 0 || !vizcore3dx.Model.IsOpen()) return;
-
-            string tail = string.Format(ScenarioScript.TextHudTail, _gasAlarm ? ScenarioScript.TextGasOn : ScenarioScript.TextGasOff, vizcore3dx.Zone.GetContents(_noGoZone).Count);
-            // 4분할이면 노트가 칸마다 그려지므로 꼬리 한 줄만 띄웁니다(장면 문구는 창 제목에 있습니다).
-            bool split = vizcore3dx.View.GetSubViewCount() != 0;
-            string text = split || string.IsNullOrEmpty(_beat) ? tail : _beat + "\n" + tail;
-            if (text == _hudText) return;
-            ShowHud(text);
-        }
-
-        // 3D 뷰 왼쪽 위에 문구 하나를 띄웁니다. 밝은 장면에서도 읽히도록 어두운 상자에 얹은 화면 고정 노트입니다. 이전 문구는 지웁니다.
-        private void ShowHud(string text)
-        {
-            ClearHud();
-            Data.NoteCustomStyle style = vizcore3dx.Note.CreateCustomStyle();
-            style.BoxFillColor = ScenarioScript.ColorPanel;
-            style.BoxStrokeColor = ScenarioScript.ColorAccent;
-            style.TextColor = ScenarioScript.HudColor;
-            style.TextSize = ScenarioScript.HudTextSize;
-            style.TextHorizontalAlignment = Data.HorizontalAlignment.Left;
-
-            // 상자 왼쪽 위 모서리를 여백에 맞춥니다. 상자 크기는 노트와 같은 계산으로 SDK 가 구합니다(기준점 TopLeft).
-            Size view = RenderSize();
-            float x = ScenarioScript.HudMarginPixels / view.Width;
-            float y = ScenarioScript.HudMarginPixels / view.Height;
-            _hudNote = vizcore3dx.Note.AddNote2D(text, x, y, style, ContentAlignment.TopLeft);
-            _hudText = text;
-        }
-
-        // 3D 화면(렌더 영역) 크기 — 처음 한 번 렌더 결과에서 읽어 둡니다.
-        private Size RenderSize()
-        {
-            if (_renderSize.IsEmpty)
-            {
-                using (Image image = vizcore3dx.View.CaptureRenderImage(true))
-                    _renderSize = image == null ? new Size(1684, 821) : image.Size;
-            }
-            return _renderSize;
-        }
-
-        // 3D 뷰 왼쪽 위 문구를 지웁니다.
-        private void ClearHud()
-        {
-            if (_hudNote != 0) vizcore3dx.Note.Delete(new List<uint> { _hudNote });
-            _hudNote = 0;
-            _hudText = null;
-        }
-
         private static float Sq(float v) { return v * v; }
-
-        // 사용자 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 탭을 숨깁니다.
-        private void ShowRibbonTabs(params VIZCore3DX.NET.Data.ToolbarKind[] keep)
-        {
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
-                vizcore3dx.Toolbar.SetVisible(kind, kind == VIZCore3DX.NET.Data.ToolbarKind.Main || Array.IndexOf(keep, kind) >= 0);
-
-            // 남길 탭은 먼저 켜고(설정 파일로 꺼져 있을 수 있음), 그 다음 모델 트리를 뺀 나머지를 끕니다. 내장 탭 이름은 "tabPage" + 툴바 종류입니다.
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in keep)
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, "tabPage" + kind, true);
-
-            foreach (string name in vizcore3dx.Panel.GetTabNames(VIZCore3DX.NET.Data.PanelKind.ModelTree))
-            {
-                if (name == "tabPageSceneTree") continue;
-                bool show = Array.Exists(keep, kind => name == "tabPage" + kind);
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, name, show);
-            }
-        }
-
-        // 속성 패널은 끕니다. 이 예제는 3D 뷰만 씁니다.
-        private void ShowAttributeTabs()
-        {
-            vizcore3dx.TabAttributeTreeEnabled = false;
-            vizcore3dx.TabNodeGroupEnabled = false;
-            vizcore3dx.TabProjectionEnabled = false;
-            vizcore3dx.TabPmiEnabled = false;
-            vizcore3dx.TabEnvironmentEnabled = false;
-            vizcore3dx.TabGenericDataEnabled = false;
-            vizcore3dx.AttributePanelVisible = false;
-        }
 
         #endregion
     }

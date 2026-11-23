@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,11 +14,14 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
     // 재생은 ScenarioRunner.cs 에 있습니다.
     //
     // ── 이 예제에서 SDK 사용을 보려면 ──
-    // · 속성(UDA)으로 4D 시공 순서 만들기: FindStages(), BuildSequence()
+    // · 속성(UDA)으로 4D 시공 순서 만들기: ReadStages(), BuildSequence() (폼 없이 복사해 쓸 수 있는 도우미)
     // · 전체 간섭 검사와 결과 받기: SceneClash(), Clash_OnClashTestFinishedEvent()
     // · 관통부 X-Ray·교차선: FocusPenetration()
-    // · 설계 변경 Rev A/B 비교와 재검사: SceneRevB()
-    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // · 설계 변경 Rev A/B 비교와 재검사: SceneRevB(), CompareRevisions()
+    // · 단면 뒤집기와 시간에 맞춘 이동: SceneSectionSweep(), SweepDown() (Section.InvertDirection(id), Section.SetCenterAsync)
+    // · 카메라 도착 뒤 이어서 하기: WhenCameraArrives() (View.OnCameraMoveCompletedEvent)
+    // · 화면 고정 문구: ShowHud() (Note.AddNote2D 기준점, FrmMain.Demo.cs)
+    // 장면 재생·리본(ScenarioRunner.cs, ScenarioRibbon.cs)과 카메라·문구 연출(FrmMain.Demo.cs)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
     // 다른 모델에 쓰려면: 같은 속성(Type·InstallSeq·PlannedStart 등)이 있어야 하며, ScenarioScript.cs 의 이름·속성 키를 그 모델에 맞게 바꿉니다.
     public partial class FrmMain : Form
     {
@@ -82,11 +84,10 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
         private Data.Node _rootB;
         private HashSet<int> _partIndex = new HashSet<int>();
 
-        // 공종별 보기에서 칠한·숨긴 부품 · 층 단면을 내리는 타이머 · 층 바닥 높이
+        // 공종별 보기에서 칠한·숨긴 부품 · 층 단면 이동을 멈추는 취소 토큰과 지금 띄운 층 이름 · 층 바닥 높이
         private List<Data.Node> _basicsColored;
         private List<Data.Node> _basicsHidden;
-        private readonly Timer _sweepTimer = new Timer();
-        private EventHandler _sweepTick;
+        private System.Threading.CancellationTokenSource _sweepCancel;
         private string _sweepLevel;
         private List<Tuple<string, float>> _levelElevations;
 
@@ -104,12 +105,11 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
         private Data.SectionItem _section;
         private bool? _originalCapFill;
 
-        // 3D 뷰에 띄운 문구
-        private uint _hudNote;
-        private Size _renderSize;
-
         // 실내 장면에서 소환한 아바타
         private int _avatarID;
+
+        // 카메라가 도착하면 할 일 — View.OnCameraMoveCompletedEvent 가 한 번 실행하고 비웁니다. 장면이 바뀌거나 처음으로 가면 버립니다.
+        private Action _onCameraArrived;
 
         public FrmMain()
         {
@@ -169,6 +169,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             InitializeRibbon();
 
             vizcore3dx.Clash.OnClashTestFinishedEvent += Clash_OnClashTestFinishedEvent;
+            vizcore3dx.View.OnCameraMoveCompletedEvent += View_OnCameraMoveCompletedEvent;
 
             // 진행 창(간섭 검사 등)을 띄우지 않습니다. 진행 상황은 3D 뷰 왼쪽 위 문구로 보입니다.
             vizcore3dx.EnableProgressForm = false;
@@ -227,26 +228,14 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             };
         }
 
-        // 창을 닫을 때 재생 타이머와 단면 타이머부터 멈추고, 간섭 검사 완료 이벤트를 해제합니다.
+        // 창을 닫을 때 재생 타이머와 단면 이동부터 멈추고, 간섭 검사 완료·카메라 도착 이벤트를 해제합니다.
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             _runner.Reset();
-            _sweepTimer.Stop();
+            StopSweep();
             vizcore3dx.Clash.OnClashTestFinishedEvent -= Clash_OnClashTestFinishedEvent;
+            vizcore3dx.View.OnCameraMoveCompletedEvent -= View_OnCameraMoveCompletedEvent;
             base.OnFormClosing(e);
-        }
-
-        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Escape && _runner.IsPlaying)
-            {
-                _runner.Reset();
-                SetStatus("재생을 중단했습니다.");
-                return true;
-            }
-
-            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion
@@ -299,12 +288,11 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             _partCount = _partIndex.Count;
             _rootA = vizcore3dx.Object3D.GetRootNodes().FirstOrDefault();
             FindStages();
-            if (_stages.Count > 0) BuildSequence();
+            if (_stages.Count > 0) _sequence = BuildSequence(vizcore3dx, _stages);
             return true;
         }
 
-        // 속성 Type=Work Package 인 노드(작업 패키지)를 모아 설치 순서(InstallSeq)로 줄 세우고, 착수일을 재생 시각으로 바꿉니다.
-        // 기초 층 작업은 첫 장면부터 보이므로 뺍니다.
+        // 작업 패키지를 모아 설치 순서(InstallSeq)로 줄 세우고, 착수일을 재생 시각으로 바꿉니다.
         private void FindStages()
         {
             _stages.Clear();
@@ -315,21 +303,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
                 if (!_byName.ContainsKey(n.NodeName)) _byName.Add(n.NodeName, n);
             _foundation = ByName(ScenarioScript.NameFoundation);
 
-            foreach (Data.Node found in vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes(ScenarioScript.UdaCategory, ScenarioScript.UdaType, ScenarioScript.TypeWorkPackage))
-            {
-                Data.Node node = ByName(found.NodeName);
-                if (node == null) continue;
-                Dictionary<string, string> uda = node.GetUDA();
-                if (Value(uda, ScenarioScript.UdaLevel) == ScenarioScript.LevelFoundation) continue;
-
-                int seq;
-                DateTime start;
-                if (!int.TryParse(Value(uda, ScenarioScript.UdaInstallSeq), out seq)) continue;
-                if (!DateTime.TryParseExact(Value(uda, ScenarioScript.UdaPlannedStart), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out start)) continue;
-
-                string activity = Value(uda, ScenarioScript.UdaActivity);
-                _stages.Add(new Stage { Node = node, Seq = seq, Start = start, Activity = activity, DropIn = activity.EndsWith(ScenarioScript.DropInActivitySuffix) });
-            }
+            _stages.AddRange(ReadStages(vizcore3dx, _byName));
             if (_stages.Count == 0) return;
 
             _stages.Sort((a, b) => a.Seq.CompareTo(b.Seq));
@@ -338,32 +312,6 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             double days = Math.Max((_lastStart - _firstStart).TotalDays, 1.0);
             foreach (Stage stage in _stages)
                 stage.At = ScenarioScript.SequenceLead + (stage.Start - _firstStart).TotalDays / days * ScenarioScript.SequenceSeconds;
-        }
-
-        // 4D 순서 — 작업 패키지마다 처음엔 숨겼다가 착수일이 되면 보입니다. 기둥은 위에 올려 뒀다가 제자리로 꽂힙니다.
-        // 120여 개를 만드는 데 몇 초 걸리므로 재생 전에(모델을 열 때) 만듭니다(그동안 화면이 멈춥니다).
-        private void BuildSequence()
-        {
-            _sequence = vizcore3dx.Animation.CreateAnimation("ConstructionSequence");
-            _sequence.Activate();
-
-            // Duration 을 직접 주지 않으면 0 초라 Play 가 바로 끝납니다.
-            _sequence.Duration = TimeSpan.FromSeconds(_stages.Max(st => st.At) + ScenarioScript.DropSeconds + 0.5);
-
-            foreach (Stage stage in _stages)
-            {
-                Data.AnimationGroup group = _sequence.CreateGroup(stage.Node.NodeName);
-                group.AddNode(stage.Node);
-
-                TimeSpan at = TimeSpan.FromSeconds(stage.At);
-                group.CreateVisibilityAction(TimeSpan.Zero, false);
-                group.CreateVisibilityAction(at, true);
-
-                // 같은 노드를 다른 그룹에 넣어 따로 올리면 적용되지 않습니다 — 한 그룹 안에서 올렸다 내립니다.
-                if (!stage.DropIn) continue;
-                group.CreateTranslationAction(TimeSpan.Zero, TimeSpan.FromSeconds(ScenarioScript.LiftSeconds), new Data.Vector3D(0f, 0f, 1f), ScenarioScript.DropHeight);
-                group.CreateTranslationAction(at, TimeSpan.FromSeconds(ScenarioScript.DropSeconds), new Data.Vector3D(0f, 0f, -1f), ScenarioScript.DropHeight);
-            }
         }
 
         private static string Value(Dictionary<string, string> uda, string key)
@@ -381,6 +329,67 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
         {
             Data.Node node;
             return name != null && _byName.TryGetValue(name, out node) ? node : null;
+        }
+
+        #endregion
+
+        #region SDK 기법 — 폼 상태 없이 복사해 쓸 수 있는 도우미
+
+        // 속성 Type=Work Package 인 노드(작업 패키지)를 모아 설치 순서·착수일·공정을 읽습니다(재생 시각 At 은 비워 둡니다).
+        // 기초 층 작업은 첫 장면부터 보이므로 뺍니다. 속성 검색이 주는 노드 대신 byName(이름 → 노드)의 노드를 씁니다.
+        private static List<Stage> ReadStages(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, Dictionary<string, Data.Node> byName)
+        {
+            List<Stage> stages = new List<Stage>();
+            foreach (Data.Node found in vizcore3dx.Object3D.UDA.GetCategoryNameValueNodes(ScenarioScript.UdaCategory, ScenarioScript.UdaType, ScenarioScript.TypeWorkPackage))
+            {
+                Data.Node node;
+                if (found.NodeName == null || !byName.TryGetValue(found.NodeName, out node)) continue;
+                Dictionary<string, string> uda = node.GetUDA();
+                if (Value(uda, ScenarioScript.UdaLevel) == ScenarioScript.LevelFoundation) continue;
+
+                int seq;
+                DateTime start;
+                if (!int.TryParse(Value(uda, ScenarioScript.UdaInstallSeq), out seq)) continue;
+                if (!DateTime.TryParseExact(Value(uda, ScenarioScript.UdaPlannedStart), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out start)) continue;
+
+                string activity = Value(uda, ScenarioScript.UdaActivity);
+                stages.Add(new Stage { Node = node, Seq = seq, Start = start, Activity = activity, DropIn = activity.EndsWith(ScenarioScript.DropInActivitySuffix) });
+            }
+            return stages;
+        }
+
+        // 4D 순서 — 작업 패키지마다 처음엔 숨겼다가 착수일이 되면 보입니다. 기둥은 위에 올려 뒀다가 제자리로 꽂힙니다.
+        // 120여 개를 만드는 데 몇 초 걸리므로 재생 전에(모델을 열 때) 만듭니다(그동안 화면이 멈춥니다).
+        private static Data.Animation BuildSequence(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, List<Stage> stages)
+        {
+            Data.Animation sequence = vizcore3dx.Animation.CreateAnimation("ConstructionSequence");
+            sequence.Activate();
+
+            // Duration 을 직접 주지 않으면 0 초라 Play 가 바로 끝납니다.
+            sequence.Duration = TimeSpan.FromSeconds(stages.Max(st => st.At) + ScenarioScript.DropSeconds + 0.5);
+
+            foreach (Stage stage in stages)
+            {
+                Data.AnimationGroup group = sequence.CreateGroup(stage.Node.NodeName);
+                group.AddNode(stage.Node);
+
+                TimeSpan at = TimeSpan.FromSeconds(stage.At);
+                group.CreateVisibilityAction(TimeSpan.Zero, false);
+                group.CreateVisibilityAction(at, true);
+
+                // 같은 노드를 다른 그룹에 넣어 따로 올리면 적용되지 않습니다 — 한 그룹 안에서 올렸다 내립니다.
+                if (!stage.DropIn) continue;
+                group.CreateTranslationAction(TimeSpan.Zero, TimeSpan.FromSeconds(ScenarioScript.LiftSeconds), new Data.Vector3D(0f, 0f, 1f), ScenarioScript.DropHeight);
+                group.CreateTranslationAction(at, TimeSpan.FromSeconds(ScenarioScript.DropSeconds), new Data.Vector3D(0f, 0f, -1f), ScenarioScript.DropHeight);
+            }
+            return sequence;
+        }
+
+        // 두 모델(Rev A · Rev B 최상위 노드)을 부재 경계 상자로 비교합니다. 이전 비교 결과는 먼저 지웁니다. 실패하면 null.
+        private static Data.CompareResult CompareRevisions(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, Data.Node rootA, Data.Node rootB)
+        {
+            vizcore3dx.Compare.Reset();
+            return vizcore3dx.Compare.Compare(Data.NodeCompareType.BodyNodeBoundingBox, rootA, rootB);
         }
 
         #endregion
@@ -413,13 +422,16 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
 
         private void Runner_ShotStarted(ScenarioShot shot)
         {
+            _onCameraArrived = null;
             _ribbon.SetCurrent(_runner.Index);
             SetStatus(shot.Name + " — " + shot.Caption);
         }
 
         // 4D 재생 중에는 지금 단계(층 · 공정)를 왼쪽 위에 띄웁니다. 애니메이션에 진행 이벤트가 없어 재생 시간을 읽습니다.
+        // 층 단면이 내려가는 동안에는 지나가는 층 이름을 띄웁니다(UpdateSweepHud).
         private void Runner_Tick()
         {
+            UpdateSweepHud();
             if (!_sequencePlaying || _sequence == null || _stages.Count == 0) return;
 
             // 지금까지 나타난 작업 중 마지막 것과, 재생 시각을 공정표 날짜로 되돌린 값을 띄웁니다.
@@ -451,6 +463,8 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
         private void ClearScene()
         {
             _runner.Reset();
+            _onCameraArrived = null;
+            StopSweep();
             if (_ribbon != null) _ribbon.SetCurrent(0);
 
             if (vizcore3dx.Model.IsOpen()) Clear3D();
@@ -513,7 +527,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             ShowFoundationOnly();
             ShowHud(string.Format("부품 {0:#,0} · 열기 {1:0.0}초", _partCount, _openSeconds));
             FlyToBox(_foundation.GetBoundBox(), ScenarioScript.ViewAerial, 1.5, ScenarioScript.IntroZoom);
-            _runner.After(1.5, () => Orbit(ScenarioScript.IntroOrbitDegrees, ScenarioScript.IntroOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.IntroOrbitDegrees, ScenarioScript.IntroOrbitSeconds));
         }
 
         // 02 4D 시공 순서 — 4D 순서를 재생하며 건물을 천천히 돕니다. 지금 단계는 Runner_Tick 이 왼쪽 위에 띄웁니다.
@@ -527,7 +541,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             _sequence.Play();
             _sequencePlaying = true;
             FlyToBox(ModelBox(), ScenarioScript.ViewAerial, 3.0, ScenarioScript.BuildingZoom);
-            _runner.After(3.0, () => Orbit(ScenarioScript.SequenceOrbitDegrees, ScenarioScript.SequenceOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.SequenceOrbitDegrees, ScenarioScript.SequenceOrbitSeconds));
         }
 
         // 07 전체 간섭 검사 — 4D 순서를 끝내고 전체 부품의 간섭을 검사합니다. 결과는 검사 완료 이벤트에서 받습니다.
@@ -550,7 +564,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
 
             ShowHud(string.Format("{0:#,0} 부품 간섭 검사 중…", parts.Count));
             FlyToBox(ModelBox(), ScenarioScript.ViewAerial, 1.0, ScenarioScript.BuildingZoom);
-            _runner.After(1.0, () => Orbit(ScenarioScript.ClashOrbitDegrees, ScenarioScript.ClashOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.ClashOrbitDegrees, ScenarioScript.ClashOrbitSeconds));
             _clashWatch.Restart();
             vizcore3dx.Clash.PerformInterferenceCheck(_clashTest.ID);
         }
@@ -604,7 +618,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             });
 
             FlyToBox(ModelBox(), ScenarioScript.ViewSide, 2.0, ScenarioScript.SummaryZoom);
-            _runner.After(2.0, () => Orbit(ScenarioScript.SummaryOrbitDegrees, ScenarioScript.SummaryOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.SummaryOrbitDegrees, ScenarioScript.SummaryOrbitSeconds));
             _runner.After(ScenarioScript.SummaryLevelsAt, () =>
                 ShowHud("많은 층 — " + string.Join(" · ", levels.Take(4).Select(g => string.Format("{0} {1}건", g.Key, g.Count())))));
         }
@@ -658,7 +672,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             });
 
             FlyCamera(new Data.Vector3D(box.GetCenter()), ScenarioScript.ViewSleeve, ScenarioScript.SleeveViewDistance, 2.0);
-            _runner.After(2.0, () => Orbit(ScenarioScript.SleeveOrbitDegrees, ScenarioScript.SleeveOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.SleeveOrbitDegrees, ScenarioScript.SleeveOrbitSeconds));
         }
 
         // 03 공종별 보기 — 공종(General/Discipline) 속성으로 색을 나누고 안쪽을 덮는 외장(건축)을 숨긴 뒤, 구조도 숨겨 설비만 남깁니다.
@@ -714,12 +728,10 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
                 _section = vizcore3dx.Section.Add(false, Data.Axis.Z);
                 if (_section == null) return;
 
-                // 뒤집기는 이 순서여야 적용됩니다(아래쪽을 남김) : Add → SetSectionPosition → Enable → Deselect → Select → InvertDirection → Deselect
+                // 아래쪽을 남기도록 이 단면만 뒤집습니다(선택과 무관하게 ID 로 지정).
                 vizcore3dx.Section.SetSectionPosition(_section.ID, new Data.Vector3D(model.CenterX, model.CenterY, top));
                 vizcore3dx.Section.Enable(true);
-                vizcore3dx.Section.Deselect();
-                vizcore3dx.Section.Select(_section);
-                vizcore3dx.Section.InvertDirection();
+                vizcore3dx.Section.InvertDirection(_section.ID);
                 vizcore3dx.Section.Deselect();
                 _section.Show(false);
             });
@@ -732,37 +744,44 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             _runner.After(ScenarioScript.ReadPause, () =>
                 FlyCamera(new Data.Vector3D(model.CenterX, model.CenterY, bottom), ScenarioScript.ViewPlan, FitDistance(planSize) * ScenarioScript.SweepZoom, ScenarioScript.SweepSeconds));
 
-            // 단면 높이를 시간에 맞춰 내립니다. 지나가는 층 이름을 문구에 띄웁니다.
-            Stopwatch watch = Stopwatch.StartNew();
-            double seconds = ScenarioScript.SweepSeconds;
-            _sweepTimer.Stop();
-            _sweepTimer.Interval = 30;
-            _sweepTick = (s, e) =>
-            {
-                if (_section == null) { _sweepTimer.Stop(); return; }
-                double t = Math.Min(1.0, Math.Max(0.0, (watch.Elapsed.TotalSeconds - ScenarioScript.ReadPause) / seconds));
-                float z = (float)(top + (bottom - top) * t);
-                vizcore3dx.Section.SetSectionPosition(_section.ID, new Data.Vector3D(model.CenterX, model.CenterY, z));
-                string level = LevelAt(z);
-                if (level != _sweepLevel) { _sweepLevel = level; ShowHud(string.Format("층 단면 — {0}", level)); }
-                if (t >= 1.0) _sweepTimer.Stop();
-            };
-            _sweepTimer.Tick -= SweepTimer_Tick;
-            _sweepTimer.Tick += SweepTimer_Tick;
+            // 단면 높이를 시간에 맞춰 내립니다(이전 이동은 위 EndBasics 가 멈췄습니다). 지나가는 층 이름은 Runner_Tick 이 문구에 띄웁니다.
             _sweepLevel = null;
-            _sweepTimer.Start();
+            _sweepCancel = new System.Threading.CancellationTokenSource();
+            SweepDown(_section.ID, bottom, _sweepCancel.Token);
         }
 
-        // 단면 타이머 한 틱 — 층 단면 장면이 정한 단면 이동을 실행합니다.
-        private void SweepTimer_Tick(object sender, EventArgs e)
+        // 읽을 시간(ReadPause)만큼 기다렸다가 단면을 높이 bottom 까지 SweepSeconds 동안 일정한 속도로 내립니다(Section.SetCenterAsync).
+        // 처음으로 가거나 다음 장면이 단면 이동을 멈추면 token 이 취소되어 그 자리에서 멈춥니다.
+        private async void SweepDown(uint id, float bottom, System.Threading.CancellationToken token)
         {
-            if (_sweepTick != null) _sweepTick(sender, e);
+            await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(ScenarioScript.ReadPause));
+            if (token.IsCancellationRequested) return;
+
+            await vizcore3dx.Section.SetCenterAsync(id, bottom, TimeSpan.FromSeconds(ScenarioScript.SweepSeconds), token);
+        }
+
+        // 층 단면이 내려가는 동안 지나가는 층 이름을 왼쪽 위에 띄웁니다. 단면 높이는 Section.GetCenter 로 읽습니다.
+        private void UpdateSweepHud()
+        {
+            if (_sweepCancel == null || _section == null) return;
+
+            string level = LevelAt(vizcore3dx.Section.GetCenter(_section.ID, -1).Z);
+            if (level != _sweepLevel) { _sweepLevel = level; ShowHud(string.Format("층 단면 — {0}", level)); }
+        }
+
+        // 진행 중인 층 단면 이동을 멈춥니다.
+        private void StopSweep()
+        {
+            if (_sweepCancel == null) return;
+            _sweepCancel.Cancel();
+            _sweepCancel.Dispose();
+            _sweepCancel = null;
         }
 
         // 공종 색·숨김을 되돌리고 단면 이동을 멈춥니다.
         private void EndBasics()
         {
-            _sweepTimer.Stop();
+            StopSweep();
             if (_basicsColored != null) vizcore3dx.Object3D.Color.RestoreColor(_basicsColored);
             _basicsColored = null;
             if (_basicsHidden != null) vizcore3dx.Object3D.Show(_basicsHidden, true);
@@ -892,7 +911,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             {
                 ShowHud(string.Format("진행 중 {0:#,0} · {1} 층 작업", doing.Count, levels));
                 FlyToBox(vizcore3dx.Object3D.GetBoundBox(doing), ScenarioScript.ViewAerial, 2.0, ScenarioScript.ProgressZoom);
-                _runner.After(2.0, () => Orbit(ScenarioScript.ProgressOrbitDegrees, ScenarioScript.ProgressOrbitSeconds));
+                WhenCameraArrives(() => Orbit(ScenarioScript.ProgressOrbitDegrees, ScenarioScript.ProgressOrbitSeconds));
             });
         }
 
@@ -938,54 +957,62 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             FlyToBox(ModelBox(), ScenarioScript.ViewAerial, 1.0, ScenarioScript.BuildingZoom);
 
             // 문구가 그려진 뒤 엽니다(여는 동안 화면이 멈춥니다).
-            _runner.After(ScenarioScript.ReadPause, () =>
+            _runner.After(ScenarioScript.ReadPause, () => RevBOpenAndCompare(revB));
+        }
+
+        // Rev B 단계 ① ② — Rev B 를 더해 열고 Rev A 와 비교해 바뀐 부재만 색으로 보인 뒤, 다음 단계(위쪽 층 · 재검사)를 예약합니다.
+        private void RevBOpenAndCompare(string revB)
+        {
+            Stopwatch watch = Stopwatch.StartNew();
+            if (!vizcore3dx.Model.Add(new List<string> { revB })) { ShowHud("Rev B 를 열 수 없습니다"); return; }
+            double addSeconds = watch.Elapsed.TotalSeconds;
+            List<Data.Node> roots = vizcore3dx.Object3D.GetRootNodes();
+            _rootB = roots.Last();
+
+            watch.Restart();
+            Data.CompareResult result = CompareRevisions(vizcore3dx, _rootA, _rootB);
+            double compareSeconds = watch.Elapsed.TotalSeconds;
+            if (result == null) { ShowHud("비교 실패"); return; }
+
+            List<Data.Node> onlyB = result.Node2ExclusiveChildren.ToList();
+            _revBChanged = onlyB.Count;
+
+            vizcore3dx.Compare.ShowResult(ScenarioScript.ColorRevA, ScenarioScript.ColorRevB, ScenarioScript.ColorRevSame);
+            ShowHud(string.Format("Rev B 열기 {0:0.0}초 · 비교 {1:0.00}초 · 바뀐 부재 {2:#,0}개", addSeconds, compareSeconds, _revBChanged));
+
+            // 건물 전체에서 바뀐 곳을 본 뒤, 바뀐 설비가 몰린 위쪽 층으로 다가가 돕니다.
+            Data.BoundBox3D model = ModelBox();
+            List<Data.Node> upper = onlyB.Where(n => n.GetBoundBox().CenterZ > model.CenterZ).ToList();
+            _runner.After(ScenarioScript.RevBUpperAt, () => RevBShowUpper(upper));
+
+            // 비교 결과를 보인 뒤, Rev A 를 숨기고 Rev B 만으로 다시 검사합니다.
+            _runner.After(ScenarioScript.RevBCompareHold, RevBRecheck);
+        }
+
+        // Rev B 단계 — 바뀐 설비가 몰린 위쪽 층(upper)으로 다가가 돕니다.
+        private void RevBShowUpper(List<Data.Node> upper)
+        {
+            ShowHud(ScenarioScript.RevBChangeNote);
+            if (upper.Count > 0) FlyToBox(vizcore3dx.Object3D.GetBoundBox(upper), ScenarioScript.ViewAerial, 2.0, ScenarioScript.RevBUpperZoom);
+            _runner.After(2.0,() => Orbit(ScenarioScript.RevBOrbitDegrees, ScenarioScript.RevBCompareHold - ScenarioScript.RevBUpperAt - 2.5));
+        }
+
+        // Rev B 단계 ③ — Rev A 를 숨기고 보이는 부품(Rev B)만으로 간섭을 다시 검사합니다. 결과는 OnRevBChecked 에서 받습니다.
+        private void RevBRecheck()
+        {
+            Batch(() =>
             {
-                Stopwatch watch = Stopwatch.StartNew();
-                if (!vizcore3dx.Model.Add(new List<string> { revB })) { ShowHud("Rev B 를 열 수 없습니다"); return; }
-                double addSeconds = watch.Elapsed.TotalSeconds;
-                List<Data.Node> roots = vizcore3dx.Object3D.GetRootNodes();
-                _rootB = roots.Last();
-
-                watch.Restart();
                 vizcore3dx.Compare.Reset();
-                Data.CompareResult result = vizcore3dx.Compare.Compare(Data.NodeCompareType.BodyNodeBoundingBox, _rootA, _rootB);
-                double compareSeconds = watch.Elapsed.TotalSeconds;
-                if (result == null) { ShowHud("비교 실패"); return; }
-
-                List<Data.Node> onlyB = result.Node2ExclusiveChildren.ToList();
-                _revBChanged = onlyB.Count;
-
-                vizcore3dx.Compare.ShowResult(ScenarioScript.ColorRevA, ScenarioScript.ColorRevB, ScenarioScript.ColorRevSame);
-                ShowHud(string.Format("Rev B 열기 {0:0.0}초 · 비교 {1:0.00}초 · 바뀐 부재 {2:#,0}개", addSeconds, compareSeconds, _revBChanged));
-
-                // 건물 전체에서 바뀐 곳을 본 뒤, 바뀐 설비가 몰린 위쪽 층으로 다가가 돕니다.
-                Data.BoundBox3D model = ModelBox();
-                List<Data.Node> upper = onlyB.Where(n => n.GetBoundBox().CenterZ > model.CenterZ).ToList();
-                _runner.After(ScenarioScript.RevBUpperAt, () =>
-                {
-                    ShowHud(ScenarioScript.RevBChangeNote);
-                    if (upper.Count > 0) FlyToBox(vizcore3dx.Object3D.GetBoundBox(upper), ScenarioScript.ViewAerial, 2.0, ScenarioScript.RevBUpperZoom);
-                    _runner.After(2.0,() => Orbit(ScenarioScript.RevBOrbitDegrees, ScenarioScript.RevBCompareHold - ScenarioScript.RevBUpperAt - 2.5));
-                });
-
-                // 비교 결과를 보인 뒤, Rev A 를 숨기고 Rev B 만으로 다시 검사합니다.
-                _runner.After(ScenarioScript.RevBCompareHold, () =>
-                {
-                    Batch(() =>
-                    {
-                        vizcore3dx.Compare.Reset();
-                        vizcore3dx.Object3D.Show(new List<Data.Node> { _rootA }, false);
-                    });
-                    List<Data.Node> parts = vizcore3dx.Object3D.FromFilter(Data.Object3dFilter.VISIBLE_PART);
-                    _clashTestB = vizcore3dx.Clash.CreateSelectionTest(Data.ClashTest.ClashTestKind.SELECTED_MODEL, parts, false, 0f, 0f, 0f);
-                    if (_clashTestB == null) { ShowHud("간섭 검사를 만들 수 없습니다"); return; }
-
-                    ShowHud(string.Format("Rev B {0:#,0} 부품 재검사 중…", parts.Count));
-                    FlyToBox(ModelBox(), ScenarioScript.ViewAerial, 1.5, ScenarioScript.BuildingZoom);
-                    _clashWatch.Restart();
-                    vizcore3dx.Clash.PerformInterferenceCheck(_clashTestB.ID);
-                });
+                vizcore3dx.Object3D.Show(new List<Data.Node> { _rootA }, false);
             });
+            List<Data.Node> parts = vizcore3dx.Object3D.FromFilter(Data.Object3dFilter.VISIBLE_PART);
+            _clashTestB = vizcore3dx.Clash.CreateSelectionTest(Data.ClashTest.ClashTestKind.SELECTED_MODEL, parts, false, 0f, 0f, 0f);
+            if (_clashTestB == null) { ShowHud("간섭 검사를 만들 수 없습니다"); return; }
+
+            ShowHud(string.Format("Rev B {0:#,0} 부품 재검사 중…", parts.Count));
+            FlyToBox(ModelBox(), ScenarioScript.ViewAerial, 1.5, ScenarioScript.BuildingZoom);
+            _clashWatch.Restart();
+            vizcore3dx.Clash.PerformInterferenceCheck(_clashTestB.ID);
         }
 
         // Rev B 재검사가 끝나면 줄어든 건수를 띄우고, 남은 간섭의 기호와 부재만 또렷하게 남깁니다.
@@ -1027,7 +1054,7 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
             });
 
             FlyToBox(ModelBox(), ScenarioScript.ViewAerial, 2.0, ScenarioScript.BuildingZoom);
-            _runner.After(2.0, () => Orbit(ScenarioScript.OutroOrbitDegrees, ScenarioScript.OutroOrbitSeconds));
+            WhenCameraArrives(() => Orbit(ScenarioScript.OutroOrbitDegrees, ScenarioScript.OutroOrbitSeconds));
         }
 
         #endregion
@@ -1189,48 +1216,20 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
 
         #endregion
 
-        #region 카메라
+        #region 카메라 도착 알림
 
-        // box 가 화면에 다 들어오도록 direction 방향에서 seconds 초 동안 이동합니다. zoom 이 1 보다 크면 그만큼 더 물러납니다.
-        private void FlyToBox(Data.BoundBox3D box, Data.Vector3D direction, double seconds, float zoom = 1f)
+        // 지금 진행 중인 카메라 이동이 끝나 카메라가 멈추면 next 를 실행합니다.
+        private void WhenCameraArrives(Action next)
         {
-            FlyCamera(new Data.Vector3D(box.GetCenter()), direction, FitDistance(box.MaxLength) * zoom, seconds);
+            _onCameraArrived = next;
         }
 
-        // 크기 size 인 대상이 화면에 다 들어오는 카메라 거리를 시야각에서 구합니다.
-        private float FitDistance(float size)
+        private void View_OnCameraMoveCompletedEvent(object sender, VIZCore3DX.NET.Event.EventManager.CameraMoveCompletedEventArgs e)
         {
-            double fov = vizcore3dx.View.FOV;
-            if (fov < 1.0 || fov > 120.0) fov = 30.0;
-
-            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * ScenarioScript.FitMargin);
-        }
-
-        // target 을 direction 방향으로 distance 만큼 떨어져 바라보도록 seconds 초 동안 이동합니다.
-        // 위 방향은 Z 입니다. direction 이 정확히 수직이면 안 됩니다.
-        private void FlyCamera(Data.Vector3D target, Data.Vector3D direction, float distance, double seconds)
-        {
-            Data.CameraData camera = vizcore3dx.View.GetCameraData();
-            if (camera == null) return;
-
-            // 시선 방향 값의 부호는 지금 카메라가 쓰는 규칙을 그대로 따릅니다.
-            Data.Vector3D current = new Data.Vector3D(camera.PivotPosition) - new Data.Vector3D(camera.EyePosition);
-            float sign = current.Dot(new Data.Vector3D(camera.CameraDirection)) < 0f ? -1f : 1f;
-
-            Data.Vector3D view = direction.GetNormalized();
-            camera.PivotPosition = target.ToVertex3D();
-            camera.EyePosition = (target - view * distance).ToVertex3D();
-            camera.CameraDirection = (view * sign).ToVertex3D();
-
-            // 위 방향은 시선에 직교해야 합니다. SetCameraData 가 시선에 맞게 다시 보정합니다.
-            camera.UpDirection = new Data.Vector3D(0f, 0f, 1f).ToVertex3D();
-            vizcore3dx.View.SetCameraData(camera, TimeSpan.FromSeconds(seconds));
-        }
-
-        // 지금 보는 지점을 중심으로 수직축 둘레를 degrees 도만큼 seconds 초 동안 돕니다.
-        private void Orbit(float degrees, double seconds)
-        {
-            vizcore3dx.View.OrbitCamera(new Data.Vector3D(0f, 0f, 1f), degrees, TimeSpan.FromSeconds(Math.Max(seconds, 1.0)));
+            Action next = _onCameraArrived;
+            _onCameraArrived = null;
+            if (next == null || !IsModelOpened()) return;
+            next();
         }
 
         #endregion
@@ -1244,87 +1243,6 @@ namespace VIZCore3DX.NET.Scenario.ConstructionReview
 
             SetStatus("모델을 먼저 열어 주세요.");
             return false;
-        }
-
-        private void SetStatus(string text)
-        {
-            Text = "VIZCore3DX.NET.Scenario.ConstructionReview — " + text;
-        }
-
-        // 3D 뷰 왼쪽 위에 문구 하나를 띄웁니다. 밝은 장면(X-Ray·단면)에서도 읽히도록 어두운 상자에 얹은 화면 고정 노트입니다. 이전 문구는 지웁니다.
-        private void ShowHud(string text)
-        {
-            ClearHud();
-            Data.NoteCustomStyle style = vizcore3dx.Note.CreateCustomStyle();
-            style.BoxFillColor = ScenarioScript.ColorPanel;
-            style.BoxStrokeColor = ScenarioScript.ColorAccent;
-            style.TextColor = ScenarioScript.HudColor;
-            style.TextSize = ScenarioScript.HudTextSize;
-            style.TextHorizontalAlignment = Data.HorizontalAlignment.Left;
-
-            // 화면 고정 노트는 좌표(화면 비율)가 상자 가운데이고, 화면 밖으로 나간 부분은 잘립니다 — 글자 폭을 재서 왼쪽 끝을 여백에 맞춥니다.
-            Size view = RenderSize();
-            Size textSize;
-            using (Font font = new Font(ScenarioScript.HudFontName, ScenarioScript.HudFontPixels, FontStyle.Bold, GraphicsUnit.Pixel))
-                textSize = TextRenderer.MeasureText(text, font);
-            float x = (ScenarioScript.HudMarginPixels + (textSize.Width + ScenarioScript.HudPaddingPixels) * 0.5f) / view.Width;
-            float y = (ScenarioScript.HudMarginPixels + ScenarioScript.HudBoxHeightPixels * 0.5f) / view.Height;
-            _hudNote = vizcore3dx.Note.AddNote2D(text, x, y, style);
-        }
-
-        // 3D 화면(렌더 영역) 크기 — 처음 한 번 렌더 결과에서 읽어 둡니다.
-        private Size RenderSize()
-        {
-            if (_renderSize.IsEmpty)
-            {
-                using (Image image = vizcore3dx.View.CaptureRenderImage(true))
-                    _renderSize = image == null ? new Size(1684, 821) : image.Size;
-            }
-            return _renderSize;
-        }
-
-        // 3D 뷰 왼쪽 위 문구를 지웁니다.
-        private void ClearHud()
-        {
-            if (_hudNote != 0) vizcore3dx.Note.Delete(new List<uint> { _hudNote });
-            _hudNote = 0;
-        }
-
-        // 시선 방향을 수직축(Z) 둘레로 degrees 도 돌립니다.
-        private static Data.Vector3D RotateZ(Data.Vector3D v, float degrees)
-        {
-            double a = degrees * Math.PI / 180.0;
-            return new Data.Vector3D((float)(v.X * Math.Cos(a) - v.Y * Math.Sin(a)), (float)(v.X * Math.Sin(a) + v.Y * Math.Cos(a)), v.Z);
-        }
-
-        // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
-        private void ShowRibbonTabs(params VIZCore3DX.NET.Data.ToolbarKind[] keep)
-        {
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
-                vizcore3dx.Toolbar.SetVisible(kind, kind == VIZCore3DX.NET.Data.ToolbarKind.Main || Array.IndexOf(keep, kind) >= 0);
-
-            // 남길 탭은 먼저 켜고(설정 파일로 꺼져 있을 수 있음), 그 다음 모델 트리를 뺀 나머지를 끕니다. 내장 탭 이름은 "tabPage" + 툴바 종류입니다.
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in keep)
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, "tabPage" + kind, true);
-
-            foreach (string name in vizcore3dx.Panel.GetTabNames(VIZCore3DX.NET.Data.PanelKind.ModelTree))
-            {
-                if (name == "tabPageSceneTree") continue;
-                bool show = Array.Exists(keep, kind => name == "tabPage" + kind);
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, name, show);
-            }
-        }
-
-        // 속성 패널은 노드 특성·노드 속성만 기본으로 남기고, 예제가 다루는 탭만 켭니다.
-        private void ShowAttributeTabs(bool attributeTree = false, bool nodeGroup = false, bool projection = false, bool pmi = false)
-        {
-            vizcore3dx.TabAttributeTreeEnabled = attributeTree;
-            vizcore3dx.TabNodeGroupEnabled = nodeGroup;
-            vizcore3dx.TabProjectionEnabled = projection;
-            vizcore3dx.TabPmiEnabled = pmi;
-            vizcore3dx.TabEnvironmentEnabled = false;
-            vizcore3dx.TabGenericDataEnabled = false;
-            vizcore3dx.AttributePanelVisible = attributeTree || nodeGroup || projection || pmi;
         }
 
         #endregion

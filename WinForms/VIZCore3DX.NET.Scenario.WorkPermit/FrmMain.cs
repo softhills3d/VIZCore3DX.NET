@@ -18,9 +18,12 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
     // · 아래 방향 접촉 거리: DownwardGap()
     // · 통로 분석(통과 가능한 구): AnalyzePassageAsync()
     // · 구역 간 최소 거리(화기 반경): ZonesWithinHotWorkRadius()
+    //   (위 세 개는 폼 없이 복사해 쓸 수 있는 정적 도우미입니다 — #region SDK 기법)
     // · 점 포함 판정: PlaceKeelWorkers()
     // · 구역 겹침 판정: SceneDropZone()
-    // 장면 재생·리본·카메라 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FlyCamera 등)과 대피 계산(EvacuationSim.cs, SDK 호출 없음)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
+    // · 카메라 도착 뒤 이어서 하기: WhenCameraArrives() (View.OnCameraMoveCompletedEvent)
+    // · 방향·여백 맞춤 카메라 이동: FlyToBox() (View.FlyToBoundingBox, FrmMain.Demo.cs)
+    // 장면 재생·리본·시연 연출(ScenarioRunner.cs, ScenarioRibbon.cs, FrmMain.Demo.cs)과 대피 계산(EvacuationSim.cs, SDK 호출 없음)은 SDK 사용과 무관하니 건너뛰어도 됩니다.
     // 다른 모델에 쓰려면: ScenarioScript.cs 의 구역 좌표가 샘플 모델 전용이라 그 모델에 맞는 값으로 바꿔야 합니다.
     public partial class FrmMain : Form
     {
@@ -81,11 +84,8 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         // 시나리오가 바꾸기 전의 공간 표시 스타일 (정리할 때 되돌립니다)
         private Data.ZoneStyle _originalZoneStyle;
 
-        // 3D 뷰에 띄운 문구
-        private Data.MessageItem _hud;
-
-        // 대피 장면의 빠른 재생 표시
-        private Data.MessageItem _speedHud;
+        // 카메라가 도착하면 할 일 — View.OnCameraMoveCompletedEvent 가 한 번 실행하고 비웁니다. 장면이 바뀌거나 처음으로 가면 버립니다.
+        private Action _onCameraArrived;
 
         public FrmMain()
         {
@@ -147,6 +147,8 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             ShowAttributeTabs();
             InitializeRibbon();
 
+            vizcore3dx.View.OnCameraMoveCompletedEvent += View_OnCameraMoveCompletedEvent;
+
             SetStatus("모델을 열어 주세요.");
         }
 
@@ -192,20 +194,8 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         {
             _evacuationTimer.Stop();
             _runner.Reset();
+            vizcore3dx.View.OnCameraMoveCompletedEvent -= View_OnCameraMoveCompletedEvent;
             base.OnFormClosing(e);
-        }
-
-        // 재생 중에도 Esc 로 멈출 수 있게 합니다.
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            if (keyData == Keys.Escape && _runner.IsPlaying)
-            {
-                _runner.Reset();
-                SetStatus("재생을 중단했습니다.");
-                return true;
-            }
-
-            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion
@@ -252,6 +242,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
         private void Runner_ShotStarted(ScenarioShot shot)
         {
+            _onCameraArrived = null;
             _ribbon.SetCurrent(_runner.Index);
             SetStatus(shot.Name + " — " + shot.Caption);
         }
@@ -289,6 +280,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private void ClearScene()
         {
             _runner.Reset();
+            _onCameraArrived = null;
             if (_ribbon != null) _ribbon.SetCurrent(0);
 
             StopEvacuation();
@@ -390,7 +382,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
         private async void SceneTankBelow()
         {
             Data.Vector3D from, to;
-            double gap = DownwardGap(_floorHotZone, _keelZone, out from, out to);
+            double gap = DownwardGap(vizcore3dx, _floorHotZone, _keelZone, out from, out to);
             ShowHud("P1 이중저 탱크 도장 중 · P2 플로어 용접 허가 요청 — 통로 분석 중");
             ClearEffects(ScenarioScript.GroupStatus);
 
@@ -401,7 +393,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             // 통로 분석은 형상을 숨기기 전에 합니다 — 숨긴 부재는 장애물에서 빠져 결과가 달라집니다.
             int paintZone = _keelZone;
             Stopwatch watch = Stopwatch.StartNew();
-            Data.ZoneAnalysisResult result = await AnalyzePassageAsync(paintZone, gap);
+            Data.ZoneAnalysisResult result = await AnalyzePassageAsync(vizcore3dx, paintZone, _floorHotZone, gap);
             watch.Stop();
 
             // 그사이 처음으로 되돌렸으면 그만둡니다.
@@ -427,10 +419,11 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             Data.BoundBox3D hot = ScenarioScript.ZonePlatformHot;
             _combustibleZone = AddZone(ScenarioScript.ZoneCombustible, ScenarioScript.NameCombustible, ScenarioScript.ColorCombustible);
             vizcore3dx.Zone.SetVisible(_combustibleZone, true);
-            List<int> within = ZonesWithinHotWorkRadius();
+            int[] others = { _keelZone, _floorHotZone, _funnelZone, _deckZone, _combustibleZone };
+            List<int> within = ZonesWithinHotWorkRadius(vizcore3dx, _platformHotZone, others, ScenarioScript.HotWorkRadius);
 
             Data.Vector3D from, to;
-            DownwardGap(_platformHotZone, _combustibleZone, out from, out to);
+            DownwardGap(vizcore3dx, _platformHotZone, _combustibleZone, out from, out to);
             FlyToBoxes(hot, ScenarioScript.ZoneCombustible, ScenarioScript.ViewZone, 2.5);
 
             ScheduleWeldingSparks(hot);
@@ -537,7 +530,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
             SetCutaway(false);
             ShowPermitZones(true);
             FlyToBox(_modelBox, ScenarioScript.ViewOverview, 2.5);
-            _runner.After(2.5, () => Orbit(ScenarioScript.OrbitDegrees, 5.0));
+            WhenCameraArrives(() => Orbit(ScenarioScript.OrbitDegrees, 5.0));
         }
 
         #endregion
@@ -847,14 +840,6 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
         // ---- 02 도장 중인 탱크 위 화기 ----
 
-        // 탱크와 플로어 화기 구역 사이를 사람이 지날 수 있는지(통과 가능한 가장 큰 구) 분석합니다.
-        private async Task<Data.ZoneAnalysisResult> AnalyzePassageAsync(int paintZone, double gap)
-        {
-            Data.ZoneAnalysisOptions options = new Data.ZoneAnalysisOptions
-            { Items = Data.ZoneAnalysisItems.MaxSphereRadius, AdjacencyMaxDistance = (float)gap + 1000f, UseObstacleCache = true };
-            return await vizcore3dx.Zone.AnalyzeAsync(paintZone, _floorHotZone, options);
-        }
-
         // 도장 중인 탱크에 유증기와 표식을 띄웁니다.
         private void ShowTankVapor(Data.BoundBox3D keel)
         {
@@ -893,36 +878,7 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
                 gap, passage ? "있음" : "없음", seconds, passage ? "보류" : "가능", ScenarioScript.AdjacentRuleText));
         }
 
-        // 구역 a 에서 아래 방향으로 구역 b 까지의 거리와 그 두 점. 판정이 실패하면 두 상자의 높이 차로 대신합니다.
-        private double DownwardGap(int a, int b, out Data.Vector3D from, out Data.Vector3D to)
-        {
-            Data.ZoneDirectionalContact contact;
-            if (vizcore3dx.Zone.GetDirectionalContact(a, b, new Data.Vector3D(0f, 0f, -1f), out contact) && contact != null)
-            {
-                from = contact.MinPointA;
-                to = contact.MinPointB;
-                return contact.MinDistance;
-            }
-
-            Data.BoundBox3D boxA = vizcore3dx.Zone.GetBoundBox(a);
-            Data.BoundBox3D boxB = vizcore3dx.Zone.GetBoundBox(b);
-            float x = (Math.Max(boxA.MinX, boxB.MinX) + Math.Min(boxA.MaxX, boxB.MaxX)) * 0.5f;
-            float y = (Math.Max(boxA.MinY, boxB.MinY) + Math.Min(boxA.MaxY, boxB.MaxY)) * 0.5f;
-            from = new Data.Vector3D(x, y, boxA.MinZ);
-            to = new Data.Vector3D(x, y, boxB.MaxZ);
-            return boxA.MinZ - boxB.MaxZ;
-        }
-
         // ---- 03 플랫폼 화기의 불티 ----
-
-        // 화기 반경 안 = 화기 구역 경계에서 다른 구역 경계까지의 최소 거리가 반경 이하 (수평·수직 모두)
-        private List<int> ZonesWithinHotWorkRadius()
-        {
-            List<int> within = new List<int>();
-            foreach (int id in new[] { _keelZone, _floorHotZone, _funnelZone, _deckZone, _combustibleZone })
-                if (vizcore3dx.Zone.GetMinDistance(_platformHotZone, id) <= ScenarioScript.HotWorkRadius) within.Add(id);
-            return within;
-        }
 
         // 화기 구역 안에 용접 불꽃을 차례로 띄웁니다. 씨앗을 고정해 불꽃 위치는 매번 같습니다.
         private void ScheduleWeldingSparks(Data.BoundBox3D hot)
@@ -1540,66 +1496,61 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
         #endregion
 
-        #region 카메라
+        #region 카메라 도착 알림
 
-        // box 가 화면에 다 들어오도록 direction 방향에서 seconds 초 동안 이동합니다.
-        private void FlyToBox(Data.BoundBox3D box, Data.Vector3D direction, double seconds)
+        // 지금 진행 중인 카메라 이동이 끝나 카메라가 멈추면 next 를 실행합니다.
+        private void WhenCameraArrives(Action next)
         {
-            FlyCamera(new Data.Vector3D(box.GetCenter()), direction, FitDistance(box.MaxLength), seconds);
+            _onCameraArrived = next;
         }
 
-        // 두 상자가 함께 화면에 들어오도록 direction 방향에서 seconds 초 동안 이동합니다.
-        private void FlyToBoxes(Data.BoundBox3D first, Data.BoundBox3D second, Data.Vector3D direction, double seconds)
+        private void View_OnCameraMoveCompletedEvent(object sender, VIZCore3DX.NET.Event.EventManager.CameraMoveCompletedEventArgs e)
         {
-            Data.BoundBox3D view = new Data.BoundBox3D(first.GetVertexMin(), first.GetVertexMax());
-            view.AddBox(second);
-            FlyToBox(view, direction, seconds);
+            Action next = _onCameraArrived;
+            _onCameraArrived = null;
+            if (next == null || !vizcore3dx.Model.IsOpen()) return;
+            next();
         }
 
-        // 화재 구역부터 집결지까지 대피 범위 전체가 보이도록 물러납니다.
-        private void FlyToEvacuationOverview()
+        #endregion
+
+        #region SDK 기법 — 폼 상태 없이 복사해 쓸 수 있는 도우미
+
+        // 구역 a 에서 아래 방향으로 구역 b 까지의 거리와 그 두 점. 판정이 실패하면 두 상자의 높이 차로 대신합니다.
+        private static double DownwardGap(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, int a, int b, out Data.Vector3D from, out Data.Vector3D to)
         {
-            Data.Vector3D muster = ScenarioScript.NodeMuster;
-            float r = ScenarioScript.MusterRadius;
-            Data.BoundBox3D view = new Data.BoundBox3D(10000f, -10000f, 5520f, 30000f, 10000f, 14500f);
-            view.AddBox(new Data.BoundBox3D(muster.X - r, muster.Y - r, muster.Z, muster.X + r, muster.Y + r, muster.Z + 2500f));
-            FlyToBox(view, ScenarioScript.ViewEvacuation, 2.5);
+            Data.ZoneDirectionalContact contact;
+            if (vizcore3dx.Zone.GetDirectionalContact(a, b, new Data.Vector3D(0f, 0f, -1f), out contact) && contact != null)
+            {
+                from = contact.MinPointA;
+                to = contact.MinPointB;
+                return contact.MinDistance;
+            }
+
+            Data.BoundBox3D boxA = vizcore3dx.Zone.GetBoundBox(a);
+            Data.BoundBox3D boxB = vizcore3dx.Zone.GetBoundBox(b);
+            float x = (Math.Max(boxA.MinX, boxB.MinX) + Math.Min(boxA.MaxX, boxB.MaxX)) * 0.5f;
+            float y = (Math.Max(boxA.MinY, boxB.MinY) + Math.Min(boxA.MaxY, boxB.MaxY)) * 0.5f;
+            from = new Data.Vector3D(x, y, boxA.MinZ);
+            to = new Data.Vector3D(x, y, boxB.MaxZ);
+            return boxA.MinZ - boxB.MaxZ;
         }
 
-        // 크기 size 인 대상이 화면에 다 들어오는 카메라 거리를 시야각에서 구합니다.
-        private float FitDistance(float size)
+        // 탱크(paintZone)와 화기 구역(hotZone) 사이를 사람이 지날 수 있는지(통과 가능한 가장 큰 구) 분석합니다.
+        private static async Task<Data.ZoneAnalysisResult> AnalyzePassageAsync(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, int paintZone, int hotZone, double gap)
         {
-            double fov = vizcore3dx.View.FOV;
-            if (fov < 1.0 || fov > 120.0) fov = 30.0;
-
-            return (float)(size * 0.5 / Math.Tan(fov * Math.PI / 360.0) * ScenarioScript.FitMargin);
+            Data.ZoneAnalysisOptions options = new Data.ZoneAnalysisOptions
+            { Items = Data.ZoneAnalysisItems.MaxSphereRadius, AdjacencyMaxDistance = (float)gap + 1000f, UseObstacleCache = true };
+            return await vizcore3dx.Zone.AnalyzeAsync(paintZone, hotZone, options);
         }
 
-        // target 을 direction 방향으로 distance 만큼 떨어져 바라보도록 seconds 초 동안 이동합니다.
-        // 위 방향은 Z 입니다. direction 이 정확히 수직이면 안 됩니다.
-        private void FlyCamera(Data.Vector3D target, Data.Vector3D direction, float distance, double seconds)
+        // 화기 반경 안 = 화기 구역 경계에서 다른 구역 경계까지의 최소 거리가 반경 이하 (수평·수직 모두)
+        private static List<int> ZonesWithinHotWorkRadius(VIZCore3DX.NET.VIZCore3DXControl vizcore3dx, int hotZone, int[] others, double radius)
         {
-            Data.CameraData camera = vizcore3dx.View.GetCameraData();
-            if (camera == null) return;
-
-            // 시선 방향 값의 부호는 지금 카메라가 쓰는 규칙을 그대로 따릅니다.
-            Data.Vector3D current = new Data.Vector3D(camera.PivotPosition) - new Data.Vector3D(camera.EyePosition);
-            float sign = current.Dot(new Data.Vector3D(camera.CameraDirection)) < 0f ? -1f : 1f;
-
-            Data.Vector3D view = direction.GetNormalized();
-            camera.PivotPosition = target.ToVertex3D();
-            camera.EyePosition = (target - view * distance).ToVertex3D();
-            camera.CameraDirection = (view * sign).ToVertex3D();
-
-            // 위 방향은 시선에 직교해야 합니다. SetCameraData 가 시선에 맞게 다시 보정합니다.
-            camera.UpDirection = new Data.Vector3D(0f, 0f, 1f).ToVertex3D();
-            vizcore3dx.View.SetCameraData(camera, TimeSpan.FromSeconds(seconds));
-        }
-
-        // 지금 보는 지점을 중심으로 수직축 둘레를 degrees 도만큼 seconds 초 동안 돕니다.
-        private void Orbit(float degrees, double seconds)
-        {
-            vizcore3dx.View.OrbitCamera(new Data.Vector3D(0f, 0f, 1f), degrees, TimeSpan.FromSeconds(Math.Max(seconds, 1.0)));
+            List<int> within = new List<int>();
+            foreach (int id in others)
+                if (vizcore3dx.Zone.GetMinDistance(hotZone, id) <= radius) within.Add(id);
+            return within;
         }
 
         #endregion
@@ -1613,70 +1564,6 @@ namespace VIZCore3DX.NET.Scenario.WorkPermit
 
             SetStatus("모델을 먼저 열어 주세요.");
             return false;
-        }
-
-        // 상태 문구를 창 제목줄에 적습니다.
-        private void SetStatus(string text)
-        {
-            Text = "VIZCore3DX.NET.Scenario.WorkPermit — " + text;
-        }
-
-        // 3D 뷰 왼쪽 위에 문구 하나를 띄웁니다. 이전 문구는 지웁니다.
-        private void ShowHud(string text)
-        {
-            if (_hud != null) vizcore3dx.View.Message.Delete(_hud);
-            _hud = vizcore3dx.View.Message.Create(text, ScenarioScript.HudPosition, ScenarioScript.HudColor, Data.TextSizeType.Size_24, true, true);
-        }
-
-        // 3D 뷰 왼쪽 위 문구를 지웁니다. 빠른 재생 표시도 함께 지웁니다.
-        private void ClearHud()
-        {
-            if (_hud != null) vizcore3dx.View.Message.Delete(_hud);
-            _hud = null;
-            ClearSpeedHud();
-        }
-
-        // 안내 문구 아래에 빠른 재생 표시를 크게 띄웁니다.
-        private void ShowSpeedHud(string text)
-        {
-            if (_speedHud != null) vizcore3dx.View.Message.Delete(_speedHud);
-            _speedHud = vizcore3dx.View.Message.Create(text, ScenarioScript.SpeedHudPosition, ScenarioScript.ColorAccent, Data.TextSizeType.Size_24, true, true);
-        }
-
-        private void ClearSpeedHud()
-        {
-            if (_speedHud != null) vizcore3dx.View.Message.Delete(_speedHud);
-            _speedHud = null;
-        }
-
-        // 지정한 탭만 남기고 나머지 툴바(=리본 탭)와 모델 트리 패널의 같은 탭을 숨깁니다. 홈 탭·모델 트리는 항상 표시합니다.
-        private void ShowRibbonTabs(params VIZCore3DX.NET.Data.ToolbarKind[] keep)
-        {
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in Enum.GetValues(typeof(VIZCore3DX.NET.Data.ToolbarKind)))
-                vizcore3dx.Toolbar.SetVisible(kind, kind == VIZCore3DX.NET.Data.ToolbarKind.Main || Array.IndexOf(keep, kind) >= 0);
-
-            // 남길 탭은 먼저 켜고(설정 파일로 꺼져 있을 수 있음), 그 다음 모델 트리를 뺀 나머지를 끕니다. 내장 탭 이름은 "tabPage" + 툴바 종류입니다.
-            foreach (VIZCore3DX.NET.Data.ToolbarKind kind in keep)
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, "tabPage" + kind, true);
-
-            foreach (string name in vizcore3dx.Panel.GetTabNames(VIZCore3DX.NET.Data.PanelKind.ModelTree))
-            {
-                if (name == "tabPageSceneTree") continue;
-                bool show = Array.Exists(keep, kind => name == "tabPage" + kind);
-                vizcore3dx.Panel.SetTabVisible(VIZCore3DX.NET.Data.PanelKind.ModelTree, name, show);
-            }
-        }
-
-        // 속성 패널은 노드 특성·노드 속성만 기본으로 남기고, 예제가 다루는 탭만 켭니다.
-        private void ShowAttributeTabs(bool attributeTree = false, bool nodeGroup = false, bool projection = false, bool pmi = false)
-        {
-            vizcore3dx.TabAttributeTreeEnabled = attributeTree;
-            vizcore3dx.TabNodeGroupEnabled = nodeGroup;
-            vizcore3dx.TabProjectionEnabled = projection;
-            vizcore3dx.TabPmiEnabled = pmi;
-            vizcore3dx.TabEnvironmentEnabled = false;
-            vizcore3dx.TabGenericDataEnabled = false;
-            vizcore3dx.AttributePanelVisible = attributeTree || nodeGroup || projection || pmi;
         }
 
         #endregion
