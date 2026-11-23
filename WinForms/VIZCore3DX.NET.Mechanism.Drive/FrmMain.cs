@@ -142,7 +142,10 @@ namespace VIZCore3DX.NET.Mechanism.Drive
         // 모델을 엽니다. 샘플 모델 Gearbox.vizx 를 기준으로 만든 예제입니다.
         private void btnOpenModel_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Model.OpenFileDialog() == false) return;
+            // 리포의 샘플 모델(SampleModels\Gearbox.vizx)이 빌드 때 exe 옆에 복사됩니다. 있으면 바로 열고, 없으면 파일을 고릅니다.
+            string sample = System.IO.Path.Combine(Application.StartupPath, "Gearbox.vizx");
+            bool opened = System.IO.File.Exists(sample) ? vizcore3dx.Model.Open(sample) : vizcore3dx.Model.OpenFileDialog();
+            if (opened == false) return;
 
             SetStatus("모델을 열었습니다. 조인트를 정의하세요.");
         }

@@ -154,7 +154,10 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
         // 모델을 엽니다. 장면이 쓰는 부품 이름·속성은 샘플 모델에 맞춰 있습니다(SceneValues.cs).
         private void btnOpenModel_Click(object sender, EventArgs e)
         {
-            if (vizcore3dx.Model.OpenFileDialog() == false) return;
+            // 리포의 샘플 모델(SampleModels\Gearbox.vizx)이 빌드 때 exe 옆에 복사됩니다. 있으면 바로 열고, 없으면 파일을 고릅니다.
+            string sample = System.IO.Path.Combine(Application.StartupPath, "Gearbox.vizx");
+            bool opened = System.IO.File.Exists(sample) ? vizcore3dx.Model.Open(sample) : vizcore3dx.Model.OpenFileDialog();
+            if (opened == false) return;
 
             IndexNodes();
             ClearScene();
@@ -1051,7 +1054,7 @@ namespace VIZCore3DX.NET.Scenario.GearboxMaintenance
             if (missing == null && !_byName.ContainsKey(Uda(_byName[SceneValues.NameMeshGear], SceneValues.UdaMate))) missing = SceneValues.NameMeshGear + " 의 속성 " + SceneValues.UdaMate;
             if (missing == null) return true;
 
-            SetStatus(string.Format("부품 '{0}' 이 모델에 없습니다. 샘플 모델 부품\\Gearbox.vizx 를 열거나 SceneValues.cs 의 부품 이름을 바꿔 주세요.", missing));
+            SetStatus(string.Format("부품 '{0}' 이 모델에 없습니다. 샘플 모델 Gearbox.vizx 를 열거나 SceneValues.cs 의 부품 이름을 바꿔 주세요.", missing));
             return false;
         }
 

@@ -131,7 +131,7 @@
             this.lblModelHint.Name = "lblModelHint";
             this.lblModelHint.Size = new System.Drawing.Size(320, 32);
             this.lblModelHint.TabIndex = 1;
-            this.lblModelHint.Text = "샘플 모델 부품\\Gearbox.vizx 를 엽니다. 부품 이름·속성은 이 모델 기준입니다(SceneValues.cs).";
+            this.lblModelHint.Text = "샘플 모델 Gearbox.vizx 를 엽니다. 부품 이름·속성은 이 모델 기준입니다(SceneValues.cs).";
             //
             // grpCleanup
             //

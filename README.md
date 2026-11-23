@@ -6,6 +6,10 @@ VIZCore3DX.NET 라이브러리를 활용한 Windows Forms 예제 프로젝트 �
 - .NET Framework 4.8
 - VIZCore3DX.NET 라이브러리 — **기준 버전 1.5.26.928** (각 예제 표의 `API version` 열이 그 예제를 마지막으로 빌드·확인한 라이브러리 버전입니다. 그보다 낮은 버전에서는 일부 API 가 없어 빌드되지 않을 수 있으니, 예제 버전 이상의 라이브러리를 사용하세요.)
 
+## 샘플 모델
+- `SampleModels\Gearbox.vizx` — 2단 기어 감속기. 축·기어·키에 속성(Type·Teeth·Mate 등)이 들어 있어 **Mechanism.Drive**·**Scenario.GearboxMaintenance** 예제가 사용합니다. 예제를 빌드하면 exe 옆에 복사되고 [모델 열기]가 바로 엽니다.
+- 그 밖의 예제는 [모델 열기]로 가지고 계신 모델을 열어 사용합니다.
+
 ## WinForms 예제 프로젝트
 ### 기본 / 뷰어
 | 프로젝트 | 설명 | API version |
